@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom Badge Styles - Make all badge text black for better visibility */
+.badge,
+.badge-primary,
+.badge-secondary, 
+.badge-success,
+.badge-danger,
+.badge-warning,
+.badge-info,
+.badge-light,
+.badge-dark {
+    color: #000 !important;
+}
+
+/* Ensure text is readable on all badge backgrounds */
+span[class*="badge-"] {
+    color: #000 !important;
+}

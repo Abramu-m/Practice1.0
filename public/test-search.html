@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Investigation Search Test</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .container { max-width: 600px; margin: 50px auto; padding: 20px; }
+        .form-group { margin-bottom: 15px; }
+        .form-control { padding: 8px; width: 100%; }
+        .position-relative { position: relative; }
+        .position-absolute { position: absolute; }
+        .w-100 { width: 100%; }
+        .bg-white { background-color: white; }
+        .border { border: 1px solid #ddd; }
+        .shadow-lg { box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .d-none { display: none; }
+        .service-suggestion-item { padding: 10px; border-bottom: 1px solid #eee; cursor: pointer; }
+        .service-suggestion-item:hover { background-color: #f8f9fa; }
+        .cursor-pointer { cursor: pointer; }
+        .hover-bg-light:hover { background-color: #f8f9fa; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Medical Services Search Test</h2>
+        
+        <div class="form-group">
+            <label>Search Medical Services:</label>
+            <div class="position-relative">
+                <input type="text" class="form-control" id="service_search" placeholder="Search medical services..." autocomplete="off">
+                <div id="service_suggestions" class="position-absolute w-100 bg-white border shadow-lg d-none" style="z-index: 1000; max-height: 200px; overflow-y: auto;">
+                    <!-- Suggestions will be populated here -->
+                </div>
+            </div>
+            <input type="hidden" name="medical_service_id" id="selected_service_id">
+        </div>
+        
+        <div id="service-info" style="display: none; padding: 10px; background: #e3f2fd; border-radius: 5px; margin-top: 10px;">
+            <!-- Service info will be displayed here -->
+        </div>
+        
+        <div id="selected-service" style="margin-top: 20px; padding: 10px; background: #f5f5f5; border-radius: 5px;">
+            <strong>Selected Service ID:</strong> <span id="selected-id">None</span>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            // Setup CSRF token
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+            
+            // Initialize search
+            initializeMedicalServiceSearch();
+        });
+
+        function initializeMedicalServiceSearch() {
+            $('#service_search').on('input', function() {
+                const query = $(this).val();
+                if (query.length >= 2) {
+                    searchMedicalServices(query);
+                } else {
+                    $('#service_suggestions').addClass('d-none');
+                }
+            });
+            
+            $(document).on('click', function(e) {
+                if (!$(e.target).closest('#service_search').length) {
+                    $('#service_suggestions').addClass('d-none');
+                }
+            });
+        }
+
+        function searchMedicalServices(query) {
+            $.ajax({
+                url: '/api/medical-services/search',
+                method: 'GET',
+                data: { query: query, limit: 10 },
+                success: function(response) {
+                    console.log('Search response:', response);
+                    if (response.success && response.data.length > 0) {
+                        showServiceSuggestions(response.data);
+                    } else {
+                        $('#service_suggestions').addClass('d-none');
+                    }
+                },
+                error: function(xhr) {
+                    console.error('Service search error:', xhr);
+                    $('#service_suggestions').addClass('d-none');
+                }
+            });
+        }
+
+        function showServiceSuggestions(services) {
+            const suggestionsHtml = services.map(service => `
+                <div class="service-suggestion-item cursor-pointer hover-bg-light" 
+                     data-service-id="${service.id}" 
+                     data-service-name="${service.name}"
+                     data-price="${service.price}"
+                     data-requires-sample="${service.requires_sample}"
+                     data-sample-type="${service.sample_type}">
+                    <strong>${service.name}</strong><br>
+                    <small style="color: #666;">Price: $${parseFloat(service.price).toFixed(2)}</small>
+                </div>
+            `).join('');
+            
+            $('#service_suggestions').html(suggestionsHtml).removeClass('d-none');
+            
+            $('.service-suggestion-item').on('click', function() {
+                const serviceId = $(this).data('service-id');
+                const serviceName = $(this).data('service-name');
+                const serviceData = {
+                    id: serviceId,
+                    name: serviceName,
+                    price: $(this).data('price'),
+                    requires_sample: $(this).data('requires-sample'),
+                    sample_type: $(this).data('sample-type')
+                };
+                
+                $('#selected_service_id').val(serviceId);
+                $('#service_search').val(serviceName);
+                $('#service_suggestions').addClass('d-none');
+                $('#selected-id').text(serviceId);
+                
+                showServiceInfoFromData(serviceData);
+            });
+        }
+
+        function showServiceInfoFromData(serviceData) {
+            const serviceInfo = $('#service-info');
+            
+            if (serviceData) {
+                let infoHtml = `<strong>Service Details:</strong><br>
+                               Price: $${parseFloat(serviceData.price).toFixed(2)}<br>
+                               Requires Sample: ${serviceData.requires_sample ? 'Yes' : 'No'}`;
+                
+                if (serviceData.requires_sample && serviceData.sample_type) {
+                    infoHtml += `<br>Sample Type: ${serviceData.sample_type}`;
+                }
+                
+                serviceInfo.html(infoHtml).show();
+            } else {
+                serviceInfo.hide();
+            }
+        }
+    </script>
+</body>
+</html>

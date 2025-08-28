@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image Test</title>
+    <style>
+        .test-image {
+            max-width: 300px;
+            border: 2px solid #007bff;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Image Path Test</h1>
+    
+    <h3>Direct Storage Path:</h3>
+    <img src="/storage/procedure_images/T5dNmJDtLJzsnUqmYKTW83CZ27mUmgonFIXYyn1D.png" 
+         alt="Test Image" 
+         class="test-image">
+    
+    <h3>Asset Helper Path (simulated):</h3>
+    <img src="/Practice1.0/public/storage/procedure_images/T5dNmJDtLJzsnUqmYKTW83CZ27mUmgonFIXYyn1D.png" 
+         alt="Test Image" 
+         class="test-image">
+    
+    <h3>Debug Info:</h3>
+    <p>Storage path exists: <span id="storageExists">Checking...</span></p>
+    
+    <script>
+        // Test image loading
+        const img1 = document.querySelector('img');
+        img1.onload = function() {
+            console.log('Image 1 loaded successfully');
+        };
+        img1.onerror = function() {
+            console.log('Image 1 failed to load');
+            console.log('Attempted path:', img1.src);
+        };
+    </script>
+</body>
+</html>
