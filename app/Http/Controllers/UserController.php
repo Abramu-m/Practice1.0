@@ -214,4 +214,112 @@ class UserController extends Controller
 
         return redirect()->back()->with('success', "Successfully verified {$updated} user(s).");
     }
+
+    /**
+     * Show a simple form for admin to trigger password reset for a user.
+     */
+    public function passwordResetForm()
+    {
+        $users = User::select('id', 'first_name', 'last_name', 'email')->orderBy('first_name')->get();
+        return view('users.password-reset', compact('users'));
+    }
+
+    /**
+     * Show form to admin for setting a new password for a specific user.
+     */
+    public function adminResetForm($id)
+    {
+        $user = User::findOrFail($id);
+        return view('users.admin-reset-password', compact('user'));
+    }
+
+    /**
+     * Send password reset link to a selected user (admin action).
+     */
+    public function sendPasswordResetLink(Request $request)
+    {
+        $request->validate([
+            'email' => ['required', 'email'],
+            'note' => ['nullable', 'string', 'max:1000'],
+            'cc_admins' => ['nullable', 'boolean']
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+        if (!$user) {
+            return redirect()->back()->withErrors(['email' => 'No user found with that email address.']);
+        }
+
+        // Create audit record
+        $admin = Auth::user();
+        $audit = \App\Models\PasswordResetRequest::create([
+            'admin_id' => $admin ? $admin->id : null,
+            'user_id' => $user->id,
+            'user_email' => $user->email,
+            'status' => 'pending',
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->header('User-Agent'),
+            'note' => $request->input('note')
+        ]);
+
+        $status = \Illuminate\Support\Facades\Password::sendResetLink(
+            $request->only('email')
+        );
+
+        if ($status == \Illuminate\Support\Facades\Password::RESET_LINK_SENT) {
+            $audit->update(['status' => 'sent', 'sent_at' => now()]);
+
+            // Optionally notify other admins that admin triggered this
+            if ($request->boolean('cc_admins')) {
+                $admins = User::whereIn('role', ['admin', 'super_admin'])->where('id', '!=', $admin->id)->get();
+                if ($admins->isNotEmpty()) {
+                    \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\AdminTriggeredPasswordReset($admin, $user->email));
+                }
+            }
+
+            return redirect()->route('users.index')->with('success', 'Password reset link sent to user.');
+        }
+
+        $audit->update(['status' => 'failed']);
+        return redirect()->back()->withErrors(['email' => __($status)]);
+    }
+
+    /**
+     * Admin sets a new password for a user directly.
+     */
+    public function adminResetPassword(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+
+        $request->validate([
+            'password' => ['required', 'string', 'min:8', 'confirmed']
+        ]);
+
+        $admin = Auth::user();
+
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        // Record audit
+        \App\Models\PasswordResetRequest::create([
+            'admin_id' => $admin ? $admin->id : null,
+            'user_id' => $user->id,
+            'user_email' => $user->email,
+            'status' => 'admin_reset',
+            'sent_at' => now(),
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->header('User-Agent'),
+            'note' => $request->input('note')
+        ]);
+
+        // Optionally notify the user that their password was changed by admin
+        if ($request->boolean('notify_user')) {
+            try {
+                $user->notify(new \App\Notifications\AdminTriggeredPasswordReset($admin, $user->email));
+            } catch (\Throwable $e) {
+                // don't block on notification failure
+            }
+        }
+
+        return redirect()->route('users.show', $user->id)->with('success', 'User password updated successfully.');
+    }
 }

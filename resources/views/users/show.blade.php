@@ -132,6 +132,14 @@
                     <a href="{{ route('users.edit', $user->id) }}" class="btn btn-primary">
                         <i class="fas fa-edit"></i> Edit User
                     </a>
+
+                    @auth
+                        @if(auth()->user()->role === 'admin' || auth()->user()->role === 'super_admin')
+                            <a href="{{ route('users.reset-password', $user->id) }}" class="btn btn-danger">
+                                <i class="fas fa-key"></i> Reset password
+                            </a>
+                        @endif
+                    @endauth
                     
                     <a href="{{ route('users.index') }}" class="btn btn-secondary">
                         <i class="fas fa-arrow-left"></i> Back to List

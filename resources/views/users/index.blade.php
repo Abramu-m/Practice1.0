@@ -163,8 +163,17 @@
                                         @endif
                                     @endif
                                 @endauth
-                                
-                                {{-- Assign as Doctor Button --}}
+
+                                    {{-- Reset password button (admin only) --}}
+                                    @auth
+                                        @if(auth()->user()->role === 'admin' || auth()->user()->role === 'super_admin')
+                                            <a href="{{ route('users.reset-password', $user->id) }}" class="btn btn-sm btn-outline-danger" title="Reset Password">
+                                                <i class="fas fa-key"></i>
+                                            </a>
+                                        @endif
+                                    @endauth
+
+                                    {{-- Assign as Doctor Button --}}
                                 @if($user->role === 'doctor' && $user->is_verified && !$user->doctor)
                                     <a href="{{ route('doctors.create', ['user_id' => $user->id]) }}" 
                                        class="btn btn-sm btn-success" title="Assign as Doctor">

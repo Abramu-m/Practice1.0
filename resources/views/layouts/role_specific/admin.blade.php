@@ -580,9 +580,15 @@
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a href="{{ url('users/password/reset') }}" class="nav-link nav-sub-item">
+                    <a href="{{ route('users.password.reset') }}" class="nav-link nav-sub-item">
                       <i class="nav-icon bi bi-key-fill text-danger"></i>
                       <p>Reset Password</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="{{ route('users.index') }}" class="nav-link nav-sub-item">
+                      <i class="nav-icon bi bi-person-fill-gear text-primary"></i>
+                      <p>Set User Password</p>
                     </a>
                   </li>
                 </ul>
@@ -986,4 +992,92 @@ document.addEventListener('DOMContentLoaded', function() {
     border-radius: 0 8px 8px 0;
     margin: 2px 0;
 }
+
+<!-- Confirmation modal for admin direct 'set user password' actions -->
+<div class="modal fade" id="adminResetConfirmModal" tabindex="-1" aria-labelledby="adminResetConfirmLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+  <div class="modal-content">
+    <div class="modal-header">
+    <h5 class="modal-title" id="adminResetConfirmLabel">Confirm Password Change</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+    <p>You're about to set a new password for the user:</p>
+    <p><strong id="adminResetTargetEmail">(no email)</strong></p>
+    <p class="text-muted small">This action will immediately change the user's password. The user may be notified if you selected that option.</p>
+    </div>
+    <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+    <button type="button" class="btn btn-danger" id="confirmAdminResetBtn">Confirm change</button>
+    </div>
+  </div>
+  </div>
+</div>
+
+<script>
+// Intercept admin direct-reset password forms and show confirmation modal.
+document.addEventListener('DOMContentLoaded', function() {
+  // Find forms that are used for admin direct resets.
+  // Heuristic: form action contains '/reset-password' and the form has a password input.
+  const resetForms = Array.from(document.querySelectorAll('form[action*="/reset-password"]'))
+    .filter(f => f.querySelector('input[name="password"]') || f.querySelector('input[type="password"]'));
+
+  if (!resetForms.length) return;
+
+  // Bootstrap modal instance (if bootstrap is present)
+  let bsModal = null;
+  const modalEl = document.getElementById('adminResetConfirmModal');
+  if (window.bootstrap && modalEl) {
+    bsModal = new bootstrap.Modal(modalEl);
+  }
+
+  let currentForm = null;
+
+  function showModalForForm(form) {
+    currentForm = form;
+    // Try to fetch email from common field names
+    const emailField = form.querySelector('input[name="email"]') || form.querySelector('input[name="user_email"]') || form.querySelector('input[type="email"]');
+    const email = emailField ? emailField.value : '(unknown)';
+    const targetSpan = document.getElementById('adminResetTargetEmail');
+    if (targetSpan) targetSpan.textContent = email;
+    if (bsModal) {
+      bsModal.show();
+    } else {
+      // Fallback to native confirm
+      const ok = window.confirm('Confirm setting a new password for ' + email + '?');
+      if (ok) form.submit();
+    }
+  }
+
+  resetForms.forEach(form => {
+    form.addEventListener('submit', function(e) {
+      // If modal already open and confirm pressed, allow submit
+      if (form.dataset.confirmed === '1') {
+        // reset flag for future submissions
+        form.dataset.confirmed = '0';
+        return true;
+      }
+      e.preventDefault();
+      showModalForForm(form);
+    });
+  });
+
+  const confirmBtn = document.getElementById('confirmAdminResetBtn');
+  if (confirmBtn) {
+    confirmBtn.addEventListener('click', function() {
+      if (!currentForm) return;
+      // mark form as confirmed to bypass the handler
+      currentForm.dataset.confirmed = '1';
+      // hide modal first (if present) then submit
+      if (bsModal) {
+        bsModal.hide();
+        // small timeout to allow modal hide animation
+        setTimeout(() => currentForm.submit(), 200);
+      } else {
+        currentForm.submit();
+      }
+    });
+  }
+});
+</script>
 </style>

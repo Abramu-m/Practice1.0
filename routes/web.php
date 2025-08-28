@@ -101,6 +101,18 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsAdmin::class])->grou
     Route::post('/users/bulk-verify', [UserController::class, 'bulkVerify'])
         ->name('users.bulk-verify');
     
+    // Admin-triggered password reset for users
+    Route::get('/users/password/reset', [UserController::class, 'passwordResetForm'])
+        ->name('users.password.reset');
+    Route::post('/users/password/reset', [UserController::class, 'sendPasswordResetLink'])
+        ->name('users.password.send-reset');
+
+    // Admin direct password reset (set a new password for a user)
+    Route::get('/users/{id}/reset-password', [UserController::class, 'adminResetForm'])
+        ->name('users.reset-password');
+    Route::post('/users/{id}/reset-password', [UserController::class, 'adminResetPassword'])
+        ->name('users.reset-password.post');
+    
     // Form templates viewer (renders consultation partials for preview)
     Route::get('form-templates', function() {
         $dir = resource_path('views/consultations/partials/investigation_forms');
