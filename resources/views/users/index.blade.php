@@ -15,7 +15,7 @@
                 <i class="fas fa-plus"></i> Add User
             </a>
             @auth
-                @if(auth()->user()->role === 'admin' || auth()->user()->role === 'super_admin')
+                @if(auth()->user()->isAdmin())
                     <a href="{{ route('users.pending-verification') }}" class="btn btn-warning">
                         <i class="fas fa-user-clock"></i> Pending Verification
                         @if(\App\Models\User::where('is_verified', false)->where('role', '!=', 'super_admin')->count() > 0)
@@ -139,7 +139,7 @@
                                 </a>
                                 
                                 @auth
-                                    @if(auth()->user()->role === 'admin' || auth()->user()->role === 'super_admin')
+                                    @if(auth()->user()->isAdmin())
                                         @if($user->is_verified)
                                             @if($user->role !== 'super_admin')
                                                 <form action="{{ route('users.unverify', $user->id) }}" method="POST" 
@@ -166,7 +166,7 @@
 
                                     {{-- Reset password button (admin only) --}}
                                     @auth
-                                        @if(auth()->user()->role === 'admin' || auth()->user()->role === 'super_admin')
+                                        @if(auth()->user()->isAdmin())
                                             <a href="{{ route('users.reset-password', $user->id) }}" class="btn btn-sm btn-outline-danger" title="Reset Password">
                                                 <i class="fas fa-key"></i>
                                             </a>

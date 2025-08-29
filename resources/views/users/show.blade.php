@@ -104,7 +104,7 @@
             <div class="row">
                 <div class="col-md-8">
                     @auth
-                        @if(auth()->user()->role === 'admin' || auth()->user()->role === 'super_admin')
+                        @if(auth()->user()->isAdmin())
                             @if($user->is_verified)
                                 @if($user->role !== 'super_admin')
                                     <form action="{{ route('users.unverify', $user->id) }}" method="POST" 
@@ -134,7 +134,7 @@
                     </a>
 
                     @auth
-                        @if(auth()->user()->role === 'admin' || auth()->user()->role === 'super_admin')
+                        @if(auth()->user()->isAdmin())
                             <a href="{{ route('users.reset-password', $user->id) }}" class="btn btn-danger">
                                 <i class="fas fa-key"></i> Reset password
                             </a>

@@ -314,9 +314,21 @@ class UserController extends Controller
         // Optionally notify the user that their password was changed by admin
         if ($request->boolean('notify_user')) {
             try {
-                $user->notify(new \App\Notifications\AdminTriggeredPasswordReset($admin, $user->email));
+                $user->notify(new \App\Notifications\UserPasswordChangedByAdmin($admin));
             } catch (\Throwable $e) {
                 // don't block on notification failure
+            }
+        }
+
+        // Optionally notify other admins
+        if ($request->boolean('cc_admins')) {
+            $admins = User::whereIn('role', ['admin', 'super_admin'])->where('id', '!=', $admin->id)->get();
+            if ($admins->isNotEmpty()) {
+                try {
+                    Notification::send($admins, new \App\Notifications\AdminTriggeredPasswordReset($admin, $user->email));
+                } catch (\Throwable $e) {
+                    // don't block on notification failure
+                }
             }
         }
 

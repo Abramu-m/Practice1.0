@@ -31,6 +31,11 @@
                             <label class="form-check-label" for="notify_user">Notify user about password change</label>
                         </div>
 
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" value="1" id="cc_admins" name="cc_admins">
+                            <label class="form-check-label" for="cc_admins">Notify other admins about this change</label>
+                        </div>
+
                         <div class="d-flex justify-content-end">
                             <button type="submit" class="btn btn-danger">Set Password</button>
                         </div>
