@@ -2,8 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -13,16 +12,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Add seeders here in the order you want them to run
         $this->call([
-            AdminUserSeeder::class,
-            ImprovedClinicalSeeder::class,
-        ]);
-
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+            MtuhaDiagnosesSeeder::class,
+            // Icd10Seeder::class, // enable if you want ICD-10 seeded here
         ]);
     }
 }

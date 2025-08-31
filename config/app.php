@@ -26,6 +26,12 @@ return [
     */
 
     'clinic_name' => env('CLINIC_NAME', 'Janet Healthcare'),
+    'clinic_slogan' => env('CLINIC_SLOGAN', 'Your Health, Our Priority'),
+    'clinic_country' => env('CLINIC_COUNTRY', 'Tanzania'),
+    'clinic_region' => env('CLINIC_REGION', 'Geita'),
+    'clinic_district' => env('CLINIC_DISTRICT', 'Geita'),
+    'clinic_locale' => env('CLINIC_LOCALE', 'Nkome'),
+    'clinic_postal' => env('CLINIC_POSTAL', 'P.O Box 622'),
     'clinic_address' => env('CLINIC_ADDRESS', 'P.O Box 622, Nkome, Geita'),
     'clinic_phone' => env('CLINIC_PHONE', '+255 756 123 456'),
     'clinic_email' => env('CLINIC_EMAIL', 'info@janethealthcare.com'),

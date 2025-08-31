@@ -1005,7 +1005,8 @@ CREATE TABLE `nhif_tariffs` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `nhif_tariffs_facility_code_item_code_scheme_id_unique` (`facility_code`,`item_code`,`scheme_id`),
   KEY `nhif_tariffs_facility_code_scheme_id_index` (`facility_code`,`scheme_id`),
-  KEY `nhif_tariffs_item_code_index` (`item_code`)
+  KEY `nhif_tariffs_item_code_index` (`item_code`),
+  KEY `nhif_tariffs_item_name_index` (`item_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `notifications`;
@@ -1022,6 +1023,26 @@ CREATE TABLE `notifications` (
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `notifications_notifiable_type_notifiable_id_index` (`notifiable_type`,`notifiable_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `password_reset_requests`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `password_reset_requests` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `admin_id` bigint(20) unsigned DEFAULT NULL,
+  `user_id` bigint(20) unsigned DEFAULT NULL,
+  `user_email` varchar(255) NOT NULL,
+  `status` varchar(255) NOT NULL DEFAULT 'pending',
+  `sent_at` timestamp NULL DEFAULT NULL,
+  `ip_address` varchar(255) DEFAULT NULL,
+  `user_agent` text DEFAULT NULL,
+  `note` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `password_reset_requests_admin_id_index` (`admin_id`),
+  KEY `password_reset_requests_user_id_index` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `password_reset_tokens`;
@@ -1064,6 +1085,7 @@ DROP TABLE IF EXISTS `patient_categories`;
 CREATE TABLE `patient_categories` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `description` varchar(50) NOT NULL,
+  `code` varchar(255) DEFAULT NULL,
   `type` enum('cash','insurance') NOT NULL DEFAULT 'cash',
   `is_active` tinyint(1) NOT NULL DEFAULT 1,
   `created_by` bigint(20) unsigned NOT NULL,
@@ -1754,6 +1776,7 @@ DROP TABLE IF EXISTS `unfit_medications`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `unfit_medications` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `reference_number` varchar(255) NOT NULL,
   `medication_id` bigint(20) unsigned NOT NULL,
   `source_type` enum('ledger','location_stock') NOT NULL,
   `source_id` bigint(20) unsigned NOT NULL,
@@ -1771,6 +1794,7 @@ CREATE TABLE `unfit_medications` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
+  UNIQUE KEY `unfit_medications_reference_number_unique` (`reference_number`),
   KEY `unfit_medications_disposed_by_foreign` (`disposed_by`),
   KEY `unfit_medications_verified_by_foreign` (`verified_by`),
   KEY `unfit_medications_medication_id_batch_number_index` (`medication_id`,`batch_number`),
@@ -1797,7 +1821,7 @@ CREATE TABLE `users` (
   `phone` varchar(255) DEFAULT NULL,
   `address` varchar(255) DEFAULT NULL,
   `profile_picture` varchar(255) DEFAULT NULL,
-  `role` enum('user','doctor','nurse','receptionist','cashier','pharmacist','lab_technician') NOT NULL DEFAULT 'user',
+  `role` enum('user','admin','doctor','nurse','receptionist','cashier','pharmacist','lab_technician','radiologist','super_admin') NOT NULL DEFAULT 'user',
   `is_admin` tinyint(1) NOT NULL DEFAULT 0,
   `is_super` tinyint(1) NOT NULL DEFAULT 0,
   `is_active` tinyint(1) NOT NULL DEFAULT 1,
@@ -2039,3 +2063,9 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (149,'2025_08_08_17
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (150,'2025_08_09_100130_update_store_locations_type_enum_add_radiology',69);
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (151,'2025_08_09_121846_create_result_templates_table',70);
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (152,'2025_08_09_172435_change_result_template_to_foreign_key_in_medical_services_table',71);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (153,'2025_08_13_154933_update_users_table_add_radiologist_role',72);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (154,'2025_08_14_200819_add_reference_number_to_unfit_medications_table',73);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (155,'2025_08_21_000001_add_indexes_to_nhif_tariffs',74);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (156,'2025_08_27_000000_add_code_and_flags_to_patient_categories',75);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (157,'2025_08_27_000001_remove_flags_from_patient_categories',75);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (158,'2025_08_28_000000_create_password_reset_requests_table',76);

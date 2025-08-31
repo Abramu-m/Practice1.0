@@ -376,6 +376,10 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsVerified::class])->g
     Route::get('services/{serviceId}/details', [ConsultationController::class, 'getServiceDetails'])
         ->name('services.details');
 
+    // MTUHA monthly report (legacy port)
+    Route::match(['get','post'], '/reports/mtuha/month', [App\Http\Controllers\MtuhaReportController::class, 'month'])
+        ->name('reports.mtuha.month');
+
     // ================================
     // VITALS MANAGEMENT
     // ================================

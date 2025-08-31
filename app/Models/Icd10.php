@@ -49,6 +49,14 @@ class Icd10 extends Model
     }
 
     /**
+     * Mtuha diagnosis relation (foreign key mtuha_diagnosis)
+     */
+    public function mtuha()
+    {
+        return $this->belongsTo(MtuhaDiagnosis::class, 'mtuha_diagnosis', 'id');
+    }
+
+    /**
      * Get formatted code and description
      */
     public function getFormattedAttribute()
