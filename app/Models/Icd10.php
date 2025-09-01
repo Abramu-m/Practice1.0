@@ -13,12 +13,19 @@ class Icd10 extends Model
         'description',
         'category',
         'subcategory',
+        'chapter',
+        'mtuha_diagnosis',
         'is_active',
         'notes'
     ];
 
     protected $casts = [
         'is_active' => 'boolean'
+    ];
+    
+    protected $dates = [
+        'created_at',
+        'updated_at',
     ];
 
     /**
@@ -62,5 +69,17 @@ class Icd10 extends Model
     public function getFormattedAttribute()
     {
         return $this->code . ' - ' . $this->description;
+    }
+
+    /**
+     * Human readable mtuha diagnosis name (safe fallback)
+     */
+    public function getMtuhaNameAttribute()
+    {
+        if ($this->relationLoaded('mtuha') && $this->mtuha) {
+            return $this->mtuha->description ?? $this->mtuha->diagnosis ?? 'ID: ' . $this->mtuha->id;
+        }
+
+        return $this->mtuha ? ($this->mtuha->description ?? $this->mtuha->diagnosis ?? 'ID: ' . $this->mtuha->id) : null;
     }
 }

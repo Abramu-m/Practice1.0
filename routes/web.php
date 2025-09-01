@@ -661,6 +661,12 @@ Route::get('/api/medical-services/{serviceId}/form-check', [ApiClinicalControlle
 // ICD10 API
 Route::get('/api/icd10/search', [App\Http\Controllers\Icd10Controller::class, 'search']);
 
+// ICD10 web UI for assigning/editing mtuha diagnosis mappings
+Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsVerified::class])->group(function () {
+    Route::get('/icd10', [App\Http\Controllers\Icd10Controller::class, 'index'])->name('icd10.index');
+    Route::patch('/icd10/{id}', [App\Http\Controllers\Icd10Controller::class, 'update'])->name('icd10.update');
+});
+
 // Medication API (auth required)
     Route::get('/medications/api/list', [App\Http\Controllers\MedicationController::class, 'apiList'])
         ->name('medications.api.list');

@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ClinicalController;
+use App\Http\Controllers\Icd10Controller;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -11,6 +12,10 @@ Route::get('/user', function (Request $request) {
 // Medical Services Search (public access for frontend)
 Route::get('/medical-services/search', [ClinicalController::class, 'searchMedicalServices']);
 Route::get('/medical-services/{serviceId}/form-check', [ClinicalController::class, 'checkServiceFormRequirements']);
+
+// Public MTUHA API for Select2
+Route::get('/mtuha/search', [Icd10Controller::class, 'mtuhaSearch']);
+Route::get('/mtuha/{id}', [Icd10Controller::class, 'mtuhaGet'])->where('id', '[0-9]+');
 
 // Investigation Forms (public access for AJAX loading)
 Route::get('/investigation-form/{formType}', function($formType) {

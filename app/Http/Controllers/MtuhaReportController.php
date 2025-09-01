@@ -22,7 +22,6 @@ class MtuhaReportController extends Controller
 
         $useCache = ! (bool) $request->input('nocache');
     $data = $this->service->buildReport($year, $month, $useCache);
-    // Provide a formatted month name to the view to avoid instantiating the service in the blade
     $data['month_name'] = $this->service->monthName($month);
 
         // PDF export

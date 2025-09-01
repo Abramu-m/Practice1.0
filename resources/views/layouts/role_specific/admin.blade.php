@@ -717,6 +717,24 @@
                       </li>
                     </ul>
                   </li>
+                                   </li>
+                  <li class="nav-item has-treeview">
+                    <a href="#" class="nav-link nav-sub-header">
+                      <i class="nav-icon bi bi-gear-fill text-danger"></i>
+                      <p>
+                        Configure reports
+                        <i class="nav-arrow bi bi-chevron-right"></i>
+                      </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                      <li class="nav-item">
+                          <a href="{{ route('icd10.index') }}" class="nav-link nav-sub-sub-item">
+                            <i class="nav-icon bi bi-gear-fill text-secondary"></i>
+                            <p>Mtuha</p>
+                          </a>
+                      </li>
+                    </ul>
+                  </li>
                 </ul>
               </li>
               <!-- Reports -->
