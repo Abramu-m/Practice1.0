@@ -141,6 +141,46 @@
                                 if (!is_array($parameters)) {
                                     $parameters = [$parameters];
                                 }
+
+                                // Helpers to compute status from a value and reference range (if status is missing)
+                                $toFloat = function ($val) {
+                                    if ($val === null || $val === '') return null;
+                                    if (is_numeric($val)) return (float)$val;
+                                    // Extract first numeric (handles strings like "<5", ">= 3.2", "5 mg/dL")
+                                    if (preg_match('/-?\d+(?:[\.,]\d+)?/', (string)$val, $m)) {
+                                        return (float) str_replace(',', '.', $m[0]);
+                                    }
+                                    return null;
+                                };
+
+                                $computeStatusFromRange = function ($valueRaw, $rangeRaw) use ($toFloat) {
+                                    // Arrays are not supported for computation
+                                    if (is_array($valueRaw) || is_array($rangeRaw)) return null;
+                                    $val = $toFloat($valueRaw);
+                                    if ($val === null || !$rangeRaw) return null;
+                                    $r = trim((string)$rangeRaw);
+                                    // Normalize unicode dashes to hyphen
+                                    $r = str_replace(["–", "—", "−"], "-", $r);
+                                    // Common patterns: "a-b" or "a to b"
+                                    if (preg_match('/^\s*(-?\d+(?:\.\d+)?)\s*(?:-|to)\s*(-?\d+(?:\.\d+)?)\s*$/i', $r, $mm)) {
+                                        $lo = (float)$mm[1];
+                                        $hi = (float)$mm[2];
+                                        if ($val < $lo) return 'low';
+                                        if ($val > $hi) return 'high';
+                                        return 'normal';
+                                    }
+                                    // Comparator patterns: "< x", "<= x", "> x", ">= x"
+                                    if (preg_match('/^\s*([<>]=?)\s*(-?\d+(?:\.\d+)?)\s*$/', $r, $mm)) {
+                                        $op = $mm[1];
+                                        $cut = (float)$mm[2];
+                                        if ($op === '<')  return $val <  $cut ? 'normal' : 'high';
+                                        if ($op === '<=') return $val <= $cut ? 'normal' : 'high';
+                                        if ($op === '>')  return $val >  $cut ? 'normal' : 'low';
+                                        if ($op === '>=') return $val >= $cut ? 'normal' : 'low';
+                                    }
+                                    // Fallback: cannot determine
+                                    return null;
+                                };
                             @endphp
                             
                             @foreach($parameters as $param)
@@ -154,25 +194,30 @@
                                     if (!is_array($param)) {
                                         continue;
                                     }
+                                    // Support both schema variants and compute status from range if missing
+                                    $pname = $param['parameter_name'] ?? ($param['parameter'] ?? 'N/A');
+                                    $pvalue = is_array($param['value'] ?? null) ? null : ($param['value'] ?? null);
+                                    $punit  = is_array($param['unit'] ?? null) ? '' : ($param['unit'] ?? '');
+                                    $prange = is_array($param['normal_range'] ?? null) ? '' : ($param['normal_range'] ?? '');
+                                    $status = $param['status'] ?? null;
+                                    if (!$status) {
+                                        $status = $computeStatusFromRange($pvalue, $prange) ?? 'unknown';
+                                    }
+                                    $badgeClass = match($status) {
+                                        'high' => 'bg-danger',
+                                        'low' => 'bg-warning',
+                                        'normal' => 'bg-success',
+                                        'critical' => 'bg-danger',
+                                        default => 'bg-secondary'
+                                    };
                                 @endphp
                                 <tr>
-                                    <td class="fw-medium">{{ $param['parameter_name'] ?? 'N/A' }}</td>
-                                    <td>{{ $param['value'] ?? 'N/A' }}</td>
-                                    <td class="text-muted">{{ $param['unit'] ?? '' }}</td>
-                                    <td class="text-muted">{{ $param['normal_range'] ?? '' }}</td>
-                                    <td>
-                                        @php
-                                            $status = $param['status'] ?? 'normal';
-                                            $badgeClass = match($status) {
-                                                'high', 'critical' => 'bg-danger',
-                                                'low' => 'bg-warning',
-                                                'normal' => 'bg-success',
-                                                default => 'bg-secondary'
-                                            };
-                                        @endphp
-                                        <span class="badge {{ $badgeClass }}">{{ ucfirst($status) }}</span>
-                                    </td>
-                                    <td class="text-muted">{{ $param['remarks'] ?? '' }}</td>
+                                    <td class="fw-medium">{{ $pname }}</td>
+                                    <td>{{ $pvalue ?? 'N/A' }}</td>
+                                    <td class="text-muted">{{ $punit }}</td>
+                                    <td class="text-muted">{{ $prange }}</td>
+                                    <td><span class="badge {{ $badgeClass }}">{{ ucfirst($status) }}</span></td>
+                                    <td class="text-muted">{{ is_array($param['remarks'] ?? '') ? json_encode($param['remarks']) : ($param['remarks'] ?? '') }}</td>
                                 </tr>
                             @endforeach
                         </tbody>

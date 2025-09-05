@@ -15,6 +15,8 @@ class DatabaseSeeder extends Seeder
         // Add seeders here in the order you want them to run
         $this->call([
             MtuhaDiagnosesSeeder::class,
+            AtcCodesSeeder::class,
+            DrugAtcMapSeeder::class,
             // Icd10Seeder::class, // enable if you want ICD-10 seeded here
         ]);
     }

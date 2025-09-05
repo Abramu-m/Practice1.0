@@ -1616,6 +1616,44 @@
                                                                     if (!is_array($parameters)) {
                                                                         $parameters = [$parameters];
                                                                     }
+
+                                                                    // Small helpers for parsing values and ranges
+                                                                    $toFloat = function ($val) {
+                                                                        if ($val === null || $val === '') return null;
+                                                                        if (is_numeric($val)) return (float)$val;
+                                                                        // Extract first numeric (handles strings like "<5", ">= 3.2", "5 mg/dL")
+                                                                        if (preg_match('/-?\d+(?:[\.,]\d+)?/', (string)$val, $m)) {
+                                                                            return (float) str_replace(',', '.', $m[0]);
+                                                                        }
+                                                                        return null;
+                                                                    };
+
+                                                                    $computeStatusFromRange = function ($valueRaw, $rangeRaw) use ($toFloat) {
+                                                                        $val = $toFloat($valueRaw);
+                                                                        if ($val === null || !$rangeRaw) return null;
+                                                                        $r = trim((string)$rangeRaw);
+                                                                        // Normalize unicode dashes to hyphen
+                                                                        $r = str_replace(["–", "—", "−"], "-", $r);
+                                                                        // Common patterns: "a-b" or "a to b"
+                                                                        if (preg_match('/^\s*(-?\d+(?:\.\d+)?)\s*(?:-|to)\s*(-?\d+(?:\.\d+)?)\s*$/i', $r, $mm)) {
+                                                                            $lo = (float)$mm[1];
+                                                                            $hi = (float)$mm[2];
+                                                                            if ($val < $lo) return 'low';
+                                                                            if ($val > $hi) return 'high';
+                                                                            return 'normal';
+                                                                        }
+                                                                        // Comparator patterns: "< x", "<= x", "> x", ">= x"
+                                                                        if (preg_match('/^\s*([<>]=?)\s*(-?\d+(?:\.\d+)?)\s*$/', $r, $mm)) {
+                                                                            $op = $mm[1];
+                                                                            $cut = (float)$mm[2];
+                                                                            if ($op === '<')  return $val <  $cut ? 'normal' : 'high';
+                                                                            if ($op === '<=') return $val <= $cut ? 'normal' : 'high';
+                                                                            if ($op === '>')  return $val >  $cut ? 'normal' : 'low';
+                                                                            if ($op === '>=') return $val >= $cut ? 'normal' : 'low';
+                                                                        }
+                                                                        // Fallback: cannot determine
+                                                                        return null;
+                                                                    };
                                                                 @endphp
                                                                 
                                                                 @foreach($parameters as $param)
@@ -1629,24 +1667,32 @@
                                                                         if (!is_array($param)) {
                                                                             continue;
                                                                         }
+
+                                                                        // Support both schema variants: parameter_name vs parameter
+                                                                        $pname = $param['parameter_name'] ?? ($param['parameter'] ?? 'N/A');
+                                                                        $pvalue = $param['value'] ?? null;
+                                                                        $punit = $param['unit'] ?? '';
+                                                                        $prange = $param['normal_range'] ?? '';
+                                                                        // Prefer existing status if provided, else compute from range
+                                                                        $computed = $param['status'] ?? null;
+                                                                        if (!$computed) {
+                                                                            $computed = $computeStatusFromRange($pvalue, $prange) ?? 'unknown';
+                                                                        }
+                                                                        $status = $computed;
+                                                                        $badgeClass = match($status) {
+                                                                            'high' => 'bg-danger',
+                                                                            'low' => 'bg-warning',
+                                                                            'normal' => 'bg-success',
+                                                                            'critical' => 'bg-danger',
+                                                                            default => 'bg-secondary'
+                                                                        };
                                                                     @endphp
                                                                     <tr>
-                                                                        <td class="fw-medium">{{ $param['parameter_name'] ?? 'N/A' }}</td>
-                                                                        <td>{{ $param['value'] ?? 'N/A' }}</td>
-                                                                        <td class="text-muted">{{ $param['unit'] ?? '' }}</td>
-                                                                        <td class="text-muted">{{ $param['normal_range'] ?? '' }}</td>
-                                                                        <td>
-                                                                            @php
-                                                                                $status = $param['status'] ?? 'normal';
-                                                                                $badgeClass = match($status) {
-                                                                                    'high', 'critical' => 'bg-danger',
-                                                                                    'low' => 'bg-warning',
-                                                                                    'normal' => 'bg-success',
-                                                                                    default => 'bg-secondary'
-                                                                                };
-                                                                            @endphp
-                                                                            <span class="badge {{ $badgeClass }}">{{ ucfirst($status) }}</span>
-                                                                        </td>
+                                                                        <td class="fw-medium">{{ $pname }}</td>
+                                                                        <td>{{ $pvalue ?? 'N/A' }}</td>
+                                                                        <td class="text-muted">{{ $punit }}</td>
+                                                                        <td class="text-muted">{{ $prange }}</td>
+                                                                        <td><span class="badge {{ $badgeClass }}">{{ ucfirst($status) }}</span></td>
                                                                     </tr>
                                                                 @endforeach
                                                             </tbody>
@@ -1720,6 +1766,9 @@
                             @endif
                             
                             <!-- Test Result Form removed: test results are managed in the Lab module. -->
+                            
+                            <!-- CDS Drawer: show any active alerts for this visit -->
+                            <x-cds.drawer :alerts="$cdsAlerts" />
                         </div>
                     </div>
                 </div>
@@ -2460,6 +2509,42 @@
         })();
     } catch (e) {
         console.error('Error initializing save overlay guard', e);
+    }
+
+    // --- CDS helpers ---
+    function ackCdsAlert(alertId, action) {
+        const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        fetch(`{{ url('/cds-alerts') }}/${alertId}/ack`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': token },
+            body: JSON.stringify({ action })
+        }).then(r => r.json()).then((res) => {
+            try { toastr.success('Alert updated'); } catch (e) {}
+            // Refresh the drawer area after ack
+            // We reuse the prescriptions save path which returns drawer html by reloading prescriptions list which also triggers markPaneSaved
+            // Or fetch current drawer via a simple in-place refresh using last response pattern if needed.
+            // For now, just remove the card to keep UI clean.
+            const el = document.querySelector(`#cds-drawer`);
+            if (el) el.remove();
+        }).catch(() => {
+            try { toastr.error('Failed to update alert'); } catch (e) {}
+        });
+    }
+
+    function ackCdsAlertWithReason(alertId, action) {
+        const reason = prompt('Provide override reason (optional):');
+        const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        fetch(`{{ url('/cds-alerts') }}/${alertId}/ack`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': token },
+            body: JSON.stringify({ action, reason })
+        }).then(r => r.json()).then((res) => {
+            try { toastr.success('Override recorded'); } catch (e) {}
+            const el = document.querySelector(`#cds-drawer`);
+            if (el) el.remove();
+        }).catch(() => {
+            try { toastr.error('Failed to override'); } catch (e) {}
+        });
     }
 </script>
 @endsection

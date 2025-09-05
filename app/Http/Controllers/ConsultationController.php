@@ -21,6 +21,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Events\MedicationPrescribed;
+use App\Services\CDS\CdsAlertService;
 
 class ConsultationController extends Controller
 {
@@ -187,6 +189,9 @@ class ConsultationController extends Controller
             ]);
         }
 
+        // Load any open CDS alerts for this visit
+        $cdsAlerts = app(\App\Services\CDS\CdsAlertService::class)->forVisit($visit->id);
+
         return view('consultations.show', compact(
             'visit',
             'consultation', 
@@ -202,7 +207,8 @@ class ConsultationController extends Controller
             'icd10Codes',
             'pastMedicalHistory',
             'icd_diagnoses',
-            'testResults'
+            'testResults',
+            'cdsAlerts'
         ));
     }
 
@@ -651,6 +657,42 @@ class ConsultationController extends Controller
             'notes' => $request->notes,
             'status' => Prescription::STATUS_PRESCRIBED,
             'prescribed_at' => now()
+        ]);
+
+        // CDS: Dispatch event for medication-related safety checks
+        event(new MedicationPrescribed(
+            $consultation->patient_id,
+            [
+                'prescription_id' => $prescription->id,
+                'medication_id' => $request->medication_id,
+                'medication_name' => $medication->generic_name ?? $medication->brand_name ?? null,
+                'dosage' => $request->dosage,
+                'administration_route_id' => $request->administration_route_id,
+                'frequency_id' => $request->frequency_id,
+                'duration_days' => $request->duration_days,
+                'quantity' => $request->quantity,
+                'unit_price' => $unitPrice,
+            ],
+            $consultation->visit_id
+        ));
+
+        // After CDS checks run (synchronously), return updated CDS drawer HTML and alert count
+        $cdsAlerts = app(CdsAlertService::class)->forVisit($consultation->visit_id);
+        $cdsDrawerHtml = view('components.cds.drawer', ['alerts' => $cdsAlerts])->render();
+
+        return response()->json([
+            'success' => true,
+            'prescription_id' => $prescription->id,
+            'cds_alerts_count' => $cdsAlerts->count(),
+            'cds_drawer_html' => $cdsDrawerHtml,
+            'cds_alerts' => $cdsAlerts->map(function ($a) {
+                return [
+                    'id' => $a->id,
+                    'severity' => $a->severity,
+                    'message' => $a->message,
+                    'rationale' => $a->rationale,
+                ];
+            }),
         ]);
     }
 

@@ -415,7 +415,7 @@ function savePrescription() {
             url: `/consultations/${window.consultationId}/prescriptions`,
             method: 'POST',
             data: formData
-        }).done(function(response) {
+    }).done(function(response) {
             console.log('Prescription saved successfully:', response);
             toastr.success('Prescription added successfully!');
             // Reset form
@@ -426,6 +426,24 @@ function savePrescription() {
             $('#prescriptionForm').collapse('hide');
             // Refresh prescriptions list
             loadPrescriptions();
+            // Update CDS drawer if provided
+            try {
+                if (response && response.cds_drawer_html !== undefined) {
+                    const drawerHost = $(".card .card-body").has(".results-list").first();
+                    // Fallback: find an existing CDS drawer container by header text
+                    let drawer = drawerHost.find('.card:contains("Clinical Decision Support")');
+                    if (drawer.length === 0) {
+                        // If not found, try inserting after results list
+                        const resultsCardBody = drawerHost;
+                        resultsCardBody.append(response.cds_drawer_html);
+                    } else {
+                        drawer.replaceWith(response.cds_drawer_html);
+                    }
+                    console.log('CDS drawer updated, alerts:', response.cds_alerts_count);
+                }
+            } catch (e) {
+                console.warn('CDS drawer update failed:', e);
+            }
             try { if (typeof markPaneSaved === 'function') markPaneSaved('treatment'); } catch (e) { console.error(e); }
             resolve(response);
         }).fail(function(xhr) {

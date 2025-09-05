@@ -279,6 +279,9 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsVerified::class])->g
     Route::get('/patient-visits/{visit}/category', [App\Http\Controllers\PatientVisitController::class, 'getVisitCategory']);
     Route::get('/patient-visits/{visit}/investigations-partial', [App\Http\Controllers\PatientVisitController::class, 'getInvestigationsPartial'])
         ->name('patient_visits.investigations_partial');
+
+    // CDS Alerts: acknowledge/override/dismiss
+    Route::post('/cds-alerts/{alert}/ack', [App\Http\Controllers\CdsAlertController::class, 'acknowledge'])->name('cds.alerts.ack');
     Route::get('/api/patients/{patient}/check-active-visit', [App\Http\Controllers\PatientVisitController::class, 'checkPatientActiveVisitApi'])
         ->name('patients.check_active_visit');
 
