@@ -52,6 +52,11 @@
     
     <!-- Include custom CSS -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+  <!-- Page-specific styles from views -->
+  @yield('styles')
+
+  <!-- Select2 CSS (global) - provides searchable dropdowns across the app -->
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
   </head>
   <body class="layout-fixed sidebar-expand-lg sidebar-mini sidebar-collapse bg-body-tertiary">
     <!--begin::App Wrapper-->
@@ -293,6 +298,8 @@
                 @include('layouts.role_specific.nurse')
               @elseif(auth()->check() && auth()->user()->isRadiologist())
                 @include('layouts.role_specific.radiologist')
+              @elseif(auth()->check() && auth()->user()->isLearning())
+                @include('layouts.role_specific.user')
               @else
               <li class="nav-item">
                 <a href="#" class="nav-link">
@@ -461,6 +468,10 @@
     
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Select2 JS (must come after jQuery). Note: some individual views already include Select2 themselves
+      so this global include may result in duplicate loads; consider removing per-view includes if you want a single centralized include. -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     
     <!-- Toastr for notifications -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">

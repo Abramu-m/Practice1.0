@@ -86,6 +86,9 @@ Route::middleware('auth')->group(function () {
     })->name('help.index');
 });
 
+// Learning routes
+require __DIR__.'/learning.php';
+
 // ================================
 // ADMIN ROUTES
 // ================================

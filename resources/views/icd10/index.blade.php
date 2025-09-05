@@ -83,12 +83,7 @@
 @endsection
 
 @section('footer_scripts')
-    <!-- Use existing project pattern for Select2 (CDN) to avoid adding local vendor files -->
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-theme@0.1.0-rc.0/dist/select2-bootstrap.min.css" rel="stylesheet" />
-    <!-- Ensure jQuery is present (some debug tools call jQuery.noConflict(true)) -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <!-- Select2 and jQuery are loaded globally in the layout; keep initialization only -->
 
     <script>
         (function($){
