@@ -431,7 +431,7 @@ function savePrescription() {
                 if (response && response.cds_drawer_html !== undefined) {
                     const drawerHost = $(".card .card-body").has(".results-list").first();
                     // Fallback: find an existing CDS drawer container by header text
-                    let drawer = drawerHost.find('.card:contains("Clinical Decision Support")');
+                    let drawer = drawerHost.find('#cds-drawer');
                     if (drawer.length === 0) {
                         // If not found, try inserting after results list
                         const resultsCardBody = drawerHost;
