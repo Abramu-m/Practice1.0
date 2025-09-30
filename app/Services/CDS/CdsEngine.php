@@ -30,9 +30,21 @@ class CdsEngine
             new Rules\DoseRangeRule(),
         ];
 
+        Log::channel(config('cds.log_channel', 'single'))
+            ->info('CDS: Running medication rules', [
+                'patient_id' => $context['patient_id'] ?? null,
+                'visit_id' => $context['visit_id'] ?? null,
+                'medication_id' => $context['order']['medication_id'] ?? null,
+                'rules_count' => count($rules)
+            ]);
+
         foreach ($rules as $rule) {
             try {
+                Log::channel(config('cds.log_channel', 'single'))
+                    ->info('CDS: Evaluating rule', ['rule' => get_class($rule)]);
+                    
                 $result = $rule->evaluate($context);
+                
                 if ($result) {
                     // Persist and log the alert
                     $payload = array_merge($result, [
@@ -44,12 +56,16 @@ class CdsEngine
                     ]);
                     $alert = $this->alerts->create($payload);
                     Log::channel(config('cds.log_channel', 'single'))
-                        ->info('CDS alert', ['id' => $alert->id] + $result);
+                        ->info('CDS alert created', ['id' => $alert->id] + $result);
+                } else {
+                    Log::channel(config('cds.log_channel', 'single'))
+                        ->info('CDS: Rule passed, no alert needed', ['rule' => get_class($rule)]);
                 }
             } catch (\Throwable $e) {
                 Log::channel(config('cds.log_channel', 'single'))
                     ->error('CDS rule error: '.$e->getMessage(), [
                         'rule' => get_class($rule),
+                        'context' => $context
                     ]);
             }
         }

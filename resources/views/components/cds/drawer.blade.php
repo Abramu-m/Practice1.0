@@ -24,4 +24,7 @@
             @endforeach
         </div>
     </div>
+@else
+    {{-- Hidden placeholder for CDS drawer that JavaScript can find and replace --}}
+    <div id="cds-drawer" style="display: none;"></div>
 @endif

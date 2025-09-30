@@ -17,6 +17,7 @@ use App\Http\Controllers\PatientController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CashierController;
 use App\Http\Controllers\PharmacistController;
+use App\Http\Controllers\AllergyController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\IcdDiagnosisController;
 use App\Http\Controllers\Api\ClinicalController as ApiClinicalController;
@@ -374,6 +375,17 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsVerified::class])->g
     Route::post('past-medical-history', [ConsultationController::class, 'storePastMedicalHistory'])
         ->name('past-medical-history.store');
 
+    // CDS Alerts
+    Route::post('consultations/{consultationId}/cds-alerts/{alertId}/ack', [ConsultationController::class, 'acknowledgeCdsAlert'])
+        ->name('consultations.cds_alerts.acknowledge');
+
+    // Allergies (structured)
+    Route::get('patients/{patient}/allergies', [AllergyController::class, 'index'])->name('patients.allergies.index');
+    Route::post('patients/{patient}/allergies', [AllergyController::class, 'store'])->name('patients.allergies.store');
+    Route::put('allergies/{allergy}', [AllergyController::class, 'update'])->name('allergies.update');
+    Route::post('allergies/{allergy}/deactivate', [AllergyController::class, 'deactivate'])->name('allergies.deactivate');
+    Route::delete('allergies/{allergy}', [AllergyController::class, 'destroy'])->name('allergies.destroy');
+
     // Test Results (manual entry) removed: results are managed in the Lab module.
 
     // Support data routes
@@ -385,6 +397,11 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsVerified::class])->g
     // MTUHA monthly report (legacy port)
     Route::match(['get','post'], '/reports/mtuha/month', [App\Http\Controllers\MtuhaReportController::class, 'month'])
         ->name('reports.mtuha.month');
+
+    // System Logs (admin only)
+    Route::get('/system/logs', [App\Http\Controllers\SystemLogController::class, 'index'])
+        ->middleware(\App\Http\Middleware\EnsureUserIsAdmin::class)
+        ->name('system.logs.index');
 
     // ================================
     // VITALS MANAGEMENT
@@ -685,6 +702,9 @@ Route::get('/medications/stock/items/{type}', [App\Http\Controllers\Store\GoodsR
 
 // Include store requisitions routes
 require __DIR__.'/requisitions.php';
+
+// CDS Testing routes
+require __DIR__.'/test-cds.php';
 
 // Prescription management routes (auth required) - Already handled by resource route above
 // Route::middleware(['auth', 'verified', \App\Http\Middleware\EnsureUserIsVerified::class])->group(function () {

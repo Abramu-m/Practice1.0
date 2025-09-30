@@ -131,6 +131,14 @@ class Patient extends Model
     }
 
     /**
+     * Structured allergies (drug/environmental) captured in allergies table
+     */
+    public function allergies()
+    {
+        return $this->hasMany(Allergy::class);
+    }
+
+    /**
      * Get patient's NHIF member record
      */
     public function nhifMember()

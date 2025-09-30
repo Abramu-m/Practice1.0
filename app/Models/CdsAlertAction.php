@@ -18,8 +18,18 @@ class CdsAlertAction extends Model
         'user_id',
     ];
 
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
+
     public function alert()
     {
         return $this->belongsTo(CdsAlert::class, 'cds_alert_id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(\App\Models\User::class, 'user_id');
     }
 }

@@ -22,7 +22,7 @@ function initializeChangeTracking() {
     trackedForms.forEach(form => {
         const formElement = document.getElementById(form.id);
         if (formElement && formElement instanceof HTMLFormElement) {
-            console.log('Initializing tracking for form:', form.id);
+            // console.log('Initializing tracking for form:', form.id);
             // Store original form data
             originalFormData[form.id] = new FormData(formElement);
             
@@ -35,16 +35,16 @@ function initializeChangeTracking() {
             const inputs = formElement.querySelectorAll('input, textarea, select');
             inputs.forEach(input => {
                 input.addEventListener('input', () => {
-                    console.log('Input change detected in form:', form.id, 'input:', input.name);
+                    // console.log('Input change detected in form:', form.id, 'input:', input.name);
                     checkFormChanges(form);
                 });
                 input.addEventListener('change', () => {
-                    console.log('Change event detected in form:', form.id, 'input:', input.name);
+                    // console.log('Change event detected in form:', form.id, 'input:', input.name);
                     checkFormChanges(form);
                 });
             });
             
-            console.log('Change tracking initialized for ' + form.id);
+            // console.log('Change tracking initialized for ' + form.id);
         } else {
             console.warn('Form not found or not a form element:', form.id, formElement);
         }
@@ -143,7 +143,7 @@ function updateChangeState(tabName, buttonId, hasChanges) {
         }
     }
     
-    console.log('Change state updated: ' + tabName + ' = ' + tabHasChanges + ', button ' + buttonId + ' = ' + hasChanges);
+    // console.log('Change state updated: ' + tabName + ' = ' + tabHasChanges + ', button ' + buttonId + ' = ' + hasChanges);
 }
 
 // Helper function to get all forms in a specific tab
@@ -237,7 +237,7 @@ function markFormAsSaved(formId, buttonId, tabName) {
         }
     }
     
-    console.log('Form ' + formId + ' marked as saved, tab ' + tabName + ' has changes: ' + tabHasChanges);
+    // console.log('Form ' + formId + ' marked as saved, tab ' + tabName + ' has changes: ' + tabHasChanges);
 }
 
 // Helper function to get form ID from tab name (for single-form tabs)

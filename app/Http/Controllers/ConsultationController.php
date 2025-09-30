@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Events\MedicationPrescribed;
 use App\Services\CDS\CdsAlertService;
+use Illuminate\Support\Str;
 
 class ConsultationController extends Controller
 {
@@ -34,6 +35,7 @@ class ConsultationController extends Controller
         $visit = PatientVisit::with([
             'patientInfo.patientCategory',
             'patientInfo.pastMedicalHistory',
+            'patientInfo.allergies',
             'doctorInfo.user',
             'doctorInfo.designationInfo',
             'visitType'
@@ -127,6 +129,21 @@ class ConsultationController extends Controller
         // Get patient's past medical history
         $pastMedicalHistory = $visit->patientInfo->pastMedicalHistory;
 
+        // Pre-compute drug allergy summary (business logic moved from Blade)
+        $activeDrugAllergies = optional($visit->patientInfo->allergies)->where('is_active', true) ?? collect();
+        $drugAllergyCount = $activeDrugAllergies->count();
+        $drugAllergyOverflow = 0;
+        $drugAllergySummary = null; // null signifies none
+        if ($drugAllergyCount > 0) {
+            $displayAllergies = $activeDrugAllergies->sortBy('substance_name')->values();
+            $drugAllergyOverflow = max(0, $drugAllergyCount - 4);
+            $drugAllergySummary = $displayAllergies->take(4)->map(function ($a) {
+                return $a->substance_name . ($a->severity ? '(' . ucfirst($a->severity) . ')' : '');
+            })->implode(', ');
+        }
+        $otherAllergiesRaw = $pastMedicalHistory->allergies ?? null;
+        $otherAllergiesSummary = $otherAllergiesRaw ? Str::limit($otherAllergiesRaw, 30) : null;
+
         // Get ICD diagnoses for the consultation
         $icd_diagnoses = $consultation->icdDiagnoses;
 
@@ -208,7 +225,11 @@ class ConsultationController extends Controller
             'pastMedicalHistory',
             'icd_diagnoses',
             'testResults',
-            'cdsAlerts'
+            'cdsAlerts',
+            'activeDrugAllergies',
+            'drugAllergySummary',
+            'drugAllergyOverflow',
+            'otherAllergiesSummary'
         ));
     }
 
@@ -660,6 +681,13 @@ class ConsultationController extends Controller
         ]);
 
         // CDS: Dispatch event for medication-related safety checks
+        Log::info('CDS: Dispatching MedicationPrescribed event', [
+            'patient_id' => $consultation->patient_id,
+            'visit_id' => $consultation->visit_id,
+            'medication_id' => $request->medication_id,
+            'medication_name' => $medication->generic_name ?? $medication->brand_name ?? null
+        ]);
+        
         event(new MedicationPrescribed(
             $consultation->patient_id,
             [
@@ -678,9 +706,14 @@ class ConsultationController extends Controller
 
         // After CDS checks run (synchronously), return updated CDS drawer HTML and alert count
         $cdsAlerts = app(CdsAlertService::class)->forVisit($consultation->visit_id);
+        Log::info('CDS: Retrieved alerts for visit', [
+            'visit_id' => $consultation->visit_id,
+            'alert_count' => $cdsAlerts->count()
+        ]);
+        
         $cdsDrawerHtml = view('components.cds.drawer', ['alerts' => $cdsAlerts])->render();
 
-        return response()->json([
+        $response = [
             'success' => true,
             'prescription_id' => $prescription->id,
             'cds_alerts_count' => $cdsAlerts->count(),
@@ -693,7 +726,16 @@ class ConsultationController extends Controller
                     'rationale' => $a->rationale,
                 ];
             }),
+        ];
+        
+        Log::info('CDS: Returning prescription response', [
+            'success' => $response['success'],
+            'prescription_id' => $response['prescription_id'],
+            'cds_alerts_count' => $response['cds_alerts_count'],
+            'cds_drawer_length' => strlen($response['cds_drawer_html']),
         ]);
+
+        return response()->json($response);
     }
 
     /**
@@ -1224,5 +1266,66 @@ class ConsultationController extends Controller
         }
     }
 
-    // storeTestResult removed: manual test results are handled via the Lab module.
+    /**
+     * Acknowledge a CDS alert
+     */
+    public function acknowledgeCdsAlert(Request $request, $consultationId, $alertId)
+    {
+        try {
+            $consultation = Consultation::findOrFail($consultationId);
+            $alert = \App\Models\CdsAlert::findOrFail($alertId);
+
+            // Validate that this alert belongs to this consultation's patient/visit
+            if ($alert->patient_id !== $consultation->patient_id && $alert->visit_id !== $consultation->visit_id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Alert does not belong to this consultation.'
+                ], 403);
+            }
+
+            $request->validate([
+                'action' => 'required|in:accept,override,dismiss',
+                'reason' => 'nullable|string|max:500'
+            ]);
+
+            // Update alert status
+            $alert->update([
+                'status' => 'acknowledged',
+                'resolved_at' => now(),
+                'resolved_by' => Auth::id()
+            ]);
+
+            // Log the acknowledgment action
+            \App\Models\CdsAlertAction::create([
+                'cds_alert_id' => $alert->id,
+                'action' => $request->action,
+                'reason' => $request->reason,
+                'user_id' => Auth::id()
+            ]);
+
+            Log::info('CDS Alert acknowledged', [
+                'alert_id' => $alert->id,
+                'action' => $request->action,
+                'reason' => $request->reason,
+                'user_id' => Auth::id()
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Alert acknowledged successfully'
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Failed to acknowledge CDS alert', [
+                'alert_id' => $alertId,
+                'error' => $e->getMessage()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to acknowledge alert'
+            ], 500);
+        }
+    }
+
 }

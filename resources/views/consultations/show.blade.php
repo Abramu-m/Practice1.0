@@ -7,7 +7,7 @@
 @endsection
 
 @section('Content_Description')
-    <small class="text-muted">Patient consultation</small>
+    <small class="text-muted">Patient Consultation</small>
 @endsection
 
 @section('main_content')
@@ -337,14 +337,23 @@
                         <div class="card-body" id="medicalAlertsCardBody">
                             <!-- Allergies -->
                             <div class="mb-3" id="allergiesSection">
-                                <h6 class="text-danger"><i class="fas fa-exclamation-circle"></i> Allergies:</h6>
-                                @if($pastMedicalHistory && $pastMedicalHistory->allergies)
-                                    <div class="alert alert-danger py-2">
-                                        <strong>⚠️ ALLERGIC TO:</strong> {{ $pastMedicalHistory->allergies }}
+                                <h6 class="text-danger mb-1"><i class="fas fa-exclamation-circle"></i> Allergies</h6>
+                                <div id="drugAllergiesDisplay" class="mb-2">
+                                    <strong class="text-danger">Drug Allergies:</strong>
+                                    <div class="mt-1" id="drugAllergiesList">
+                                        <span class="text-muted">Loading...</span>
                                     </div>
-                                @else
-                                    <p class="text-muted mb-2">No known allergies</p>
-                                @endif
+                                </div>
+                                <div id="otherAllergiesDisplay">
+                                    <strong class="text-danger">Other Allergies:</strong>
+                                    @if($pastMedicalHistory && $pastMedicalHistory->allergies)
+                                        <div class="alert alert-danger py-2 mt-1 mb-0">
+                                            <strong>⚠️</strong> {{ $pastMedicalHistory->allergies }}
+                                        </div>
+                                    @else
+                                        <p class="text-muted mb-2 mt-1">None recorded</p>
+                                    @endif
+                                </div>
                             </div>
 
                             <!-- Chronic Conditions -->
@@ -521,43 +530,125 @@
                                 <div class="mb-3">
                                     <div class="d-flex justify-content-between align-items-center mb-2">
                                         <h6 class="text-success mb-0"><i class="fas fa-check-circle"></i> Medical History on File</h6>
-                                        <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="collapse" data-bs-target="#editMedicalHistory">
+                                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="showModal('editMedicalHistoryModal')">
                                             <i class="fas fa-edit"></i> Update
                                         </button>
                                     </div>
                                     
-                                    <!-- Quick Summary -->
-                                    <div class="row">
-                                        <div class="col-6">
-                                            <small><strong>Allergies:</strong> 
-                                                @if($pastMedicalHistory->allergies)
-                                                    <span class="text-danger">{{ Str::limit($pastMedicalHistory->allergies, 50) }}</span>
+                                    <!-- Compact Full PMH Display -->
+                                    <div class="row g-2">
+                                        <div class="col-12">
+                                            <small>
+                                                <p class="mb-1"><strong>Allergies:</strong></p>
+                                                @if($drugAllergySummary || $otherAllergiesSummary)
+                                                    @if($drugAllergySummary)
+                                                        <p class="mb-1">
+                                                            Drugs:
+                                                            <span class="text-danger" title="Full drug allergy list">
+                                                                {{ $drugAllergySummary }}@if($drugAllergyOverflow) +{{ $drugAllergyOverflow }} more @endif
+                                                            </span>
+                                                        </p>
+                                                    @else
+                                                        <p class="mb-1"><span class="text-muted">Drugs: None</span></p>
+                                                    @endif
+                                                    @if($otherAllergiesSummary)
+                                                        <p class="mb-0">Other:<span class="text-danger ms-1" title="Other allergies full text"> {{ $otherAllergiesSummary }}</span></p>
+                                                    @else
+                                                        <p class="mb-0">Other:<span class="text-muted ms-1"> None</span></p>
+                                                    @endif
                                                 @else
                                                     <span class="text-muted">None</span>
                                                 @endif
                                             </small>
                                         </div>
+
                                         <div class="col-6">
-                                            <small><strong>Chronic Conditions:</strong> 
+                                            <small><strong>Chronic Conditions:</strong>
                                                 @if($pastMedicalHistory->chronic_conditions)
-                                                    <span class="text-warning">{{ Str::limit($pastMedicalHistory->chronic_conditions, 50) }}</span>
+                                                    <span class="text-warning">{{ Str::limit($pastMedicalHistory->chronic_conditions, 80) }}</span>
                                                 @else
                                                     <span class="text-muted">None</span>
                                                 @endif
                                             </small>
                                         </div>
                                         <div class="col-6">
-                                            <small><strong>Smoking:</strong> 
+                                            <small><strong>Current Medications:</strong>
+                                                @if($pastMedicalHistory->current_medications)
+                                                    <span class="text-info">{{ Str::limit($pastMedicalHistory->current_medications, 80) }}</span>
+                                                @else
+                                                    <span class="text-muted">None</span>
+                                                @endif
+                                            </small>
+                                        </div>
+
+                                        <div class="col-6">
+                                            <small><strong>Previous Surgeries:</strong>
+                                                @if($pastMedicalHistory->previous_surgeries)
+                                                    <span class="text-secondary">{{ Str::limit($pastMedicalHistory->previous_surgeries, 80) }}</span>
+                                                @else
+                                                    <span class="text-muted">None</span>
+                                                @endif
+                                            </small>
+                                        </div>
+                                        <div class="col-6">
+                                            <small><strong>Family History:</strong>
+                                                @if($pastMedicalHistory->family_history)
+                                                    <span class="text-dark">{{ Str::limit($pastMedicalHistory->family_history, 80) }}</span>
+                                                @else
+                                                    <span class="text-muted">None</span>
+                                                @endif
+                                            </small>
+                                        </div>
+
+                                        <div class="col-6">
+                                            <small>
+                                                <strong>Smoking:</strong>
                                                 <span class="badge bg-{{ $pastMedicalHistory->smoking_status === 'non_smoker' ? 'success' : 'warning' }}">
                                                     {{ ucfirst(str_replace('_', ' ', $pastMedicalHistory->smoking_status ?? 'Unknown')) }}
                                                 </span>
+                                                <span class="ms-2"><strong>Alcohol:</strong>
+                                                    <span class="badge bg-{{ $pastMedicalHistory->alcohol_use === 'none' ? 'success' : 'warning' }}">
+                                                        {{ ucfirst($pastMedicalHistory->alcohol_use ?? 'Unknown') }}
+                                                    </span>
+                                                </span>
                                             </small>
                                         </div>
                                         <div class="col-6">
-                                            <small><strong>Alcohol:</strong> 
-                                                <span class="badge bg-{{ $pastMedicalHistory->alcohol_use === 'none' ? 'success' : 'warning' }}">
-                                                    {{ ucfirst($pastMedicalHistory->alcohol_use ?? 'Unknown') }}
-                                                </span>
+                                            <small><strong>Social History:</strong>
+                                                @if($pastMedicalHistory->social_history)
+                                                    <span>{{ Str::limit($pastMedicalHistory->social_history, 80) }}</span>
+                                                @else
+                                                    <span class="text-muted">None</span>
+                                                @endif
+                                            </small>
+                                        </div>
+
+                                        <div class="col-6">
+                                            <small><strong>Occupational History:</strong>
+                                                @if($pastMedicalHistory->occupational_history)
+                                                    <span>{{ Str::limit($pastMedicalHistory->occupational_history, 80) }}</span>
+                                                @else
+                                                    <span class="text-muted">None</span>
+                                                @endif
+                                            </small>
+                                        </div>
+                                        <div class="col-6">
+                                            <small><strong>Immunizations:</strong>
+                                                @if($pastMedicalHistory->immunization_history)
+                                                    <span>{{ Str::limit($pastMedicalHistory->immunization_history, 80) }}</span>
+                                                @else
+                                                    <span class="text-muted">None</span>
+                                                @endif
+                                            </small>
+                                        </div>
+
+                                        <div class="col-12">
+                                            <small><strong>Reproductive History:</strong>
+                                                @if($pastMedicalHistory->reproductive_history)
+                                                    <span>{{ Str::limit($pastMedicalHistory->reproductive_history, 120) }}</span>
+                                                @else
+                                                    <span class="text-muted">None</span>
+                                                @endif
                                             </small>
                                         </div>
                                     </div>
@@ -565,150 +656,178 @@
                             @else
                                 <div class="alert alert-info">
                                     <i class="fas fa-info-circle"></i> No past medical history recorded for this patient.
-                                    <button type="button" class="btn btn-sm btn-primary ms-2" data-bs-toggle="collapse" data-bs-target="#editMedicalHistory">
+                                    <button type="button" class="btn btn-sm btn-primary ms-2" onclick="showModal('editMedicalHistoryModal')">
                                         <i class="fas fa-plus"></i> Add Medical History
                                     </button>
                                 </div>
                             @endif
                             </div>
 
-                            <!-- Medical History Form (Collapsible) -->
-                            <div class="collapse" id="editMedicalHistory">
-                                <div class="border-top pt-3">
-                                    <form id="medicalHistoryForm">
-                                        @csrf
-                                        <input type="hidden" name="patient_id" value="{{ $visit->patientInfo->id }}">
-                                        
-                                        <div class="row">
-                                            <!-- Critical Information -->
-                                            <div class="col-12 mb-3">
-                                                <h6 class="text-danger"><i class="fas fa-exclamation-triangle"></i> Critical Information</h6>
-                                            </div>
-                                            
-                                            <div class="col-12 mb-3">
-                                                <label class="form-label text-danger fw-bold">
-                                                    <i class="fas fa-exclamation-circle"></i> Allergies (Drug/Food/Environmental):
-                                                </label>
-                                                <textarea class="form-control border-danger" name="allergies" rows="2" 
-                                                        placeholder="List all known allergies with specific reactions..."
-                                                        style="resize: vertical;">{{ $pastMedicalHistory->allergies ?? '' }}</textarea>
-                                                <small class="text-danger">⚠️ Be specific about reactions (rash, anaphylaxis, etc.)</small>
-                                            </div>
-
-                                            <!-- Medical Conditions -->
-                                            <div class="col-12 mb-3">
-                                                <h6 class="text-warning"><i class="fas fa-heartbeat"></i> Medical Conditions</h6>
-                                            </div>
-                                            
-                                            <div class="col-12 mb-3">
-                                                <label class="form-label">Chronic Conditions:</label>
-                                                <textarea class="form-control" name="chronic_conditions" rows="2" 
-                                                        placeholder="Diabetes, Hypertension, Heart Disease, etc."
-                                                        style="resize: vertical;">{{ $pastMedicalHistory->chronic_conditions ?? '' }}</textarea>
-                                            </div>
-
-                                            <div class="col-12 mb-3">
-                                                <label class="form-label">Current Medications:</label>
-                                                <textarea class="form-control" name="current_medications" rows="2" 
-                                                        placeholder="List all current medications with dosages..."
-                                                        style="resize: vertical;">{{ $pastMedicalHistory->current_medications ?? '' }}</textarea>
-                                            </div>
-
-                                            <!-- Surgical History -->
-                                            <div class="col-12 mb-3">
-                                                <h6 class="text-info"><i class="fas fa-cut"></i> Surgical History</h6>
-                                            </div>
-                                            
-                                            <div class="col-12 mb-3">
-                                                <label class="form-label">Previous Surgeries:</label>
-                                                <textarea class="form-control" name="previous_surgeries" rows="2" 
-                                                        placeholder="List surgeries with dates and complications if any..."
-                                                        style="resize: vertical;">{{ $pastMedicalHistory->previous_surgeries ?? '' }}</textarea>
-                                            </div>
-
-                                            <!-- Social History -->
-                                            <div class="col-12 mb-3">
-                                                <h6 class="text-secondary"><i class="fas fa-user-friends"></i> Social History</h6>
-                                            </div>
-                                            
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label">Smoking Status:</label>
-                                                <select class="form-control" name="smoking_status">
-                                                    <option value="">Select status</option>
-                                                    <option value="non_smoker" {{ ($pastMedicalHistory->smoking_status ?? '') === 'non_smoker' ? 'selected' : '' }}>Non-smoker</option>
-                                                    <option value="former_smoker" {{ ($pastMedicalHistory->smoking_status ?? '') === 'former_smoker' ? 'selected' : '' }}>Former smoker</option>
-                                                    <option value="current_smoker" {{ ($pastMedicalHistory->smoking_status ?? '') === 'current_smoker' ? 'selected' : '' }}>Current smoker</option>
-                                                </select>
-                                            </div>
-
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label">Alcohol Use:</label>
-                                                <select class="form-control" name="alcohol_use">
-                                                    <option value="">Select usage</option>
-                                                    <option value="none" {{ ($pastMedicalHistory->alcohol_use ?? '') === 'none' ? 'selected' : '' }}>None</option>
-                                                    <option value="occasional" {{ ($pastMedicalHistory->alcohol_use ?? '') === 'occasional' ? 'selected' : '' }}>Occasional</option>
-                                                    <option value="moderate" {{ ($pastMedicalHistory->alcohol_use ?? '') === 'moderate' ? 'selected' : '' }}>Moderate</option>
-                                                    <option value="heavy" {{ ($pastMedicalHistory->alcohol_use ?? '') === 'heavy' ? 'selected' : '' }}>Heavy</option>
-                                                </select>
-                                            </div>
-
-                                            <div class="col-12 mb-3">
-                                                <label class="form-label">Social History Details:</label>
-                                                <textarea class="form-control" name="social_history" rows="2" 
-                                                        placeholder="Living situation, support system, occupation details..."
-                                                        style="resize: vertical;">{{ $pastMedicalHistory->social_history ?? '' }}</textarea>
-                                            </div>
-
-                                            <div class="col-12 mb-3">
-                                                <label class="form-label">Occupational History:</label>
-                                                <textarea class="form-control" name="occupational_history" rows="2" 
-                                                        placeholder="Work history, exposure to hazards, occupational injuries..."
-                                                        style="resize: vertical;">{{ $pastMedicalHistory->occupational_history ?? '' }}</textarea>
-                                            </div>
-
-                                            <!-- Family History -->
-                                            <div class="col-12 mb-3">
-                                                <h6 class="text-primary"><i class="fas fa-users"></i> Family History</h6>
-                                            </div>
-                                            
-                                            <div class="col-12 mb-3">
-                                                <label class="form-label">Family Medical History:</label>
-                                                <textarea class="form-control" name="family_history" rows="3" 
-                                                        placeholder="Family history of diabetes, heart disease, cancer, etc. Include relationship and age at diagnosis..."
-                                                        style="resize: vertical;">{{ $pastMedicalHistory->family_history ?? '' }}</textarea>
-                                            </div>
-
-                                            <!-- Additional Information -->
-                                            <div class="col-12 mb-3">
-                                                <h6 class="text-success"><i class="fas fa-plus-circle"></i> Additional Information</h6>
-                                            </div>
-
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label">Immunization History:</label>
-                                                <textarea class="form-control" name="immunization_history" rows="2" 
-                                                        placeholder="Recent vaccinations, immunization status..."
-                                                        style="resize: vertical;">{{ $pastMedicalHistory->immunization_history ?? '' }}</textarea>
-                                            </div>
-
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label">Reproductive History:</label>
-                                                <textarea class="form-control" name="reproductive_history" rows="2" 
-                                                        placeholder="For female patients: pregnancies, menstrual history..."
-                                                        style="resize: vertical;">{{ $pastMedicalHistory->reproductive_history ?? '' }}</textarea>
-                                            </div>
+                            <!-- Medical History Form (Modal) -->
+                            <div class="modal fade" id="editMedicalHistoryModal" tabindex="-1" aria-labelledby="editMedicalHistoryModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="editMedicalHistoryModalLabel"><i class="fas fa-history me-2"></i> Past Medical History</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
+                                        <div class="modal-body">
+                                            <form id="medicalHistoryForm">
+                                                @csrf
+                                                <input type="hidden" name="patient_id" value="{{ $visit->patientInfo->id }}">
+                                                
+                                                <div class="row">
+                                                    <!-- Critical Information -->
+                                                    <div class="col-12 mb-3">
+                                                        <h6 class="text-danger"><i class="fas fa-exclamation-triangle"></i> Critical Information</h6>
+                                                    </div>
+                                                    
+                                                    <div class="col-12 mb-3">
+                                                        <label class="form-label text-danger fw-bold mb-1">
+                                                            <i class="fas fa-pills"></i> Drug Allergies
+                                                        </label>
+                                                        <div class="input-group mb-2">
+                                                            <select id="drugAllergiesSelect" class="form-select select2" data-placeholder="Search and select medication" data-allow-clear="true" style="width:100%">
+                                                                <option value=""></option>
+                                                                @foreach($medications as $m)
+                                                                    <option value="{{ $m->generic_name }}">{{ $m->generic_name }} {{ $m->strength ? '(' . $m->strength . ')' : '' }}</option>
+                                                                @endforeach
+                                                            </select>
+                                                            <button type="button" id="addDrugAllergyBtn" class="btn btn-outline-danger">
+                                                                <i class="fas fa-plus"></i> Add
+                                                            </button>
+                                                        </div>
+                                                        <div id="drugAllergyTags" class="mb-2">
+                                                            <!-- dynamically added tags -->
+                                                        </div>
+                                                        <input type="hidden" name="drug_allergies" id="drugAllergiesInput" value="">
+                                                        <small class="text-muted">Select each offending drug and click Add. Remove by clicking the × on a tag.</small>
+                                                    </div>
+                                                    <div class="col-12 mb-3">
+                                                        <label class="form-label text-danger fw-bold">
+                                                            <i class="fas fa-exclamation-circle"></i> Other Allergies (Food / Environmental / Reactions):
+                                                        </label>
+                                                        <textarea class="form-control border-danger" name="allergies" rows="2"
+                                                            placeholder="Peanuts – anaphylaxis; Pollen – rhinitis; Latex – rash..."
+                                                            style="resize: vertical;">{{ $pastMedicalHistory->allergies ?? '' }}</textarea>
+                                                        <small class="text-danger">⚠️ Be specific about reactions (rash, anaphylaxis, etc.)</small>
+                                                    </div>
 
-                                        <div class="text-end">
-                                            <button type="button" class="btn btn-secondary me-2" data-bs-toggle="collapse" data-bs-target="#editMedicalHistory">
-                                                <i class="fas fa-times"></i> Cancel
+                                                    <!-- Medical Conditions -->
+                                                    <div class="col-12 mb-3">
+                                                        <h6 class="text-warning"><i class="fas fa-heartbeat"></i> Medical Conditions</h6>
+                                                    </div>
+                                                    
+                                                    <div class="col-12 mb-3">
+                                                        <label class="form-label">Chronic Conditions:</label>
+                                                        <textarea class="form-control" name="chronic_conditions" rows="2" 
+                                                                placeholder="Diabetes, Hypertension, Heart Disease, etc."
+                                                                style="resize: vertical;">{{ $pastMedicalHistory->chronic_conditions ?? '' }}</textarea>
+                                                    </div>
+
+                                                    <div class="col-12 mb-3">
+                                                        <label class="form-label">Current Medications:</label>
+                                                        <textarea class="form-control" name="current_medications" rows="2" 
+                                                                placeholder="List all current medications with dosages..."
+                                                                style="resize: vertical;">{{ $pastMedicalHistory->current_medications ?? '' }}</textarea>
+                                                    </div>
+
+                                                    <!-- Surgical History -->
+                                                    <div class="col-12 mb-3">
+                                                        <h6 class="text-info"><i class="fas fa-cut"></i> Surgical History</h6>
+                                                    </div>
+                                                    
+                                                    <div class="col-12 mb-3">
+                                                        <label class="form-label">Previous Surgeries:</label>
+                                                        <textarea class="form-control" name="previous_surgeries" rows="2" 
+                                                                placeholder="List surgeries with dates and complications if any..."
+                                                                style="resize: vertical;">{{ $pastMedicalHistory->previous_surgeries ?? '' }}</textarea>
+                                                    </div>
+
+                                                    <!-- Social History -->
+                                                    <div class="col-12 mb-3">
+                                                        <h6 class="text-secondary"><i class="fas fa-user-friends"></i> Social History</h6>
+                                                    </div>
+                                                    
+                                                    <div class="col-md-6 mb-3">
+                                                        <label class="form-label">Smoking Status:</label>
+                                                        <select class="form-control" name="smoking_status">
+                                                            <option value="">Select status</option>
+                                                            <option value="non_smoker" {{ ($pastMedicalHistory->smoking_status ?? '') === 'non_smoker' ? 'selected' : '' }}>Non-smoker</option>
+                                                            <option value="former_smoker" {{ ($pastMedicalHistory->smoking_status ?? '') === 'former_smoker' ? 'selected' : '' }}>Former smoker</option>
+                                                            <option value="current_smoker" {{ ($pastMedicalHistory->smoking_status ?? '') === 'current_smoker' ? 'selected' : '' }}>Current smoker</option>
+                                                        </select>
+                                                    </div>
+
+                                                    <div class="col-md-6 mb-3">
+                                                        <label class="form-label">Alcohol Use:</label>
+                                                        <select class="form-control" name="alcohol_use">
+                                                            <option value="">Select usage</option>
+                                                            <option value="none" {{ ($pastMedicalHistory->alcohol_use ?? '') === 'none' ? 'selected' : '' }}>None</option>
+                                                            <option value="occasional" {{ ($pastMedicalHistory->alcohol_use ?? '') === 'occasional' ? 'selected' : '' }}>Occasional</option>
+                                                            <option value="moderate" {{ ($pastMedicalHistory->alcohol_use ?? '') === 'moderate' ? 'selected' : '' }}>Moderate</option>
+                                                            <option value="heavy" {{ ($pastMedicalHistory->alcohol_use ?? '') === 'heavy' ? 'selected' : '' }}>Heavy</option>
+                                                        </select>
+                                                    </div>
+
+                                                    <div class="col-12 mb-3">
+                                                        <label class="form-label">Social History Details:</label>
+                                                        <textarea class="form-control" name="social_history" rows="2" 
+                                                                placeholder="Living situation, support system, occupation details..."
+                                                                style="resize: vertical;">{{ $pastMedicalHistory->social_history ?? '' }}</textarea>
+                                                    </div>
+
+                                                    <div class="col-12 mb-3">
+                                                        <label class="form-label">Occupational History:</label>
+                                                        <textarea class="form-control" name="occupational_history" rows="2" 
+                                                                placeholder="Work history, exposure to hazards, occupational injuries..."
+                                                                style="resize: vertical;">{{ $pastMedicalHistory->occupational_history ?? '' }}</textarea>
+                                                    </div>
+
+                                                    <!-- Family History -->
+                                                    <div class="col-12 mb-3">
+                                                        <h6 class="text-primary"><i class="fas fa-users"></i> Family History</h6>
+                                                    </div>
+                                                    
+                                                    <div class="col-12 mb-3">
+                                                        <label class="form-label">Family Medical History:</label>
+                                                        <textarea class="form-control" name="family_history" rows="3" 
+                                                                placeholder="Family history of diabetes, heart disease, cancer, etc. Include relationship and age at diagnosis..."
+                                                                style="resize: vertical;">{{ $pastMedicalHistory->family_history ?? '' }}</textarea>
+                                                    </div>
+
+                                                    <!-- Additional Information -->
+                                                    <div class="col-12 mb-3">
+                                                        <h6 class="text-success"><i class="fas fa-plus-circle"></i> Additional Information</h6>
+                                                    </div>
+
+                                                    <div class="col-md-6 mb-3">
+                                                        <label class="form-label">Immunization History:</label>
+                                                        <textarea class="form-control" name="immunization_history" rows="2" 
+                                                                placeholder="Recent vaccinations, immunization status..."
+                                                                style="resize: vertical;">{{ $pastMedicalHistory->immunization_history ?? '' }}</textarea>
+                                                    </div>
+
+                                                    <div class="col-md-6 mb-3">
+                                                        <label class="form-label">Reproductive History:</label>
+                                                        <textarea class="form-control" name="reproductive_history" rows="2" 
+                                                                placeholder="For female patients: pregnancies, menstrual history..."
+                                                                style="resize: vertical;">{{ $pastMedicalHistory->reproductive_history ?? '' }}</textarea>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                                <i class="fas fa-times"></i> Close
                                             </button>
                                             <button type="button" class="btn btn-success" onclick="saveMedicalHistory()" id="saveMedicalHistoryBtn">
-                                                <i class="fas fa-save"></i> 
+                                                <i class="fas fa-save"></i>
                                                 <span class="btn-text">Save Medical History</span>
                                                 <span class="unsaved-text d-none text-warning">• Unsaved</span>
                                             </button>
                                         </div>
-                                    </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1483,29 +1602,54 @@
                             </div>
                         </div>
 
-                        <!-- Previous Prescriptions -->
+                        <!-- Clinical Decision Support Alerts -->
                         <div class="col-md-4">
-                            <div class="card">
-                                <div class="card-header bg-info text-white">
-                                    <h6 class="mb-0"><i class="fas fa-history"></i> Previous Prescriptions (30 Days)</h6>
+                            <div class="card" id="cds-alerts-card">
+                                <div class="card-header text-white" style="background-color: #dc3545;" id="cds-alerts-header">
+                                    <h6 class="mb-0">
+                                        <i class="fas fa-exclamation-triangle"></i> 
+                                        Clinical Decision Support
+                                        <span id="cds-alert-count-badge" class="badge bg-light text-dark ms-2">
+                                            {{ $cdsAlerts->count() }}
+                                        </span>
+                                    </h6>
                                 </div>
-                                <div class="card-body">
-                                    @if(isset($previous_prescriptions) && $previous_prescriptions->count() > 0)
-                                        @foreach($previous_prescriptions as $prev_presc)
-                                        <div class="border-bottom pb-2 mb-2">
-                                            <div class="d-flex justify-content-between">
-                                                <div>
-                                                    <strong>{{ $prev_presc->medication->generic_name ?? $prev_presc->medicine_name ?? 'Unknown' }}</strong><br>
-                                                    <small class="text-muted">
-                                                        {{ $prev_presc->created_at->format('d/m/Y') }} | 
-                                                        Qty: {{ $prev_presc->quantity }}
-                                                    </small>
+                                <div class="card-body" id="cds-alerts-body">
+                                    @if($cdsAlerts && $cdsAlerts->count() > 0)
+                                        <div id="cds-alerts-list">
+                                            @foreach($cdsAlerts as $alert)
+                                            <div class="alert alert-{{ $alert->severity === 'critical' ? 'danger' : ($alert->severity === 'high' ? 'warning' : 'info') }} alert-sm mb-2 p-2" data-alert-id="{{ $alert->id }}">
+                                                <div class="d-flex justify-content-between align-items-start">
+                                                    <div class="flex-grow-1">
+                                                        <div class="fw-bold small">{{ ucfirst($alert->severity) }} Alert</div>
+                                                        <div class="small mb-1">{{ $alert->message }}</div>
+                                                        @if($alert->rationale)
+                                                            <div class="text-muted" style="font-size: 0.75rem;">
+                                                                {{ Str::limit($alert->rationale, 100) }}
+                                                            </div>
+                                                        @endif
+                                                        <div class="mt-2">
+                                                            <button class="btn btn-sm btn-outline-success me-1" onclick="ackCdsAlert({{ $alert->id }}, 'accept')" title="Accept Alert">
+                                                                <i class="fas fa-check"></i>
+                                                            </button>
+                                                            <button class="btn btn-sm btn-outline-warning me-1" onclick="ackCdsAlertWithReason({{ $alert->id }}, 'override')" title="Override with Reason">
+                                                                <i class="fas fa-exclamation"></i>
+                                                            </button>
+                                                            <button class="btn btn-sm btn-outline-secondary" onclick="ackCdsAlert({{ $alert->id }}, 'dismiss')" title="Dismiss">
+                                                                <i class="fas fa-times"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
+                                            @endforeach
                                         </div>
-                                        @endforeach
                                     @else
-                                        <p class="text-muted">No previous prescriptions in the last 30 days.</p>
+                                        <div id="no-alerts-message" class="text-center text-muted py-3">
+                                            <i class="fas fa-check-circle text-success mb-2" style="font-size: 2rem;"></i>
+                                            <div>No clinical alerts</div>
+                                            <small>System monitoring for safety issues</small>
+                                        </div>
                                     @endif
                                 </div>
                             </div>
@@ -1766,9 +1910,6 @@
                             @endif
                             
                             <!-- Test Result Form removed: test results are managed in the Lab module. -->
-                            
-                            <!-- CDS Drawer: show any active alerts for this visit -->
-                            <x-cds.drawer :alerts="$cdsAlerts" />
                         </div>
                     </div>
                 </div>
@@ -1916,6 +2057,209 @@
         // intentionally no-op while overlay is disabled
         return;
     }
+
+    // =====================
+    // Drug Allergy Capture
+    // =====================
+    // Modal HTML (injected if not present)
+    if(!document.getElementById('drugAllergyModal')) {
+        const modalHtml = `
+        <div class="modal fade" id="drugAllergyModal" tabindex="-1" aria-labelledby="drugAllergyModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="drugAllergyModalLabel"><i class='fas fa-pills'></i> Add Drug Allergy</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <div class="mb-2"><strong>Drug:</strong> <span id="modalDrugName" class="text-danger"></span></div>
+                <div class="mb-3">
+                    <label class="form-label">Reaction (optional)</label>
+                    <input type="text" id="modalReaction" class="form-control" placeholder="e.g. rash, anaphylaxis">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Severity (optional)</label>
+                    <select id="modalSeverity" class="form-select">
+                        <option value="">-- Select --</option>
+                        <option value="mild">Mild</option>
+                        <option value="moderate">Moderate</option>
+                        <option value="severe">Severe</option>
+                    </select>
+                </div>
+                <small class="text-muted">Leave blank if uncertain; you can update later.</small>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" id="saveDrugAllergyModalBtn" class="btn btn-danger">
+                    <span class="btn-text">Save Allergy</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>`;
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+    }
+
+    (function(){
+        const selectEl = document.getElementById('drugAllergiesSelect');
+        const addBtn = document.getElementById('addDrugAllergyBtn');
+        const tagsWrap = document.getElementById('drugAllergyTags');
+        const hiddenInput = document.getElementById('drugAllergiesInput');
+        const modalEl = document.getElementById('drugAllergyModal');
+        const modalDrugName = document.getElementById('modalDrugName');
+        const modalReaction = document.getElementById('modalReaction');
+        const modalSeverity = document.getElementById('modalSeverity');
+        const saveModalBtn = document.getElementById('saveDrugAllergyModalBtn');
+        if(!selectEl || !addBtn || !tagsWrap || !hiddenInput) return;
+
+        const bsModal = modalEl ? new bootstrap.Modal(modalEl) : null;
+        let pendingDrug = null;
+        let allergies = []; // objects {id, substance_name, reaction, severity, is_active}
+
+        function activeAllergies(){
+            const act = allergies.filter(a => a.is_active !== false); // treat missing/1/true as active
+            console.log('[Allergies] Active list computed:', act);
+            return act;
+        }
+
+        function renderTags() {
+            console.log('[Allergies] Rendering tags. Full allergies array:', allergies);
+            const actives = activeAllergies();
+            tagsWrap.innerHTML = actives.map((a, idx) => `
+                <span class="badge bg-danger me-1 mb-1 drug-allergy-tag" data-edit-id="${a.id}" style="cursor:pointer;font-size:0.8rem;" title="Click to edit | ${a.reaction || 'No reaction specified'}${a.severity ? ' | ' + a.severity : ''}">
+                    <span class="me-1">${a.substance_name}</span>
+                    ${a.severity ? `<span class='badge bg-light text-dark me-1'>${a.severity.charAt(0).toUpperCase()+a.severity.slice(1)}</span>` : ''}
+                    <button type="button" class="btn btn-sm btn-link text-white p-0" data-id="${a.id}" data-action="remove" style="line-height:1;">&times;</button>
+                </span>
+            `).join('');
+            hiddenInput.value = actives.map(a => a.substance_name).join(',');
+
+            // Update display list
+            const listContainer = document.getElementById('drugAllergiesList');
+            if(listContainer) {
+                if(actives.length === 0) {
+                    listContainer.innerHTML = '<span class="text-muted">None recorded</span>';
+                } else {
+                    listContainer.innerHTML = actives.map(a => `<span class=\"badge bg-danger me-1 mb-1\" title=\"${a.reaction || 'No reaction'}${a.severity ? ' | '+a.severity : ''}\">${a.substance_name}</span>`).join('');
+                }
+            }
+        }
+
+        // Tag click handlers (edit or remove)
+        tagsWrap.addEventListener('click', function(e){
+            const removeBtn = e.target.closest('button[data-action="remove"][data-id]');
+            if(removeBtn) {
+                const id = removeBtn.getAttribute('data-id');
+                const allergy = allergies.find(a => a.id == id);
+                if(!allergy) return;
+                if(!confirm(`Deactivate allergy: ${allergy.substance_name}?`)) return;
+                $.post(`/allergies/${id}/deactivate`, {_token: '{{ csrf_token() }}'}).done(resp => {
+                    allergy.is_active = false;
+                    renderTags();
+                    toastr.info('Allergy deleted');
+                }).fail(xhr => {
+                    toastr.error('Failed to delete allergy');
+                });
+                return;
+            }
+            const tag = e.target.closest('.drug-allergy-tag[data-edit-id]');
+            if(tag) {
+                const id = tag.getAttribute('data-edit-id');
+                const allergy = allergies.find(a => a.id == id);
+                if(!allergy) return;
+                pendingDrug = allergy.substance_name; // keep name for update
+                modalDrugName.textContent = allergy.substance_name + ' (edit)';
+                modalReaction.value = allergy.reaction || '';
+                modalSeverity.value = allergy.severity || '';
+                saveModalBtn.setAttribute('data-update-id', allergy.id);
+                if(bsModal) bsModal.show();
+            }
+        });
+
+        addBtn.addEventListener('click', function(){
+            const val = selectEl.value?.trim();
+            if(!val) return;
+            // duplicate check (active)
+            if(activeAllergies().some(a => a.substance_name.toLowerCase() === val.toLowerCase())) {
+                toastr.warning('Drug allergy already recorded.');
+                return;
+            }
+            pendingDrug = val;
+            modalDrugName.textContent = val;
+            modalReaction.value = '';
+            modalSeverity.value = '';
+            if(bsModal) bsModal.show();
+        });
+
+        saveModalBtn.addEventListener('click', function(){
+            if(!pendingDrug) return;
+            // If severity severe ensure reaction not empty (client-side guard)
+            if(modalSeverity.value === 'severe' && !modalReaction.value.trim()) {
+                toastr.error('Reaction is required for severe allergies.');
+                return;
+            }
+            saveModalBtn.disabled = true;
+            const btnText = saveModalBtn.querySelector('.btn-text');
+            const origText = btnText.textContent;
+            btnText.textContent = 'Saving...';
+            const patientId = {{ $visit->patientInfo->id }};
+            const updateId = saveModalBtn.getAttribute('data-update-id');
+            const payload = {
+                _token: '{{ csrf_token() }}',
+                substance_name: pendingDrug,
+                reaction: modalReaction.value.trim(),
+                severity: modalSeverity.value
+            };
+            let ajaxOpts;
+            if(updateId) {
+                ajaxOpts = { url: `/allergies/${updateId}`, method: 'PUT', data: payload };
+            } else {
+                ajaxOpts = { url: `/patients/${patientId}/allergies`, method: 'POST', data: payload };
+            }
+            $.ajax(ajaxOpts).done(resp => {
+                if(resp && resp.data) {
+                    if(updateId) {
+                        const idx = allergies.findIndex(a => a.id == updateId);
+                        if(idx !== -1) allergies[idx] = resp.data; else allergies.unshift(resp.data);
+                        toastr.success('Allergy updated');
+                    } else {
+                        allergies.unshift(resp.data);
+                        toastr.success('Drug allergy added');
+                    }
+                    renderTags();
+                    // Refetch from server to normalize (casts etc.)
+                    setTimeout(() => { if(window.fetchDrugAllergiesList) window.fetchDrugAllergiesList(); }, 300);
+                }
+                if(bsModal) bsModal.hide();
+            }).fail(xhr => {
+                let msg = 'Failed to save allergy';
+                if(xhr.status === 409 && xhr.responseJSON && xhr.responseJSON.message) msg = xhr.responseJSON.message;
+                else if(xhr.responseJSON && xhr.responseJSON.message) msg = xhr.responseJSON.message;
+                else if(xhr.responseJSON && xhr.responseJSON.errors) msg = Object.values(xhr.responseJSON.errors).flat().join(', ');
+                toastr.error(msg);
+            }).always(() => {
+                saveModalBtn.disabled = false;
+                btnText.textContent = origText;
+                pendingDrug = null;
+                selectEl.value = '';
+                saveModalBtn.removeAttribute('data-update-id');
+            });
+        });
+
+        const patientId = {{ $visit->patientInfo->id }};
+        window.fetchDrugAllergiesList = function(){
+            $.getJSON(`/patients/${patientId}/allergies`, function(resp){
+                console.log('[Allergies] Fetch response:', resp);
+                if(resp && resp.data) {
+                    allergies = resp.data.map(a => ({...a, is_active: a.is_active === 1 || a.is_active === true}));
+                    renderTags();
+                } else {
+                    console.warn('[Allergies] No data in response');
+                }
+            });
+        };
+        window.fetchDrugAllergiesList();
+    })();
 
     // Mark a pane as saved: clear its unsaved indicator and switch back to Clinical Information tab
     function markPaneSaved(paneId) {
@@ -2514,18 +2858,29 @@
     // --- CDS helpers ---
     function ackCdsAlert(alertId, action) {
         const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-        fetch(`{{ url('/cds-alerts') }}/${alertId}/ack`, {
+        fetch(`/consultations/{{ $consultation->id }}/cds-alerts/${alertId}/ack`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': token },
             body: JSON.stringify({ action })
         }).then(r => r.json()).then((res) => {
-            try { toastr.success('Alert updated'); } catch (e) {}
-            // Refresh the drawer area after ack
-            // We reuse the prescriptions save path which returns drawer html by reloading prescriptions list which also triggers markPaneSaved
-            // Or fetch current drawer via a simple in-place refresh using last response pattern if needed.
-            // For now, just remove the card to keep UI clean.
-            const el = document.querySelector(`#cds-drawer`);
-            if (el) el.remove();
+            if (res.success) {
+                try { 
+                    toastr.success('Alert ' + action + 'ed successfully'); 
+                } catch (e) {}
+                
+                // Remove the specific alert from the sidebar
+                const alertElement = document.querySelector(`[data-alert-id="${alertId}"]`);
+                if (alertElement) {
+                    alertElement.remove();
+                }
+                
+                // Update the alert count
+                refreshCdsAlertCount();
+            } else {
+                try { 
+                    toastr.error(res.message || 'Failed to update alert'); 
+                } catch (e) {}
+            }
         }).catch(() => {
             try { toastr.error('Failed to update alert'); } catch (e) {}
         });
@@ -2533,18 +2888,67 @@
 
     function ackCdsAlertWithReason(alertId, action) {
         const reason = prompt('Provide override reason (optional):');
+        if (reason === null) return; // User cancelled
+        
         const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-        fetch(`{{ url('/cds-alerts') }}/${alertId}/ack`, {
+        fetch(`/consultations/{{ $consultation->id }}/cds-alerts/${alertId}/ack`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': token },
             body: JSON.stringify({ action, reason })
         }).then(r => r.json()).then((res) => {
-            try { toastr.success('Override recorded'); } catch (e) {}
-            const el = document.querySelector(`#cds-drawer`);
-            if (el) el.remove();
+            if (res.success) {
+                try { 
+                    toastr.success('Override recorded successfully'); 
+                } catch (e) {}
+                
+                // Remove the specific alert from the sidebar
+                const alertElement = document.querySelector(`[data-alert-id="${alertId}"]`);
+                if (alertElement) {
+                    alertElement.remove();
+                }
+                
+                // Update the alert count
+                refreshCdsAlertCount();
+            } else {
+                try { 
+                    toastr.error(res.message || 'Failed to override alert'); 
+                } catch (e) {}
+            }
         }).catch(() => {
             try { toastr.error('Failed to override'); } catch (e) {}
         });
+    }
+    
+    // Refresh the CDS alert count and styling after alerts are acknowledged
+    function refreshCdsAlertCount() {
+        const remainingAlerts = document.querySelectorAll('[data-alert-id]').length;
+        const countBadge = document.getElementById('cds-alert-count-badge');
+        const header = document.getElementById('cds-alerts-header');
+        const alertsBody = document.getElementById('cds-alerts-body');
+        
+        if (countBadge) {
+            countBadge.textContent = remainingAlerts;
+        }
+        
+        if (remainingAlerts === 0) {
+            // Update header to show success state
+            if (header) {
+                header.style.backgroundColor = '#28a745';
+                header.classList.add('text-white');
+                header.classList.remove('text-dark');
+            }
+            
+            // Show no alerts message
+            if (alertsBody) {
+                alertsBody.innerHTML = `
+                    <div id="no-alerts-message" class="text-center text-muted py-3">
+                        <i class="fas fa-check-circle text-success mb-2" style="font-size: 2rem;"></i>
+                        <div>No clinical alerts</div>
+                        <small>System monitoring for safety issues</small>
+                    </div>
+                `;
+            }
+        }
     }
 </script>
 @endsection
@@ -2852,3 +3256,26 @@ textarea.border-warning {
 }
 </style>
 @endpush
+
+@section('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const el = $('#drugAllergiesSelect');
+    if (el.length && !el.hasClass('select2-hidden-accessible')) {
+        el.select2({
+            width: '100%',
+            placeholder: el.data('placeholder') || 'Search medication',
+            allowClear: true,
+            matcher: function(params, data) {
+                if ($.trim(params.term) === '') { return data; }
+                if (typeof data.text === 'undefined') { return null; }
+                const term = params.term.toLowerCase();
+                const text = data.text.toLowerCase();
+                if (text.indexOf(term) > -1) { return data; }
+                return null;
+            }
+        });
+    }
+});
+</script>
+@endsection

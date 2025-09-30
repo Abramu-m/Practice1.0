@@ -755,6 +755,23 @@
                   </li>
                 </ul>
               </li>
+              <li class="nav-item has-treeview">
+                <a href="#" class="nav-link nav-header">
+                  <i class="nav-icon bi bi-file-earmark-text-fill text-secondary"></i>
+                  <p class="text-bold">
+                    Logs
+                    <i class="nav-arrow bi bi-chevron-right"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+                  <li class="nav-item">
+                    <a href="{{ route('system.logs.index') }}" class="nav-link nav-sub-item {{ request()->routeIs('system.logs.*') ? 'active' : '' }}">
+                      <i class="nav-icon bi bi-list-columns-reverse text-primary"></i>
+                      <p>All logs</p>
+                    </a>
+                  </li>
+                </ul>
+              </li>
 
 <script>
 // Update pending transactions count in sidebar

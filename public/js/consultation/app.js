@@ -191,11 +191,82 @@ $(document).ajaxError(function(event, xhr, settings, thrownError) {
     toastr.error(errorMessage);
 });
 
+// Global modal utilities
+function hideModal(modalNameOrSelector) {
+    try {
+        if (!modalNameOrSelector) return false;
+        // Support id without #, or full selector
+        const selector = modalNameOrSelector.startsWith('#') ? modalNameOrSelector : `#${modalNameOrSelector}`;
+        const $modal = $(selector);
+        if ($modal.length === 0) return false;
+
+        // Bootstrap 5 API
+        if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+            let instance = bootstrap.Modal.getInstance($modal[0]);
+            if (!instance) instance = new bootstrap.Modal($modal[0]);
+            instance.hide();
+            return true;
+        }
+        // jQuery plugin API (Bootstrap 4 style)
+        if (typeof $modal.modal === 'function') {
+            $modal.modal('hide');
+            return true;
+        }
+        // Manual fallback
+        $modal.removeClass('show').attr('aria-hidden', 'true').css('display', 'none');
+        $('.modal-backdrop').remove();
+        $('body').removeClass('modal-open').css({ overflow: '', paddingRight: '' });
+        return true;
+    } catch (e) {
+        console.warn('hideModal failed:', e);
+        return false;
+    }
+}
+
+function showModal(modalNameOrSelector) {
+    try {
+        if (!modalNameOrSelector) return false;
+        const selector = modalNameOrSelector.startsWith('#') ? modalNameOrSelector : `#${modalNameOrSelector}`;
+        const $modal = $(selector);
+        if ($modal.length === 0) return false;
+
+        // Bootstrap 5 API
+        if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+            let instance = bootstrap.Modal.getInstance($modal[0]);
+            if (!instance) instance = new bootstrap.Modal($modal[0]);
+            instance.show();
+            return true;
+        }
+        // jQuery plugin API (Bootstrap 4 style)
+        if (typeof $modal.modal === 'function') {
+            $modal.modal('show');
+            return true;
+        }
+        // Manual fallback
+        // Add backdrop if missing
+        if ($('.modal-backdrop').length === 0) {
+            $('<div class="modal-backdrop fade show"></div>').appendTo(document.body);
+        }
+        $modal.addClass('show').attr('aria-hidden', 'false').css('display', 'block');
+        $('body').addClass('modal-open');
+        return true;
+    } catch (e) {
+        console.warn('showModal failed:', e);
+        return false;
+    }
+}
+
 // Export functions for global access
 window.consultationApp = {
     dischargePatient: dischargePatient,
     printConsultation: printConsultation,
     loadPrescriptions: loadPrescriptions,
     updatePrescriptionStatus: updatePrescriptionStatus,
-    initializeConsultationApp: initializeConsultationApp
+    initializeConsultationApp: initializeConsultationApp,
+    hideModal: hideModal,
+    showModal: showModal
 };
+
+// Also expose as a simple global for convenience
+window.hideModal = hideModal;
+window.showModal = showModal;

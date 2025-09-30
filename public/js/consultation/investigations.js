@@ -46,7 +46,6 @@ function initializeMedicalServiceSearch() {
     
     // Set up medical service search autocomplete
     serviceSearchElement.on('input', function() {
-        console.log('Service search input event triggered');
         const query = $(this).val();
         if (query.length >= 2) {
             searchMedicalServices(query);
