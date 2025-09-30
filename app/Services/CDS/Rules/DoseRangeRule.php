@@ -239,20 +239,79 @@ class DoseRangeRule
      * Parse a dosage string into mg. Supports forms like "500 mg", "1 g".
      * Returns null when parsing is not possible.
      */
+    /**
+     * Parse a dosage string into mg. Supports forms like "500 mg", "1 g", "1/2 mg", "½ mg", "1 milligram", etc.
+     * Returns null when parsing is not possible.
+     */
     private function parseDoseToMg(string $dosage): ?float
     {
         $t = strtolower(trim($dosage));
-        // Match "number unit" patterns
-        if (preg_match('/([0-9]+(?:\.[0-9]+)?)\s*(mg|g|mcg|µg)/i', $t, $m)) {
-            $val = (float)$m[1];
-            $unit = strtolower($m[2]);
+        // Match patterns like "1/2 mg", "½ mg", "0.5 mg", "1 mg", "1 milligram", "2 grams", etc.
+        // Also support mixed numbers like "1 1/2 mg"
+        $unitPatterns = [
+            'mg' => ['mg', 'milligram', 'milligrams'],
+            'g' => ['g', 'gram', 'grams'],
+            'mcg' => ['mcg', 'microgram', 'micrograms', 'μg', 'µg'],
+        ];
+        // Build a regex for all units
+        $allUnits = [];
+        foreach ($unitPatterns as $uarr) {
+            $allUnits = array_merge($allUnits, $uarr);
+        }
+        $unitRegex = implode('|', array_map('preg_quote', $allUnits));
+        // Regex: [number|fraction|vulgar fraction] [unit]
+        if (preg_match('/^\s*([0-9]+(?:\.[0-9]+)?|[0-9]+\s+[0-9]+\/[0-9]+|[0-9]+\/[0-9]+|[¼½¾⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞])\s*(' . $unitRegex . ')\b/i', $t, $m)) {
+            $numStr = trim($m[1]);
+            $unitStr = strtolower($m[2]);
+            $val = $this->parseFractionalNumber($numStr);
+            // Normalize unit to canonical
+            $unit = null;
+            foreach ($unitPatterns as $canon => $variants) {
+                if (in_array($unitStr, $variants, true)) {
+                    $unit = $canon;
+                    break;
+                }
+            }
+            if ($unit === null) {
+                return null;
+            }
             return match ($unit) {
                 'mg' => $val,
                 'g' => $val * 1000.0,
-                'mcg', 'µg' => $val / 1000.0,
+                'mcg' => $val / 1000.0,
                 default => null,
             };
         }
         return null;
+    }
+
+    /**
+     * Parse a string representing a number, fraction, or vulgar fraction to float.
+     * Supports "1", "0.5", "1/2", "1 1/2", "½", etc.
+     */
+    private function parseFractionalNumber(string $str): float
+    {
+        $str = trim($str);
+        // Map vulgar fractions to float
+        $vulgarMap = [
+            '¼' => 0.25, '½' => 0.5, '¾' => 0.75,
+            '⅓' => 1/3, '⅔' => 2/3,
+            '⅕' => 0.2, '⅖' => 0.4, '⅗' => 0.6, '⅘' => 0.8,
+            '⅙' => 1/6, '⅚' => 5/6,
+            '⅛' => 0.125, '⅜' => 0.375, '⅝' => 0.625, '⅞' => 0.875,
+        ];
+        if (isset($vulgarMap[$str])) {
+            return $vulgarMap[$str];
+        }
+        // Mixed number: "1 1/2"
+        if (preg_match('/^([0-9]+)\s+([0-9]+)\/([0-9]+)$/', $str, $m)) {
+            return (float)$m[1] + ((float)$m[2] / (float)$m[3]);
+        }
+        // Simple fraction: "1/2"
+        if (preg_match('/^([0-9]+)\/([0-9]+)$/', $str, $m)) {
+            return (float)$m[1] / (float)$m[2];
+        }
+        // Decimal or integer
+        return (float)$str;
     }
 }

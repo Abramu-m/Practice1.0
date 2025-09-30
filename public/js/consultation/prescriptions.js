@@ -5,6 +5,7 @@
 
 // Update prescription status function
 function updatePrescriptionStatus(prescriptionId) {
+    console.log('Opening prescription edit modal for ID:', prescriptionId);
     
     // Clear any previous modal content
     $('#editPrescriptionModalContent').html('<div class="p-4 text-center"><i class="fas fa-spinner fa-spin"></i> Loading...</div>');
@@ -21,6 +22,7 @@ function updatePrescriptionStatus(prescriptionId) {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         },
         success: function(response) {
+            console.log('Prescription edit form loaded successfully');
             $('#editPrescriptionModalContent').html(response);
             
             // Initialize form validation or any other necessary scripts
@@ -51,6 +53,7 @@ function updatePrescriptionStatus(prescriptionId) {
 
 // Initialize prescription edit form after loading
 function initializePrescriptionEditForm() {
+    console.log('Initializing prescription edit form...');
     
     // Add any specific initialization for the prescription edit form
     // For example, setting up medication search, frequency dropdowns, etc.
@@ -72,6 +75,7 @@ function initializePrescriptionEditForm() {
 
 // Submit prescription update
 function submitPrescriptionUpdate() {
+    console.log('Submitting prescription update...');
     
     const form = $('#editPrescriptionForm');
     const submitButton = $('#submitPrescriptionUpdate');
@@ -91,6 +95,9 @@ function submitPrescriptionUpdate() {
     const formData = form.serialize() + '&_method=PUT';
     const prescriptionId = form.data('prescription-id');
     
+    console.log('Prescription ID:', prescriptionId);
+    console.log('Form data:', formData);
+    
     if (!prescriptionId) {
         console.error('Prescription ID not found');
         toastr.error('Prescription ID not found');
@@ -108,6 +115,7 @@ function submitPrescriptionUpdate() {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         },
         success: function(response) {
+            console.log('Prescription update successful:', response);
             toastr.success('Prescription updated successfully!');
             
             // Close modal
@@ -145,11 +153,13 @@ function submitPrescriptionUpdate() {
 
 // Load prescriptions list
 function loadPrescriptions() {
+    console.log('Loading prescriptions list...');
     
     $.ajax({
         url: `/consultations/${window.consultationId}/prescriptions-partial-html`,
         method: 'GET',
         success: function(response) {
+            console.log('Prescriptions loaded successfully');
             $('#prescriptions-list').html(response);
             // Ensure the Treatment tab is deactivated if this was called after a save
             try { if (typeof markPaneSaved === 'function') markPaneSaved('treatment'); } catch (e) { console.error(e); }
@@ -171,6 +181,7 @@ function closePrescriptionModal() {
 
 // Initialize prescription module
 function initializePrescriptionModule() {
+    console.log('Initializing prescription module...');
     
     // Initialize medication search functionality
     initializeMedicationSearch();
@@ -178,6 +189,7 @@ function initializePrescriptionModule() {
     // Set up modal event handlers
     const modalElement = document.getElementById('editPrescriptionModal');
     modalElement.addEventListener('hidden.bs.modal', function () {
+        console.log('Prescription modal closed');
         // Clear modal content when closed
         $('#editPrescriptionModalContent').html('');
     });
@@ -193,6 +205,7 @@ function initializePrescriptionModule() {
 
 // Delete prescription
 function deletePrescription(prescriptionId) {
+    console.log('Deleting prescription:', prescriptionId);
     
     $.ajax({
         url: `/prescriptions/${prescriptionId}`,
@@ -216,16 +229,20 @@ function deletePrescription(prescriptionId) {
 let medicationSearchTimeout;
 
 function initializeMedicationSearch() {
+    console.log('Initializing medication search...');
     
     // Check if the medication search element exists
     const medicationSearchElement = $('#medication_search');
     if (medicationSearchElement.length === 0) {
         console.warn('Medication search element #medication_search not found!');
         return;
+    } else {
+        console.log('Found medication search element:', medicationSearchElement);
     }
     
     // Set up medication search autocomplete
     medicationSearchElement.on('input', function() {
+        console.log('Medication search input event triggered');
         const query = $(this).val();
         
         // Clear previous timeout
@@ -250,9 +267,11 @@ function initializeMedicationSearch() {
         }
     });
     
+    console.log('Medication search initialization complete');
 }
 
 function searchMedications(query) {
+    console.log('Searching medications for:', query);
     
     $.ajax({
         url: '/medications/api/list',
@@ -262,6 +281,7 @@ function searchMedications(query) {
             limit: 10 
         },
         success: function(response) {
+            console.log('Medications search response:', response);
             
             // The response should be an array of medications
             let medications = [];
@@ -285,6 +305,7 @@ function searchMedications(query) {
 }
 
 function showMedicationSuggestions(medications) {
+    console.log('Showing medication suggestions:', medications);
     
     const container = $('#medication_suggestions');
     
@@ -350,87 +371,9 @@ function hideMedicationSuggestions() {
     $('#medication_suggestions').addClass('d-none');
 }
 
-// Update CDS alerts in the sidebar
-function updateCdsAlertsSidebar(alerts, alertCount) {
-    console.log('Updating CDS alerts sidebar:', alerts, alertCount);
-    
-    // Update the alert count badge
-    const countBadge = $('#cds-alert-count-badge');
-    if (countBadge.length > 0) {
-        countBadge.text(alertCount);
-    }
-    
-    // Update the header color based on alert severity
-    const header = $('#cds-alerts-header');
-    if (header.length > 0) {
-        if (alertCount > 0) {
-            // Check for critical alerts
-            const hasCritical = alerts.some(alert => alert.severity === 'critical');
-            const hasHigh = alerts.some(alert => alert.severity === 'high');
-            
-            if (hasCritical) {
-                header.removeClass('bg-warning bg-info').css('background-color', '#dc3545');
-            } else if (hasHigh) {
-                header.removeClass('bg-info').css('background-color', '#ffc107').removeClass('text-white').addClass('text-dark');
-            } else {
-                header.removeClass('bg-warning').css('background-color', '#17a2b8').addClass('text-white').removeClass('text-dark');
-            }
-        } else {
-            header.removeClass('bg-warning').css('background-color', '#28a745').addClass('text-white').removeClass('text-dark');
-        }
-    }
-    
-    // Update the alerts content
-    const alertsBody = $('#cds-alerts-body');
-    if (alertsBody.length > 0) {
-        if (alertCount > 0) {
-            let alertsHtml = '<div id="cds-alerts-list">';
-            
-            alerts.forEach(alert => {
-                const severityClass = alert.severity === 'critical' ? 'danger' : 
-                                    (alert.severity === 'high' ? 'warning' : 'info');
-                
-                alertsHtml += `
-                    <div class="alert alert-${severityClass} alert-sm mb-2 p-2" data-alert-id="${alert.id}">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div class="flex-grow-1">
-                                <div class="fw-bold small">${alert.severity.charAt(0).toUpperCase() + alert.severity.slice(1)} Alert</div>
-                                <div class="small mb-1">${alert.message}</div>
-                                ${alert.rationale ? `<div class="text-muted" style="font-size: 0.75rem;">${alert.rationale.substring(0, 100)}${alert.rationale.length > 100 ? '...' : ''}</div>` : ''}
-                                <div class="mt-2">
-                                    <button class="btn btn-sm btn-outline-success me-1" onclick="ackCdsAlert(${alert.id}, 'accept')" title="Accept Alert">
-                                        <i class="fas fa-check"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-outline-warning me-1" onclick="ackCdsAlertWithReason(${alert.id}, 'override')" title="Override with Reason">
-                                        <i class="fas fa-exclamation"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-outline-secondary" onclick="ackCdsAlert(${alert.id}, 'dismiss')" title="Dismiss">
-                                        <i class="fas fa-times"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            alertsHtml += '</div>';
-            alertsBody.html(alertsHtml);
-        } else {
-            // Show no alerts message
-            alertsBody.html(`
-                <div id="no-alerts-message" class="text-center text-muted py-3">
-                    <i class="fas fa-check-circle text-success mb-2" style="font-size: 2rem;"></i>
-                    <div>No clinical alerts</div>
-                    <small>System monitoring for safety issues</small>
-                </div>
-            `);
-        }
-    }
-}
-
 // Save prescription function
 function savePrescription() {
+    console.log('savePrescription() function called');
     
     const button = $('button[onclick="savePrescription()"]');
     const form = $('#prescriptionFormElement');
@@ -473,6 +416,7 @@ function savePrescription() {
             method: 'POST',
             data: formData
     }).done(function(response) {
+            console.log('Prescription saved successfully:', response);
             toastr.success('Prescription added successfully!');
             // Reset form
             form[0].reset();
@@ -482,45 +426,23 @@ function savePrescription() {
             $('#prescriptionForm').collapse('hide');
             // Refresh prescriptions list
             loadPrescriptions();
-            // Update CDS alerts in the dedicated sidebar section
-            console.log('Response received:', response);
-            console.log('CDS alerts:', response.cds_alerts);
-            console.log('CDS alerts count:', response.cds_alerts_count);
-            
+            // Update CDS drawer if provided
             try {
-                if (response && response.cds_alerts !== undefined) {
-                    updateCdsAlertsSidebar(response.cds_alerts, response.cds_alerts_count);
-                    
-                    // Show toast notification for new alerts
-                    if (response.cds_alerts_count > 0) {
-                        // Show toast notification if toastr is available
-                        if (typeof toastr !== 'undefined') {
-                            toastr.warning(`${response.cds_alerts_count} clinical alert(s) require attention.`, 'Clinical Decision Support', {
-                                timeOut: 0, // Don't auto-close
-                                extendedTimeOut: 0,
-                                closeButton: true,
-                                progressBar: true
-                            });
-                        } else {
-                            // Fallback alert if toastr is not available
-                            alert(`Clinical Decision Support: ${response.cds_alerts_count} clinical alert(s) require attention.`);
-                        }
-                        
-                        // Highlight the CDS alerts card
-                        const cdsCard = $('#cds-alerts-card');
-                        if (cdsCard.length > 0) {
-                            cdsCard.addClass('border-danger');
-                            setTimeout(() => cdsCard.removeClass('border-danger'), 5000);
-                        }
+                if (response && response.cds_drawer_html !== undefined) {
+                    const drawerHost = $(".card .card-body").has(".results-list").first();
+                    // Fallback: find an existing CDS drawer container by header text
+                    let drawer = drawerHost.find('#cds-drawer');
+                    if (drawer.length === 0) {
+                        // If not found, try inserting after results list
+                        const resultsCardBody = drawerHost;
+                        resultsCardBody.append(response.cds_drawer_html);
+                    } else {
+                        drawer.replaceWith(response.cds_drawer_html);
                     }
-                } else {
-                    console.log('No CDS alerts in response');
+                    console.log('CDS drawer updated, alerts:', response.cds_alerts_count);
                 }
             } catch (e) {
-                console.error('CDS alerts update failed:', e);
-                if (typeof toastr !== 'undefined') {
-                    toastr.error('Failed to update clinical alerts display.');
-                }
+                console.warn('CDS drawer update failed:', e);
             }
             try { if (typeof markPaneSaved === 'function') markPaneSaved('treatment'); } catch (e) { console.error(e); }
             resolve(response);
