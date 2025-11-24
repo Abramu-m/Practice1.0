@@ -164,4 +164,42 @@ class SystemLogController extends Controller
             'raw' => implode("\n", $lines),
         ];
     }
+
+    /**
+     * Clear log files.
+     */
+    public function clear(Request $request)
+    {
+        $request->validate([
+            'file' => 'nullable|string',
+        ]);
+
+        $logsDir = storage_path('logs');
+        $file = $request->input('file');
+
+        if ($file) {
+            // Delete specific file
+            $path = $logsDir . DIRECTORY_SEPARATOR . $file;
+            if (file_exists($path) && is_file($path)) {
+                unlink($path);
+                return redirect()->route('system.logs.index')
+                    ->with('success', "Log file '{$file}' has been deleted.");
+            }
+        } else {
+            // Delete all log files
+            $files = File::files($logsDir);
+            $cleared = 0;
+            foreach ($files as $f) {
+                if (Str::endsWith($f->getFilename(), '.log')) {
+                    unlink($f->getPathname());
+                    $cleared++;
+                }
+            }
+            return redirect()->route('system.logs.index')
+                ->with('success', "{$cleared} log file(s) have been deleted.");
+        }
+
+        return redirect()->route('system.logs.index')
+            ->with('error', 'Log file not found.');
+    }
 }

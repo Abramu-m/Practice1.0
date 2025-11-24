@@ -402,6 +402,9 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsVerified::class])->g
     Route::get('/system/logs', [App\Http\Controllers\SystemLogController::class, 'index'])
         ->middleware(\App\Http\Middleware\EnsureUserIsAdmin::class)
         ->name('system.logs.index');
+    Route::post('/system/logs/clear', [App\Http\Controllers\SystemLogController::class, 'clear'])
+        ->middleware(\App\Http\Middleware\EnsureUserIsAdmin::class)
+        ->name('system.logs.clear');
 
     // ================================
     // VITALS MANAGEMENT
@@ -715,6 +718,27 @@ require __DIR__.'/test-cds.php';
 //     Route::delete('/prescriptions/{prescriptionId}', [App\Http\Controllers\PrescriptionController::class, 'destroy'])
 //         ->name('prescriptions.destroy');
 // });
+
+// CDS Administration Routes
+Route::middleware(['auth', 'verified'])->prefix('admin/cds')->name('admin.cds.')->group(function () {
+    // CDS Dashboard
+    Route::get('/dashboard', [App\Http\Controllers\Admin\CdsRuleController::class, 'dashboard'])
+        ->name('dashboard');
+    
+    // CDS Rules Management
+    Route::resource('rules', App\Http\Controllers\Admin\CdsRuleController::class);
+    
+    // Additional Rule Actions
+    Route::get('/rules/{rule}/test', [App\Http\Controllers\Admin\CdsRuleController::class, 'test'])
+        ->name('rules.test');
+    Route::post('/rules/{rule}/toggle', [App\Http\Controllers\Admin\CdsRuleController::class, 'toggle'])
+        ->name('rules.toggle');
+    
+    // Medication Policies
+    Route::get('/medication-policies', [App\Http\Controllers\Admin\CdsRuleController::class, 'medicationPolicies'])
+        ->name('medication-policies.index');
+});
+
 });
 
 require __DIR__.'/auth.php';

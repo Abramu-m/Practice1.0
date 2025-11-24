@@ -2,6 +2,18 @@
 
 @section('main_content')
 <div class="container-fluid">
+  @if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      {{ session('success') }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  @endif
+  @if(session('error'))
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      {{ session('error') }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  @endif
   <div class="row mb-3">
     <div class="col-12 d-flex align-items-center justify-content-between">
       <h4 class="mb-0">System Logs</h4>
@@ -26,6 +38,9 @@
           <input type="text" class="form-control" name="q" value="{{ request('q') }}" placeholder="Search message...">
           <button class="btn btn-primary" type="submit">Search</button>
         </div>
+        <button type="button" class="btn btn-danger" onclick="confirmClearLogs('{{ $currentFile }}')">
+          <i class="fas fa-trash"></i> Clear Logs
+        </button>
       </form>
     </div>
   </div>
@@ -97,6 +112,35 @@ function copyRaw(btn) {
     });
   } catch (e) {
     alert('Copy failed');
+  }
+}
+
+function confirmClearLogs(currentFile) {
+  const message = currentFile 
+    ? `Are you sure you want to clear the log file "${currentFile}"? This action cannot be undone.`
+    : 'Are you sure you want to clear all log files? This action cannot be undone.';
+  
+  if (confirm(message)) {
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '{{ route("system.logs.clear") }}';
+    
+    const csrfInput = document.createElement('input');
+    csrfInput.type = 'hidden';
+    csrfInput.name = '_token';
+    csrfInput.value = '{{ csrf_token() }}';
+    form.appendChild(csrfInput);
+    
+    if (currentFile) {
+      const fileInput = document.createElement('input');
+      fileInput.type = 'hidden';
+      fileInput.name = 'file';
+      fileInput.value = currentFile;
+      form.appendChild(fileInput);
+    }
+    
+    document.body.appendChild(form);
+    form.submit();
   }
 }
 </script>

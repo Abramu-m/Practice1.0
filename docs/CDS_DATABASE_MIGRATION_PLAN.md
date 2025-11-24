@@ -1356,7 +1356,7 @@ class CdsRuleController extends Controller
 {{-- resources/views/admin/cds/rules/index.blade.php --}}
 @extends('layouts.admin')
 
-@section('content')
+@section('main_content')
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1>CDS Rules Management</h1>

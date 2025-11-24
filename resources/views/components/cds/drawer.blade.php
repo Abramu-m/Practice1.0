@@ -2,23 +2,30 @@
 
 @if($alerts && $alerts->count() > 0)
     <div id="cds-drawer" class="card mt-3">
-        <div class="card-header bg-secondary text-white">
-            <strong><i class="fas fa-bell"></i> Clinical Decision Support</strong>
-        </div>
         <div class="card-body">
             @foreach($alerts as $alert)
-                <div class="mb-2 p-2 border rounded">
-                    <x-cds.alert :severity="$alert->severity" :message="$alert->message" :rationale="$alert->rationale" />
-                    <div class="d-flex gap-2">
-                        <button class="btn btn-sm btn-outline-success" onclick="ackCdsAlert({{ $alert->id }}, 'accept')">
-                            Accept
-                        </button>
-                        <button class="btn btn-sm btn-outline-warning" onclick="ackCdsAlertWithReason({{ $alert->id }}, 'override')">
-                            Override
-                        </button>
-                        <button class="btn btn-sm btn-outline-secondary" onclick="ackCdsAlert({{ $alert->id }}, 'dismiss')">
-                            Dismiss
-                        </button>
+                <div class="alert alert-{{ $alert->severity === 'critical' ? 'danger' : ($alert->severity === 'high' ? 'warning' : 'info') }} alert-sm mb-2 p-2" data-alert-id="{{ $alert->id }}">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="flex-grow-1">
+                            <div class="fw-bold small">{{ ucfirst($alert->severity) }} Alert</div>
+                            <div class="small mb-1">{{ $alert->message }}</div>
+                            @if($alert->rationale)
+                                <div class="text-muted" style="font-size: 0.75rem;">
+                                    {{ Str::limit($alert->rationale, 100) }}
+                                </div>
+                            @endif
+                            <div class="mt-2">
+                                <button class="btn btn-sm btn-outline-success me-1" onclick="ackCdsAlert({{ $alert->id }}, 'accept')" title="Accept Alert">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-warning me-1" onclick="ackCdsAlertWithReason({{ $alert->id }}, 'override')" title="Override with Reason">
+                                    <i class="fas fa-exclamation"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary" onclick="ackCdsAlert({{ $alert->id }}, 'dismiss')" title="Dismiss">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             @endforeach

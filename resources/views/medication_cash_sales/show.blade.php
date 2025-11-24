@@ -555,8 +555,6 @@
 </div>
 
 <!-- Payment Modal -->
-<!-- Debug: Can be paid = {{ $medicationCashSale->canBePaid() ? 'true' : 'false' }} -->
-{{-- Temporarily removed condition for debugging --}}
 {{-- @if($medicationCashSale->canBePaid()) --}}
 <div class="modal fade" id="paymentModal" tabindex="-1">
     <div class="modal-dialog modal-lg">

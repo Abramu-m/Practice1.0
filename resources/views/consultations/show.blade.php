@@ -1605,7 +1605,7 @@
                         <!-- Clinical Decision Support Alerts -->
                         <div class="col-md-4">
                             <div class="card" id="cds-alerts-card">
-                                <div class="card-header text-white" style="background-color: #dc3545;" id="cds-alerts-header">
+                                <div class="card-header text-white" style="background-color: #28a745;" id="cds-alerts-header">
                                     <h6 class="mb-0">
                                         <i class="fas fa-exclamation-triangle"></i> 
                                         Clinical Decision Support

@@ -429,15 +429,25 @@ function savePrescription() {
             // Update CDS drawer if provided
             try {
                 if (response && response.cds_drawer_html !== undefined) {
-                    const drawerHost = $(".card .card-body").has(".results-list").first();
-                    // Fallback: find an existing CDS drawer container by header text
-                    let drawer = drawerHost.find('#cds-drawer');
-                    if (drawer.length === 0) {
-                        // If not found, try inserting after results list
-                        const resultsCardBody = drawerHost;
-                        resultsCardBody.append(response.cds_drawer_html);
-                    } else {
-                        drawer.replaceWith(response.cds_drawer_html);
+                    // Target the CDS alerts body in the treatment section
+                    let alertsBody = $('#cds-alerts-body');
+                    if (alertsBody.length > 0) {
+                        alertsBody.html(response.cds_drawer_html);
+                        // Update the count badge
+                        if (response.cds_alerts_count !== undefined) {
+                            $('#cds-alert-count-badge').text(response.cds_alerts_count);
+                        }
+                        // Update header color to red when alerts are present
+                        let header = $('#cds-alerts-header');
+                        if (response.cds_alerts_count > 0) {
+                            header.css('background-color', '#dc3545');
+                            header.removeClass('bg-success');
+                            header.addClass('text-white');
+                        } else {
+                            header.css('background-color', '#28a745');
+                            header.removeClass('text-dark');
+                            header.addClass('text-white');
+                        }
                     }
                     console.log('CDS drawer updated, alerts:', response.cds_alerts_count);
                 }
