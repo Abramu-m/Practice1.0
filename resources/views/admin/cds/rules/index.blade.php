@@ -194,9 +194,66 @@
         </div>
     </div>
 </div>
+@endsection
 
-@push('scripts')
+@section('scripts')
 <script>
+// Define global functions first for inline onclick handlers
+window.testRule = function(ruleId) {
+    $('#testRuleModal').modal('show');
+    
+    $.ajax({
+        url: `/admin/cds/rules/${ruleId}/test`,
+        method: 'GET',
+        success: function(response) {
+            $('#testRuleContent').html(response);
+        },
+        error: function() {
+            $('#testRuleContent').html('<div class="alert alert-danger">Error loading test interface</div>');
+        }
+    });
+};
+
+window.deleteRule = function(ruleId) {
+    if (confirm('Are you sure you want to delete this rule? This action cannot be undone.')) {
+        $.ajax({
+            url: `/admin/cds/rules/${ruleId}`,
+            method: 'DELETE',
+            data: {
+                _token: '{{ csrf_token() }}'
+            },
+            success: function(response) {
+                if (response.success) {
+                    showAlert('success', 'Rule deleted successfully');
+                    location.reload();
+                } else {
+                    showAlert('error', 'Failed to delete rule');
+                }
+            },
+            error: function() {
+                showAlert('error', 'Error deleting rule');
+            }
+        });
+    }
+};
+
+window.showAlert = function(type, message) {
+    // Create and show alert
+    const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+    const alert = `<div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+        ${message}
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>`;
+    
+    $('.container-fluid').prepend(alert);
+    
+    // Auto-hide after 3 seconds
+    setTimeout(function() {
+        $('.alert').fadeOut();
+    }, 3000);
+};
+
+// Document ready handlers
 $(document).ready(function() {
     // Rule toggle functionality
     $('.rule-toggle').change(function() {
@@ -225,60 +282,5 @@ $(document).ready(function() {
         });
     });
 });
-
-function testRule(ruleId) {
-    $('#testRuleModal').modal('show');
-    
-    $.ajax({
-        url: `/admin/cds/rules/${ruleId}/test`,
-        method: 'GET',
-        success: function(response) {
-            $('#testRuleContent').html(response);
-        },
-        error: function() {
-            $('#testRuleContent').html('<div class="alert alert-danger">Error loading test interface</div>');
-        }
-    });
-}
-
-function deleteRule(ruleId) {
-    if (confirm('Are you sure you want to delete this rule? This action cannot be undone.')) {
-        $.ajax({
-            url: `/admin/cds/rules/${ruleId}`,
-            method: 'DELETE',
-            data: {
-                _token: '{{ csrf_token() }}'
-            },
-            success: function(response) {
-                if (response.success) {
-                    showAlert('success', 'Rule deleted successfully');
-                    location.reload();
-                } else {
-                    showAlert('error', 'Failed to delete rule');
-                }
-            },
-            error: function() {
-                showAlert('error', 'Error deleting rule');
-            }
-        });
-    }
-}
-
-function showAlert(type, message) {
-    // Create and show alert
-    const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
-    const alert = `<div class="alert ${alertClass} alert-dismissible fade show" role="alert">
-        ${message}
-        <button type="button" class="close" data-dismiss="alert">&times;</button>
-    </div>`;
-    
-    $('.container-fluid').prepend(alert);
-    
-    // Auto-hide after 3 seconds
-    setTimeout(function() {
-        $('.alert').fadeOut();
-    }, 3000);
-}
 </script>
-@endpush
 @endsection

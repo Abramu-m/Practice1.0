@@ -29,7 +29,7 @@ class CdsRuleController extends Controller
             'medication_policies' => CdsMedicationPolicy::count(),
         ];
 
-        $recentRules = CdsRule::with(['category', 'ruleType'])
+        $recentRules = CdsRule::with(['ruleCategory', 'ruleType'])
             ->latest()
             ->limit(10)
             ->get();
@@ -258,5 +258,107 @@ class CdsRuleController extends Controller
         return redirect()
             ->back()
             ->with('success', "Rule '{$rule->name}' has been {$status}");
+    }
+
+    public function duplicate(CdsRule $rule, Request $request)
+    {
+        try {
+            // Create a duplicate of the rule
+            $newRule = $rule->replicate();
+            $newRule->name = $rule->name . ' (Copy)';
+            $newRule->is_active = false; // Start inactive to allow review
+            $newRule->save();
+
+            // Duplicate conditions
+            foreach ($rule->conditions as $condition) {
+                $newCondition = $condition->replicate();
+                $newCondition->rule_id = $newRule->id;
+                $newCondition->save();
+            }
+
+            // Duplicate parameters
+            foreach ($rule->parameters as $parameter) {
+                $newParameter = $parameter->replicate();
+                $newParameter->rule_id = $newRule->id;
+                $newParameter->save();
+            }
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => "Rule duplicated successfully as '{$newRule->name}'",
+                    'redirect_url' => route('admin.cds.rules.edit', $newRule)
+                ]);
+            }
+
+            return redirect()
+                ->route('admin.cds.rules.edit', $newRule)
+                ->with('success', "Rule duplicated successfully as '{$newRule->name}'");
+        } catch (\Exception $e) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'Failed to duplicate rule: ' . $e->getMessage()
+                ], 500);
+            }
+
+            return redirect()
+                ->back()
+                ->with('error', 'Failed to duplicate rule: ' . $e->getMessage());
+        }
+    }
+
+    public function export(CdsRule $rule)
+    {
+        try {
+            // Load all related data
+            $rule->load(['ruleType.category', 'conditions', 'parameters', 'creator', 'updater']);
+
+            // Prepare export data
+            $exportData = [
+                'rule' => [
+                    'name' => $rule->name,
+                    'description' => $rule->description,
+                    'rule_type' => $rule->ruleType->name,
+                    'category' => $rule->ruleType->category->name,
+                    'priority' => $rule->priority,
+                    'severity' => $rule->severity,
+                    'is_active' => $rule->is_active,
+                ],
+                'conditions' => $rule->conditions->map(function ($condition) {
+                    return [
+                        'field_name' => $condition->field_name,
+                        'operator' => $condition->operator,
+                        'value' => $condition->value,
+                        'value_type' => $condition->value_type,
+                        'logical_operator' => $condition->logical_operator,
+                        'is_active' => $condition->is_active,
+                    ];
+                })->toArray(),
+                'parameters' => $rule->parameters->map(function ($parameter) {
+                    return [
+                        'parameter_name' => $parameter->parameter_name,
+                        'parameter_value' => $parameter->parameter_value,
+                        'parameter_type' => $parameter->parameter_type,
+                        'description' => $parameter->description,
+                    ];
+                })->toArray(),
+                'metadata' => [
+                    'exported_at' => now()->toIso8601String(),
+                    'exported_by' => \Illuminate\Support\Facades\Auth::user()?->name ?? 'Unknown',
+                    'system_version' => config('app.version', '1.0'),
+                ]
+            ];
+
+            $filename = 'cds_rule_' . $rule->id . '_' . now()->format('Y-m-d_His') . '.json';
+
+            return response()->json($exportData)
+                ->header('Content-Type', 'application/json')
+                ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
+        } catch (\Exception $e) {
+            return redirect()
+                ->back()
+                ->with('error', 'Failed to export rule: ' . $e->getMessage());
+        }
     }
 }

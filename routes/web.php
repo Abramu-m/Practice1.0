@@ -733,6 +733,10 @@ Route::middleware(['auth', 'verified'])->prefix('admin/cds')->name('admin.cds.')
         ->name('rules.test');
     Route::post('/rules/{rule}/toggle', [App\Http\Controllers\Admin\CdsRuleController::class, 'toggle'])
         ->name('rules.toggle');
+    Route::post('/rules/{rule}/duplicate', [App\Http\Controllers\Admin\CdsRuleController::class, 'duplicate'])
+        ->name('rules.duplicate');
+    Route::get('/rules/{rule}/export', [App\Http\Controllers\Admin\CdsRuleController::class, 'export'])
+        ->name('rules.export');
     
     // Medication Policies
     Route::get('/medication-policies', [App\Http\Controllers\Admin\CdsRuleController::class, 'medicationPolicies'])

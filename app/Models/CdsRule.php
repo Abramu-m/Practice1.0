@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Support\Facades\Auth;
 
 class CdsRule extends Model
@@ -44,6 +45,22 @@ class CdsRule extends Model
     public function ruleType(): BelongsTo
     {
         return $this->belongsTo(CdsRuleType::class, 'rule_type_id');
+    }
+
+    /**
+     * Convenience accessor to get the category through the rule type
+     * Equivalent to $rule->ruleType->category
+     */
+    public function ruleCategory(): HasOneThrough
+    {
+        return $this->hasOneThrough(
+            CdsRuleCategory::class,    // The final model we want to access
+            CdsRuleType::class,         // The intermediate model
+            'id',                       // Foreign key on intermediate (CdsRuleType.id)
+            'id',                       // Foreign key on final model (CdsRuleCategory.id)
+            'rule_type_id',            // Local key on this model (CdsRule.rule_type_id)
+            'category_id'              // Local key on intermediate (CdsRuleType.category_id)
+        );
     }
 
     public function conditions(): HasMany

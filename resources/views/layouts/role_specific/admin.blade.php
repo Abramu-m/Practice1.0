@@ -737,6 +737,228 @@
                   </li>
                 </ul>
               </li>
+
+              <!-- Clinical Decision Support (CDS) -->
+              <li class="nav-item has-treeview">
+                <a href="#" class="nav-link nav-header">
+                  <i class="nav-icon bi bi-lightbulb-fill text-warning"></i>
+                  <p class="text-bold">
+                    Clinical Decision Support
+                    <i class="nav-arrow bi bi-chevron-right"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+                  <!-- CDS Dashboard -->
+                  <li class="nav-item">
+                    <a href="{{ route('admin.cds.dashboard') }}" class="nav-link nav-sub-item {{ request()->routeIs('admin.cds.dashboard') ? 'active' : '' }}">
+                      <i class="nav-icon bi bi-speedometer2 text-primary"></i>
+                      <p>
+                        CDS Dashboard
+                        <i class="bi bi-graph-up text-success ms-auto"></i>
+                      </p>
+                    </a>
+                  </li>
+
+                  <!-- Rules Management -->
+                  <li class="nav-item has-treeview">
+                    <a href="#" class="nav-link nav-sub-header">
+                      <i class="nav-icon bi bi-list-check text-info"></i>
+                      <p>
+                        Rules Management
+                        <i class="nav-arrow bi bi-chevron-right"></i>
+                      </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                      <li class="nav-item">
+                        <a href="{{ route('admin.cds.rules.index') }}" class="nav-link nav-sub-sub-item {{ request()->routeIs('admin.cds.rules.index') ? 'active' : '' }}">
+                          <i class="nav-icon bi bi-list-ul text-primary"></i>
+                          <p>All Rules</p>
+                        </a>
+                      </li>
+                      <li class="nav-item">
+                        <a href="{{ route('admin.cds.rules.create') }}" class="nav-link nav-sub-sub-item {{ request()->routeIs('admin.cds.rules.create') ? 'active' : '' }}">
+                          <i class="nav-icon bi bi-plus-circle-fill text-success"></i>
+                          <p>Create New Rule</p>
+                        </a>
+                      </li>
+                      <li class="nav-item">
+                        <a href="{{ route('admin.cds.rules.index', ['status' => 'active']) }}" class="nav-link nav-sub-sub-item">
+                          <i class="nav-icon bi bi-check-circle-fill text-success"></i>
+                          <p>Active Rules</p>
+                        </a>
+                      </li>
+                      <li class="nav-item">
+                        <a href="{{ route('admin.cds.rules.index', ['status' => 'inactive']) }}" class="nav-link nav-sub-sub-item">
+                          <i class="nav-icon bi bi-x-circle text-secondary"></i>
+                          <p>Inactive Rules</p>
+                        </a>
+                      </li>
+                    </ul>
+                  </li>
+
+                  <!-- Medication Safety -->
+                  <li class="nav-item has-treeview">
+                    <a href="#" class="nav-link nav-sub-header">
+                      <i class="nav-icon bi bi-shield-fill-check text-success"></i>
+                      <p>
+                        Medication Safety
+                        <i class="nav-arrow bi bi-chevron-right"></i>
+                      </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                      <li class="nav-item">
+                        <a href="{{ route('admin.cds.medication-policies.index') }}" class="nav-link nav-sub-sub-item {{ request()->routeIs('admin.cds.medication-policies.*') ? 'active' : '' }}">
+                          <i class="nav-icon bi bi-file-medical text-primary"></i>
+                          <p>Medication Policies</p>
+                        </a>
+                      </li>
+                      <li class="nav-item">
+                        <a href="{{ route('admin.cds.rules.index', ['category' => 'medication']) }}" class="nav-link nav-sub-sub-item">
+                          <i class="nav-icon bi bi-capsule text-info"></i>
+                          <p>Drug Interaction Rules</p>
+                        </a>
+                      </li>
+                      <li class="nav-item">
+                        <a href="{{ route('admin.cds.rules.index', ['category' => 'medication', 'type' => 'allergy_check']) }}" class="nav-link nav-sub-sub-item">
+                          <i class="nav-icon bi bi-exclamation-triangle text-warning"></i>
+                          <p>Allergy Checks</p>
+                        </a>
+                      </li>
+                      <li class="nav-item">
+                        <a href="{{ route('admin.cds.rules.index', ['category' => 'medication', 'type' => 'dose_check']) }}" class="nav-link nav-sub-sub-item">
+                          <i class="nav-icon bi bi-calculator text-success"></i>
+                          <p>Dose Range Rules</p>
+                        </a>
+                      </li>
+                    </ul>
+                  </li>
+
+                  <!-- Lab & Diagnostics -->
+                  <li class="nav-item has-treeview">
+                    <a href="#" class="nav-link nav-sub-header">
+                      <i class="nav-icon bi bi-clipboard2-pulse text-danger"></i>
+                      <p>
+                        Lab & Diagnostics
+                        <i class="nav-arrow bi bi-chevron-right"></i>
+                      </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                      <li class="nav-item">
+                        <a href="{{ route('admin.cds.rules.index', ['category' => 'laboratory']) }}" class="nav-link nav-sub-sub-item">
+                          <i class="nav-icon bi bi-vial text-primary"></i>
+                          <p>Lab Result Rules</p>
+                        </a>
+                      </li>
+                      <li class="nav-item">
+                        <a href="{{ route('admin.cds.rules.index', ['category' => 'laboratory', 'type' => 'critical_value']) }}" class="nav-link nav-sub-sub-item">
+                          <i class="nav-icon bi bi-exclamation-octagon text-danger"></i>
+                          <p>Critical Value Alerts</p>
+                        </a>
+                      </li>
+                      <li class="nav-item">
+                        <a href="{{ route('admin.cds.rules.index', ['category' => 'laboratory', 'type' => 'follow_up']) }}" class="nav-link nav-sub-sub-item">
+                          <i class="nav-icon bi bi-arrow-repeat text-info"></i>
+                          <p>Follow-up Recommendations</p>
+                        </a>
+                      </li>
+                    </ul>
+                  </li>
+
+                  <!-- Clinical Workflows -->
+                  <li class="nav-item has-treeview">
+                    <a href="#" class="nav-link nav-sub-header">
+                      <i class="nav-icon bi bi-diagram-3 text-purple"></i>
+                      <p>
+                        Clinical Workflows
+                        <i class="nav-arrow bi bi-chevron-right"></i>
+                      </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                      <li class="nav-item">
+                        <a href="{{ route('admin.cds.rules.index', ['category' => 'workflow']) }}" class="nav-link nav-sub-sub-item">
+                          <i class="nav-icon bi bi-flow-chart text-primary"></i>
+                          <p>All Workflow Rules</p>
+                        </a>
+                      </li>
+                      <li class="nav-item">
+                        <a href="{{ route('admin.cds.rules.index', ['type' => 'order_set']) }}" class="nav-link nav-sub-sub-item">
+                          <i class="nav-icon bi bi-list-task text-success"></i>
+                          <p>Order Sets</p>
+                        </a>
+                      </li>
+                      <li class="nav-item">
+                        <a href="{{ route('admin.cds.rules.index', ['type' => 'guideline_prompt']) }}" class="nav-link nav-sub-sub-item">
+                          <i class="nav-icon bi bi-book text-info"></i>
+                          <p>Clinical Guidelines</p>
+                        </a>
+                      </li>
+                    </ul>
+                  </li>
+
+                  <!-- System Configuration -->
+                  <li class="nav-item has-treeview">
+                    <a href="#" class="nav-link nav-sub-header">
+                      <i class="nav-icon bi bi-gear-fill text-secondary"></i>
+                      <p>
+                        Configuration
+                        <i class="nav-arrow bi bi-chevron-right"></i>
+                      </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                      <li class="nav-item">
+                        <a href="{{ route('admin.cds.rules.index', ['view' => 'categories']) }}" class="nav-link nav-sub-sub-item">
+                          <i class="nav-icon bi bi-tags text-warning"></i>
+                          <p>Rule Categories</p>
+                        </a>
+                      </li>
+                      <li class="nav-item">
+                        <a href="{{ route('admin.cds.rules.index', ['view' => 'types']) }}" class="nav-link nav-sub-sub-item">
+                          <i class="nav-icon bi bi-collection text-primary"></i>
+                          <p>Rule Types</p>
+                        </a>
+                      </li>
+                      <li class="nav-item">
+                        <a href="{{ route('admin.cds.rules.index', ['sort' => 'priority']) }}" class="nav-link nav-sub-sub-item">
+                          <i class="nav-icon bi bi-sort-numeric-down text-info"></i>
+                          <p>Priority Management</p>
+                        </a>
+                      </li>
+                    </ul>
+                  </li>
+
+                  <!-- Analytics & Reports -->
+                  <li class="nav-item has-treeview">
+                    <a href="#" class="nav-link nav-sub-header">
+                      <i class="nav-icon bi bi-graph-up text-success"></i>
+                      <p>
+                        Analytics & Reports
+                        <i class="nav-arrow bi bi-chevron-right"></i>
+                      </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                      <li class="nav-item">
+                        <a href="{{ route('admin.cds.dashboard') }}#alerts" class="nav-link nav-sub-sub-item">
+                          <i class="nav-icon bi bi-bell text-warning"></i>
+                          <p>Alert Statistics</p>
+                        </a>
+                      </li>
+                      <li class="nav-item">
+                        <a href="{{ route('admin.cds.dashboard') }}#performance" class="nav-link nav-sub-sub-item">
+                          <i class="nav-icon bi bi-speedometer text-primary"></i>
+                          <p>Rule Performance</p>
+                        </a>
+                      </li>
+                      <li class="nav-item">
+                        <a href="{{ route('admin.cds.dashboard') }}#audit" class="nav-link nav-sub-sub-item">
+                          <i class="nav-icon bi bi-file-text text-info"></i>
+                          <p>Audit Trail</p>
+                        </a>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+
               <!-- Reports -->
               <li class="nav-item has-treeview">
                 <a href="#" class="nav-link nav-header">

@@ -363,7 +363,7 @@
             <!--begin::Row-->
             <div class="row">
               <div class="col-md-12">
-                <div class="card mb-4">
+                <div class="card mb-2 mt-2">
                   <div class="card-body">
                     <!--begin::Row-->
                     <div class="row">
