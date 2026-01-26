@@ -50,16 +50,6 @@ Route::get('/auto-login', function () {
     return 'Admin user not found';
 });
 
-// Temporary auto-login route for radiologist testing (remove in production)
-Route::get('/auto-login-radiologist', function () {
-    $user = \App\Models\User::where('role', 'radiologist')->first();
-    if ($user) {
-        \Illuminate\Support\Facades\Auth::login($user);
-        return redirect('/dashboard');
-    }
-    return 'Radiologist user not found';
-});
-
 // ================================
 // BASIC AUTH ROUTES
 // ================================
