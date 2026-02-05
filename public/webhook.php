@@ -8,7 +8,7 @@
 define('SECRET', 'my_secure_webhook_secret_2026'); // Match this with GitHub webhook secret
 define('PROJECT_PATH', '/home2/yyfcolmy/abramu/practice1.0'); // Update with your actual Bluehost path
 define('LOG_FILE', PROJECT_PATH . '/storage/logs/webhook.log');
-define('BRANCH', 'main'); // or 'master' depending on your branch name
+define('BRANCH', 'master'); // or 'main' depending on your branch name
 
 // Function to log messages
 function logMessage($message) {
