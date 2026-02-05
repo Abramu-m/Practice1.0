@@ -3,7 +3,7 @@
                 <a href="#" class="nav-link nav-header">
                   <i class="nav-icon bi bi-person-check-fill text-info"></i>
                   <p class="text-bold">
-                    Reception Deskkkkkkk
+                    Reception Desk
                     <i class="nav-arrow bi bi-chevron-right"></i>
                   </p>
                 </a>
@@ -12,7 +12,7 @@
                     <a href="{{ url('patients') }}" class="nav-link nav-sub-item">
                       <i class="nav-icon bi bi-person-plus-fill text-success"></i>
                       <p>
-                        Patient Registrationkkkk
+                        Patient Registration
                       </p>               
                     </a>
                   </li>
