@@ -56,17 +56,21 @@ logMessage("Commit message: {$commitMessage}");
 // Change to project directory and execute deployment commands
 chdir(PROJECT_PATH);
 
+// Define full paths
+$gitCommand = 'cd ' . PROJECT_PATH . ' && git pull origin ' . BRANCH . ' 2>&1';
+$phpPath = '/usr/local/bin/php'; // Bluehost PHP path, adjust if needed
+
 $commands = [
-    'git pull origin ' . BRANCH . ' 2>&1',
-    'php artisan config:clear 2>&1',
-    'php artisan cache:clear 2>&1',
-    'php artisan route:clear 2>&1',
-    'php artisan view:clear 2>&1',
-    'php artisan config:cache 2>&1',
-    'php artisan route:cache 2>&1',
-    'php artisan view:cache 2>&1',
+    $gitCommand,
+    $phpPath . ' ' . PROJECT_PATH . '/artisan config:clear 2>&1',
+    $phpPath . ' ' . PROJECT_PATH . '/artisan cache:clear 2>&1',
+    $phpPath . ' ' . PROJECT_PATH . '/artisan route:clear 2>&1',
+    $phpPath . ' ' . PROJECT_PATH . '/artisan view:clear 2>&1',
+    $phpPath . ' ' . PROJECT_PATH . '/artisan config:cache 2>&1',
+    $phpPath . ' ' . PROJECT_PATH . '/artisan route:cache 2>&1',
+    $phpPath . ' ' . PROJECT_PATH . '/artisan view:cache 2>&1',
     // Comment if you dont want automatic migrations
-    'php artisan migrate --force 2>&1',
+    $phpPath . ' ' . PROJECT_PATH . '/artisan migrate --force 2>&1',
 ];
 
 $results = [];
