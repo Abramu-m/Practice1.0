@@ -60,10 +60,12 @@ echo "6. Testing SSH connection to GitHub...\n";
 exec('ssh -i ' . $sshKey . ' -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new -T git@github.com 2>&1', $output5, $return5);
 echo implode("\n", $output5) . "\n\n";
 
-// 7. Reset any local changes and pull
-echo "7. Resetting local changes and pulling...\n";
-exec('git reset --hard HEAD 2>&1', $output7a);
+// 7. Clean and pull
+echo "7. Cleaning untracked files and pulling...\n";
+exec('git clean -fd 2>&1', $output7a);
 echo implode("\n", $output7a) . "\n";
+exec('git reset --hard origin/master 2>&1', $output7b);
+echo implode("\n", $output7b) . "\n";
 
 $gitSsh = 'GIT_SSH_COMMAND=' . escapeshellarg('ssh -i ' . $sshKey . ' -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new');
 exec($gitSsh . ' git pull origin master 2>&1', $output6, $return6);
