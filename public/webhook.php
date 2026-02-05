@@ -57,7 +57,9 @@ logMessage("Commit message: {$commitMessage}");
 chdir(PROJECT_PATH);
 
 // Define full paths
-$gitCommand = 'cd ' . PROJECT_PATH . ' && git pull origin ' . BRANCH . ' 2>&1';
+$sshKey = '/home2/yyfcolmy/.ssh/github_deploy';
+$sshCommand = 'ssh -i ' . $sshKey . ' -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new';
+$gitCommand = 'cd ' . PROJECT_PATH . ' && GIT_SSH_COMMAND=' . escapeshellarg($sshCommand) . ' git pull origin ' . BRANCH . ' 2>&1';
 $phpPath = '/usr/local/bin/php'; // Bluehost PHP path, adjust if needed
 
 $commands = [

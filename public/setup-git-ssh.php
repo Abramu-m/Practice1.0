@@ -16,6 +16,7 @@ echo "<pre>";
 echo "=== Git SSH Setup Script ===\n\n";
 
 $projectPath = '/home2/yyfcolmy/practice1.0/Practice1.0';
+$sshKey = '/home2/yyfcolmy/.ssh/github_deploy';
 
 // Change to project directory
 chdir($projectPath);
@@ -49,14 +50,20 @@ echo "4. New git remote:\n";
 exec('git remote -v 2>&1', $output4);
 echo implode("\n", $output4) . "\n\n";
 
-// 5. Test SSH connection to GitHub
-echo "5. Testing SSH connection to GitHub...\n";
-exec('ssh -T git@github.com 2>&1', $output5, $return5);
+// 5. Check deploy key file
+echo "5. Checking deploy key file...\n";
+exec('ls -l ' . $sshKey . ' ' . $sshKey . '.pub 2>&1', $output5a, $return5a);
+echo implode("\n", $output5a) . "\n\n";
+
+// 6. Test SSH connection to GitHub (using deploy key)
+echo "6. Testing SSH connection to GitHub...\n";
+exec('ssh -i ' . $sshKey . ' -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new -T git@github.com 2>&1', $output5, $return5);
 echo implode("\n", $output5) . "\n\n";
 
-// 6. Test git pull
-echo "6. Testing git pull...\n";
-exec('git pull origin master 2>&1', $output6, $return6);
+// 7. Test git pull
+echo "7. Testing git pull...\n";
+$gitSsh = 'GIT_SSH_COMMAND=' . escapeshellarg('ssh -i ' . $sshKey . ' -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new');
+exec($gitSsh . ' git pull origin master 2>&1', $output6, $return6);
 if ($return6 === 0) {
     echo "✓ SUCCESS! Git pull works!\n";
     echo implode("\n", $output6) . "\n\n";
