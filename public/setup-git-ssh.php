@@ -16,7 +16,7 @@ echo "<pre>";
 echo "=== Git SSH Setup Script ===\n\n";
 
 $projectPath = '/home2/yyfcolmy/practice1.0/Practice1.0';
-$sshKey = '/home2/yyfcolmy/.ssh/github_deploy';
+$sshKey = '/home2/yyfcolmy/.ssh/github_deploy_3';
 
 // Change to project directory
 chdir($projectPath);
