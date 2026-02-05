@@ -3,7 +3,7 @@
                 <a href="#" class="nav-link nav-header">
                   <i class="nav-icon bi bi-person-check-fill text-info"></i>
                   <p class="text-bold">
-                    Reception Desk
+                    Reception Desko
                     <i class="nav-arrow bi bi-chevron-right"></i>
                   </p>
                 </a>
