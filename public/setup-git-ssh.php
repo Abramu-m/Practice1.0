@@ -60,8 +60,11 @@ echo "6. Testing SSH connection to GitHub...\n";
 exec('ssh -i ' . $sshKey . ' -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new -T git@github.com 2>&1', $output5, $return5);
 echo implode("\n", $output5) . "\n\n";
 
-// 7. Test git pull
-echo "7. Testing git pull...\n";
+// 7. Reset any local changes and pull
+echo "7. Resetting local changes and pulling...\n";
+exec('git reset --hard HEAD 2>&1', $output7a);
+echo implode("\n", $output7a) . "\n";
+
 $gitSsh = 'GIT_SSH_COMMAND=' . escapeshellarg('ssh -i ' . $sshKey . ' -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new');
 exec($gitSsh . ' git pull origin master 2>&1', $output6, $return6);
 if ($return6 === 0) {
