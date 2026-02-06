@@ -62,13 +62,18 @@
                             <input type="hidden" name="doctor_id" value="{{ $selectedDoctor->id }}">
                         @endif
                         <div class="row">
-                            <div class="col-md-10">
+                            <div class="col-md-8">
                                 <input type="text" name="search" class="form-control" placeholder="Search by patient name, MR number, SIC, authorization, or NHIF reference number..." value="{{ request('search') }}">
                             </div>
                             <div class="col-md-2">
                                 <button type="submit" class="btn btn-primary btn-block">
                                     <i class="fas fa-search"></i> Search
                                 </button>
+                            </div>
+                            <div class="col-md-2">
+                                <a href="{{ route('patient_visits.index') }}{{ isset($selectedPatient) ? '?patient_id=' . $selectedPatient->id : (isset($selectedDoctor) ? '?doctor_id=' . $selectedDoctor->id : '') }}" class="btn btn-secondary btn-block">
+                                    <i class="fas fa-times"></i> Clear
+                                </a>
                             </div>
                         </div>
                     </form>
