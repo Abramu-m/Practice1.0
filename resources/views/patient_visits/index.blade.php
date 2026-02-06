@@ -352,17 +352,6 @@ $(document).ready(function() {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
-    
-    // Check URL parameters to auto-open lab modal if patient_id and visit_id are present
-    const urlParams = new URLSearchParams(window.location.search);
-    const patientId = urlParams.get('patient_id');
-    const visitId = urlParams.get('visit_id');
-    const patientName = urlParams.get('patient_name');
-    
-    if (patientId && visitId) {
-        // Auto-open the lab modal with the patient information from URL
-        openLabModal(parseInt(patientId), parseInt(visitId), patientName || 'Unknown Patient');
-    }
 });
 
 // Open lab investigation modal
