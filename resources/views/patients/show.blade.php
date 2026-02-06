@@ -209,7 +209,11 @@
                                             </td>
                                             <td>
                                                 <div class="btn-group btn-group-sm" role="group">
-                                                    @if(($visit->visit_status == 0 || $visit->visit_status == 1) && 
+                                                    @if($visit->visitType && stripos($visit->visitType->description, 'lab only') !== false)
+                                                        <a href="{{ route('patient_visits.index') }}?search={{ $patient->mr_number ?? '' }}" class="btn btn-warning btn-sm" title="Add lab investigations for this visit">
+                                                            <i class="fas fa-flask"></i> Add Labs
+                                                        </a>
+                                                    @elseif(($visit->visit_status == 0 || $visit->visit_status == 1) && 
                                                         (auth()->user()->is_admin || auth()->user()->is_super || 
                                                          (auth()->user()->role === 'doctor' && auth()->user()->doctor && 
                                                           auth()->user()->doctor->doctor_id == $visit->doctor)))
