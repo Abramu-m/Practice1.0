@@ -58,7 +58,6 @@
                                 <th>Visit Status</th>
                                 <th>Investigations</th>
                                 <th>Prescriptions</th>
-                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -156,26 +155,10 @@
                                         <span class="text-muted">No prescriptions</span>
                                     @endif
                                 </td>
-                                <td>
-                                    <div class="btn-group" role="group">
-                                        @if($visit->investigations_count > 0)
-                                            <button class="btn btn-sm btn-primary" 
-                                                    onclick="viewInvestigations({{ $visit->id }})">
-                                                <i class="bi bi-clipboard-data"></i> Investigations
-                                            </button>
-                                        @endif
-                                        @if($visit->prescriptions_count > 0)
-                                            <button class="btn btn-sm btn-success" 
-                                                    onclick="viewPrescriptions({{ $visit->id }})">
-                                                <i class="bi bi-capsule"></i> Prescriptions
-                                            </button>
-                                        @endif
-                                    </div>
-                                </td>
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="8" class="text-center py-4">
+                                <td colspan="7" class="text-center py-4">
                                     <div class="text-muted">
                                         <i class="bi bi-inbox" style="font-size: 3rem;"></i>
                                         <h5>No patient visits found</h5>
