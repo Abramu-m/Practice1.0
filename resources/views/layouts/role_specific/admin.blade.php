@@ -306,7 +306,7 @@
                       <li class="nav-item">
                         <a href="{{ route('store.requisitions.index') }}" class="nav-link nav-sub-sub-item">
                           <i class="nav-icon bi bi-clipboard-data text-warning"></i>
-                          <p>Requisitions</p>
+                          <p>Restocking Requests</p>
                         </a>
                       </li>
                       <li class="nav-item">
