@@ -51,7 +51,6 @@
                     <table class="table table-hover text-nowrap">
                         <thead>
                             <tr>
-                                <th>Visit ID</th>
                                 <th>Patient</th>
                                 <th>Visit Date</th>
                                 <th>Doctor</th>
@@ -63,12 +62,6 @@
                         <tbody>
                             @forelse($visits as $visit)
                             <tr>
-                                <td>
-                                    <strong>#{{ $visit->id }}</strong>
-                                    @if($visit->sic_no)
-                                        <br><small class="text-muted">SIC: {{ $visit->sic_no }}</small>
-                                    @endif
-                                </td>
                                 <td>
                                     @if($visit->patientInfo)
                                         <strong>{{ $visit->patientInfo->first_name }} {{ $visit->patientInfo->last_name }}</strong>
@@ -158,7 +151,7 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="7" class="text-center py-4">
+                                <td colspan="6" class="text-center py-4">
                                     <div class="text-muted">
                                         <i class="bi bi-inbox" style="font-size: 3rem;"></i>
                                         <h5>No patient visits found</h5>
