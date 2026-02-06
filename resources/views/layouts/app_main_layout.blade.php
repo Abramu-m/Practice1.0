@@ -139,7 +139,7 @@
             @else
             <li class="nav-item dropdown user-menu">
               <a href="#" class="nav-link dropdown-toggle d-flex align-items-center" data-bs-toggle="dropdown">
-                @if(Auth::user()->profile_picture)
+                @if(Auth::user()->profile_picture && file_exists(storage_path('app/public/' . Auth::user()->profile_picture)))
                   <img
                     src="{{ asset('storage/' . Auth::user()->profile_picture) }}"
                     class="user-image rounded-circle shadow me-2"
@@ -163,7 +163,7 @@
                 <!--begin::User Image-->
                 <li class="user-header text-bg-primary text-center">
                   <div class="d-flex flex-column align-items-center">
-                    @if(Auth::user()->profile_picture)
+                    @if(Auth::user()->profile_picture && file_exists(storage_path('app/public/' . Auth::user()->profile_picture)))
                       <img
                         src="{{ asset('storage/' . Auth::user()->profile_picture) }}"
                         class="rounded-circle shadow mb-2"
