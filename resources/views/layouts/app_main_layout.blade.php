@@ -145,12 +145,7 @@
                     class="user-image rounded-circle shadow me-2"
                     alt="User Image"
                     style="width: 25px; height: 25px; object-fit: cover;"
-                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
                   />
-                  <div class="user-image rounded-circle shadow bg-primary d-flex align-items-center justify-content-center me-2" 
-                       style="width: 25px; height: 25px; font-size: 12px; color: white; display: none;">
-                    {{ strtoupper(substr(Auth::user()->first_name, 0, 1)) }}{{ strtoupper(substr(Auth::user()->last_name, 0, 1)) }}
-                  </div>
                 @else
                   <div class="user-image rounded-circle shadow bg-primary d-flex align-items-center justify-content-center me-2" 
                        style="width: 25px; height: 25px; font-size: 12px; color: white;">
@@ -169,12 +164,7 @@
                         class="rounded-circle shadow mb-2"
                         alt="User Image"
                         style="width: 90px; height: 90px; object-fit: cover;"
-                        onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
                       />
-                      <div class="rounded-circle shadow bg-light d-flex align-items-center justify-content-center mb-2" 
-                           style="width: 90px; height: 90px; font-size: 36px; color: #007bff; display: none;">
-                        <i class="fas fa-user"></i>
-                      </div>
                     @else
                       <div class="rounded-circle shadow bg-light d-flex align-items-center justify-content-center mb-2" 
                            style="width: 90px; height: 90px; font-size: 36px; color: #007bff;">
