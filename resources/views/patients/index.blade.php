@@ -107,7 +107,7 @@
                                 @if($patient->active_visit && 
                                     $patient->active_visit->visitType && 
                                     stripos($patient->active_visit->visitType->description, 'lab only') !== false)
-                                    <a href="{{ route('patient_visits.index') }}?search={{ $patient->mr_number ?? '' }}" class="btn btn-sm btn-warning" title="Add lab investigations for this visit">
+                                    <a href="{{ route('patient_visits.index') }}?search={{ $patient->mr_number ?? '' }}" class="btn btn-sm btn-success" title="Add lab investigations for this visit">
                                         <i class="fas fa-flask"></i> Add Labs
                                     </a>
                                 @elseif($patient->active_visit && 
