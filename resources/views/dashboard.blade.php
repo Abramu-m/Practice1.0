@@ -326,7 +326,7 @@
                                                     <i class="fas fa-user-md"></i> Start Consultation
                                                 </a>
                                             @elseif($visit->visitType && stripos($visit->visitType->description, 'lab only') !== false)
-                                                <a href="{{ route('patient_visits.index', ['patient_id' => $visit->patient, 'visit_id' => $visit->id]) }}" 
+                                                <a href="{{ route('patient_visits.index') }}?search={{ $visit->patientInfo->mr_number ?? '' }}" 
                                                    class="btn btn-warning btn-sm" 
                                                    title="Add lab investigations for this visit">
                                                     <i class="fas fa-flask"></i> Add Labs
