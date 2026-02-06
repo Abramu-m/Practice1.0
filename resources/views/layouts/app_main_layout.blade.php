@@ -139,13 +139,18 @@
             @else
             <li class="nav-item dropdown user-menu">
               <a href="#" class="nav-link dropdown-toggle d-flex align-items-center" data-bs-toggle="dropdown">
-                @if(Auth::user()->profile_picture && file_exists(storage_path('app/public/' . Auth::user()->profile_picture)))
+                @if(Auth::user()->profile_picture)
                   <img
                     src="{{ asset('storage/' . Auth::user()->profile_picture) }}"
                     class="user-image rounded-circle shadow me-2"
                     alt="User Image"
                     style="width: 25px; height: 25px; object-fit: cover;"
+                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
                   />
+                  <div class="user-image rounded-circle shadow bg-primary d-flex align-items-center justify-content-center me-2" 
+                       style="width: 25px; height: 25px; font-size: 12px; color: white; display: none;">
+                    {{ strtoupper(substr(Auth::user()->first_name, 0, 1)) }}{{ strtoupper(substr(Auth::user()->last_name, 0, 1)) }}
+                  </div>
                 @else
                   <div class="user-image rounded-circle shadow bg-primary d-flex align-items-center justify-content-center me-2" 
                        style="width: 25px; height: 25px; font-size: 12px; color: white;">
@@ -158,13 +163,18 @@
                 <!--begin::User Image-->
                 <li class="user-header text-bg-primary text-center">
                   <div class="d-flex flex-column align-items-center">
-                    @if(Auth::user()->profile_picture && file_exists(storage_path('app/public/' . Auth::user()->profile_picture)))
+                    @if(Auth::user()->profile_picture)
                       <img
                         src="{{ asset('storage/' . Auth::user()->profile_picture) }}"
                         class="rounded-circle shadow mb-2"
                         alt="User Image"
                         style="width: 90px; height: 90px; object-fit: cover;"
+                        onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
                       />
+                      <div class="rounded-circle shadow bg-light d-flex align-items-center justify-content-center mb-2" 
+                           style="width: 90px; height: 90px; font-size: 36px; color: #007bff; display: none;">
+                        <i class="fas fa-user"></i>
+                      </div>
                     @else
                       <div class="rounded-circle shadow bg-light d-flex align-items-center justify-content-center mb-2" 
                            style="width: 90px; height: 90px; font-size: 36px; color: #007bff;">
