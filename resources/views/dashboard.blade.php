@@ -318,12 +318,17 @@
                                             </span>
                                         </td>
                                         <td>
-                                            @if(auth()->user()->is_admin || auth()->user()->is_super || 
-                                                (auth()->user()->role === 'doctor' && auth()->user()->doctor && 
-                                                 auth()->user()->doctor->doctor_id == $visit->doctor))
+                                            @if($visit->visitType && stripos($visit->visitType->description, 'lab only') === false && 
+                                                (auth()->user()->is_admin || auth()->user()->is_super || 
+                                                 (auth()->user()->role === 'doctor' && auth()->user()->doctor && 
+                                                  auth()->user()->doctor->doctor_id == $visit->doctor)))
                                                 <a href="{{ route('consultations.show', $visit->id) }}" class="btn btn-success btn-sm">
                                                     <i class="fas fa-user-md"></i> Start Consultation
                                                 </a>
+                                            @elseif($visit->visitType && stripos($visit->visitType->description, 'lab only') !== false)
+                                                <span class="text-muted">
+                                                    <i class="fas fa-flask"></i> Lab Only Visit
+                                                </span>
                                             @else
                                                 <span class="text-muted">
                                                     <i class="fas fa-lock"></i> Not Assigned
