@@ -72,7 +72,7 @@
                             </div>
                             <div class="col-md-2">
                                 <a href="{{ route('patient_visits.index') }}{{ isset($selectedPatient) ? '?patient_id=' . $selectedPatient->id : (isset($selectedDoctor) ? '?doctor_id=' . $selectedDoctor->id : '') }}" class="btn btn-secondary btn-block">
-                                    <i class="fas fa-times"></i> Clear
+                                    <i class="fas fa-list"></i> All Visits
                                 </a>
                             </div>
                         </div>
