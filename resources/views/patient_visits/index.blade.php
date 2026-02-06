@@ -156,15 +156,17 @@
                                                     </button>
                                                 @endif
                                                 
-                                                <!-- Consult Button - Most prominent -->
-                                                @if(($visit->visit_status == 0 || $visit->visit_status == 1) && 
+                                                <!-- Consult Button - Most prominent (hide for lab-only visits) -->
+                                                @if($visit->visitType && stripos($visit->visitType->description, 'lab only') === false && 
+                                                    ($visit->visit_status == 0 || $visit->visit_status == 1) && 
                                                     (auth()->user()->is_admin || auth()->user()->is_super || 
                                                      (auth()->user()->role === 'doctor' && auth()->user()->doctor && 
                                                       auth()->user()->doctor->doctor_id == $visit->doctor)))
                                                     <a href="{{ route('consultations.show', $visit->id) }}" class="btn btn-sm btn-success" title="{{ $visit->visit_status == 0 ? 'Start Consultation' : 'Continue Consultation' }}">
                                                         <i class="fas fa-user-md"></i> Consult
                                                     </a>
-                                                @elseif(($visit->visit_status == 0 || $visit->visit_status == 1) && auth()->user()->role === 'doctor')
+                                                @elseif($visit->visitType && stripos($visit->visitType->description, 'lab only') === false && 
+                                                        ($visit->visit_status == 0 || $visit->visit_status == 1) && auth()->user()->role === 'doctor')
                                                     <span class="btn btn-sm btn-secondary disabled" title="Patient not assigned to you">
                                                         <i class="fas fa-lock"></i> Not Assigned
                                                     </span>
