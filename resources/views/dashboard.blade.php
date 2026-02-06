@@ -326,9 +326,11 @@
                                                     <i class="fas fa-user-md"></i> Start Consultation
                                                 </a>
                                             @elseif($visit->visitType && stripos($visit->visitType->description, 'lab only') !== false)
-                                                <span class="text-muted">
-                                                    <i class="fas fa-flask"></i> Lab Only Visit
-                                                </span>
+                                                <a href="{{ route('patient_visits.index', ['patient_id' => $visit->patient, 'visit_id' => $visit->id, 'patient_name' => urlencode($visit->patientInfo->full_name ?? 'Unknown')]) }}" 
+                                                   class="btn btn-warning btn-sm" 
+                                                   title="Add lab investigations for this visit">
+                                                    <i class="fas fa-flask"></i> Add Labs
+                                                </a>
                                             @else
                                                 <span class="text-muted">
                                                     <i class="fas fa-lock"></i> Not Assigned
