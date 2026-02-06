@@ -16,7 +16,11 @@
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h4>Patient Visit Details</h4>
                     <div>
-                        @if(($patientVisit->visit_status == 0 || $patientVisit->visit_status == 1) && auth()->user()->role === 'doctor')
+                        @if($patientVisit->visitType && stripos($patientVisit->visitType->description, 'lab only') !== false)
+                            <a href="{{ route('patient_visits.index') }}?search={{ $patientVisit->patientInfo->mr_number ?? '' }}" class="btn btn-warning">
+                                <i class="fas fa-flask"></i> Add Labs
+                            </a>
+                        @elseif(($patientVisit->visit_status == 0 || $patientVisit->visit_status == 1) && auth()->user()->role === 'doctor')
                             <a href="{{ route('consultations.show', $patientVisit->id) }}" class="btn btn-success">
                                 <i class="fas fa-user-md"></i> {{ $patientVisit->visit_status == 0 ? 'Start Consultation' : 'Continue Consultation' }}
                             </a>
