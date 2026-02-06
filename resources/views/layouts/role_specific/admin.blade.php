@@ -238,12 +238,6 @@
                         </a>
                       </li>
                       <li class="nav-item">
-                        <a href="{{ route('medications.stock.ledger.index') }}" class="nav-link nav-sub-sub-item">
-                          <i class="nav-icon bi bi-journal-text text-info"></i>
-                          <p>Medication Ledger</p>
-                        </a>
-                      </li>
-                      <li class="nav-item">
                         <a href="{{ route('store-categories.index') }}" class="nav-link nav-sub-sub-item">
                           <i class="nav-icon bi bi-tags text-warning"></i>
                           <p>Categories</p>
@@ -265,6 +259,12 @@
                         <a href="{{ route('medications.stock.grn.index') }}" class="nav-link nav-sub-sub-item">
                           <i class="nav-icon bi bi-receipt text-info"></i>
                           <p>Goods Received Notes</p>
+                        </a>
+                      </li>
+                      <li class="nav-item">
+                        <a href="{{ route('medications.stock.grn.index') }}" class="nav-link nav-sub-sub-item">
+                          <i class="nav-icon bi bi-receipt-cutoff text-info"></i>
+                          <p>GRN Management</p>
                         </a>
                       </li>
                       <li class="nav-item">
@@ -298,9 +298,9 @@
                     </a>
                     <ul class="nav nav-treeview">
                       <li class="nav-item">
-                        <a href="{{ route('medications.stock.grn.index') }}" class="nav-link nav-sub-sub-item">
-                          <i class="nav-icon bi bi-receipt-cutoff text-info"></i>
-                          <p>GRN Management</p>
+                        <a href="{{ route('medications.stock.ledger.index') }}" class="nav-link nav-sub-sub-item">
+                          <i class="nav-icon bi bi-journal-text text-info"></i>
+                          <p>Medication Ledger</p>
                         </a>
                       </li>
                       <li class="nav-item">
