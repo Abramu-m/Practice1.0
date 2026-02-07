@@ -37,10 +37,13 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                Today's Consultations
+                                Total Consultations
                             </div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                {{ $todaysConsultations ?? 0 }}
+                                {{ $totalConsultations ?? 0 }}
+                            </div>
+                            <div class="text-xs text-muted mt-1">
+                                Active: {{ $activeConsultations ?? 0 }}
                             </div>
                         </div>
                         <div class="col-auto">
@@ -62,10 +65,13 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                Pending Procedures
+                                Total Procedures
                             </div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                {{ $pendingProcedures ?? 0 }}
+                                {{ $totalProcedures ?? 0 }}
+                            </div>
+                            <div class="text-xs text-muted mt-1">
+                                Active: {{ $activeProcedures ?? 0 }}
                             </div>
                         </div>
                         <div class="col-auto">
@@ -76,31 +82,6 @@
                 <div class="card-footer bg-light">
                     <a href="{{ route('procedures.index') }}" class="small text-warning">
                         Review <i class="fas fa-arrow-circle-right"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-3 col-md-6">
-            <div class="card border-left-success shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                Active Patients
-                            </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                {{ $activePatients ?? 0 }}
-                            </div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-users fa-2x text-success"></i>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-footer bg-light">
-                    <a href="{{ route('patients.index') }}" class="small text-success">
-                        Manage <i class="fas fa-arrow-circle-right"></i>
                     </a>
                 </div>
             </div>

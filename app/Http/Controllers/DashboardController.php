@@ -177,17 +177,19 @@ class DashboardController extends Controller
         $doctorId = $user->doctor->doctor_id ?? null;
         
         // Doctor-specific statistics
-        $todaysConsultations = PatientVisit::where('doctor', $doctorId)
-                                          ->whereDate('visit_date', Carbon::today())
+        // All consultations (total and active)
+        $totalConsultations = PatientVisit::where('doctor', $doctorId)->count();
+        
+        $activeConsultations = PatientVisit::where('doctor', $doctorId)
+                                          ->where('visit_status', 1)
                                           ->count();
         
-        $pendingProcedures = Investigation::where('ordered_by', $user->id)
-                                         ->whereIn('status', ['draft', 'ordered', 'collected'])
-                                         ->count();
+        // All procedures (total and active)
+        $totalProcedures = Investigation::where('ordered_by', $user->id)->count();
         
-        $activePatients = PatientVisit::where('doctor', $doctorId)
-                                     ->where('visit_status', 1)
-                                     ->count();
+        $activeProcedures = Investigation::where('ordered_by', $user->id)
+                                        ->whereIn('status', ['draft', 'ordered', 'collected'])
+                                        ->count();
         
         // Count NHIF claims for this doctor
         $postedClaims = FinancialTransaction::where('created_by', $user->id)
@@ -233,9 +235,10 @@ class DashboardController extends Controller
         $alerts = [];
         
         return view('dashboards.doctor', compact(
-            'todaysConsultations',
-            'pendingProcedures', 
-            'activePatients',
+            'totalConsultations',
+            'activeConsultations',
+            'totalProcedures',
+            'activeProcedures',
             'postedClaims',
             'todaysAppointments',
             'weeklyStats',
