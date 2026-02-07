@@ -36,13 +36,13 @@ class VitalSigns extends Model
     ];
 
     protected $casts = [
-        'pulse_rate' => 'decimal:1',
+        'pulse_rate' => 'integer',
         'temperature' => 'decimal:1',
         'respiratory_rate' => 'integer',
         'weight' => 'decimal:1',
         'height' => 'decimal:1',
         'bmi' => 'decimal:1',
-        'oxygen_saturation' => 'decimal:1',
+        'oxygen_saturation' => 'integer',
         'systolic_bp' => 'integer',
         'diastolic_bp' => 'integer',
         'recorded_at' => 'datetime',

@@ -26,12 +26,9 @@
                         <table class="table table-bordered table-striped">
                             <thead>
                                 <tr>
-                                    <th>Visit ID</th>
                                     <th>Patient Name</th>
                                     <th>MR Number</th>
                                     <th>Visit Date</th>
-                                    <th>Visit Type</th>
-                                    <th>Status</th>
                                     <th>Vitals Status</th>
                                     <th>Actions</th>
                                 </tr>
@@ -39,16 +36,9 @@
                             <tbody>
                                 @forelse($visits as $visit)
                                 <tr>
-                                    <td>{{ $visit->id }}</td>
                                     <td>{{ $visit->patientInfo->first_name ?? 'N/A' }} {{ $visit->patientInfo->last_name ?? '' }}</td>
                                     <td>{{ $visit->patientInfo->mr_number ?? 'N/A' }}</td>
                                     <td>{{ $visit->visit_date ? $visit->visit_date->format('Y-m-d H:i') : 'N/A' }}</td>
-                                    <td>{{ $visit->visit_type ?? 'General' }}</td>
-                                    <td>
-                                        <span class="badge bg-{{ $visit->status == 'completed' ? 'success' : ($visit->status == 'in_progress' ? 'warning' : 'secondary') }}">
-                                            {{ ucfirst($visit->status) }}
-                                        </span>
-                                    </td>
                                     <td>
                                         @if($visit->vitalSigns && $visit->vitalSigns->count() > 0)
                                             <span class="badge bg-success">
@@ -74,7 +64,7 @@
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="8" class="text-center">No patient visits found.</td>
+                                    <td colspan="5" class="text-center">No patient visits found.</td>
                                 </tr>
                                 @endforelse
                             </tbody>

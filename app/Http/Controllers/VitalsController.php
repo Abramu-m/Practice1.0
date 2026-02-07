@@ -45,8 +45,8 @@ class VitalsController extends Controller
         $request->validate([
             'systolic_bp' => 'nullable|numeric|min:0|max:300',
             'diastolic_bp' => 'nullable|numeric|min:0|max:200',
-            'pulse_rate' => 'nullable|numeric|min:0|max:200',
-            'temperature' => 'nullable|numeric|min:90|max:110',
+            'pulse_rate' => 'nullable|numeric|min:0|max:220',
+            'temperature' => 'nullable|numeric|min:30|max:50',
             'respiratory_rate' => 'nullable|numeric|min:0|max:60',
             'oxygen_saturation' => 'nullable|numeric|min:0|max:100',
             'height' => 'nullable|numeric|min:0|max:300',
@@ -95,8 +95,8 @@ class VitalsController extends Controller
         $request->validate([
             'systolic_bp' => 'nullable|numeric|min:0|max:300',
             'diastolic_bp' => 'nullable|numeric|min:0|max:200',
-            'pulse_rate' => 'nullable|numeric|min:0|max:200',
-            'temperature' => 'nullable|numeric|min:90|max:110',
+            'pulse_rate' => 'nullable|numeric|min:0|max:220',
+            'temperature' => 'nullable|numeric|min:30|max:50',
             'respiratory_rate' => 'nullable|numeric|min:0|max:60',
             'oxygen_saturation' => 'nullable|numeric|min:0|max:100',
             'height' => 'nullable|numeric|min:0|max:300',

@@ -48,12 +48,12 @@
                                 <label class="form-label">Blood Pressure</label>
                                 <div class="row">
                                     <div class="col-6">
-                                        <input type="text" class="form-control" name="systolic_bp" 
-                                               placeholder="Systolic" min="0" max="300" value="{{ $vitals->systolic_bp ?? '' }}">
+                                        <input type="number" class="form-control" name="systolic_bp" 
+                                               placeholder="Systolic" min="0" max="300" value="{{ old('systolic_bp', $vitals->systolic_bp ?? '') }}">
                                     </div>
                                     <div class="col-6">
-                                        <input type="text" class="form-control" name="diastolic_bp" 
-                                               placeholder="Diastolic" min="0" max="200" value="{{ $vitals->diastolic_bp ?? '' }}">
+                                        <input type="number" class="form-control" name="diastolic_bp" 
+                                               placeholder="Diastolic" min="0" max="200" value="{{ old('diastolic_bp', $vitals->diastolic_bp ?? '') }}">
                                     </div>
                                 </div>
                                 <small class="text-muted">mmHg (e.g., 120/80)</small>
@@ -62,27 +62,27 @@
                             <!-- Pulse Rate -->
                             <div class="col-md-3 mb-3">
                                 <label class="form-label">Pulse Rate</label>
-                                <input type="text" class="form-control" name="pulse_rate" 
-                                       placeholder="Enter pulse rate" min="0" max="200" step="0.1" 
-                                       value="{{ $vitals->pulse_rate ?? '' }}">
+                                <input type="number" class="form-control" name="pulse_rate" 
+                                       placeholder="Enter pulse rate" min="0" max="220" step="1" 
+                                       value="{{ old('pulse_rate', $vitals->pulse_rate ?? '') }}">
                                 <small class="text-muted">beats/min</small>
                             </div>
 
                             <!-- Temperature -->
                             <div class="col-md-3 mb-3">
                                 <label class="form-label">Temperature</label>
-                                <input type="text" class="form-control" name="temperature" 
-                                       placeholder="Enter temperature" min="90" max="110" step="0.1" 
-                                       value="{{ $vitals->temperature ?? '' }}">
-                                <small class="text-muted">°F</small>
+                                <input type="number" class="form-control" name="temperature" 
+                                       placeholder="Enter temperature" min="30" max="50" step="0.1" 
+                                       value="{{ old('temperature', $vitals->temperature ?? '') }}">
+                                <small class="text-muted">°C</small>
                             </div>
 
                             <!-- Respiratory Rate -->
                             <div class="col-md-3 mb-3">
                                 <label class="form-label">Respiratory Rate</label>
-                                <input type="text" class="form-control" name="respiratory_rate" 
-                                       placeholder="Enter rate" min="0" max="60" 
-                                       value="{{ $vitals->respiratory_rate ?? '' }}">
+                                <input type="number" class="form-control" name="respiratory_rate" 
+                                       placeholder="Enter rate" min="0" max="60" step="1"
+                                       value="{{ old('respiratory_rate', $vitals->respiratory_rate ?? '') }}">
                                 <small class="text-muted">breaths/min</small>
                             </div>
                         </div>
@@ -91,36 +91,36 @@
                             <!-- Weight -->
                             <div class="col-md-3 mb-3">
                                 <label class="form-label">Weight</label>
-                                <input type="text" class="form-control" name="weight" 
+                                <input type="number" class="form-control" name="weight" 
                                        placeholder="Enter weight" min="0" max="500" step="0.1" 
-                                       value="{{ $vitals->weight ?? '' }}">
+                                       value="{{ old('weight', $vitals->weight ?? '') }}">
                                 <small class="text-muted">kg</small>
                             </div>
 
                             <!-- Height -->
                             <div class="col-md-3 mb-3">
                                 <label class="form-label">Height</label>
-                                <input type="text" class="form-control" name="height" 
+                                <input type="number" class="form-control" name="height" 
                                        placeholder="Enter height" min="0" max="300" step="0.1" 
-                                       value="{{ $vitals->height ?? '' }}">
+                                       value="{{ old('height', $vitals->height ?? '') }}">
                                 <small class="text-muted">cm</small>
                             </div>
 
                             <!-- Oxygen Saturation -->
                             <div class="col-md-3 mb-3">
                                 <label class="form-label">Oxygen Saturation</label>
-                                <input type="text" class="form-control" name="oxygen_saturation" 
-                                       placeholder="Enter SpO2" min="0" max="100" step="0.1" 
-                                       value="{{ $vitals->oxygen_saturation ?? '' }}">
+                                <input type="number" class="form-control" name="oxygen_saturation" 
+                                       placeholder="Enter SpO2" min="0" max="100" step="1" 
+                                       value="{{ old('oxygen_saturation', $vitals->oxygen_saturation ?? '') }}">
                                 <small class="text-muted">%</small>
                             </div>
 
                             <!-- BMI (Auto-calculated) -->
                             <div class="col-md-3 mb-3">
                                 <label class="form-label">BMI</label>
-                                <input type="text" class="form-control" name="bmi" 
+                                <input type="number" class="form-control" name="bmi" 
                                        placeholder="Auto-calculated" readonly 
-                                       value="{{ $vitals->bmi ?? '' }}">
+                                       value="{{ old('bmi', $vitals->bmi ?? '') }}">
                                 <small class="text-muted">kg/m²</small>
                             </div>
                         </div>
@@ -129,7 +129,7 @@
                         <div class="mb-3">
                             <label class="form-label">Notes</label>
                             <textarea class="form-control" name="notes" rows="3" 
-                                      placeholder="Additional observations or notes...">{{ $vitals->notes ?? '' }}</textarea>
+                                      placeholder="Additional observations or notes...">{{ old('notes', $vitals->notes ?? '') }}</textarea>
                         </div>
 
                         <!-- Action Buttons -->
