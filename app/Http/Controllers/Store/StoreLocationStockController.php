@@ -108,12 +108,12 @@ class StoreLocationStockController extends Controller
         }
 
         return [
-            'my_locations' => StoreLocation::when(!in_array('all', $locationTypes), function($q) use ($locationTypes) {
+            'total_locations' => StoreLocation::when(!in_array('all', $locationTypes), function($q) use ($locationTypes) {
                 $q->whereIn('type', $locationTypes);
             })->where('is_active', true)->count(),
-            'total_stock_items' => $baseQuery->count(),
+            'total_medications' => (clone $baseQuery)->distinct('medication_id')->count('medication_id'),
             'expiring_soon' => (clone $baseQuery)->whereBetween('expiry_date', [now(), now()->addDays(30)])->count(),
-            'critical_stock' => (clone $baseQuery)->where('quantity', '<=', 5)->count(),
+            'out_of_stock' => (clone $baseQuery)->where('quantity', '<=', 0)->count(),
         ];
     }
 
