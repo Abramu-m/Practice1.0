@@ -212,9 +212,6 @@
                                                 <a href="{{ route('store-locations-stock.show', $entry->id) }}" class="btn btn-sm btn-info" title="View Details">
                                                     <i class="fas fa-eye"></i>
                                                 </a>
-                                                <a href="{{ route('store-locations-stock.edit', $entry->id) }}" class="btn btn-sm btn-primary" title="Edit">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
                                                 @if($entry->quantity > 0)
                                                     <button type="button" class="btn btn-sm btn-success" 
                                                             onclick="showMovementModal({{ $entry->id }}, '{{ $entry->medication->generic_name }}', {{ $entry->quantity }})"
