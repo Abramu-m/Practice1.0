@@ -992,6 +992,12 @@
                       <p>All logs</p>
                     </a>
                   </li>
+                  <li class="nav-item">
+                    <a href="{{ route('admin.redundancy-analysis.index') }}" class="nav-link nav-sub-item {{ request()->routeIs('admin.redundancy-analysis.*') ? 'active' : '' }}">
+                      <i class="nav-icon bi bi-diagram-3 text-warning"></i>
+                      <p>Redundancy Analysis</p>
+                    </a>
+                  </li>
                 </ul>
               </li>
 
