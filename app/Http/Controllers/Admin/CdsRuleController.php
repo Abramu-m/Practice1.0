@@ -223,6 +223,56 @@ class CdsRuleController extends Controller
         return view('admin.cds.medication-policies.index', compact('policies'));
     }
 
+    /**
+     * Display a listing of rule categories
+     */
+    public function categoriesIndex()
+    {
+        $categories = CdsRuleCategory::withCount(['ruleTypes', 'rules'])
+            ->ordered()
+            ->paginate(20);
+
+        return view('admin.cds.categories.index', compact('categories'));
+    }
+
+    /**
+     * Display a specific rule category
+     */
+    public function categoriesShow(CdsRuleCategory $category)
+    {
+        $category->load(['ruleTypes' => function($query) {
+            $query->withCount('rules')->orderBy('sort_order');
+        }]);
+
+        return view('admin.cds.categories.show', compact('category'));
+    }
+
+    /**
+     * Display a listing of rule types
+     */
+    public function typesIndex()
+    {
+        $ruleTypes = CdsRuleType::with('category')
+            ->withCount(['rules', 'activeRules'])
+            ->orderBy('category_id')
+            ->orderBy('sort_order')
+            ->paginate(20);
+
+        return view('admin.cds.types.index', compact('ruleTypes'));
+    }
+
+    /**
+     * Display a specific rule type
+     */
+    public function typesShow(CdsRuleType $ruleType)
+    {
+        $ruleType->load(['category', 'rules' => function($query) {
+            $query->orderBy('priority', 'desc');
+        }]);
+
+        return view('admin.cds.types.show', compact('ruleType'));
+    }
+
     public function toggle(CdsRule $rule, Request $request)
     {
         $isActive = $request->boolean('is_active');
