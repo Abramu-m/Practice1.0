@@ -731,6 +731,18 @@ Route::middleware(['auth', 'verified'])->prefix('admin/cds')->name('admin.cds.')
     // Medication Policies
     Route::get('/medication-policies', [App\Http\Controllers\Admin\CdsRuleController::class, 'medicationPolicies'])
         ->name('medication-policies.index');
+    
+    // Rule Categories
+    Route::get('/categories', [App\Http\Controllers\Admin\CdsRuleController::class, 'categoriesIndex'])
+        ->name('categories.index');
+    Route::get('/categories/{category}', [App\Http\Controllers\Admin\CdsRuleController::class, 'categoriesShow'])
+        ->name('categories.show');
+    
+    // Rule Types
+    Route::get('/types', [App\Http\Controllers\Admin\CdsRuleController::class, 'typesIndex'])
+        ->name('types.index');
+    Route::get('/types/{ruleType}', [App\Http\Controllers\Admin\CdsRuleController::class, 'typesShow'])
+        ->name('types.show');
 });
 
 });

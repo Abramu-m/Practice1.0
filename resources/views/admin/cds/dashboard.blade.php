@@ -21,34 +21,38 @@
     <!-- Statistics Cards -->
     <div class="row mb-4">
         <div class="col-md-2">
-            <div class="card bg-primary text-white">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <h6 class="card-title">Categories</h6>
-                            <h3 class="mb-0">{{ $stats['categories'] }}</h3>
-                        </div>
-                        <div class="align-self-center">
-                            <i class="fas fa-folder fa-2x"></i>
+            <a href="{{ route('admin.cds.categories.index') }}" class="text-decoration-none">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="card-title">Categories</h6>
+                                <h3 class="mb-0">{{ $stats['categories'] }}</h3>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-folder fa-2x"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </a>
         </div>
         <div class="col-md-2">
-            <div class="card bg-info text-white">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <h6 class="card-title">Rule Types</h6>
-                            <h3 class="mb-0">{{ $stats['rule_types'] }}</h3>
-                        </div>
-                        <div class="align-self-center">
-                            <i class="fas fa-cogs fa-2x"></i>
+            <a href="{{ route('admin.cds.types.index') }}" class="text-decoration-none">
+                <div class="card bg-info text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="card-title">Rule Types</h6>
+                                <h3 class="mb-0">{{ $stats['rule_types'] }}</h3>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-cogs fa-2x"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </a>
         </div>
         <div class="col-md-2">
             <div class="card bg-success text-white">
@@ -191,6 +195,12 @@
                 </div>
                 <div class="card-body">
                     <div class="list-group list-group-flush">
+                        <a href="{{ route('admin.cds.categories.index') }}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-folder text-primary"></i> View Categories
+                        </a>
+                        <a href="{{ route('admin.cds.types.index') }}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-cogs text-info"></i> View Rule Types
+                        </a>
                         <a href="{{ route('admin.cds.rules.index') }}" class="list-group-item list-group-item-action">
                             <i class="fas fa-list text-primary"></i> View All Rules
                         </a>
