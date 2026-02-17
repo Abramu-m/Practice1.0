@@ -197,11 +197,28 @@ class Patient extends Model
     }
 
     /**
+     * Active visit relationship (for eager loading)
+     */
+    public function activeVisit()
+    {
+        return $this->hasOne(PatientVisit::class, 'patient', 'id')
+            ->whereIn('visit_status', [0, 1])
+            ->where('visit_date', '>=', now()->subDays(7))
+            ->latest('visit_date');
+    }
+
+    /**
      * Get the patient's active visit (status 0 or 1 and within last 7 days)
      * Returns the most recent active visit that's not older than 7 days
      */
     public function getActiveVisitAttribute()
     {
+        // If relationship is already loaded, use it
+        if ($this->relationLoaded('activeVisit')) {
+            return $this->getRelation('activeVisit');
+        }
+        
+        // Otherwise query it
         return $this->visits()
             ->whereIn('visit_status', [0, 1])
             ->where('visit_date', '>=', now()->subDays(7))

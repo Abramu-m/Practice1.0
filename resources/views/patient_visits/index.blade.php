@@ -54,168 +54,26 @@
                         </div>
                     @endif
 
-                    <!-- Search Form -->
-                    <form method="GET" action="{{ route('patient_visits.index') }}" class="mb-3">
-                        @if(isset($selectedPatient))
-                            <input type="hidden" name="patient_id" value="{{ $selectedPatient->id }}">
-                        @elseif(isset($selectedDoctor))
-                            <input type="hidden" name="doctor_id" value="{{ $selectedDoctor->id }}">
-                        @endif
-                        <div class="row">
-                            <div class="col-md-{{ request('search') ? '8' : '10' }}">
-                                <input type="text" name="search" class="form-control" placeholder="Search by patient name, MR number, SIC, authorization, or NHIF reference number..." value="{{ request('search') }}">
-                            </div>
-                            <div class="col-md-2">
-                                <button type="submit" class="btn btn-primary btn-block">
-                                    <i class="fas fa-search"></i> Search
-                                </button>
-                            </div>
-                            @if(request('search'))
-                                <div class="col-md-2">
-                                    <a href="{{ route('patient_visits.index') }}{{ isset($selectedPatient) ? '?patient_id=' . $selectedPatient->id : (isset($selectedDoctor) ? '?doctor_id=' . $selectedDoctor->id : '') }}" class="btn btn-secondary btn-block">
-                                        <i class="fas fa-list"></i> All Visits
-                                    </a>
-                                </div>
-                            @endif
-                        </div>
-                    </form>
-
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Visit ID</th>
-                                    @if(!isset($selectedPatient))
-                                        <th>Patient</th>
-                                    @endif
-                                    <th>Visit Date</th>
-                                    <th>Category</th>
-                                    <th>Visit Type</th>
-                                    @if(!isset($selectedDoctor))
-                                        <th>Doctor</th>
-                                    @endif
-                                    <th>Cash Amount</th>
-                                    <th>Covered Amount</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($visits as $visit)
-                                    <tr>
-                                        <td>{{ $visit->id }}</td>
-                                        @if(!isset($selectedPatient))
-                                            <td>{{ $visit->patientInfo->full_name ?? 'Unknown' }}</td>
-                                        @endif
-                                        <td>{{ $visit->visit_date ? \Carbon\Carbon::parse($visit->visit_date)->format('d/m/Y') : 'N/A' }}</td>
-                                        <td>{{ $visit->visitCategory->description ?? 'N/A' }}</td>
-                                        <td>
-                                            @php
-                                                $visitTypeDesc = $visit->visitType->description ?? 'N/A';
-                                                $badgeClass = 'badge-secondary'; // Default
-                                                
-                                                // Color coding based on visit type
-                                                switch(strtolower($visitTypeDesc)) {
-                                                    case 'first visit':
-                                                        $badgeClass = 'badge-primary';
-                                                        break;
-                                                    case 'follow up':
-                                                        $badgeClass = 'badge-success';
-                                                        break;
-                                                    case 'internal referral':
-                                                        $badgeClass = 'badge-warning';
-                                                        break;
-                                                    case 'external referral':
-                                                        $badgeClass = 'badge-info';
-                                                        break;
-                                                    case 'lab only':
-                                                        $badgeClass = 'badge-danger';
-                                                        break;
-                                                }
-                                                
-                                                // Check if patient has active visit using model method
-                                                $hasActiveVisit = false;
-                                                $activeVisitId = null;
-                                                if (!isset($selectedPatient)) {
-                                                    $activeVisit = $visit->patientInfo->active_visit ?? null;
-                                                    $hasActiveVisit = $activeVisit && $activeVisit->id == $visit->id;
-                                                    $activeVisitId = $hasActiveVisit ? $visit->id : null;
-                                                }
-                                            @endphp
-                                            <span class="badge {{ $badgeClass }}">{{ $visitTypeDesc }}</span>
-                                        </td>
-                                        @if(!isset($selectedDoctor))
-                                            <td>{{ optional(optional($visit->doctorInfo)->user)->name ?? 'N/A' }}</td>
-                                        @endif
-                                        <td>${{ number_format($visit->amount_cash, 2) }}</td>
-                                        <td>${{ number_format($visit->amount_covered ?? 0, 2) }}</td>
-                                        <td>
-                                            <span class="badge {{ $visit->visit_status_badge_class }} text-black">{{ $visit->visit_status_label }}</span>
-                                        </td>
-                                        <td>
-                                            <div class="btn-group" role="group">
-                                                <!-- Lab Button for patients with active visits (only show in general view, not when filtering by patient) -->
-                                                @if(!isset($selectedPatient) && $hasActiveVisit)
-                                                    <button type="button" class="btn btn-sm btn-success" 
-                                                            onclick="openLabModal({{ $visit->patient }}, {{ $activeVisitId }}, {{ json_encode($visit->patientInfo->full_name ?? 'Unknown') }})"
-                                                            title="Add Lab Investigation">
-                                                        <i class="fas fa-plus"></i> Lab
-                                                    </button>
-                                                @endif
-                                                
-                                                <!-- Consult Button - Most prominent (hide for lab-only visits) -->
-                                                @if($visit->visitType && stripos($visit->visitType->description, 'lab only') === false && 
-                                                    ($visit->visit_status == 0 || $visit->visit_status == 1) && 
-                                                    (auth()->user()->is_admin || auth()->user()->is_super || 
-                                                     (auth()->user()->role === 'doctor' && auth()->user()->doctor && 
-                                                      auth()->user()->doctor->doctor_id == $visit->doctor)))
-                                                    <a href="{{ route('consultations.show', $visit->id) }}" class="btn btn-sm btn-success" title="{{ $visit->visit_status == 0 ? 'Start Consultation' : 'Continue Consultation' }}">
-                                                        <i class="fas fa-user-md"></i> Consult
-                                                    </a>
-                                                @elseif($visit->visitType && stripos($visit->visitType->description, 'lab only') === false && 
-                                                        ($visit->visit_status == 0 || $visit->visit_status == 1) && auth()->user()->role === 'doctor')
-                                                    <span class="btn btn-sm btn-secondary disabled" title="Patient not assigned to you">
-                                                        <i class="fas fa-lock"></i> Not Assigned
-                                                    </span>
-                                                @endif
-                                                
-                                                <!-- Other action buttons -->
-                                                <a href="{{ route('patient_visits.show', $visit->id) }}" class="btn btn-sm btn-info" title="View Visit">
-                                                    <i class="fas fa-eye"></i>
-                                                </a>
-                                                <a href="{{ route('patient_visits.edit', $visit->id) }}" class="btn btn-sm btn-warning" title="Edit Visit">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
-                                                @if(auth()->user()->isAdmin())
-                                                <form action="{{ route('patient_visits.destroy', $visit->id) }}" method="POST" style="display:inline;">
-                                                    @csrf @method('DELETE')
-                                                    <button type="submit" onclick="return confirm('Delete this visit?')" class="btn btn-sm btn-danger" title="Delete Visit">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
-                                                </form>
-                                                @endif
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="{{ isset($selectedPatient) && isset($selectedDoctor) ? '7' : (isset($selectedPatient) || isset($selectedDoctor) ? '8' : '9') }}" class="text-center">
-                                            @if(isset($selectedPatient))
-                                                No visits found for this patient.
-                                            @elseif(isset($selectedDoctor))
-                                                No visits found for this doctor.
-                                            @else
-                                                No visits found.
-                                            @endif
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="card-footer">
-                    {{ $visits->appends(request()->query())->links('pagination::bootstrap-5') }}
+                    <table class="table table-bordered table-hover" id="visitsTable">
+                        <thead>
+                            <tr>
+                                <th>Visit ID</th>
+                                @if(!isset($selectedPatient))
+                                    <th>Patient</th>
+                                @endif
+                                <th>Visit Date</th>
+                                <th>Category</th>
+                                <th>Visit Type</th>
+                                @if(!isset($selectedDoctor))
+                                    <th>Doctor</th>
+                                @endif
+                                <th>Cash Amount</th>
+                                <th>Covered Amount</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                    </table>
                 </div>
             </div>
         </div>
@@ -228,9 +86,58 @@
 @endsection
 
 @section('scripts')
+<script>
+$(document).ready(function() {
+    // Define columns based on context
+    var columns = [
+        { data: 'id', name: 'id' },
+        @if(!isset($selectedPatient))
+        { data: 'patient_name', name: 'patientInfo.first_name' },
+        @endif
+        { data: 'visit_date', name: 'visit_date' },
+        { data: 'category', name: 'visitCategory.description' },
+        { data: 'visit_type', name: 'visitType.description' },
+        @if(!isset($selectedDoctor))
+        { data: 'doctor_name', name: 'doctorInfo.user.name' },
+        @endif
+        { data: 'cash_amount', name: 'amount_cash', orderable: true },
+        { data: 'covered_amount', name: 'amount_covered', orderable: true },
+        { data: 'status', name: 'visit_status' },
+        { data: 'actions', name: 'actions', orderable: false, searchable: false }
+    ];
+
+    // Initialize DataTable
+    const table = $('#visitsTable').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: '{{ route("patient_visits.index") }}',
+            data: function(d) {
+                @if(isset($selectedPatient))
+                d.patient_id = {{ $selectedPatient->id }};
+                @endif
+                @if(isset($selectedDoctor))
+                d.doctor_id = {{ $selectedDoctor->id }};
+                @endif
+            }
+        },
+        columns: columns,
+        order: [[0, 'desc']],
+        pageLength: 10,
+        responsive: true,
+        language: {
+            search: "Search visits:",
+            lengthMenu: "Show _MENU_ visits per page",
+            info: "Showing _START_ to _END_ of _TOTAL_ visits",
+            infoEmpty: "No visits found",
+            infoFiltered: "(filtered from _MAX_ total visits)"
+        }
+    });
+});
+</script>
+
 {{-- Lab Investigation Modal JavaScript --}}
 <script src="{{ asset('js/lab-investigation-modal.js') }}"></script>
-
 @endsection
 
 @section('extra_footer_content')
@@ -246,9 +153,6 @@
 .badge-danger { background-color: #dc3545 !important; color: white !important; }
 .badge-secondary { background-color: #6c757d !important; color: white !important; }
 
-/* Table responsiveness for visit type column */
-.table th, .table td { white-space: nowrap; }
 .badge { font-size: 0.85em; padding: 0.4em 0.6em; }
 </style>
-
 @endsection

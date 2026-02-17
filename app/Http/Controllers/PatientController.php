@@ -6,6 +6,7 @@ use App\Models\PatientCategory;
 use App\Models\NhifMember;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Yajra\DataTables\Facades\DataTables;
 
 class PatientController extends Controller
 {
@@ -14,44 +15,84 @@ class PatientController extends Controller
      */
     public function index(Request $request)
     {
-        $patients = Patient::with(['category', 'creator', 'visits']);
+        // Handle DataTables AJAX request
+        if ($request->ajax()) {
+            $query = Patient::with(['category', 'creator', 'visits', 'activeVisit.visitType']);
 
-        if ($request->has('search')) {
-            $search = trim($request->search);
-
-            // If search looks like an MR number, extract and match id
-            if (preg_match('/MR-\d{4}-(\d+)/', $search, $matches)) {
-                $patients->where('id', intval($matches[1]));
-
-            } elseif (ctype_digit($search) && strlen($search) <= 6) {
-                // Treat short all-digit searches (likely an ID) as exact id lookup
-                $patients->where('id', intval($search));
-
-            } else {
-                // Fallback: broad LIKE search across several fields (for names, contact, NIDA, card no.)
-                $patients->where(function($query) use ($search) {
-                    $query->where('first_name', 'like', '%' . $search . '%')
-                          ->orWhere('last_name', 'like', '%' . $search . '%')
-                          ->orWhere('middle_name', 'like', '%' . $search . '%')
-                          ->orWhere('contact', 'like', '%' . $search . '%')
-                          ->orWhere('nida', 'like', '%' . $search . '%')
-                          ->orWhere('card_number', 'like', '%' . $search . '%');
-                });
+            // Apply category filter
+            if ($request->has('category_filter') && $request->category_filter != '') {
+                $query->where('patient_category', $request->category_filter);
             }
+
+            // Apply status filter
+            if ($request->has('status_filter') && $request->status_filter != '') {
+                $query->where('status', $request->status_filter);
+            }
+
+            return DataTables::of($query)
+                ->filter(function ($query) use ($request) {
+                    if ($request->has('search') && !empty($request->search['value'])) {
+                        $search = trim($request->search['value']);
+                        
+                        // If search looks like an MR number, extract and match id
+                        if (preg_match('/MR-\d{4}-(\d+)/', $search, $matches)) {
+                            $query->where('id', intval($matches[1]));
+                        } elseif (ctype_digit($search) && strlen($search) <= 6) {
+                            // Treat short all-digit searches (likely an ID) as exact id lookup
+                            $query->where('id', intval($search));
+                        } else {
+                            // Fallback: broad LIKE search across several fields
+                            $query->where(function($q) use ($search) {
+                                $q->where('first_name', 'like', '%' . $search . '%')
+                                  ->orWhere('last_name', 'like', '%' . $search . '%')
+                                  ->orWhere('middle_name', 'like', '%' . $search . '%')
+                                  ->orWhere('contact', 'like', '%' . $search . '%')
+                                  ->orWhere('nida', 'like', '%' . $search . '%')
+                                  ->orWhere('card_number', 'like', '%' . $search . '%');
+                            });
+                        }
+                    }
+                })
+                ->addIndexColumn()
+                ->addColumn('full_name', function ($patient) {
+                    return $patient->full_name;
+                })
+                ->addColumn('gender', function ($patient) {
+                    return ucfirst($patient->gender);
+                })
+                ->addColumn('date_of_birth', function ($patient) {
+                    return $patient->date_of_birth->format('d/m/Y');
+                })
+                ->addColumn('contact', function ($patient) {
+                    return $patient->contact ?? 'N/A';
+                })
+                ->addColumn('category', function ($patient) {
+                    $html = $patient->category->description ?? 'N/A';
+                    if (!empty($patient->card_number)) {
+                        $html .= '<br><small class="text-muted">Card: ' . e($patient->card_number) . '</small>';
+                    }
+                    return $html;
+                })
+                ->addColumn('visits', function ($patient) {
+                    return '<span class="badge badge-info" style="color: black">' . $patient->visits->count() . ' visit(s)</span>';
+                })
+                ->addColumn('status', function ($patient) {
+                    if ($patient->status == 'active') {
+                        return '<span class="badge badge-success" style="color: black">Active</span>';
+                    } else {
+                        return '<span class="badge badge-danger" style="color: black">Inactive</span>';
+                    }
+                })
+                ->addColumn('actions', function ($patient) {
+                    return view('patients._actions', compact('patient'))->render();
+                })
+                ->rawColumns(['category', 'visits', 'status', 'actions'])
+                ->make(true);
         }
 
-        if ($request->has('category_filter') && $request->category_filter != '') {
-            $patients->where('patient_category', $request->category_filter);
-        }
-
-        if ($request->has('status_filter') && $request->status_filter != '') {
-            $patients->where('status', $request->status_filter);
-        }
-
-        $patients = $patients->orderBy('created_at', 'desc')->paginate(10);
+        // Regular page load - just return the view with categories
         $categories = PatientCategory::where('is_active', true)->get();
-
-        return view('patients.index', compact('patients', 'categories'));
+        return view('patients.index', compact('categories'));
     }
 
     /**

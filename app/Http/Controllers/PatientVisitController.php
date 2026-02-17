@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Yajra\DataTables\Facades\DataTables;
 
 class PatientVisitController extends Controller
 {
@@ -16,8 +17,6 @@ class PatientVisitController extends Controller
      */
     public function index(Request $request)
     {
-        $query = PatientVisit::with(['patientInfo', 'visitCategory', 'visitType', 'doctorInfo', 'createdBy']);
-
         // Get current user and check if they're a doctor
         $user = Auth::user();
         $currentDoctorId = null;
@@ -26,63 +25,105 @@ class PatientVisitController extends Controller
             $currentDoctorId = $user->doctor->doctor_id ?? null;
         }
         
-        // If user is a doctor (not admin), filter to only show their patients
-        if ($currentDoctorId && !($user->is_admin || $user->is_super)) {
-            $query->where('doctor', $currentDoctorId);
-        }
-
-        // Filter by patient if specified
-        if ($request->has('patient_id') && $request->patient_id) {
-            $query->where('patient', $request->patient_id);
-        }
-        
-        // Filter by doctor if specified (admins can still filter by any doctor)
-        if ($request->has('doctor_id') && $request->doctor_id) {
-            // Only allow doctor filtering if user is admin or if filtering by their own ID
-            if ($user->is_admin || $user->is_super || $request->doctor_id == $currentDoctorId) {
-                $query->where('doctor', $request->doctor_id);
-            }
-        }
-
-        // Search functionality
-        if ($search = $request->input('search')) {
-            $query->where(function ($q) use ($search) {
-                $q->whereHas('patientInfo', function($patientQuery) use ($search) { 
-                    $patientQuery->where('first_name', 'like', "%{$search}%")
-                                 ->orWhere('last_name', 'like', "%{$search}%")
-                                 ->orWhere('middle_name', 'like', "%{$search}%");
-                                 
-                    // Check if search looks like an MR number format and extract ID
-                    if (preg_match('/MR-\d{4}-(\d+)/', $search, $matches)) {
-                        $patientQuery->orWhere('id', intval($matches[1]));
-                    } elseif (is_numeric($search)) {
-                        // Also check for raw numeric ID
-                        $patientQuery->orWhere('id', $search);
-                    }
-                })
-                ->orWhere('sic_no', 'like', "%{$search}%")
-                ->orWhere('authorization_no', 'like', "%{$search}%")
-                ->orWhere('nhif_reference_no', 'like', "%{$search}%")
-                ->orWhere('id', $search);
-            });
-        }
-
-        // Pagination (10 per page)
-        $visits = $query->orderBy('created_at', 'desc')->paginate(10);
-        
-        // Get selected patient for breadcrumb if filtering by patient
+        // Get selected patient/doctor for context
         $selectedPatient = null;
         if ($request->has('patient_id') && $request->patient_id) {
             $selectedPatient = \App\Models\Patient::find($request->patient_id);
         }
         
-        // Get selected doctor for breadcrumb if filtering by doctor
         $selectedDoctor = null;
         if ($request->has('doctor_id') && $request->doctor_id) {
             $selectedDoctor = \App\Models\Doctor::with('user')->find($request->doctor_id);
         }
+        
+        // Handle DataTables AJAX request
+        if ($request->ajax()) {
+            $query = PatientVisit::with(['patientInfo.activeVisit.visitType', 'visitCategory', 'visitType', 'doctorInfo.user', 'createdBy']);
+            
+            // If user is a doctor (not admin), filter to only show their patients
+            if ($currentDoctorId && !($user->is_admin || $user->is_super)) {
+                $query->where('doctor', $currentDoctorId);
+            }
 
-        return view('patient_visits.index', compact('visits', 'selectedPatient', 'selectedDoctor'));
+            // Filter by patient if specified
+            if ($request->has('patient_id') && $request->patient_id) {
+                $query->where('patient', $request->patient_id);
+            }
+            
+            // Filter by doctor if specified
+            if ($request->has('doctor_id') && $request->doctor_id) {
+                if ($user->is_admin || $user->is_super || $request->doctor_id == $currentDoctorId) {
+                    $query->where('doctor', $request->doctor_id);
+                }
+            }
+            
+            return DataTables::of($query)
+                ->filter(function ($query) use ($request) {
+                    if ($request->has('search') && !empty($request->search['value'])) {
+                        $search = trim($request->search['value']);
+                        
+                        $query->where(function ($q) use ($search) {
+                            $q->whereHas('patientInfo', function($patientQuery) use ($search) { 
+                                $patientQuery->where('first_name', 'like', "%{$search}%")
+                                             ->orWhere('last_name', 'like', "%{$search}%")
+                                             ->orWhere('middle_name', 'like', "%{$search}%");
+                                             
+                                if (preg_match('/MR-\d{4}-(\d+)/', $search, $matches)) {
+                                    $patientQuery->orWhere('id', intval($matches[1]));
+                                } elseif (is_numeric($search)) {
+                                    $patientQuery->orWhere('id', $search);
+                                }
+                            })
+                            ->orWhere('sic_no', 'like', "%{$search}%")
+                            ->orWhere('authorization_no', 'like', "%{$search}%")
+                            ->orWhere('nhif_reference_no', 'like', "%{$search}%")
+                            ->orWhere('id', $search);
+                        });
+                    }
+                })
+                ->addColumn('patient_name', function ($visit) {
+                    return $visit->patientInfo->full_name ?? 'Unknown';
+                })
+                ->addColumn('visit_date', function ($visit) {
+                    return $visit->visit_date ? \Carbon\Carbon::parse($visit->visit_date)->format('d/m/Y') : 'N/A';
+                })
+                ->addColumn('category', function ($visit) {
+                    return $visit->visitCategory->description ?? 'N/A';
+                })
+                ->addColumn('visit_type', function ($visit) {
+                    $visitTypeDesc = $visit->visitType->description ?? 'N/A';
+                    $badgeClass = 'badge-secondary';
+                    
+                    switch(strtolower($visitTypeDesc)) {
+                        case 'first visit': $badgeClass = 'badge-primary'; break;
+                        case 'follow up': $badgeClass = 'badge-success'; break;
+                        case 'internal referral': $badgeClass = 'badge-warning'; break;
+                        case 'external referral': $badgeClass = 'badge-info'; break;
+                        case 'lab only': $badgeClass = 'badge-danger'; break;
+                    }
+                    
+                    return '<span class="badge ' . $badgeClass . '">' . e($visitTypeDesc) . '</span>';
+                })
+                ->addColumn('doctor_name', function ($visit) {
+                    return optional(optional($visit->doctorInfo)->user)->name ?? 'N/A';
+                })
+                ->addColumn('cash_amount', function ($visit) {
+                    return '$' . number_format($visit->amount_cash, 2);
+                })
+                ->addColumn('covered_amount', function ($visit) {
+                    return '$' . number_format($visit->amount_covered ?? 0, 2);
+                })
+                ->addColumn('status', function ($visit) {
+                    return '<span class="badge ' . $visit->visit_status_badge_class . ' text-black">' . e($visit->visit_status_label) . '</span>';
+                })
+                ->addColumn('actions', function ($visit) use ($selectedPatient, $user, $currentDoctorId) {
+                    return view('patient_visits._actions', compact('visit', 'selectedPatient', 'user', 'currentDoctorId'))->render();
+                })
+                ->rawColumns(['visit_type', 'status', 'actions'])
+                ->make(true);
+        }
+
+        return view('patient_visits.index', compact('selectedPatient', 'selectedDoctor'));
     }
 
     /**
