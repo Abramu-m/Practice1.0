@@ -71,6 +71,7 @@ $phpPath = '/usr/local/bin/php'; // Bluehost PHP path, adjust if needed
 
 $commands = [
     $gitCommand,
+    'cd ' . PROJECT_PATH . ' && /opt/cpanel/composer/bin/composer install --no-dev --optimize-autoloader 2>&1',
     $phpPath . ' ' . PROJECT_PATH . '/artisan config:clear 2>&1',
     $phpPath . ' ' . PROJECT_PATH . '/artisan cache:clear 2>&1',
     $phpPath . ' ' . PROJECT_PATH . '/artisan route:clear 2>&1',
@@ -91,7 +92,8 @@ Log::channel('webhook')->info('⚙️  Executing deployment commands');
 foreach ($commands as $command) {
     // Extract command name for cleaner display
     $commandName = 'Unknown';
-    if (strpos($command, 'git pull') !== false) $commandName = 'Git Pull';
+    if (strpos($command, 'git pumposer install') !== false) $commandName = 'Install Dependencies';
+    elseif (strpos($command, 'coll') !== false) $commandName = 'Git Pull';
     elseif (strpos($command, 'config:clear') !== false) $commandName = 'Clear Config Cache';
     elseif (strpos($command, 'cache:clear') !== false) $commandName = 'Clear App Cache';
     elseif (strpos($command, 'route:clear') !== false) $commandName = 'Clear Route Cache';
