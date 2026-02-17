@@ -31,12 +31,7 @@
             <form method="GET" action="{{ route('patients.index') }}" id="patientFilterForm" class="d-flex">
                 <div class="input-group me-2">
                     <span class="input-group-text bg-white"><i class="fas fa-search"></i></span>
-                    <input type="text" name="search" class="form-control auto-filter" placeholder="Search patients..." value="{{ request('search') }}">
-                    @if(request('search'))
-                        <span class="input-group-text bg-light text-muted" style="cursor: pointer;" onclick="$('[name=search]').val(''); $('#patientFilterForm').submit();">
-                            <i class="fas fa-times"></i>
-                        </span>
-                    @endif
+                    <input type="text" name="search" class="form-control auto-filter" placeholder="Search patients..." value="{{ request('search') }}" autocomplete="off">
                 </div>
                 <select name="category_filter" class="form-select me-2 auto-filter {{ request('category_filter') ? 'border-primary' : '' }}">
                     <option value="">All Categories</option>
@@ -51,19 +46,13 @@
                     <option value="active" {{ request('status_filter') == 'active' ? 'selected' : '' }}>Active</option>
                     <option value="inactive" {{ request('status_filter') == 'inactive' ? 'selected' : '' }}>Inactive</option>
                 </select>
-                @if(request('search') || request('category_filter') || request('status_filter'))
-                    <button type="button" class="btn btn-outline-danger" id="clearFilters" style="white-space: nowrap;" title="Clear all filters">
-                        <i class="fas fa-times"></i> Clear All
-                    </button>
-                @else
-                    <button type="button" class="btn btn-outline-secondary" id="clearFilters" style="white-space: nowrap; visibility: hidden;">
-                        <i class="fas fa-times"></i> Clear
-                    </button>
-                @endif
+                <button type="button" class="btn btn-outline-secondary" id="clearFilters" style="white-space: nowrap; {{ request('search') || request('category_filter') || request('status_filter') ? '' : 'visibility: hidden;' }}" title="Clear all filters">
+                    <i class="fas fa-times"></i> Clear{{ request('search') || request('category_filter') || request('status_filter') ? ' All' : '' }}
+                </button>
             </form>
         </div>
         @if(request('search') || request('category_filter') || request('status_filter'))
-        <div class="col-md-12 mt-2">
+        <div class="col-md-12 mt-2" id="filter-badges-container">
             <small class="text-muted">
                 <i class="fas fa-filter me-1"></i> Active filters:
                 @if(request('search'))
@@ -210,7 +199,7 @@ $(document).ready(function() {
         }
     });
 
-    // Auto-filter functionality
+    // Auto-filter functionality with AJAX live search
     let searchTimeout;
     let isFiltering = false;
     
@@ -218,37 +207,210 @@ $(document).ready(function() {
     function showFilterLoading() {
         if (!isFiltering) {
             isFiltering = true;
-            // Add a subtle opacity change to indicate filtering
-            $('.table-responsive').css('opacity', '0.6');
+            $('.table-responsive').css('opacity', '0.5');
             if (!$('#filter-loading-indicator').length) {
-                $('#patientFilterForm').after('<div id="filter-loading-indicator" class="text-center my-2"><small class="text-muted"><i class="fas fa-spinner fa-spin"></i> Filtering...</small></div>');
+                $('.table-responsive').before('<div id="filter-loading-indicator" class="text-center my-2"><small class="text-muted"><i class="fas fa-spinner fa-spin"></i> Loading...</small></div>');
             }
         }
     }
     
-    // Handle search input with debounce
+    // Hide loading indicator
+    function hideFilterLoading() {
+        isFiltering = false;
+        $('.table-responsive').css('opacity', '1');
+        $('#filter-loading-indicator').remove();
+    }
+    
+    // Perform AJAX search
+    function performSearch() {
+        const form = $('#patientFilterForm');
+        const formData = form.serialize();
+        
+        showFilterLoading();
+        
+        $.ajax({
+            url: form.attr('action'),
+            type: 'GET',
+            data: formData,
+            success: function(response) {
+                // Extract the table body and pagination from the response
+                const tempDiv = $('<div>').html(response);
+                const newTableBody = tempDiv.find('.table tbody').html();
+                const newPagination = tempDiv.find('.card-footer').html();
+                
+                // Update the table and pagination
+                if (newTableBody) {
+                    $('.table tbody').html(newTableBody);
+                }
+                if (newPagination) {
+                    $('.card-footer').html(newPagination);
+                }
+                
+                // Update URL without reloading page
+                const url = new URL(window.location);
+                const params = new URLSearchParams(formData);
+                
+                // Clear existing params
+                url.search = '';
+                
+                // Add new params
+                params.forEach((value, key) => {
+                    if (value) {
+                        url.searchParams.set(key, value);
+                    }
+                });
+                
+                window.history.pushState({}, '', url);
+                
+                // Update filter badges
+                updateFilterBadges();
+            },
+            error: function(xhr) {
+                console.error('Filter error:', xhr);
+                toastr.error('Error filtering patients');
+            },
+            complete: function() {
+                hideFilterLoading();
+            }
+        });
+    }
+    
+    // Update filter badges dynamically
+    function updateFilterBadges() {
+        const search = $('[name="search"]').val();
+        const category = $('[name="category_filter"]').val();
+        const categoryText = $('[name="category_filter"] option:selected').text();
+        const status = $('[name="status_filter"]').val();
+        const statusText = $('[name="status_filter"] option:selected').text();
+        
+        const hasFilters = search || category || status;
+        
+        if (hasFilters) {
+            // Update Clear button
+            $('#clearFilters')
+                .removeClass('btn-outline-secondary')
+                .addClass('btn-outline-danger')
+                .html('<i class="fas fa-times"></i> Clear All')
+                .css('visibility', 'visible')
+                .attr('title', 'Clear all filters');
+            
+            // Build badges HTML
+            let badgesHtml = '<small class="text-muted"><i class="fas fa-filter me-1"></i> Active filters: ';
+            
+            if (search) {
+                const otherParams = $.param({ category_filter: category, status_filter: status });
+                badgesHtml += `<span class="badge bg-primary me-1">
+                    Search: "${search}"
+                    <a href="?${otherParams}" class="text-white ms-1" style="text-decoration: none;">×</a>
+                </span>`;
+            }
+            
+            if (category) {
+                const otherParams = $.param({ search: search, status_filter: status });
+                badgesHtml += `<span class="badge bg-primary me-1">
+                    Category: ${categoryText}
+                    <a href="?${otherParams}" class="text-white ms-1" style="text-decoration: none;">×</a>
+                </span>`;
+            }
+            
+            if (status) {
+                const otherParams = $.param({ search: search, category_filter: category });
+                badgesHtml += `<span class="badge bg-primary me-1">
+                    Status: ${statusText}
+                    <a href="?${otherParams}" class="text-white ms-1" style="text-decoration: none;">×</a>
+                </span>`;
+            }
+            
+            badgesHtml += '</small>';
+            
+            // Show or update badges
+            if ($('#filter-badges-container').length) {
+                $('#filter-badges-container').html(badgesHtml);
+            } else {
+                $('#patientFilterForm').parent().after(`<div class="col-md-12 mt-2" id="filter-badges-container">${badgesHtml}</div>`);
+            }
+        } else {
+            // No filters active
+            $('#clearFilters')
+                .removeClass('btn-outline-danger')
+                .addClass('btn-outline-secondary')
+                .html('<i class="fas fa-times"></i> Clear')
+                .css('visibility', 'hidden');
+            $('#filter-badges-container').remove();
+        }
+        
+        // Update select borders
+        $('[name="category_filter"]').toggleClass('border-primary', !!category);
+        $('[name="status_filter"]').toggleClass('border-primary', !!status);
+        
+        // Update search clear button
+        if (search) {
+            if (!$('.search-clear-btn').length) {
+                $('[name="search"]').after('<span class="input-group-text bg-light text-muted search-clear-btn" style="cursor: pointer;"><i class="fas fa-times"></i></span>');
+                $('.search-clear-btn').on('click', function() {
+                    $('[name="search"]').val('');
+                    performSearch();
+                });
+            }
+        } else {
+            $('.search-clear-btn').remove();
+        }
+    }
+    
+    // Handle search input with debounce (live search as you type)
     $('#patientFilterForm input[name="search"]').on('input', function() {
         clearTimeout(searchTimeout);
-        const form = $('#patientFilterForm');
         searchTimeout = setTimeout(function() {
-            showFilterLoading();
-            form.submit();
-        }, 500); // Wait 500ms after user stops typing
+            performSearch();
+        }, 300); // Faster debounce for more responsive feel (300ms)
     });
     
     // Handle select changes immediately
     $('#patientFilterForm select.auto-filter').on('change', function() {
-        showFilterLoading();
-        $('#patientFilterForm').submit();
+        performSearch();
     });
     
     // Clear all filters
-    $('#clearFilters').on('click', function() {
+    $(document).on('click', '#clearFilters', function() {
         $('#patientFilterForm input[name="search"]').val('');
         $('#patientFilterForm select.auto-filter').val('');
-        showFilterLoading();
-        $('#patientFilterForm').submit();
+        performSearch();
     });
+    
+    // Handle pagination clicks
+    $(document).on('click', '.pagination a', function(e) {
+        e.preventDefault();
+        const url = $(this).attr('href');
+        if (url) {
+            showFilterLoading();
+            $.get(url, function(response) {
+                const tempDiv = $('<div>').html(response);
+                const newTableBody = tempDiv.find('.table tbody').html();
+                const newPagination = tempDiv.find('.card-footer').html();
+                
+                if (newTableBody) {
+                    $('.table tbody').html(newTableBody);
+                }
+                if (newPagination) {
+                    $('.card-footer').html(newPagination);
+                }
+                
+                window.history.pushState({}, '', url);
+                
+                // Scroll to top of table
+                $('html, body').animate({
+                    scrollTop: $('.card').offset().top - 100
+                }, 300);
+            }).fail(function() {
+                toastr.error('Error loading page');
+            }).always(function() {
+                hideFilterLoading();
+            });
+        }
+    });
+    
+    // Initialize badges on page load
+    updateFilterBadges();
 });
 
 // Lab investigation UI and handlers removed from this view.
@@ -269,6 +431,13 @@ if (typeof toastr !== 'undefined') {
 /* Filter badge styles */
 .badge a:hover {
     text-decoration: underline !important;
+}
+/* Search clear button animation */
+.search-clear-btn {
+    transition: background-color 0.2s ease;
+}
+.search-clear-btn:hover {
+    background-color: #e9ecef !important;
 }
 </style>
 @endsection
