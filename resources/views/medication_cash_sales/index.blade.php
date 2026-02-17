@@ -145,7 +145,7 @@
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-bordered">
+                        <table id="cashSalesTable" class="table table-bordered">
                             <thead>
                                 <tr>
                                     <th>Sale Number</th>
@@ -156,173 +156,11 @@
                                     <th>Status</th>
                                     <th>Created By</th>
                                     <th>Created At</th>
-                                    <th>Actions</th>
+                                    <th style="width: 200px;">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                @forelse($cashSales as $sale)
-                                <tr>
-                                    <td>
-                                        <strong>{{ $sale->sale_number }}</strong>
-                                        @if($sale->status === 'cancelled')
-                                            <br><small class="text-danger">
-                                                <i class="fas fa-ban"></i> Cancelled
-                                            </small>
-                                        @elseif(isset($stockInfo[$sale->id]) && $stockInfo[$sale->id]['has_issues'])
-                                            <br><small class="text-danger">
-                                                <i class="fas fa-exclamation-triangle"></i> Stock insufficient
-                                            </small>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        <span class="badge badge-info">
-                                            {{ $sale->sale_type == 'otc' ? 'OTC' : 'External Rx' }}
-                                        </span>
-                                    </td>
-                                    <td>{{ $sale->patientCategory->description }}</td>
-                                    <td>{{ $sale->items->count() }} item(s)</td>
-                                    <td>TSh {{ number_format($sale->final_amount, 2) }}</td>
-                                    <td>
-                                        <span class="badge badge-{{ $sale->status_color }}">
-                                            {{ $sale->status_label }}
-                                        </span>
-                                    </td>
-                                    <td>{{ $sale->creator->name }}</td>
-                                    <td>{{ $sale->created_at->format('M d, Y H:i') }}</td>
-                                    <td>
-                                        <a href="{{ route('medication-cash-sales.show', $sale) }}" class="btn btn-sm btn-primary">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                        
-                                        {{-- Only pharmacists and administrators can see dispense button --}}
-                                        @if($sale->canBeDispensed() && (Auth::user()->isPharmacist() || (!Auth::user()->isCashier() && !Auth::user()->isReceptionist())))
-                                            @php
-                                                $hasStockIssues = isset($stockInfo[$sale->id]) && $stockInfo[$sale->id]['has_issues'];
-                                            @endphp
-                                            @if($hasStockIssues)
-                                                <button type="button" class="btn btn-sm btn-secondary" disabled title="Insufficient stock for some medications">
-                                                    <i class="fas fa-pills"></i> Dispense
-                                                </button>
-                                            @else
-                                                <form method="POST" action="{{ route('medication-cash-sales.dispense', $sale) }}" style="display:inline;">
-                                                    @csrf
-                                                    <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Dispense this sale?')">
-                                                        <i class="fas fa-pills"></i> Dispense
-                                                    </button>
-                                                </form>
-                                            @endif
-                                        @endif
-
-                                        {{-- Receptionists and cashiers can process payments --}}
-                                        @if($sale->canBePaid() && (Auth::user()->isReceptionist() || Auth::user()->isCashier() || Auth::user()->isAdmin()))
-                                        <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#paymentModal{{ $sale->id }}">
-                                            <i class="fas fa-money-bill"></i> Pay
-                                        </button>
-                                        @endif
-
-                                        {{-- Cancel button logic --}}
-                                        @if(!$sale->is_paid && !$sale->dispensed_at)
-                                            {{-- For unpaid sales - simple cancel (will delete) --}}
-                                            <form method="POST" action="{{ route('medication-cash-sales.cancel', $sale) }}" style="display:inline;">
-                                                @csrf
-                                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this sale?')">
-                                                    <i class="fas fa-times"></i>
-                                                </button>
-                                            </form>
-                                        @elseif($sale->is_paid && Auth::user()->isAdmin())
-                                            {{-- For paid sales - only admins can cancel with reason --}}
-                                            <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#cancelModal{{ $sale->id }}">
-                                                <i class="fas fa-times"></i>
-                                            </button>
-                                        @endif
-                                    </td>
-                                </tr>
-
-                                <!-- Payment Modal -->
-                                @if($sale->canBePaid())
-                                <div class="modal fade" id="paymentModal{{ $sale->id }}" tabindex="-1">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <form method="POST" action="{{ route('medication-cash-sales.process-payment', $sale) }}">
-                                                @csrf
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title">Process Payment - {{ $sale->sale_number }}</h5>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <div class="form-group">
-                                                        <label>Amount Due</label>
-                                                        <input type="text" class="form-control" value="TSh {{ number_format($sale->final_amount, 2) }}" readonly>
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label>Payment Method *</label>
-                                                        <select name="payment_method" class="form-control" required>
-                                                            <option value="">Select Method</option>
-                                                            <option value="cash">Cash</option>
-                                                            <option value="card">Card</option>
-                                                            <option value="mobile_money">Mobile Money</option>
-                                                        </select>
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label>Amount Paid *</label>
-                                                        <input type="number" name="amount_paid" class="form-control" step="0.01" min="{{ $sale->final_amount }}" value="{{ $sale->final_amount }}" required>
-                                                    </div>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                                    <button type="submit" class="btn btn-success">Process Payment</button>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                                @endif
-
-                                <!-- Cancellation Modal for Paid Sales -->
-                                @if($sale->is_paid && Auth::user()->isAdmin())
-                                <div class="modal fade" id="cancelModal{{ $sale->id }}" tabindex="-1">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <form method="POST" action="{{ route('medication-cash-sales.cancel', $sale) }}">
-                                                @csrf
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title">Cancel Paid Sale - {{ $sale->sale_number }}</h5>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <div class="alert alert-warning">
-                                                        <i class="fas fa-exclamation-triangle"></i>
-                                                        <strong>Warning:</strong> You are about to cancel a paid sale worth TSh {{ number_format($sale->final_amount, 2) }}.
-                                                        This action requires administrator approval and a detailed reason.
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label>Cancellation Reason *</label>
-                                                        <textarea name="cancel_reason" class="form-control" rows="4" placeholder="Provide a detailed reason for cancelling this paid sale (minimum 15 characters)..." required minlength="15"></textarea>
-                                                        <small class="form-text text-muted">This reason will be logged for audit purposes.</small>
-                                                    </div>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                                    <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to cancel this paid sale? This action will be logged.')">
-                                                        <i class="fas fa-times"></i> Cancel Sale
-                                                    </button>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                                @endif
-
-                                @empty
-                                <tr>
-                                    <td colspan="9" class="text-center">No cash sales found</td>
-                                </tr>
-                                @endforelse
-                            </tbody>
                         </table>
                     </div>
-
-                    {{ $cashSales->links() }}
                 </div>
             </div>
         </div>
@@ -333,6 +171,47 @@
 @section('scripts')
 <script>
 $(document).ready(function() {
+    var table = $('#cashSalesTable').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: '{{ route("medication-cash-sales.index") }}',
+            data: function(d) {
+                d.status = $('select[name="status"]').val();
+                d.sale_type = $('select[name="sale_type"]').val();
+                d.search_param = $('input[name="search"]').val();
+            }
+        },
+        columns: [
+            { data: 'sale_number_display', name: 'sale_number' },
+            { data: 'type_badge', name: 'sale_type', orderable: false, searchable: false },
+            { data: 'category', name: 'patientCategory.description' },
+            { data: 'items_count', name: 'items_count', orderable: false, searchable: false },
+            { data: 'amount', name: 'final_amount' },
+            { data: 'status_badge', name: 'status', orderable: false, searchable: false },
+            { data: 'creator_name', name: 'creator.name' },
+            { data: 'created_date', name: 'created_at' },
+            { data: 'actions', name: 'actions', orderable: false, searchable: false }
+        ],
+        order: [[7, 'desc']],
+        pageLength: 15
+    });
+
+    // Filter form submission
+    $('.card-body form').on('submit', function(e) {
+        e.preventDefault();
+        table.draw();
+    });
+
+    // Clear button
+    $('.card-body form .btn-outline-secondary').on('click', function(e) {
+        e.preventDefault();
+        $('select[name="status"]').val('');
+        $('select[name="sale_type"]').val('');
+        $('input[name="search"]').val('');
+        table.draw();
+    });
+
     // Auto-hide alerts after 5 seconds
     setTimeout(function() {
         $('.alert').fadeOut();
