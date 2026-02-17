@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Yajra\DataTables\Facades\DataTables;
 
 class LabController extends Controller
 {
@@ -23,72 +24,6 @@ class LabController extends Controller
      */
     public function index(Request $request)
     {
-        $query = PatientVisit::with([
-            'patientInfo', 
-            'doctorInfo.user', 
-            'consultation.investigations.medicalService.serviceCategory'
-        ])
-            ->whereHas('consultation.investigations', function($q) {
-                $q->whereIn('status', [
-                    Investigation::STATUS_ORDERED,
-                    Investigation::STATUS_COLLECTED, 
-                    Investigation::STATUS_PROCESSING
-                ])
-                ->whereHas('medicalService.serviceCategory', function($sc) {
-                    $sc->where(function($cat) {
-                        $cat->where('name', 'LIKE', '%lab%')
-                            ->orWhere('name', 'LIKE', '%investigation%')
-                            ->orWhere('name', 'LIKE', '%pathology%')
-                            ->orWhere('name', 'LIKE', '%hematology%')
-                            ->orWhere('name', 'LIKE', '%biochemistry%')
-                            ->orWhere('name', 'LIKE', '%microbiology%');
-                    });
-                });
-            });
-
-        // Apply filters
-        if ($request->filled('patient_search')) {
-            $search = $request->patient_search;
-            $query->whereHas('patientInfo', function($q) use ($search) {
-                $q->where('first_name', 'like', "%{$search}%")
-                  ->orWhere('last_name', 'like', "%{$search}%")
-                  ->orWhere('nida', 'like', "%{$search}%");
-                  
-                // Check if search looks like an MR number format and extract ID
-                if (preg_match('/MR-\d{4}-(\d+)/', $search, $matches)) {
-                    $q->orWhere('id', intval($matches[1]));
-                } elseif (is_numeric($search)) {
-                    // Also check for raw numeric ID
-                    $q->orWhere('id', $search);
-                }
-            });
-        }
-
-        if ($request->filled('doctor_id')) {
-            $query->where('doctor', $request->doctor_id);
-        }
-
-        if ($request->filled('date_from')) {
-            $query->whereDate('visit_date', '>=', $request->date_from);
-        }
-
-        if ($request->filled('date_to')) {
-            $query->whereDate('visit_date', '<=', $request->date_to);
-        }
-
-        if ($request->filled('priority')) {
-            $query->whereHas('consultation.investigations', function($q) use ($request) {
-                $q->where('priority', $request->priority);
-            });
-        }
-
-        // Only show visits from the last 7 days by default
-        if (!$request->filled('date_from') && !$request->filled('date_to')) {
-            $query->where('visit_date', '>=', now()->subDays(7));
-        }
-
-        $visits = $query->orderBy('visit_date', 'desc')->paginate(20);
-
         // Get filter data
         $doctors = Doctor::active()->get();
         $serviceCategories = ServiceCategory::active()
@@ -101,7 +36,164 @@ class LabController extends Controller
                   ->orWhere('name', 'LIKE', '%microbiology%');
             })->get();
 
-        return view('lab.visits.index', compact('visits', 'doctors', 'serviceCategories'));
+        if ($request->ajax()) {
+            $query = PatientVisit::with([
+                'patientInfo', 
+                'doctorInfo.user', 
+                'consultation.investigations.medicalService.serviceCategory'
+            ])
+                ->whereHas('consultation.investigations', function($q) {
+                    $q->whereIn('status', [
+                        Investigation::STATUS_ORDERED,
+                        Investigation::STATUS_COLLECTED, 
+                        Investigation::STATUS_PROCESSING
+                    ])
+                    ->whereHas('medicalService.serviceCategory', function($sc) {
+                        $sc->where(function($cat) {
+                            $cat->where('name', 'LIKE', '%lab%')
+                                ->orWhere('name', 'LIKE', '%investigation%')
+                                ->orWhere('name', 'LIKE', '%pathology%')
+                                ->orWhere('name', 'LIKE', '%hematology%')
+                                ->orWhere('name', 'LIKE', '%biochemistry%')
+                                ->orWhere('name', 'LIKE', '%microbiology%');
+                        });
+                    });
+                });
+
+            // Apply filters
+            if ($request->filled('patient_search')) {
+                $search = $request->patient_search;
+                $query->whereHas('patientInfo', function($q) use ($search) {
+                    $q->where('first_name', 'like', "%{$search}%")
+                      ->orWhere('last_name', 'like', "%{$search}%")
+                      ->orWhere('mr_number', 'like', "%{$search}%");
+                });
+            }
+
+            if ($request->filled('doctor_id')) {
+                $query->where('doctor', $request->doctor_id);
+            }
+
+            if ($request->filled('date_from')) {
+                $query->whereDate('visit_date', '>=', $request->date_from);
+            }
+
+            if ($request->filled('date_to')) {
+                $query->whereDate('visit_date', '<=', $request->date_to);
+            }
+
+            if ($request->filled('priority')) {
+                $query->whereHas('consultation.investigations', function($q) use ($request) {
+                    $q->where('priority', $request->priority);
+                });
+            }
+
+            // Only show visits from the last 7 days by default
+            if (!$request->filled('date_from') && !$request->filled('date_to')) {
+                $query->where('visit_date', '>=', now()->subDays(7));
+            }
+
+            $query->orderBy('visit_date', 'desc');
+
+            return DataTables::of($query)
+                ->addColumn('patient_info', function ($visit) {
+                    $html = '<div><strong>' . e($visit->patientInfo->first_name) . ' ' . e($visit->patientInfo->last_name) . '</strong>';
+                    if ($visit->patientInfo->middle_name) {
+                        $html .= ' ' . e($visit->patientInfo->middle_name);
+                    }
+                    $html .= '<br><small class="text-muted">MR #: ' . e($visit->patientInfo->mr_number ?? 'N/A') . ' | ';
+                    $html .= 'Age: ' . e($visit->patientInfo->age ?? 'N/A') . ' | ';
+                    $html .= 'Gender: ' . ucfirst(e($visit->patientInfo->gender ?? 'N/A')) . '</small></div>';
+                    return $html;
+                })
+                ->addColumn('visit_date_formatted', function ($visit) {
+                    return '<div>' . ($visit->visit_date ? $visit->visit_date->format('M d, Y') : 'N/A') . 
+                           '<br><small class="text-muted">' . ($visit->visit_date ? $visit->visit_date->format('H:i A') : '') . '</small></div>';
+                })
+                ->addColumn('doctor_name', function ($visit) {
+                    if (optional($visit->doctorInfo)->user) {
+                        return 'Dr. ' . e(optional($visit->doctorInfo->user)->first_name) . ' ' . e(optional($visit->doctorInfo->user)->last_name);
+                    }
+                    return '<span class="text-muted">Not assigned</span>';
+                })
+                ->addColumn('investigations_info', function ($visit) {
+                    $labInvestigations = collect();
+                    if ($visit->consultation && $visit->consultation->investigations) {
+                        $labInvestigations = $visit->consultation->investigations->filter(function($investigation) {
+                            return $investigation->medicalService && 
+                                   $investigation->medicalService->serviceCategory &&
+                                   (
+                                       str_contains(strtolower($investigation->medicalService->serviceCategory->name), 'lab') ||
+                                       str_contains(strtolower($investigation->medicalService->serviceCategory->name), 'investigation') ||
+                                       str_contains(strtolower($investigation->medicalService->serviceCategory->name), 'pathology') ||
+                                       str_contains(strtolower($investigation->medicalService->serviceCategory->name), 'hematology') ||
+                                       str_contains(strtolower($investigation->medicalService->serviceCategory->name), 'biochemistry') ||
+                                       str_contains(strtolower($investigation->medicalService->serviceCategory->name), 'microbiology')
+                                   ) &&
+                                   in_array($investigation->status, ['ordered', 'collected', 'processing']);
+                        });
+                    }
+                    
+                    $urgentCount = $labInvestigations->whereIn('priority', ['urgent', 'stat'])->count();
+                    $totalCount = $labInvestigations->count();
+                    
+                    $html = '<div><span class="badge bg-primary">' . $totalCount . ' investigations</span>';
+                    if ($urgentCount > 0) {
+                        $html .= '<br><span class="badge bg-danger mt-1">' . $urgentCount . ' urgent</span>';
+                    }
+                    $html .= '</div>';
+                    return $html;
+                })
+                ->addColumn('priority_status', function ($visit) {
+                    $labInvestigations = collect();
+                    if ($visit->consultation && $visit->consultation->investigations) {
+                        $labInvestigations = $visit->consultation->investigations->filter(function($investigation) {
+                            return $investigation->medicalService && 
+                                   $investigation->medicalService->serviceCategory &&
+                                   (
+                                       str_contains(strtolower($investigation->medicalService->serviceCategory->name), 'lab') ||
+                                       str_contains(strtolower($investigation->medicalService->serviceCategory->name), 'investigation')
+                                   ) &&
+                                   in_array($investigation->status, ['ordered', 'collected', 'processing']);
+                        });
+                    }
+                    
+                    $statuses = $labInvestigations->pluck('status')->unique();
+                    $html = '';
+                    foreach ($statuses as $status) {
+                        $statusClass = match($status) {
+                            'ordered' => 'warning',
+                            'collected' => 'info',
+                            'processing' => 'primary',
+                            'resulted' => 'success',
+                            'cancelled' => 'secondary',
+                            default => 'secondary'
+                        };
+                        $count = $labInvestigations->where('status', $status)->count();
+                        $html .= '<span class="badge bg-' . $statusClass . ' me-1">' . $count . ' ' . ucfirst($status) . '</span> ';
+                    }
+                    return $html;
+                })
+                ->addColumn('visit_status', function ($visit) {
+                    return '<span class="badge ' . $visit->visit_status_badge_class . '">' . e($visit->visit_status_label) . '</span>';
+                })
+                ->addColumn('actions', function ($visit) {
+                    return '<div class="btn-group" role="group">
+                                <a href="' . route('lab.visits.investigations', $visit->id) . '" 
+                                   class="btn btn-sm btn-primary" title="View Lab Investigations">
+                                    <i class="fas fa-flask"></i> Lab Work
+                                </a>
+                                <a href="' . route('patient_visits.show', $visit->id) . '" 
+                                   class="btn btn-sm btn-outline-info" title="View Full Visit Details">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            </div>';
+                })
+                ->rawColumns(['patient_info', 'visit_date_formatted', 'doctor_name', 'investigations_info', 'priority_status', 'visit_status', 'actions'])
+                ->make(true);
+        }
+
+        return view('lab.visits.index', compact('doctors', 'serviceCategories'));
     }
 
     /**

@@ -92,7 +92,7 @@
 
                     <!-- Patient Visits Table -->
                     <div class="table-responsive">
-                        <table class="table table-hover">
+                        <table id="labVisitsTable" class="table table-hover">
                             <thead class="table-light">
                                 <tr>
                                     <th>Patient</th>
@@ -104,131 +104,8 @@
                                     <th>Actions</th>
                                 </tr>
                             </thead>
-                                @forelse($visits as $visit)
-                                @php
-                                    // Get lab investigations through consultation relationship
-                                    $labInvestigations = collect();
-                                    if ($visit->consultation && $visit->consultation->investigations) {
-                                        $labInvestigations = $visit->consultation->investigations->filter(function($investigation) {
-                                            return $investigation->medicalService && 
-                                                   $investigation->medicalService->serviceCategory &&
-                                                   (
-                                                       str_contains(strtolower($investigation->medicalService->serviceCategory->name), 'lab') ||
-                                                       str_contains(strtolower($investigation->medicalService->serviceCategory->name), 'investigation') ||
-                                                       str_contains(strtolower($investigation->medicalService->serviceCategory->name), 'pathology') ||
-                                                       str_contains(strtolower($investigation->medicalService->serviceCategory->name), 'hematology') ||
-                                                       str_contains(strtolower($investigation->medicalService->serviceCategory->name), 'biochemistry') ||
-                                                       str_contains(strtolower($investigation->medicalService->serviceCategory->name), 'microbiology')
-                                                   ) &&
-                                                   in_array($investigation->status, ['ordered', 'collected', 'processing']);
-                                        });
-                                    }
-                                    
-                                    $urgentCount = $labInvestigations->whereIn('priority', ['urgent', 'stat'])->count();
-                                    $totalCount = $labInvestigations->count();
-                                @endphp
-                                <tr>
-                                    <td>
-                                        <div>
-                                            <strong>{{ $visit->patientInfo->first_name }} {{ $visit->patientInfo->last_name }}</strong>
-                                            @if($visit->patientInfo->middle_name)
-                                                {{ $visit->patientInfo->middle_name }}
-                                            @endif
-                                            <br>
-                                            <small class="text-muted">
-                                                MR #: {{ $visit->patientInfo->mr_number ?? 'N/A' }} |
-                                                Age: {{ $visit->patientInfo->age ?? 'N/A' }} |
-                                                Gender: {{ ucfirst($visit->patientInfo->gender ?? 'N/A') }}
-                                            </small>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div>
-                                            {{ $visit->visit_date ? $visit->visit_date->format('M d, Y') : 'N/A' }}
-                                            <br>
-                                            <small class="text-muted">{{ $visit->visit_date ? $visit->visit_date->format('H:i A') : '' }}</small>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        @if(optional($visit->doctorInfo)->user)
-                                            Dr. {{ optional($visit->doctorInfo->user)->first_name }} {{ optional($visit->doctorInfo->user)->last_name }}
-                                        @else
-                                            <span class="text-muted">Not assigned</span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        <div>
-                                            <span class="badge bg-primary">{{ $totalCount }} investigations</span>
-                                            @if($urgentCount > 0)
-                                                <br><span class="badge bg-danger mt-1">{{ $urgentCount }} urgent</span>
-                                            @endif
-                                        </div>
-                                    </td>
-                                    <td>
-                                        @php
-                                            $statuses = $labInvestigations->pluck('status')->unique();
-                                        @endphp
-                                        @foreach($statuses as $status)
-                                            @php
-                                                $statusClass = match($status) {
-                                                    'ordered' => 'warning',
-                                                    'collected' => 'info',
-                                                    'processing' => 'primary',
-                                                    'resulted' => 'success',
-                                                    'cancelled' => 'secondary',
-                                                    default => 'secondary'
-                                                };
-                                                $count = $labInvestigations->where('status', $status)->count();
-                                            @endphp
-                                            <span class="badge bg-{{ $statusClass }} me-1">
-                                                {{ $count }} {{ ucfirst($status) }}
-                                            </span>
-                                        @endforeach
-                                    </td>
-                                    <td>
-                                        <span class="badge {{ $visit->visit_status_badge_class }}">
-                                            {{ $visit->visit_status_label }}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <div class="btn-group" role="group">
-                                            <a href="{{ route('lab.visits.investigations', $visit->id) }}" 
-                                               class="btn btn-sm btn-primary" title="View Lab Investigations">
-                                                <i class="fas fa-flask"></i> Lab Work
-                                            </a>
-                                            <a href="{{ route('patient_visits.show', $visit->id) }}" 
-                                               class="btn btn-sm btn-outline-info" title="View Full Visit Details">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                                @empty
-                                <tr>
-                                    <td colspan="7" class="text-center py-5">
-                                        <i class="fas fa-vial text-muted fa-3x mb-3"></i>
-                                        <h5 class="text-muted">No patient visits with pending lab investigations</h5>
-                                        <p class="text-muted mb-3">
-                                            @if(request()->hasAny(['patient_search', 'doctor_id', 'priority', 'date_from', 'date_to']))
-                                                Try adjusting your filters or 
-                                                <a href="{{ route('lab.visits.index') }}" class="text-decoration-none">clear all filters</a>
-                                            @else
-                                                Lab investigations will appear here when patients have pending tests.
-                                            @endif
-                                        </p>
-                                    </td>
-                                </tr>
-                                @endforelse
-                            </tbody>
                         </table>
                     </div>
-
-                    <!-- Pagination -->
-                    @if($visits->hasPages())
-                        <div class="d-flex justify-content-center mt-4">
-                            {{ $visits->appends(request()->query())->links() }}
-                        </div>
-                    @endif
                 </div>
             </div>
         </div>
@@ -259,13 +136,45 @@
 
 @push('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Load initial statistics
-    loadLabStatistics();
-    
-    // Refresh stats every 5 minutes
-    setInterval(loadLabStatistics, 300000);
+$(document).ready(function() {
+    var table = $('#labVisitsTable').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: '{{ route("lab.visits.index") }}',
+            data: function(d) {
+                d.patient_search = $('input[name="patient_search"]').val();
+                d.doctor_id = $('select[name="doctor_id"]').val();
+                d.priority = $('select[name="priority"]').val();
+                d.date_from = $('input[name="date_from"]').val();
+                d.date_to = $('input[name="date_to"]').val();
+            }
+        },
+        columns: [
+            { data: 'patient_info', name: 'patientInfo.first_name' },
+            { data: 'visit_date_formatted', name: 'visit_date' },
+            { data: 'doctor_name', name: 'doctorInfo.user.first_name', orderable: false },
+            { data: 'investigations_info', name: 'investigations_info', orderable: false, searchable: false },
+            { data: 'priority_status', name: 'priority_status', orderable: false, searchable: false },
+            { data: 'visit_status', name: 'visit_status', orderable: false, searchable: false },
+            { data: 'actions', name: 'actions', orderable: false, searchable: false }
+        ],
+        order: [[1, 'desc']],
+        pageLength: 20
+    });
+
+    // Filter form submission
+    $('.card-body form').on('submit', function(e) {
+        e.preventDefault();
+        table.draw();
+    });
 });
+
+// Load initial statistics
+loadLabStatistics();
+
+// Refresh stats every 5 minutes
+setInterval(loadLabStatistics, 300000);
 
 function loadLabStatistics() {
     fetch('{{ route("lab.statistics") }}')
