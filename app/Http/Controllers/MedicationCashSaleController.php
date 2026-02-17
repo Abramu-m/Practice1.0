@@ -63,8 +63,10 @@ class MedicationCashSaleController extends Controller
                 $query->where('sale_type', $request->sale_type);
             }
 
-            // Search by sale number
-            if ($request->has('search') && !empty($request->search['value'])) {
+            // Search by sale number - handle both DataTables global search and custom filter
+            if ($request->filled('search_param')) {
+                $query->where('sale_number', 'like', '%' . $request->search_param . '%');
+            } elseif ($request->has('search') && !empty($request->search['value'])) {
                 $search = $request->search['value'];
                 $query->where('sale_number', 'like', '%' . $search . '%');
             }
