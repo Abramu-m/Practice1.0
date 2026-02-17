@@ -8,6 +8,7 @@ use App\Models\MedicationUnit;
 use App\Models\StoreCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Yajra\DataTables\Facades\DataTables;
 
 class MedicationController extends Controller
 {
@@ -16,55 +17,92 @@ class MedicationController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Medication::with(['storeCategory', 'formulation', 'dispensingUnit']);
+        if ($request->ajax()) {
+            $query = Medication::with(['storeCategory', 'formulation', 'dispensingUnit']);
 
-        // Search filter
-        if ($request->has('search') && $request->search) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('generic_name', 'like', "%{$search}%")
-                  ->orWhere('brand_name', 'like', "%{$search}%");
-            });
-        }
-
-        // Category filter
-        if ($request->has('category_id') && $request->category_id) {
-            $query->where('category_id', $request->category_id);
-        }
-
-        // Status filter
-        if ($request->has('status') && $request->status !== '') {
-            $query->where('is_active', $request->status);
-        }
-
-        // Stock status filter
-        if ($request->has('stock_status') && $request->stock_status) {
-            switch ($request->stock_status) {
-                case 'low_stock':
-                    $query->whereRaw('stock_quantity <= reorder_level');
-                    break;
-                case 'out_of_stock':
-                    $query->where('stock_quantity', 0);
-                    break;
-                case 'expired':
-                    // Use ledger entries to check for expired batches
-                    $query->whereHas('ledgerEntries', function ($q) {
-                        $q->where('expiry_date', '<', now());
-                    });
-                    break;
-                case 'expiring_soon':
-                    // Use ledger entries to check for expiring batches
-                    $query->whereHas('ledgerEntries', function ($q) {
-                        $q->whereBetween('expiry_date', [now(), now()->addDays(30)]);
-                    });
-                    break;
+            // Category filter
+            if ($request->has('category_id') && $request->category_id) {
+                $query->where('category_id', $request->category_id);
             }
+
+            // Status filter
+            if ($request->has('status') && $request->status !== '') {
+                $query->where('is_active', $request->status);
+            }
+
+            // Stock status filter
+            if ($request->has('stock_status') && $request->stock_status) {
+                switch ($request->stock_status) {
+                    case 'low_stock':
+                        $query->whereRaw('stock_quantity <= reorder_level');
+                        break;
+                    case 'out_of_stock':
+                        $query->where('stock_quantity', 0);
+                        break;
+                    case 'expired':
+                        // Use ledger entries to check for expired batches
+                        $query->whereHas('ledgerEntries', function ($q) {
+                            $q->where('expiry_date', '<', now());
+                        });
+                        break;
+                    case 'expiring_soon':
+                        // Use ledger entries to check for expiring batches
+                        $query->whereHas('ledgerEntries', function ($q) {
+                            $q->whereBetween('expiry_date', [now(), now()->addDays(30)]);
+                        });
+                        break;
+                }
+            }
+
+            return DataTables::of($query)
+                ->addColumn('generic_display', function ($medication) {
+                    $html = '<strong>' . e($medication->generic_name) . '</strong>';
+                    if ($medication->formulation) {
+                        $html .= '<br><small class="text-muted">' . e($medication->formulation->description) . '</small>';
+                    }
+                    return $html;
+                })
+                ->addColumn('dispensing_unit_display', function ($medication) {
+                    if ($medication->dispensingUnit) {
+                        return '<span class="badge badge-secondary">' . e($medication->dispensingUnit->unit_code) . '</span>' .
+                               '<small class="text-muted d-block">' . e($medication->dispensingUnit->unit_name) . '</small>';
+                    }
+                    return '<span class="text-muted">-</span>';
+                })
+                ->addColumn('category_display', function ($medication) {
+                    if ($medication->storeCategory) {
+                        return e($medication->storeCategory->description ?? $medication->storeCategory->description);
+                    }
+                    return '<span class="text-muted">No Category</span>';
+                })
+                ->addColumn('stock_display', function ($medication) {
+                    return number_format($medication->stock_quantity) . '<br><small class="text-muted">' . e($medication->stock_status) . '</small>';
+                })
+                ->addColumn('status', function ($medication) {
+                    if ($medication->is_active) {
+                        return '<span class="badge badge-success text-black">Active</span>';
+                    }
+                    return '<span class="badge badge-danger text-black">Inactive</span>';
+                })
+                ->addColumn('actions', function ($medication) {
+                    return view('medications._actions', compact('medication'))->render();
+                })
+                ->filter(function ($query) use ($request) {
+                    if ($request->has('search') && $request->search['value']) {
+                        $search = $request->search['value'];
+                        $query->where(function ($q) use ($search) {
+                            $q->where('generic_name', 'like', "%{$search}%")
+                              ->orWhere('brand_name', 'like', "%{$search}%");
+                        });
+                    }
+                })
+                ->rawColumns(['generic_display', 'dispensing_unit_display', 'category_display', 'stock_display', 'status', 'actions'])
+                ->make(true);
         }
 
-        $medications = $query->orderBy('generic_name')->paginate(25);
         $categories = StoreCategory::orderBy('description')->get();
 
-        return view('medications.index', compact('medications', 'categories'));
+        return view('medications.index', compact('categories'));
     }
 
     /**
