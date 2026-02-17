@@ -168,13 +168,13 @@ $(document).ready(function() {
         e.preventDefault();
         table.draw();
     });
+
+    // Load initial statistics
+    loadLabStatistics();
+    
+    // Refresh stats every 5 minutes
+    setInterval(loadLabStatistics, 300000);
 });
-
-// Load initial statistics
-loadLabStatistics();
-
-// Refresh stats every 5 minutes
-setInterval(loadLabStatistics, 300000);
 
 function loadLabStatistics() {
     fetch('{{ route("lab.statistics") }}')

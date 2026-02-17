@@ -67,6 +67,14 @@ class LabController extends Controller
                     $q->where('first_name', 'like', "%{$search}%")
                       ->orWhere('last_name', 'like', "%{$search}%")
                       ->orWhere('mr_number', 'like', "%{$search}%");
+                    
+                    // Check if search looks like an MR number format and extract ID for more efficient lookup
+                    if (preg_match('/MR-\d{4}-(\d+)/', $search, $matches)) {
+                        $q->orWhere('id', intval($matches[1]));
+                    } elseif (is_numeric($search)) {
+                        // Also check for raw numeric ID
+                        $q->orWhere('id', $search);
+                    }
                 });
             }
 

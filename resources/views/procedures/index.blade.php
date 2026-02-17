@@ -368,7 +368,7 @@ $(document).ready(function() {
             { data: 'result_status', name: 'result_status', orderable: false, searchable: false },
             { data: 'actions', name: 'actions', orderable: false, searchable: false }
         ],
-        order: [[{{ $user->role === 'doctor' ? '5' : '6' }}, 'desc']],
+        order: [[{{ $user->role === 'doctor' ? '6' : '7' }}, 'desc']],
         pageLength: 20,
         responsive: true,
         createdRow: function(row, data, dataIndex) {
