@@ -675,5 +675,22 @@ setInterval(function() {
         location.reload();
     }
 }, 120000);
+
+// Initialize DataTable
+$('.table').DataTable({
+    responsive: true,
+    order: [[5, 'desc']], // Order by date ordered (descending)
+    pageLength: 25,
+    columnDefs: [
+        { orderable: false, targets: [-1] } // Disable sorting on actions column
+    ],
+    language: {
+        search: "Search investigations:",
+        lengthMenu: "Show _MENU_ investigations per page",
+        info: "Showing _START_ to _END_ of _TOTAL_ investigations",
+        infoEmpty: "No investigations found",
+        infoFiltered: "(filtered from _MAX_ total investigations)"
+    }
+});
 </script>
 @endsection

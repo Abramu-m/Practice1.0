@@ -194,6 +194,30 @@
 </div>
 @endsection
 
+@endsection
+
+@section('scripts')
+<script>
+$(document).ready(function() {
+    $('.table').DataTable({
+        responsive: true,
+        order: [[1, 'asc']],
+        pageLength: 10,
+        columnDefs: [
+            { orderable: false, targets: [-1] }
+        ],
+        language: {
+            search: "Search templates:",
+            lengthMenu: "Show _MENU_ templates per page",
+            info: "Showing _START_ to _END_ of _TOTAL_ templates",
+            infoEmpty: "No templates found",
+            infoFiltered: "(filtered from _MAX_ total templates)"
+        }
+    });
+});
+</script>
+@endsection
+
 @section('extra_footer_content')
 <script>
     // Auto-submit form on filter changes

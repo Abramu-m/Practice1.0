@@ -253,6 +253,30 @@
     </div>
 @endsection
 
+@endsection
+
+@section('scripts')
+<script>
+$(document).ready(function() {
+    $('.table').DataTable({
+        responsive: true,
+        order: [[1, 'asc']],
+        pageLength: 10,
+        columnDefs: [
+            { orderable: false, targets: [-1] }
+        ],
+        language: {
+            search: "Search services:",
+            lengthMenu: "Show _MENU_ services per page",
+            info: "Showing _START_ to _END_ of _TOTAL_ services",
+            infoEmpty: "No services found",
+            infoFiltered: "(filtered from _MAX_ total services)"
+        }
+    });
+});
+</script>
+@endsection
+
 @push('styles')
 <style>
     .table th {

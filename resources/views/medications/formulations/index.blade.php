@@ -117,4 +117,26 @@
     });
 </script>
 @endif
+
+@section('scripts')
+<script>
+$(document).ready(function() {
+    $('.table').DataTable({
+        responsive: true,
+        order: [[1, 'asc']],
+        pageLength: 10,
+        columnDefs: [
+            { orderable: false, targets: [-1] }
+        ],
+        language: {
+            search: "Search formulations:",
+            lengthMenu: "Show _MENU_ formulations per page",
+            info: "Showing _START_ to _END_ of _TOTAL_ formulations",
+            infoEmpty: "No formulations found",
+            infoFiltered: "(filtered from _MAX_ total formulations)"
+        }
+    });
+});
+</script>
+@endsection
 @endsection
