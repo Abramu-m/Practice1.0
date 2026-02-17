@@ -189,14 +189,7 @@ class Medication extends Model
     }
 
     /**
-     * Scope for items by category
-     */
-    public function scopeByCategory($query, $categoryId)
-    {
-        return $query->where('category_id', $categoryId);
-    }
 
-    /**
      * Scope for medications in stock
      */
     public function scopeInStock($query)

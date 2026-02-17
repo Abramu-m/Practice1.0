@@ -21,44 +21,6 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <!-- Store Navigation Tabs -->
-                    <div class="row mb-3">
-                        <div class="col-12">
-                            <div class="btn-group" role="group" aria-label="Store Items">
-                                <a href="{{ route('medications.index') }}" class="btn btn-outline-primary active">
-                                    <i class="fas fa-th-large"></i> All Items
-                                </a>
-                                @foreach($categories as $category)
-                                    @if($category->description == 'Medications')
-                                        <a href="{{ route('medications.by-category', $category->id) }}" class="btn btn-outline-primary">
-                                            <i class="fas fa-pills"></i> {{ $category->description }}
-                                        </a>
-                                    @elseif($category->description == 'Consumables')
-                                        <a href="{{ route('medications.by-category', $category->id) }}" class="btn btn-outline-primary">
-                                            <i class="fas fa-syringe"></i> {{ $category->description }}
-                                        </a>
-                                    @elseif($category->description == 'Equipment')
-                                        <a href="{{ route('medications.by-category', $category->id) }}" class="btn btn-outline-primary">
-                                            <i class="fas fa-stethoscope"></i> {{ $category->description }}
-                                        </a>
-                                    @elseif($category->description == 'Supplies')
-                                        <a href="{{ route('medications.by-category', $category->id) }}" class="btn btn-outline-primary">
-                                            <i class="fas fa-box"></i> {{ $category->description }}
-                                        </a>
-                                    @elseif($category->description == 'Other')
-                                        <a href="{{ route('medications.by-category', $category->id) }}" class="btn btn-outline-primary">
-                                            <i class="fas fa-question-circle"></i> {{ $category->description }}
-                                        </a>
-                                    @else
-                                        <a href="{{ route('medications.by-category', $category->id) }}" class="btn btn-outline-primary">
-                                            <i class="fas fa-tag"></i> {{ $category->description }}
-                                        </a>
-                                    @endif
-                                @endforeach
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- Filters -->
                     <div class="row mb-3">
                         <div class="col-md-3">
@@ -129,6 +91,11 @@ $(document).ready(function() {
                 d.category_id = $('#categoryFilter').val();
                 d.status = $('#statusFilter').val();
                 d.stock_status = $('#stockStatusFilter').val();
+            },
+            error: function(xhr, error, code) {
+                console.error('DataTables AJAX error:', error);
+                console.error('Status:', xhr.status);
+                console.error('Response:', xhr.responseText);
             }
         },
         columns: [

@@ -661,11 +661,7 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsVerified::class])->g
     // Include medication management routes (includes dashboard, stock, consumption, reconciliation, etc.)
     require __DIR__.'/medication.php';
     
-    // Specific medication routes (defined before resource routes to avoid conflicts)
-    Route::get('/medications/category/{categoryId}', [App\Http\Controllers\MedicationController::class, 'indexByCategory'])
-        ->name('medications.by-category');
-    
-    // Core medication resource routes (defined after specific routes to avoid conflicts)
+    // Core medication resource routes
     Route::resource('medications', App\Http\Controllers\MedicationController::class);
     Route::post('/medications/{medication}/toggle-status', [App\Http\Controllers\MedicationController::class, 'toggleStatus'])
         ->name('medications.toggle-status');

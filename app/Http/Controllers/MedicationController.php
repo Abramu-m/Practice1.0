@@ -18,7 +18,7 @@ class MedicationController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $query = Medication::with(['storeCategory', 'formulation', 'dispensingUnit']);
+            $query = Medication::query();
 
             // Category filter
             if ($request->has('category_id') && $request->category_id) {
@@ -26,12 +26,12 @@ class MedicationController extends Controller
             }
 
             // Status filter
-            if ($request->has('status') && $request->status !== '') {
+            if ($request->filled('status')) {
                 $query->where('is_active', $request->status);
             }
 
             // Stock status filter
-            if ($request->has('stock_status') && $request->stock_status) {
+            if ($request->filled('stock_status')) {
                 switch ($request->stock_status) {
                     case 'low_stock':
                         $query->whereRaw('stock_quantity <= reorder_level');
@@ -39,44 +39,57 @@ class MedicationController extends Controller
                     case 'out_of_stock':
                         $query->where('stock_quantity', 0);
                         break;
-                    case 'expired':
-                        // Use ledger entries to check for expired batches
-                        $query->whereHas('ledgerEntries', function ($q) {
-                            $q->where('expiry_date', '<', now());
-                        });
-                        break;
-                    case 'expiring_soon':
-                        // Use ledger entries to check for expiring batches
-                        $query->whereHas('ledgerEntries', function ($q) {
-                            $q->whereBetween('expiry_date', [now(), now()->addDays(30)]);
-                        });
-                        break;
                 }
             }
 
             return DataTables::of($query)
+                ->filter(function ($query) use ($request) {
+                    if ($request->has('search') && !empty($request->search['value'])) {
+                        $search = trim($request->search['value']);
+                        $query->where(function($q) use ($search) {
+                            $q->where('generic_name', 'like', '%' . $search . '%')
+                              ->orWhere('brand_name', 'like', '%' . $search . '%')
+                              ->orWhere('strength', 'like', '%' . $search . '%');
+                        });
+                    }
+                })
                 ->addColumn('generic_display', function ($medication) {
                     $html = '<strong>' . e($medication->generic_name) . '</strong>';
-                    if ($medication->formulation) {
-                        $html .= '<br><small class="text-muted">' . e($medication->formulation->description) . '</small>';
+                    if ($medication->formulation_id) {
+                        $formulation = \App\Models\MedicationFormulation::find($medication->formulation_id);
+                        if ($formulation) {
+                            $html .= '<br><small class="text-muted">' . e($formulation->description) . '</small>';
+                        }
                     }
                     return $html;
                 })
                 ->addColumn('dispensing_unit_display', function ($medication) {
-                    if ($medication->dispensingUnit) {
-                        return '<span class="badge badge-secondary">' . e($medication->dispensingUnit->unit_code) . '</span>' .
-                               '<small class="text-muted d-block">' . e($medication->dispensingUnit->unit_name) . '</small>';
+                    if ($medication->dispensing_unit_id) {
+                        $unit = \App\Models\MedicationUnit::find($medication->dispensing_unit_id);
+                        if ($unit) {
+                            return '<span class="badge badge-secondary">' . e($unit->unit_code) . '</span>' .
+                                   '<small class="text-muted d-block">' . e($unit->unit_name) . '</small>';
+                        }
                     }
                     return '<span class="text-muted">-</span>';
                 })
                 ->addColumn('category_display', function ($medication) {
-                    if ($medication->storeCategory) {
-                        return e($medication->storeCategory->description ?? $medication->storeCategory->description);
+                    if ($medication->category_id) {
+                        $category = \App\Models\StoreCategory::find($medication->category_id);
+                        if ($category) {
+                            return e($category->description);
+                        }
                     }
                     return '<span class="text-muted">No Category</span>';
                 })
                 ->addColumn('stock_display', function ($medication) {
-                    return number_format($medication->stock_quantity) . '<br><small class="text-muted">' . e($medication->stock_status) . '</small>';
+                    $status = 'In Stock';
+                    if ($medication->stock_quantity == 0) {
+                        $status = 'Out of Stock';
+                    } elseif ($medication->stock_quantity <= $medication->reorder_level) {
+                        $status = 'Low Stock';
+                    }
+                    return number_format($medication->stock_quantity) . '<br><small class="text-muted">' . $status . '</small>';
                 })
                 ->addColumn('status', function ($medication) {
                     if ($medication->is_active) {
@@ -86,15 +99,6 @@ class MedicationController extends Controller
                 })
                 ->addColumn('actions', function ($medication) {
                     return view('medications._actions', compact('medication'))->render();
-                })
-                ->filter(function ($query) use ($request) {
-                    if ($request->has('search') && $request->search['value']) {
-                        $search = $request->search['value'];
-                        $query->where(function ($q) use ($search) {
-                            $q->where('generic_name', 'like', "%{$search}%")
-                              ->orWhere('brand_name', 'like', "%{$search}%");
-                        });
-                    }
                 })
                 ->rawColumns(['generic_display', 'dispensing_unit_display', 'category_display', 'stock_display', 'status', 'actions'])
                 ->make(true);
@@ -316,74 +320,6 @@ class MedicationController extends Controller
             ->get();
 
         return view('medications.expiring_soon', compact('medications'));
-    }
-
-    /**
-     * Display items by category
-     */
-    public function indexByCategory(Request $request, $categoryId)
-    {
-        $category = StoreCategory::findOrFail($categoryId);
-        $categories = StoreCategory::orderBy('description')->get();
-        
-        $query = Medication::byCategory($categoryId)->with(['storeCategory']);
-
-        // Apply filters
-        if ($request->has('search') && $request->search) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('generic_name', 'like', "%{$search}%")
-                  ->orWhere('brand_name', 'like', "%{$search}%");
-            });
-        }
-
-        if ($request->has('status') && $request->status !== '') {
-            $query->where('is_active', (bool) $request->status);
-        }
-
-        if ($request->has('stock_status') && $request->stock_status) {
-            if ($request->stock_status === 'low_stock') {
-                $query->where('stock_quantity', '<=', DB::raw('reorder_level'));
-            } elseif ($request->stock_status === 'out_of_stock') {
-                $query->where('stock_quantity', 0);
-            }
-        }
-
-        $items = $query->orderBy('generic_name')->paginate(50);
-
-        return view('medications.index_by_category', compact('items', 'category', 'categories'));
-    }
-
-    /**
-     * API endpoint to get items by category
-     */
-    public function apiByCategory(Request $request, $categoryId)
-    {
-        $query = Medication::byCategory($categoryId)->active()->with(['storeCategory']);
-
-        if ($request->has('search') && $request->search) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('generic_name', 'like', "%{$search}%")
-                  ->orWhere('brand_name', 'like', "%{$search}%");
-            });
-        }
-
-        $items = $query->limit(50)->get();
-
-        return response()->json([
-            'success' => true,
-            'data' => $items->map(function ($item) {
-                return [
-                    'id' => $item->id,
-                    'name' => $item->generic_name ?: $item->brand_name,
-                    'category' => $item->storeCategory->description ?? 'N/A',
-                    'stock_quantity' => $item->stock_quantity,
-                    'stock_status' => $item->stock_status,
-                    'is_low_stock' => $item->is_low_stock,
-                ];
-            })
-        ]);
     }
 
     /**
