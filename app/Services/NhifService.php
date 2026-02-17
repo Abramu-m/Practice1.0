@@ -197,18 +197,32 @@ class NhifService
     {
         try {
             $url = $this->config['url']['verification'][$this->mode] . '?CardNo=' . urlencode($cardNumber);
+            
+            // Try Bearer token authentication for both test and production
+            Log::info('NHIF getCardDetails: Getting auth header', ['mode' => $this->mode, 'url' => $url]);
             $authHeader = $this->getAuthHeader();
-            $response = Http::timeout($this->config['timeout'])
-                ->withHeaders(['Authorization' => $authHeader])
-                ->get($url);
+            
+            if (!$authHeader) {
+                Log::warning('NHIF getCardDetails: No auth header available, falling back to Basic Auth');
+                $response = Http::timeout($this->config['timeout'])
+                    ->withBasicAuth($this->username, $this->password)
+                    ->get($url);
+            } else {
+                Log::info('NHIF getCardDetails: Using Bearer token', ['auth_type' => explode(' ', $authHeader)[0] ?? 'Unknown']);
+                $response = Http::timeout($this->config['timeout'])
+                    ->withHeaders(['Authorization' => $authHeader])
+                    ->get($url);
+            }
 
             if ($response->successful()) {
+                Log::info('NHIF getCardDetails: Success', ['status' => $response->status()]);
                 return [
                     'success' => true,
                     'data' => $response->json(),
                 ];
             }
 
+            Log::error('NHIF getCardDetails failed', ['status' => $response->status(), 'body' => $response->body()]);
             return [
                 'success' => false,
                 'message' => 'Failed to get card details',

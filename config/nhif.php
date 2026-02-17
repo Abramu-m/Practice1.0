@@ -14,7 +14,8 @@ return [
         'production' => 'https://verification.nhif.or.tz/nhifservice/breeze/',
         'token' => [
             'test' => 'http://196.13.105.15/nhifservice/Token',
-            'production' => 'https://verification.nhif.or.tz/claimsserver/Token',
+            'production' => 'https://verification.nhif.or.tz/nhifservice/Token',
+            'production_claimsserver' => 'https://verification.nhif.or.tz/claimsserver/Token',
         ],
         'verification' => [
             'test' => 'http://196.13.105.15/nhifservice/breeze/verification/GetCardDetails',
