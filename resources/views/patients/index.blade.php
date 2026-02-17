@@ -28,9 +28,17 @@
     </div>
     <div class="row mb-3">
         <div class="col-md-12">
-            <form method="GET" action="{{ route('patients.index') }}" class="d-flex">
-                <input type="text" name="search" class="form-control me-2" placeholder="Search patients..." value="{{ request('search') }}">
-                <select name="category_filter" class="form-select me-2">
+            <form method="GET" action="{{ route('patients.index') }}" id="patientFilterForm" class="d-flex">
+                <div class="input-group me-2">
+                    <span class="input-group-text bg-white"><i class="fas fa-search"></i></span>
+                    <input type="text" name="search" class="form-control auto-filter" placeholder="Search patients..." value="{{ request('search') }}">
+                    @if(request('search'))
+                        <span class="input-group-text bg-light text-muted" style="cursor: pointer;" onclick="$('[name=search]').val(''); $('#patientFilterForm').submit();">
+                            <i class="fas fa-times"></i>
+                        </span>
+                    @endif
+                </div>
+                <select name="category_filter" class="form-select me-2 auto-filter {{ request('category_filter') ? 'border-primary' : '' }}">
                     <option value="">All Categories</option>
                     @foreach($categories as $category)
                         <option value="{{ $category->id }}" {{ request('category_filter') == $category->id ? 'selected' : '' }}>
@@ -38,14 +46,47 @@
                         </option>
                     @endforeach
                 </select>
-                <select name="status_filter" class="form-select me-2">
+                <select name="status_filter" class="form-select me-2 auto-filter {{ request('status_filter') ? 'border-primary' : '' }}">
                     <option value="">All Status</option>
                     <option value="active" {{ request('status_filter') == 'active' ? 'selected' : '' }}>Active</option>
                     <option value="inactive" {{ request('status_filter') == 'inactive' ? 'selected' : '' }}>Inactive</option>
                 </select>
-                <button type="submit" class="btn btn-outline-secondary">Filter</button>
+                @if(request('search') || request('category_filter') || request('status_filter'))
+                    <button type="button" class="btn btn-outline-danger" id="clearFilters" style="white-space: nowrap;" title="Clear all filters">
+                        <i class="fas fa-times"></i> Clear All
+                    </button>
+                @else
+                    <button type="button" class="btn btn-outline-secondary" id="clearFilters" style="white-space: nowrap; visibility: hidden;">
+                        <i class="fas fa-times"></i> Clear
+                    </button>
+                @endif
             </form>
         </div>
+        @if(request('search') || request('category_filter') || request('status_filter'))
+        <div class="col-md-12 mt-2">
+            <small class="text-muted">
+                <i class="fas fa-filter me-1"></i> Active filters:
+                @if(request('search'))
+                    <span class="badge bg-primary me-1">
+                        Search: "{{ request('search') }}"
+                        <a href="{{ route('patients.index', array_filter(['category_filter' => request('category_filter'), 'status_filter' => request('status_filter')])) }}" class="text-white ms-1" style="text-decoration: none;">×</a>
+                    </span>
+                @endif
+                @if(request('category_filter'))
+                    <span class="badge bg-primary me-1">
+                        Category: {{ $categories->firstWhere('id', request('category_filter'))->description ?? 'Unknown' }}
+                        <a href="{{ route('patients.index', array_filter(['search' => request('search'), 'status_filter' => request('status_filter')])) }}" class="text-white ms-1" style="text-decoration: none;">×</a>
+                    </span>
+                @endif
+                @if(request('status_filter'))
+                    <span class="badge bg-primary me-1">
+                        Status: {{ ucfirst(request('status_filter')) }}
+                        <a href="{{ route('patients.index', array_filter(['search' => request('search'), 'category_filter' => request('category_filter')])) }}" class="text-white ms-1" style="text-decoration: none;">×</a>
+                    </span>
+                @endif
+            </small>
+        </div>
+        @endif
     </div>
 
     <div class="card">
@@ -168,6 +209,46 @@ $(document).ready(function() {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
+
+    // Auto-filter functionality
+    let searchTimeout;
+    let isFiltering = false;
+    
+    // Show loading indicator
+    function showFilterLoading() {
+        if (!isFiltering) {
+            isFiltering = true;
+            // Add a subtle opacity change to indicate filtering
+            $('.table-responsive').css('opacity', '0.6');
+            if (!$('#filter-loading-indicator').length) {
+                $('#patientFilterForm').after('<div id="filter-loading-indicator" class="text-center my-2"><small class="text-muted"><i class="fas fa-spinner fa-spin"></i> Filtering...</small></div>');
+            }
+        }
+    }
+    
+    // Handle search input with debounce
+    $('#patientFilterForm input[name="search"]').on('input', function() {
+        clearTimeout(searchTimeout);
+        const form = $('#patientFilterForm');
+        searchTimeout = setTimeout(function() {
+            showFilterLoading();
+            form.submit();
+        }, 500); // Wait 500ms after user stops typing
+    });
+    
+    // Handle select changes immediately
+    $('#patientFilterForm select.auto-filter').on('change', function() {
+        showFilterLoading();
+        $('#patientFilterForm').submit();
+    });
+    
+    // Clear all filters
+    $('#clearFilters').on('click', function() {
+        $('#patientFilterForm input[name="search"]').val('');
+        $('#patientFilterForm select.auto-filter').val('');
+        showFilterLoading();
+        $('#patientFilterForm').submit();
+    });
 });
 
 // Lab investigation UI and handlers removed from this view.
@@ -185,6 +266,10 @@ if (typeof toastr !== 'undefined') {
 
 <style>
 /* Lab-related styles removed from this view. */
+/* Filter badge styles */
+.badge a:hover {
+    text-decoration: underline !important;
+}
 </style>
 @endsection
 
