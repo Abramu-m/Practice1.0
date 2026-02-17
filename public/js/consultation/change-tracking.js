@@ -11,12 +11,11 @@ let originalFormData = {};
 function initializeChangeTracking() {
     const trackedForms = [
         { id: 'consultationForm', tab: 'clinical-information', button: 'saveConsultationBtn' },
-        { id: 'medicalHistoryForm', tab: 'clinical-information', button: 'saveMedicalHistoryBtn' },
+        // medicalHistoryForm removed - now in modal component
         { id: 'diagnosisForm', tab: 'diagnosis', button: 'saveDiagnosisBtn' },
-        { id: 'investigationFormElement', tab: 'investigations', button: 'saveInvestigationBtn' },
         { id: 'remarksForm', tab: 'remarks', button: 'saveRemarksBtn' },
-        { id: 'quickVitalsFormElement', tab: 'examinations', button: 'saveQuickVitalsBtn' },
-        { id: 'systemicExaminationForm', tab: 'examinations', button: 'saveSystemicExamBtn' }
+        { id: 'quickVitalsFormElement', tab: 'examinations', button: 'saveQuickVitalsBtn' }
+        // systemicExaminationForm removed - now in modal component
     ];
     
     trackedForms.forEach(form => {
@@ -150,12 +149,12 @@ function updateChangeState(tabName, buttonId, hasChanges) {
 function getFormsInTab(tabName) {
     const allForms = [
         { id: 'consultationForm', tab: 'clinical-information', button: 'saveConsultationBtn' },
-        { id: 'medicalHistoryForm', tab: 'clinical-information', button: 'saveMedicalHistoryBtn' },
+        // medicalHistoryForm removed - now in modal component
         { id: 'diagnosisForm', tab: 'diagnosis', button: 'saveDiagnosisBtn' },
         { id: 'investigationFormElement', tab: 'investigations', button: 'saveInvestigationBtn' },
         { id: 'remarksForm', tab: 'remarks', button: 'saveRemarksBtn' },
-        { id: 'quickVitalsFormElement', tab: 'examinations', button: 'saveQuickVitalsBtn' },
-        { id: 'systemicExaminationForm', tab: 'examinations', button: 'saveSystemicExamBtn' }
+        { id: 'quickVitalsFormElement', tab: 'examinations', button: 'saveQuickVitalsBtn' }
+        // systemicExaminationForm removed - now in modal component
     ];
     return allForms.filter(form => form.tab === tabName);
 }
@@ -256,12 +255,12 @@ function getFormIdFromTab(tabName) {
 function triggerChangeDetection() {
     const trackedForms = [
         { id: 'consultationForm', tab: 'clinical-information', button: 'saveConsultationBtn' },
-        { id: 'medicalHistoryForm', tab: 'clinical-information', button: 'saveMedicalHistoryBtn' },
+        // medicalHistoryForm removed - now in modal component
         { id: 'diagnosisForm', tab: 'diagnosis', button: 'saveDiagnosisBtn' },
         { id: 'investigationFormElement', tab: 'investigations', button: 'saveInvestigationBtn' },
         { id: 'remarksForm', tab: 'remarks', button: 'saveRemarksBtn' },
-        { id: 'quickVitalsFormElement', tab: 'examinations', button: 'saveQuickVitalsBtn' },
-        { id: 'systemicExaminationForm', tab: 'examinations', button: 'saveSystemicExamBtn' }
+        { id: 'quickVitalsFormElement', tab: 'examinations', button: 'saveQuickVitalsBtn' }
+        // systemicExaminationForm removed - now in modal component
     ];
     
     trackedForms.forEach(form => {

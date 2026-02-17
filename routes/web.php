@@ -339,6 +339,12 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsVerified::class])->g
     Route::get('consultations/{consultationId}/examinations-partial', [ConsultationController::class, 'getExaminationsPartial'])
         ->name('consultations.examinations_partial');
 
+    // Visit-based examination routes (for modal)
+    Route::get('patient-visits/{visitId}/examinations', [ConsultationController::class, 'getExaminationsByVisit'])
+        ->name('patient-visits.examinations');
+    Route::post('patient-visits/{visitId}/examinations', [ConsultationController::class, 'storeExaminationByVisit'])
+        ->name('patient-visits.store_examination');
+
     // Prescriptions
     Route::post('consultations/{consultationId}/prescriptions', [ConsultationController::class, 'storePrescription'])
         ->name('consultations.store_prescription');
@@ -362,6 +368,8 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsVerified::class])->g
     Route::delete('/consultations/icd-diagnoses/{icdDiagnosis}', [ConsultationController::class, 'removeIcdDiagnosis']);
 
     // Past Medical History
+    Route::get('patients/{patient}/medical-history', [ConsultationController::class, 'getPatientMedicalHistory'])
+        ->name('patients.medical-history.show');
     Route::post('past-medical-history', [ConsultationController::class, 'storePastMedicalHistory'])
         ->name('past-medical-history.store');
 
@@ -410,6 +418,9 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsVerified::class])->g
     Route::post('vitals/{visitId}', [VitalsController::class, 'store'])->name('vitals.store');
     Route::put('vitals/{vitalsId}', [VitalsController::class, 'update'])->name('vitals.update');
     Route::get('vitals-statistics', [VitalsController::class, 'statistics'])->name('vitals.statistics');
+    // Vitals modal endpoints
+    Route::get('vitals/visit/{visitId}/current', [VitalsController::class, 'getCurrentVitals'])->name('vitals.current');
+    Route::get('vitals/visit/{visitId}/history', [VitalsController::class, 'getVitalsHistory'])->name('vitals.history');
 
     // ================================
     // MEDICATION SYSTEM
@@ -681,6 +692,9 @@ Route::get('/api/medical-services/{serviceId}/form-check', [ApiClinicalControlle
 
 // ICD10 API
 Route::get('/api/icd10/search', [App\Http\Controllers\Icd10Controller::class, 'search']);
+
+// Medications API  
+Route::get('/api/medications/search', [App\Http\Controllers\MedicationSearchController::class, 'search']);
 
 // ICD10 web UI for assigning/editing mtuha diagnosis mappings
 Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsVerified::class])->group(function () {

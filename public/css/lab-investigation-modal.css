@@ -1,0 +1,152 @@
+/**
+ * Lab Investigation Modal Styles
+ * Styles for the lab investigation ordering modal component
+ * 
+ * Usage: <link rel="stylesheet" href="{{ asset('css/lab-investigation-modal.css') }}">
+ */
+
+/* Service suggestion dropdown styling */
+.suggestions-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 1060;
+    max-height: 250px;
+    overflow-y: auto;
+    background: white;
+    border: 1px solid #dee2e6;
+    border-top: none;
+    border-radius: 0 0 0.375rem 0.375rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.service-suggestion-item {
+    cursor: pointer;
+    transition: background-color 0.15s ease-in-out;
+}
+
+.service-suggestion-item:hover {
+    background-color: #f8f9fa !important;
+}
+
+.service-suggestion-item:last-child {
+    border-bottom: none !important;
+}
+
+/* Ensure suggestions dropdown is visible */
+#modal_service_suggestions {
+    display: block !important;
+    visibility: visible !important;
+}
+
+/* Current investigations table styling */
+#current_investigations .table th {
+    background-color: #f8f9fa;
+    font-size: 0.85rem;
+    border-top: none;
+}
+
+#current_investigations .table td {
+    font-size: 0.85rem;
+    vertical-align: middle;
+}
+
+#current_investigations .badge {
+    font-size: 0.7rem;
+}
+
+/* Lab investigation modal specific styles */
+#labInvestigationModal .modal-body {
+    max-height: 75vh;
+    overflow-y: auto;
+}
+
+#labInvestigationModal .form-group {
+    margin-bottom: 1rem;
+}
+
+#labInvestigationModal .form-label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+/* Form display container */
+#form-display-container {
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    padding: 1rem;
+    background-color: #f8f9fa;
+}
+
+#form-type-info-container .alert {
+    margin-bottom: 0;
+}
+
+/* Badge styling */
+.badge {
+    font-size: 0.75rem;
+    padding: 0.4em 0.6em;
+}
+
+/* Button group spacing */
+.btn-group .btn {
+    margin-right: 2px;
+}
+
+.btn-group .btn:last-child {
+    margin-right: 0;
+}
+
+/* Modal header styling for patient name badge */
+#labInvestigationModal .modal-title .badge {
+    font-size: 0.9rem;
+    padding: 0.5em 0.8em;
+    vertical-align: middle;
+}
+
+/* Service info alert styling */
+#modal-service-info {
+    border-radius: 0.375rem;
+    margin-top: 1rem;
+}
+
+/* Priority select styling */
+#labInvestigationModal select[name="priority"] {
+    cursor: pointer;
+}
+
+/* Loading states */
+.spinner-border {
+    width: 1.5rem;
+    height: 1.5rem;
+    border-width: 0.2em;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    #labInvestigationModal .modal-dialog {
+        margin: 0.5rem;
+    }
+    
+    .service-suggestion-item {
+        padding: 0.75rem !important;
+    }
+    
+    .service-suggestion-item .d-flex {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+    }
+    
+    .service-suggestion-item .text-end {
+        text-align: left !important;
+        margin-top: 0.5rem;
+    }
+}
+
+/* Print styles for investigation results */
+@media print {
+    #complexResultsModal .modal-footer {
+        display: none;
+    }
+}

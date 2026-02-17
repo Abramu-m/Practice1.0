@@ -87,7 +87,7 @@ class PatientVisit extends Model
     {
         return [
             0 => 'Waiting',
-            1 => 'In Treatment/Being Consulted',
+            1 => 'In Treatment',
             2 => 'Discharged'
         ];
     }

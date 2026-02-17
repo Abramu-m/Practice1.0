@@ -1,0 +1,134 @@
+/* Medical History Modal Styles */
+
+#pastMedicalHistoryModal .modal-dialog {
+    max-width: 1200px;
+}
+
+#pastMedicalHistoryModal .modal-body {
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+}
+
+/* Drug Allergy Tags */
+#modalDrugAllergyTags .drug-allergy-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    margin: 0.25rem;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+}
+
+#modalDrugAllergyTags .drug-allergy-tag:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+}
+
+#modalDrugAllergyTags .drug-allergy-tag button {
+    font-size: 1.2rem;
+    line-height: 1;
+    padding: 0;
+    margin-left: 0.5rem;
+    border: none;
+    background: none;
+    color: white;
+    opacity: 0.8;
+    transition: opacity 0.2s ease;
+}
+
+#modalDrugAllergyTags .drug-allergy-tag button:hover {
+    opacity: 1;
+    transform: scale(1.2);
+}
+
+/* Select2 in Modal */
+#pastMedicalHistoryModal .select2-container {
+    z-index: 9999 !important;
+}
+
+#pastMedicalHistoryModal .select2-dropdown {
+    z-index: 10000 !important;
+}
+
+/* Form Sections */
+#pastMedicalHistoryModal .modal-body h6 {
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid;
+}
+
+#pastMedicalHistoryModal .modal-body h6.text-danger {
+    border-bottom-color: #dc3545;
+}
+
+#pastMedicalHistoryModal .modal-body h6.text-warning {
+    border-bottom-color: #ffc107;
+}
+
+#pastMedicalHistoryModal .modal-body h6.text-info {
+    border-bottom-color: #0dcaf0;
+}
+
+#pastMedicalHistoryModal .modal-body h6.text-secondary {
+    border-bottom-color: #6c757d;
+}
+
+#pastMedicalHistoryModal .modal-body h6.text-primary {
+    border-bottom-color: #0d6efd;
+}
+
+#pastMedicalHistoryModal .modal-body h6.text-success {
+    border-bottom-color: #198754;
+}
+
+/* Textarea styling */
+#pastMedicalHistoryModal textarea {
+    min-height: 80px;
+}
+
+#pastMedicalHistoryModal textarea.border-danger {
+    border-width: 2px;
+}
+
+/* Patient Badge */
+#pastMedicalHistoryPatientBadge {
+    font-size: 0.875rem;
+    padding: 0.375rem 0.75rem;
+}
+
+/* Drug Allergy Detail Modal */
+#modalDrugAllergyModal .modal-dialog {
+    max-width: 500px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    #pastMedicalHistoryModal .modal-dialog {
+        max-width: 100%;
+        margin: 0.5rem;
+    }
+    
+    #pastMedicalHistoryModal .modal-body {
+        max-height: calc(100vh - 150px);
+    }
+    
+    #modalDrugAllergyTags .drug-allergy-tag {
+        font-size: 0.75rem;
+        padding: 0.35rem 0.5rem;
+    }
+}
+
+/* Loading state */
+#savePastMedicalHistoryBtn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Focus styles for accessibility */
+#pastMedicalHistoryModal textarea:focus,
+#pastMedicalHistoryModal select:focus,
+#pastMedicalHistoryModal input:focus {
+    border-color: #86b7fe;
+    outline: 0;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}

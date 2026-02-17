@@ -47,10 +47,8 @@ function initializeConsultationApp() {
         initializeExaminationHandlers();
     }
     
-    // Initialize prescription module
-    if (typeof initializePrescriptionModule === 'function') {
-        initializePrescriptionModule();
-    }
+    // NOTE: Prescription module is now initialized by prescription-modal.js
+    // No need to call initializePrescriptionModule() here
     
     // Initialize ICD-10 search
     if (typeof initializeIcd10Search === 'function') {
@@ -112,9 +110,9 @@ function initializeCollapseElements() {
 function loadInitialData() {
     console.log('Loading initial consultation data...');
     
-    // Load prescriptions if the treatment tab is visible
-    if ($('#prescriptions-list').length > 0) {
-        loadPrescriptions();
+    // Load prescriptions if the treatment tab is visible and function is available
+    if ($('#prescriptions-list').length > 0 && typeof window.loadPrescriptions === 'function') {
+        window.loadPrescriptions();
     }
     
     // Load any other initial data as needed
@@ -260,8 +258,6 @@ function showModal(modalNameOrSelector) {
 window.consultationApp = {
     dischargePatient: dischargePatient,
     printConsultation: printConsultation,
-    loadPrescriptions: loadPrescriptions,
-    updatePrescriptionStatus: updatePrescriptionStatus,
     initializeConsultationApp: initializeConsultationApp,
     hideModal: hideModal,
     showModal: showModal

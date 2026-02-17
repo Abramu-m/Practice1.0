@@ -1,0 +1,145 @@
+/**
+ * Prescription Modal Styles
+ */
+
+/* Medication suggestions dropdown */
+#modal_medication_suggestions {
+    z-index: 1060;
+    max-height: 250px;
+    overflow-y: auto;
+    border-radius: 0.25rem;
+}
+
+#modal_medication_suggestions .list-group-item {
+    cursor: pointer;
+    border-left: none;
+    border-right: none;
+    transition: all 0.2s ease;
+}
+
+#modal_medication_suggestions .list-group-item:first-child {
+    border-top: none;
+}
+
+#modal_medication_suggestions .list-group-item:last-child {
+    border-bottom: none;
+}
+
+#modal_medication_suggestions .list-group-item:hover {
+    background-color: #f8f9fa;
+    transform: translateX(3px);
+}
+
+.medication-suggestion-item {
+    padding: 0.75rem 1rem;
+}
+
+/* Prescription list in modal */
+#modal_current_prescriptions_section {
+    font-size: 0.875rem;
+}
+
+#modal_current_prescriptions_section .prescription-item {
+    padding: 0.75rem;
+    border-bottom: 1px solid #dee2e6;
+    transition: background-color 0.2s ease;
+}
+
+#modal_current_prescriptions_section .prescription-item:last-child {
+    border-bottom: none;
+}
+
+#modal_current_prescriptions_section .prescription-item:hover {
+    background-color: #f1f3f5;
+}
+
+/* Modal header badge */
+#modal_prescription_patient_name {
+    font-size: 0.85rem;
+    padding: 0.35rem 0.65rem;
+}
+
+/* Form labels */
+#prescriptionModal .form-label {
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+    font-size: 0.9rem;
+}
+
+/* Required field indicator */
+#prescriptionModal .text-danger {
+    font-weight: bold;
+}
+
+/* Modal size adjustments */
+@media (max-width: 768px) {
+    #prescriptionModal .modal-dialog {
+        margin: 0.5rem;
+        max-width: calc(100% - 1rem);
+    }
+    
+    #prescriptionModal .modal-body .row {
+        flex-direction: column;
+    }
+    
+    #prescriptionModal .col-md-7,
+    #prescriptionModal .col-md-5 {
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    #modal_medication_suggestions {
+        max-height: 150px;
+    }
+}
+
+/* Button states */
+#prescriptionModal .btn .fa-spinner {
+    margin-right: 0.25rem;
+}
+
+/* Current prescriptions card */
+#prescriptionModal .card.bg-light {
+    border: 1px solid #dee2e6;
+}
+
+#prescriptionModal .card-header {
+    background-color: #e9ecef;
+    border-bottom: 1px solid #dee2e6;
+    padding: 0.75rem 1rem;
+}
+
+#prescriptionModal .card-body {
+    padding: 0;
+}
+
+/* Prescription item styling */
+.prescription-item .medication-name {
+    font-weight: 600;
+    color: #212529;
+    font-size: 0.9rem;
+}
+
+.prescription-item .prescription-details {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-top: 0.25rem;
+}
+
+.prescription-item .prescription-actions {
+    margin-top: 0.5rem;
+}
+
+.prescription-item .btn-sm {
+    padding: 0.2rem 0.5rem;
+    font-size: 0.75rem;
+}
+
+/* Loading and error states */
+.text-center.text-muted .fa-spinner {
+    font-size: 1.5rem;
+}
+
+.text-center.text-danger .fa-exclamation-triangle {
+    font-size: 1.5rem;
+}

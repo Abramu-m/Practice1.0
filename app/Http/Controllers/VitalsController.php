@@ -154,4 +154,56 @@ class VitalsController extends Controller
 
         return response()->json($stats);
     }
+
+    /**
+     * Get current vitals for a visit (for modal display)
+     */
+    public function getCurrentVitals($visitId)
+    {
+        $visit = PatientVisit::findOrFail($visitId);
+        
+        $vitals = VitalSigns::where('visit_id', $visitId)
+            ->with('recordedBy')
+            ->latest('created_at')
+            ->first();
+
+        if (!$vitals) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No vitals recorded for this visit',
+                'vitals' => null
+            ], 404);
+        }
+
+        // Add recorded by name to vitals object
+        $vitals->recorded_by_name = $vitals->recordedBy ? $vitals->recordedBy->name : null;
+
+        return response()->json([
+            'success' => true,
+            'vitals' => $vitals
+        ]);
+    }
+
+    /**
+     * Get vitals history for a visit (for modal display)
+     */
+    public function getVitalsHistory($visitId)
+    {
+        $visit = PatientVisit::findOrFail($visitId);
+        
+        $history = VitalSigns::where('visit_id', $visitId)
+            ->with('recordedBy')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // Add recorded by name to each vitals record
+        $history->each(function($vitals) {
+            $vitals->recorded_by_name = $vitals->recordedBy ? $vitals->recordedBy->name : null;
+        });
+
+        return response()->json([
+            'success' => true,
+            'history' => $history
+        ]);
+    }
 }

@@ -10,6 +10,14 @@
     <small class="text-muted">Patient Consultation</small>
 @endsection
 
+@section('styles')
+<link rel="stylesheet" href="{{ asset('css/lab-investigation-modal.css') }}">
+<link rel="stylesheet" href="{{ asset('css/prescription-modal.css') }}">
+<link rel="stylesheet" href="{{ asset('css/medical-history-modal.css') }}">
+<link rel="stylesheet" href="{{ asset('css/vitals-modal.css') }}">
+<link rel="stylesheet" href="{{ asset('css/systemic-examination-modal.css') }}">
+@endsection
+
 @section('main_content')
 <div class="container-fluid">
     
@@ -85,9 +93,36 @@
         <div id="home" class="tab-pane fade">
             <h3 class="mb-4"><i class="fas fa-user-injured text-primary"></i> Patient Profile</h3>
             
-            <div class="row">
-                <!-- Basic Information -->
-                <div class="col-md-6">
+            <!-- Profile Sub-Tabs -->
+            <ul class="nav nav-tabs mb-3" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="basic-info-tab" data-bs-toggle="tab" data-bs-target="#basic-info" type="button" role="tab">
+                        <i class="fas fa-id-card"></i> Basic Information & Contact
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="visit-info-tab" data-bs-toggle="tab" data-bs-target="#visit-info" type="button" role="tab">
+                        <i class="fas fa-calendar-check"></i> Current Visit
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="medical-alerts-tab" data-bs-toggle="tab" data-bs-target="#medical-alerts" type="button" role="tab">
+                        <i class="fas fa-exclamation-triangle"></i> Medical History & Alerts
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="statistics-tab" data-bs-toggle="tab" data-bs-target="#statistics" type="button" role="tab">
+                        <i class="fas fa-chart-bar"></i> Statistics
+                    </button>
+                </li>
+            </ul>
+            
+            <div class="tab-content">
+                <!-- Basic Information & Contact Tab -->
+                <div class="tab-pane fade show active" id="basic-info" role="tabpanel">
+                    <div class="row">
+                        <!-- Basic Information -->
+                        <div class="col-md-6">
                     <div class="card mb-4">
                         <div class="card-header bg-primary text-white">
                             <h5 class="mb-0"><i class="fas fa-id-card"></i> Basic Information</h5>
@@ -240,10 +275,14 @@
                     </div>
                 </div>
             </div>
-
-            <div class="row">
-                <!-- Current Visit Information -->
-                <div class="col-md-6">
+                </div>
+                <!-- End Basic Information & Contact Tab -->
+                
+                <!-- Current Visit Information Tab -->
+                <div class="tab-pane fade" id="visit-info" role="tabpanel">
+                    <div class="row justify-content-center">
+                        <!-- Current Visit Information -->
+                        <div class="col-md-8">
                     <div class="card mb-4">
                         <div class="card-header bg-warning text-dark">
                             <h5 class="mb-0"><i class="fas fa-calendar-check"></i> Current Visit Information</h5>
@@ -327,9 +366,15 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Medical History & Alerts -->
-                <div class="col-md-6">
+                    </div>
+                </div>
+                <!-- End Current Visit Information Tab -->
+                
+                <!-- Medical History & Alerts Tab -->
+                <div class="tab-pane fade" id="medical-alerts" role="tabpanel">
+                    <div class="row">
+                        <!-- Medical History & Alerts -->
+                        <div class="col-md-12">
                     <div class="card mb-4">
                         <div class="card-header bg-danger text-white">
                             <h5 class="mb-0"><i class="fas fa-exclamation-triangle"></i> Medical Alerts & History</h5>
@@ -440,10 +485,13 @@
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- Visit Statistics -->
-            <div class="row">
+                    </div>
+                </div>
+                <!-- End Medical History & Alerts Tab -->
+                
+                <!-- Statistics Tab -->
+                <div class="tab-pane fade" id="statistics" role="tabpanel">
+                    <div class="row">
                 <div class="col-md-12">
                     <div class="card">
                         <div class="card-header bg-info text-white">
@@ -478,6 +526,10 @@
                     </div>
                 </div>
             </div>
+                </div>
+                <!-- End Statistics Tab -->
+            </div>
+            <!-- End Profile Sub-Tabs Content -->
         </div>
 
         <!-- Clinical Information Tab -->
@@ -520,21 +572,18 @@
                 <!-- Past Medical History -->
                 <div class="col-md-6">
                     <div class="card mb-4">
-                        <div class="card-header bg-warning text-dark">
+                        <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
                             <h5 class="mb-0"><i class="fas fa-history"></i> Past Medical History</h5>
+                            <button type="button" class="btn btn-sm btn-primary" 
+                                    onclick="openMedicalHistoryModal({id: {{ $visit->patientInfo->id }}, name: {{ json_encode($visit->patientInfo->first_name . ' ' . $visit->patientInfo->last_name) }}})">
+                                <i class="fas fa-edit"></i> Manage History
+                            </button>
                         </div>
                         <div class="card-body">
                             <!-- Display Current Past Medical History -->
                             <div id="medicalHistoryDisplay">
                             @if($pastMedicalHistory)
                                 <div class="mb-3">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <h6 class="text-success mb-0"><i class="fas fa-check-circle"></i> Medical History on File</h6>
-                                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="showModal('editMedicalHistoryModal')">
-                                            <i class="fas fa-edit"></i> Update
-                                        </button>
-                                    </div>
-                                    
                                     <!-- Compact Full PMH Display -->
                                     <div class="row g-2">
                                         <div class="col-12">
@@ -654,181 +703,10 @@
                                     </div>
                                 </div>
                             @else
-                                <div class="alert alert-info">
+                                <div class="alert alert-info mb-0">
                                     <i class="fas fa-info-circle"></i> No past medical history recorded for this patient.
-                                    <button type="button" class="btn btn-sm btn-primary ms-2" onclick="showModal('editMedicalHistoryModal')">
-                                        <i class="fas fa-plus"></i> Add Medical History
-                                    </button>
                                 </div>
                             @endif
-                            </div>
-
-                            <!-- Medical History Form (Modal) -->
-                            <div class="modal fade" id="editMedicalHistoryModal" tabindex="-1" aria-labelledby="editMedicalHistoryModalLabel" aria-hidden="true">
-                                <div class="modal-dialog modal-lg modal-dialog-scrollable">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="editMedicalHistoryModalLabel"><i class="fas fa-history me-2"></i> Past Medical History</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <form id="medicalHistoryForm">
-                                                @csrf
-                                                <input type="hidden" name="patient_id" value="{{ $visit->patientInfo->id }}">
-                                                
-                                                <div class="row">
-                                                    <!-- Critical Information -->
-                                                    <div class="col-12 mb-3">
-                                                        <h6 class="text-danger"><i class="fas fa-exclamation-triangle"></i> Critical Information</h6>
-                                                    </div>
-                                                    
-                                                    <div class="col-12 mb-3">
-                                                        <label class="form-label text-danger fw-bold mb-1">
-                                                            <i class="fas fa-pills"></i> Drug Allergies
-                                                        </label>
-                                                        <div class="input-group mb-2">
-                                                            <select id="drugAllergiesSelect" class="form-select select2" data-placeholder="Search and select medication" data-allow-clear="true" style="width:100%">
-                                                                <option value=""></option>
-                                                                @foreach($medications as $m)
-                                                                    <option value="{{ $m->generic_name }}">{{ $m->generic_name }} {{ $m->strength ? '(' . $m->strength . ')' : '' }}</option>
-                                                                @endforeach
-                                                            </select>
-                                                            <button type="button" id="addDrugAllergyBtn" class="btn btn-outline-danger">
-                                                                <i class="fas fa-plus"></i> Add
-                                                            </button>
-                                                        </div>
-                                                        <div id="drugAllergyTags" class="mb-2">
-                                                            <!-- dynamically added tags -->
-                                                        </div>
-                                                        <input type="hidden" name="drug_allergies" id="drugAllergiesInput" value="">
-                                                        <small class="text-muted">Select each offending drug and click Add. Remove by clicking the × on a tag.</small>
-                                                    </div>
-                                                    <div class="col-12 mb-3">
-                                                        <label class="form-label text-danger fw-bold">
-                                                            <i class="fas fa-exclamation-circle"></i> Other Allergies (Food / Environmental / Reactions):
-                                                        </label>
-                                                        <textarea class="form-control border-danger" name="allergies" rows="2"
-                                                            placeholder="Peanuts – anaphylaxis; Pollen – rhinitis; Latex – rash..."
-                                                            style="resize: vertical;">{{ $pastMedicalHistory->allergies ?? '' }}</textarea>
-                                                        <small class="text-danger">⚠️ Be specific about reactions (rash, anaphylaxis, etc.)</small>
-                                                    </div>
-
-                                                    <!-- Medical Conditions -->
-                                                    <div class="col-12 mb-3">
-                                                        <h6 class="text-warning"><i class="fas fa-heartbeat"></i> Medical Conditions</h6>
-                                                    </div>
-                                                    
-                                                    <div class="col-12 mb-3">
-                                                        <label class="form-label">Chronic Conditions:</label>
-                                                        <textarea class="form-control" name="chronic_conditions" rows="2" 
-                                                                placeholder="Diabetes, Hypertension, Heart Disease, etc."
-                                                                style="resize: vertical;">{{ $pastMedicalHistory->chronic_conditions ?? '' }}</textarea>
-                                                    </div>
-
-                                                    <div class="col-12 mb-3">
-                                                        <label class="form-label">Current Medications:</label>
-                                                        <textarea class="form-control" name="current_medications" rows="2" 
-                                                                placeholder="List all current medications with dosages..."
-                                                                style="resize: vertical;">{{ $pastMedicalHistory->current_medications ?? '' }}</textarea>
-                                                    </div>
-
-                                                    <!-- Surgical History -->
-                                                    <div class="col-12 mb-3">
-                                                        <h6 class="text-info"><i class="fas fa-cut"></i> Surgical History</h6>
-                                                    </div>
-                                                    
-                                                    <div class="col-12 mb-3">
-                                                        <label class="form-label">Previous Surgeries:</label>
-                                                        <textarea class="form-control" name="previous_surgeries" rows="2" 
-                                                                placeholder="List surgeries with dates and complications if any..."
-                                                                style="resize: vertical;">{{ $pastMedicalHistory->previous_surgeries ?? '' }}</textarea>
-                                                    </div>
-
-                                                    <!-- Social History -->
-                                                    <div class="col-12 mb-3">
-                                                        <h6 class="text-secondary"><i class="fas fa-user-friends"></i> Social History</h6>
-                                                    </div>
-                                                    
-                                                    <div class="col-md-6 mb-3">
-                                                        <label class="form-label">Smoking Status:</label>
-                                                        <select class="form-control" name="smoking_status">
-                                                            <option value="">Select status</option>
-                                                            <option value="non_smoker" {{ ($pastMedicalHistory->smoking_status ?? '') === 'non_smoker' ? 'selected' : '' }}>Non-smoker</option>
-                                                            <option value="former_smoker" {{ ($pastMedicalHistory->smoking_status ?? '') === 'former_smoker' ? 'selected' : '' }}>Former smoker</option>
-                                                            <option value="current_smoker" {{ ($pastMedicalHistory->smoking_status ?? '') === 'current_smoker' ? 'selected' : '' }}>Current smoker</option>
-                                                        </select>
-                                                    </div>
-
-                                                    <div class="col-md-6 mb-3">
-                                                        <label class="form-label">Alcohol Use:</label>
-                                                        <select class="form-control" name="alcohol_use">
-                                                            <option value="">Select usage</option>
-                                                            <option value="none" {{ ($pastMedicalHistory->alcohol_use ?? '') === 'none' ? 'selected' : '' }}>None</option>
-                                                            <option value="occasional" {{ ($pastMedicalHistory->alcohol_use ?? '') === 'occasional' ? 'selected' : '' }}>Occasional</option>
-                                                            <option value="moderate" {{ ($pastMedicalHistory->alcohol_use ?? '') === 'moderate' ? 'selected' : '' }}>Moderate</option>
-                                                            <option value="heavy" {{ ($pastMedicalHistory->alcohol_use ?? '') === 'heavy' ? 'selected' : '' }}>Heavy</option>
-                                                        </select>
-                                                    </div>
-
-                                                    <div class="col-12 mb-3">
-                                                        <label class="form-label">Social History Details:</label>
-                                                        <textarea class="form-control" name="social_history" rows="2" 
-                                                                placeholder="Living situation, support system, occupation details..."
-                                                                style="resize: vertical;">{{ $pastMedicalHistory->social_history ?? '' }}</textarea>
-                                                    </div>
-
-                                                    <div class="col-12 mb-3">
-                                                        <label class="form-label">Occupational History:</label>
-                                                        <textarea class="form-control" name="occupational_history" rows="2" 
-                                                                placeholder="Work history, exposure to hazards, occupational injuries..."
-                                                                style="resize: vertical;">{{ $pastMedicalHistory->occupational_history ?? '' }}</textarea>
-                                                    </div>
-
-                                                    <!-- Family History -->
-                                                    <div class="col-12 mb-3">
-                                                        <h6 class="text-primary"><i class="fas fa-users"></i> Family History</h6>
-                                                    </div>
-                                                    
-                                                    <div class="col-12 mb-3">
-                                                        <label class="form-label">Family Medical History:</label>
-                                                        <textarea class="form-control" name="family_history" rows="3" 
-                                                                placeholder="Family history of diabetes, heart disease, cancer, etc. Include relationship and age at diagnosis..."
-                                                                style="resize: vertical;">{{ $pastMedicalHistory->family_history ?? '' }}</textarea>
-                                                    </div>
-
-                                                    <!-- Additional Information -->
-                                                    <div class="col-12 mb-3">
-                                                        <h6 class="text-success"><i class="fas fa-plus-circle"></i> Additional Information</h6>
-                                                    </div>
-
-                                                    <div class="col-md-6 mb-3">
-                                                        <label class="form-label">Immunization History:</label>
-                                                        <textarea class="form-control" name="immunization_history" rows="2" 
-                                                                placeholder="Recent vaccinations, immunization status..."
-                                                                style="resize: vertical;">{{ $pastMedicalHistory->immunization_history ?? '' }}</textarea>
-                                                    </div>
-
-                                                    <div class="col-md-6 mb-3">
-                                                        <label class="form-label">Reproductive History:</label>
-                                                        <textarea class="form-control" name="reproductive_history" rows="2" 
-                                                                placeholder="For female patients: pregnancies, menstrual history..."
-                                                                style="resize: vertical;">{{ $pastMedicalHistory->reproductive_history ?? '' }}</textarea>
-                                                    </div>
-                                                </div>
-                                            </form>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                                <i class="fas fa-times"></i> Close
-                                            </button>
-                                            <button type="button" class="btn btn-success" onclick="saveMedicalHistory()" id="saveMedicalHistoryBtn">
-                                                <i class="fas fa-save"></i>
-                                                <span class="btn-text">Save Medical History</span>
-                                                <span class="unsaved-text d-none text-warning">• Unsaved</span>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -884,9 +762,10 @@
                                 </div>
                                 
                                 <div class="d-grid gap-2">
-                                    <a href="{{ route('vitals.show', $visit->id) }}" class="btn btn-info btn-sm" target="_blank">
-                                        <i class="fas fa-chart-line"></i> View Full Vitals & History
-                                    </a>
+                                    <button type="button" class="btn btn-info btn-sm" 
+                                            onclick="openVitalsModal({id: {{ $visit->id }}}, {id: {{ $visit->patientInfo->id }}, name: {{ json_encode($visit->patientInfo->first_name . ' ' . $visit->patientInfo->last_name) }}})">
+                                        <i class="fas fa-chart-line"></i> View Full Vitals & Record
+                                    </button>
                                     <button type="button" class="btn btn-outline-info btn-sm" data-bs-toggle="collapse" data-bs-target="#quickVitalsForm">
                                         <i class="fas fa-edit"></i> Quick Update Vitals
                                     </button>
@@ -896,9 +775,10 @@
                                     <i class="fas fa-info-circle"></i> No vital signs recorded yet.
                                 </div>
                                 <div class="d-grid gap-2">
-                                    <a href="{{ route('vitals.show', $visit->id) }}" class="btn btn-info btn-sm" target="_blank">
+                                    <button type="button" class="btn btn-info btn-sm"
+                                            onclick="openVitalsModal({id: {{ $visit->id }}}, {id: {{ $visit->patientInfo->id }}, name: {{ json_encode($visit->patientInfo->first_name . ' ' . $visit->patientInfo->last_name) }}})">
                                         <i class="fas fa-plus"></i> Record Initial Vitals
-                                    </a>
+                                    </button>
                                     <button type="button" class="btn btn-outline-info btn-sm" data-bs-toggle="collapse" data-bs-target="#quickVitalsForm">
                                         <i class="fas fa-plus"></i> Quick Add Vitals
                                     </button>
@@ -965,12 +845,7 @@
                                             <div class="card-body p-3">
                                                 <div class="d-flex justify-content-between align-items-start mb-2">
                                                     <h6 class="card-title mb-0">{{ $exam->examination_type ?? 'Systemic Examination' }}</h6>
-                                                    <div class="d-flex gap-2">
-                                                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="editExamination({{ $exam->id }})">
-                                                            <i class="fas fa-edit"></i> Edit
-                                                        </button>
-                                                        <small class="text-muted align-self-center">{{ $exam->created_at->format('d/m/Y H:i') }}</small>
-                                                    </div>
+                                                    <small class="text-muted">{{ $exam->created_at->format('d/m/Y H:i') }}</small>
                                                 </div>
                                                 
                                                 @if($exam->general_findings)
@@ -1040,103 +915,11 @@
                                 @endif
                             </div>
                             
-                            <!-- Examination Form -->
-                            <button type="button" class="btn btn-success" data-bs-toggle="collapse" data-bs-target="#systemicExamForm">
-                                <i class="fas fa-plus"></i> Add Systemic Examination
+                            <!-- Modal Button -->
+                            <button type="button" class="btn btn-success" 
+                                    onclick="openSystemicExaminationModal({id: {{ $visit->id }}}, {{ json_encode($visit->patientInfo->first_name . ' ' . $visit->patientInfo->last_name) }}, 'consultation', {{ $consultation->id }})">
+                                <i class="fas fa-plus"></i> Add/Manage Systemic Examinations
                             </button>
-                            
-                            <div class="collapse mt-3" id="systemicExamForm">
-                                <div class="border-top pt-3">
-                                    <form id="systemicExaminationForm">
-                                        @csrf
-                                        <div class="row">
-                                            <div class="col-md-12 mb-3">
-                                                <label class="form-label"><strong>Examination Type</strong></label>
-                                                <select class="form-control" name="examination_type">
-                                                    <option value="General">General Examination</option>
-                                                    <option value="Systemic">Systemic Examination</option>
-                                                    <option value="Focused">Focused Examination</option>
-                                                    <option value="Follow-up">Follow-up Examination</option>
-                                                </select>
-                                            </div>
-                                            
-                                            <div class="col-md-12 mb-3">
-                                                <label class="form-label"><strong>General Findings</strong></label>
-                                                <textarea class="form-control" name="general_findings" rows="2" 
-                                                        placeholder="General examination findings..."></textarea>
-                                            </div>
-                                            
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label"><i class="fas fa-heart text-danger"></i> Cardiovascular System</label>
-                                                <textarea class="form-control form-control-sm" name="cardiovascular_system" rows="2" 
-                                                        placeholder="Heart sounds, murmurs, peripheral pulses..."></textarea>
-                                            </div>
-                                            
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label"><i class="fas fa-lungs text-info"></i> Respiratory System</label>
-                                                <textarea class="form-control form-control-sm" name="respiratory_system" rows="2" 
-                                                        placeholder="Breath sounds, chest expansion..."></textarea>
-                                            </div>
-                                            
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label"><i class="fas fa-stomach text-warning"></i> Gastrointestinal System</label>
-                                                <textarea class="form-control form-control-sm" name="gastrointestinal_system" rows="2" 
-                                                        placeholder="Abdomen inspection, palpation, bowel sounds..."></textarea>
-                                            </div>
-                                            
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label"><i class="fas fa-brain text-primary"></i> Nervous System</label>
-                                                <textarea class="form-control form-control-sm" name="nervous_system" rows="2" 
-                                                        placeholder="Consciousness, reflexes, motor/sensory function..."></textarea>
-                                            </div>
-                                            
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label"><i class="fas fa-bone text-secondary"></i> Musculoskeletal System</label>
-                                                <textarea class="form-control form-control-sm" name="musculoskeletal_system" rows="2" 
-                                                        placeholder="Joint mobility, muscle strength, deformities..."></textarea>
-                                            </div>
-                                            
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label"><i class="fas fa-kidneys text-info"></i> Genitourinary System</label>
-                                                <textarea class="form-control form-control-sm" name="genitourinary_system" rows="2" 
-                                                        placeholder="Renal angle tenderness, urogenital examination..."></textarea>
-                                            </div>
-                                            
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label"><i class="fas fa-hand-paper text-warning"></i> Skin Examination</label>
-                                                <textarea class="form-control form-control-sm" name="skin_examination" rows="2" 
-                                                        placeholder="Skin color, rashes, lesions, temperature..."></textarea>
-                                            </div>
-                                            
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label"><i class="fas fa-head-side-virus text-danger"></i> Psychiatric Assessment</label>
-                                                <textarea class="form-control form-control-sm" name="psychiatric_assessment" rows="2" 
-                                                        placeholder="Mental state, orientation, mood, behavior..."></textarea>
-                                            </div>
-                                            
-                                            <div class="col-md-12 mb-3">
-                                                <label class="form-label"><strong>Additional Notes</strong></label>
-                                                <textarea class="form-control" name="notes" rows="2" 
-                                                        placeholder="Any additional examination notes..."></textarea>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="text-end">
-                                            <button type="button" class="btn btn-secondary me-2" data-bs-toggle="collapse" data-bs-target="#systemicExamForm">
-                                                <i class="fas fa-times"></i> Cancel
-                                            </button>
-                                            <button type="button" class="btn btn-danger me-2" id="deleteSystemicExamBtn" onclick="deleteSystemicExamination()">
-                                                <i class="fas fa-trash"></i> Delete
-                                            </button>
-                                            <button type="button" class="btn btn-success" onclick="saveSystemicExamination()" id="saveSystemicExamBtn">
-                                                <i class="fas fa-save"></i> 
-                                                <span class="btn-text">Save Examination</span>
-                                                <span class="unsaved-text d-none text-warning">• Unsaved</span>
-                                            </button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -1390,61 +1173,11 @@
                                 @endif
                             </div>
                             
-                            <!-- Investigation Form -->
-                            <button type="button" class="btn btn-sm btn-outline-warning" data-bs-toggle="collapse" data-bs-target="#investigationForm">
+                            <!-- Investigation Button - Opens Reusable Modal -->
+                            <button type="button" class="btn btn-sm btn-outline-warning" 
+                                    onclick="openLabModal({{ $visit->patient }}, {{ $visit->id }}, {{ json_encode(($visit->patientInfo->first_name ?? '') . ' ' . ($visit->patientInfo->middle_name ?? '') . ' ' . ($visit->patientInfo->last_name ?? '')) }}, 'consultation')">
                                 <i class="fas fa-plus"></i> Order Investigation
                             </button>
-                            
-                            <div class="collapse mt-3" id="investigationForm">
-                                <form id="investigationFormElement" class="border-top pt-3">
-                                    @csrf
-                                    <!-- Hidden field for patient category -->
-                                    <input type="hidden" id="patient_category_id" value="{{ $visit->patientInfo->patient_category_id ?? $visit->patientInfo->patientCategory->id ?? '' }}">
-                                    <div class="form-group mb-3">
-                                        <label class="form-label">Investigation/Service</label>
-                                        <div class="position-relative">
-                                            <input type="text" class="form-control" id="service_search" placeholder="Search medical services..." autocomplete="off">
-                                            <div id="service_suggestions" class="position-absolute w-100 bg-white border shadow-lg d-none" style="z-index: 1000; max-height: 200px; overflow-y: auto;">
-                                                <!-- Suggestions will be populated here -->
-                                            </div>
-                                        </div>
-                                        <!-- Hidden field to store the selected service ID -->
-                                        <input type="hidden" name="medical_service_id" id="selected_service_id" required>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="form-group mb-3">
-                                                <label class="form-label">Quantity</label>
-                                                <input type="text" class="form-control" name="quantity" value="1" min="1" required id="investigation_quantity">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="form-group mb-3">
-                                                <label class="form-label">Priority</label>
-                                                <select class="form-control" name="priority">
-                                                    <option value="routine">Routine</option>
-                                                    <option value="urgent">Urgent</option>
-                                                    <option value="stat">STAT</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="form-group mb-3">
-                                        <label class="form-label">Clinical Notes</label>
-                                        <textarea class="form-control" name="notes" rows="2" 
-                                                placeholder="Clinical indication for investigation..."></textarea>
-                                    </div>
-                                    <div id="service-info" class="alert alert-info" style="display: none;"></div>
-                                    <div class="text-end">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary me-2" onclick="discardInvestigationForm()">
-                                            <i class="fas fa-times"></i> Discard
-                                        </button>
-                                        <button type="button" class="btn btn-sm btn-warning" onclick="saveInvestigation()">
-                                            <i class="fas fa-save"></i> Order Investigation
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -1527,79 +1260,11 @@
                                 @endif
                             </div>
                             
-                            <!-- Prescription Form -->
-                            <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="collapse" data-bs-target="#prescriptionForm">
+                            <!-- Prescription Button - Opens Reusable Modal -->
+                            <button type="button" class="btn btn-sm btn-outline-primary" 
+                                    onclick="openPrescriptionModal({{ $visit->patient }}, {{ $visit->id }}, {{ json_encode(($visit->patientInfo->first_name ?? '') . ' ' . ($visit->patientInfo->middle_name ?? '') . ' ' . ($visit->patientInfo->last_name ?? '')) }}, 'consultation')">
                                 <i class="fas fa-plus"></i> Add Prescription
                             </button>
-                            
-                            <div class="collapse mt-3" id="prescriptionForm">
-                                <form id="prescriptionFormElement" class="border-top pt-3">
-                                    @csrf
-                                    <div class="row">
-                                                                            <div class="form-group mb-3">
-                                        <label class="form-label">Investigation/Service</label>
-                                        <div class="position-relative">
-                                            <input type="text" class="form-control" id="medication_search" placeholder="Type at least 3 characters..." autocomplete="off">
-                                            <div id="medication_suggestions" class="position-absolute w-100 bg-white border shadow-lg d-none" style="z-index: 1000; max-height: 200px; overflow-y: auto;">
-                                                <!-- Suggestions will be populated here -->
-                                            </div>
-                                        </div>
-                                        <!-- Hidden field to store the selected service ID -->
-                                        <input type="hidden" name="medication_id" id="selected_medication_id" required>
-                                    </div>
-                                        <div class="col-md-6 mb-2">
-                                            <label class="form-label">Dosage</label>
-                                            <input type="text" class="form-control form-control-sm" name="dosage" 
-                                                   placeholder="e.g., 500mg" required>
-                                        </div>
-                                        <div class="col-md-3 mb-2">
-                                            <label class="form-label">Frequency</label>
-                                            <select class="form-control form-control-sm" name="frequency_id" required>
-                                                <option value="">Select Frequency</option>
-                                                @if(isset($frequencies))
-                                                    @foreach($frequencies as $frequency)
-                                                        <option value="{{ $frequency->id }}">{{ $frequency->frequency_name }}</option>
-                                                    @endforeach
-                                                @endif
-                                            </select>
-                                        </div>
-                                        <div class="col-md-3 mb-2">
-                                            <label class="form-label">Duration (Days)</label>
-                                            <input type="text" class="form-control form-control-sm" name="duration_days" 
-                                                   placeholder="e.g., 7" min="1" required>
-                                        </div>
-                                        <div class="col-md-3 mb-2">
-                                            <label class="form-label">Quantity</label>
-                                            <input type="text" class="form-control form-control-sm" name="quantity" 
-                                                   placeholder="Qty" min="1" required>
-                                        </div>
-                                        <div class="col-md-3 mb-2">
-                                            <label class="form-label">Route</label>
-                                            <select class="form-control form-control-sm" name="administration_route_id">
-                                                <option value="">Select Route</option>
-                                                @if(isset($routes))
-                                                    @foreach($routes as $route)
-                                                        <option value="{{ $route->id }}">{{ $route->route_name }}</option>
-                                                    @endforeach
-                                                @endif
-                                            </select>
-                                        </div>
-                                        <div class="col-md-12 mb-3">
-                                            <label class="form-label">Instructions</label>
-                                            <textarea class="form-control form-control-sm" name="instructions" rows="2" 
-                                                    placeholder="Special instructions for taking medication..."></textarea>
-                                        </div>
-                                    </div>
-                                    <div class="text-end">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary me-2" onclick="discardPrescriptionForm()">
-                                            <i class="fas fa-times"></i> Discard
-                                        </button>
-                                        <button type="button" class="btn btn-sm btn-primary" onclick="savePrescription()">
-                                            <i class="fas fa-save"></i> Add Prescription
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
                         </div>
 
                         <!-- Clinical Decision Support Alerts -->
@@ -2006,6 +1671,21 @@
     </div>
 </div>
 
+<!-- Lab Investigation Modal Component -->
+@include('partials.lab_investigation_modal')
+
+<!-- Prescription Modal Component -->
+@include('partials.prescription_modal')
+
+<!-- Past Medical History Modal Component -->
+@include('partials.past_medical_history_modal')
+
+<!-- Vitals Modal Component -->
+@include('partials.vitals_modal')
+
+<!-- Systemic Examination Modal Component -->
+@include('partials.systemic_examination_modal')
+
 @endsection
 
 @section('scripts')
@@ -2013,13 +1693,97 @@
 <script src="{{ asset('js/consultation/change-tracking.js') }}"></script>
 <script src="{{ asset('js/consultation/form-saves.js') }}"></script>
 <script src="{{ asset('js/consultation/examinations.js') }}"></script>
-<script src="{{ asset('js/consultation/prescriptions.js') }}"></script>
 <script src="{{ asset('js/consultation/icd10.js') }}"></script>
-<script src="{{ asset('js/consultation/investigations.js') }}"></script>
+<script src="{{ asset('js/lab-investigation-modal.js') }}"></script>
+<script src="{{ asset('js/prescription-modal.js') }}"></script>
+<script src="{{ asset('js/medical-history-modal.js') }}"></script>
+<script src="{{ asset('js/vitals-modal.js') }}"></script>
+<script src="{{ asset('js/systemic-examination-modal.js') }}"></script>
 <script src="{{ asset('js/consultation/app.js') }}"></script>
 <script>
     // Set global consultation ID for use in modules
     window.consultationId = {{ $consultation->id }};
+    
+    // Load investigations table - called after saving investigations from modal
+    window.loadInvestigations = function() {
+        $.ajax({
+            url: `/consultations/${window.consultationId}/investigations-partial`,
+            method: 'GET',
+            success: function(response) {
+                if (response.success) {
+                    $('#investigations-table-container').html(response.html);
+                } else {
+                    toastr.error('Failed to load investigations');
+                }
+            },
+            error: function(xhr) {
+                console.error('Failed to load investigations:', xhr);
+                toastr.error('Failed to refresh investigations list');
+            }
+        });
+    };
+    
+    // Load prescriptions table - called after saving prescriptions from modal
+    window.loadPrescriptions = function() {
+        $.ajax({
+            url: `/consultations/${window.consultationId}/prescriptions-partial`,
+            method: 'GET',
+            success: function(response) {
+                if (response.success) {
+                    $('#prescriptions-list').html(response.html);
+                } else {
+                    toastr.error('Failed to load prescriptions');
+                }
+            },
+            error: function(xhr) {
+                console.error('Failed to load prescriptions:', xhr);
+                toastr.error('Failed to refresh prescriptions list');
+            }
+        });
+    };
+    
+    // View investigation details
+    window.viewInvestigation = function(investigationId) {
+        // This function can be implemented to show investigation details/results in a modal
+        toastr.info('View investigation details - ID: ' + investigationId);
+        // TODO: Implement investigation details view
+    };
+    
+    // Remove investigation
+    window.removeInvestigation = function(investigationId) {
+        if (!confirm('Are you sure you want to remove this investigation?')) {
+            return;
+        }
+        
+        $.ajax({
+            url: `/consultations/investigations/${investigationId}`,
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                toastr.success('Investigation removed successfully');
+                
+                // Refresh the main page investigations table
+                loadInvestigations();
+                
+                // Also refresh the modal's investigations list if it's open
+                const modalVisitId = $('#modal_visit_id').val();
+                if (modalVisitId && typeof window.loadExistingInvestigations === 'function') {
+                    window.loadExistingInvestigations(modalVisitId, 'consultation');
+                }
+                
+                if (typeof markFormAsSaved === 'function') {
+                    markFormAsSaved();
+                }
+            },
+            error: function(xhr) {
+                console.error('Failed to remove investigation:', xhr);
+                toastr.error(xhr.responseJSON?.message || 'Failed to remove investigation');
+            }
+        });
+    };
+    
     // Flag used to suppress the browser beforeunload prompt while we perform programmatic saves/navigation
     window._suppressBeforeUnload = false;
     // Backup holder for any existing beforeunload handler; use setSuppressBeforeUnload(true) to
@@ -2247,19 +2011,373 @@
         });
 
         const patientId = {{ $visit->patientInfo->id }};
-        window.fetchDrugAllergiesList = function(){
-            $.getJSON(`/patients/${patientId}/allergies`, function(resp){
-                console.log('[Allergies] Fetch response:', resp);
-                if(resp && resp.data) {
-                    allergies = resp.data.map(a => ({...a, is_active: a.is_active === 1 || a.is_active === true}));
+        
+        // Only setup the tag management if we have the prescription form elements
+        if(selectEl && addBtn && tagsWrap && hiddenInput) {
+            window.fetchDrugAllergiesList = function(){
+                console.log('[Allergies] Fetching for patient:', patientId);
+                $.getJSON(`/patients/${patientId}/allergies`, function(resp){
+                    console.log('[Allergies] Fetch response:', resp);
+                    if(resp && resp.data) {
+                        allergies = resp.data.map(a => ({...a, is_active: a.is_active === 1 || a.is_active === true}));
+                        renderTags();
+                    } else {
+                        console.warn('[Allergies] No data in response');
+                        allergies = [];
+                        renderTags();
+                    }
+                }).fail(function(xhr) {
+                    console.error('[Allergies] Failed to fetch:', xhr);
+                    allergies = [];
                     renderTags();
-                } else {
-                    console.warn('[Allergies] No data in response');
-                }
-            });
-        };
+                });
+            };
+            window.fetchDrugAllergiesList();
+        }
+    })();
+    
+    // Standalone drug allergies loader for display lists (works independently of prescription form)
+    (function() {
+        const patientId = {{ $visit->patientInfo->id }};
+        const displayListContainer = document.getElementById('drugAllergiesList');
+        
+        if (!displayListContainer) {
+            console.log('[Allergies Display] drugAllergiesList element not found, skipping');
+            return;
+        }
+        
+        // If the prescription form function wasn't created (form not present), create standalone version
+        if (typeof window.fetchDrugAllergiesList !== 'function') {
+            window.fetchDrugAllergiesList = function() {
+                console.log('[Allergies Display] Fetching for patient:', patientId);
+                $.getJSON(`/patients/${patientId}/allergies`, function(resp) {
+                    console.log('[Allergies Display] Fetch response:', resp);
+                    const allergies = (resp && resp.data) ? resp.data.filter(a => a.is_active !== false && a.is_active !== 0) : [];
+                    
+                    if (allergies.length === 0) {
+                        displayListContainer.innerHTML = '<span class="text-muted">None recorded</span>';
+                    } else {
+                        displayListContainer.innerHTML = allergies.map(a => 
+                            `<span class="badge bg-danger me-1 mb-1" title="${a.reaction || 'No reaction'}${a.severity ? ' | '+a.severity : ''}">${a.substance_name}</span>`
+                        ).join('');
+                    }
+                }).fail(function(xhr) {
+                    console.error('[Allergies Display] Failed to fetch:', xhr);
+                    displayListContainer.innerHTML = '<span class="text-muted">Failed to load</span>';
+                });
+            };
+        }
+        
+        // Load allergies on page load
         window.fetchDrugAllergiesList();
     })();
+
+    /**
+     * Load and display complete medical history
+     * Called after saving medical history from modal
+     */
+    window.loadMedicalHistoryDisplay = function() {
+        const patientId = {{ $visit->patientInfo->id }};
+        
+        console.log('[Medical History] Loading display for patient:', patientId);
+        
+        $.ajax({
+            url: `/patients/${patientId}/medical-history`,
+            method: 'GET'
+        }).done(function(response) {
+            console.log('[Medical History] Display data loaded:', response);
+            
+            const history = response.data;
+            
+            // Update Other Allergies
+            const otherAllergiesHtml = history && history.allergies ? 
+                `<div class="alert alert-danger py-2 mt-1 mb-0"><strong>⚠️</strong> ${history.allergies}</div>` :
+                `<p class="text-muted mb-2 mt-1">None recorded</p>`;
+            $('#otherAllergiesDisplay').html(`
+                <strong class="text-danger">Other Allergies:</strong>
+                ${otherAllergiesHtml}
+            `);
+            
+            // Update Chronic Conditions
+            const chronicConditionsHtml = history && history.chronic_conditions ?
+                `<div class="alert alert-warning py-2">${history.chronic_conditions}</div>` :
+                `<p class="text-muted mb-2">No chronic conditions recorded</p>`;
+            $('#chronicConditionsSection').html(`
+                <h6 class="text-warning"><i class="fas fa-heartbeat"></i> Chronic Conditions:</h6>
+                ${chronicConditionsHtml}
+            `);
+            
+            // Update Current Medications
+            const currentMedicationsHtml = history && history.current_medications ?
+                `<div class="alert alert-info py-2">${history.current_medications}</div>` :
+                `<p class="text-muted mb-2">No current medications</p>`;
+            $('#currentMedicationsSection').html(`
+                <h6 class="text-info"><i class="fas fa-pills"></i> Current Medications:</h6>
+                ${currentMedicationsHtml}
+            `);
+            
+            // Update Previous Surgeries
+            const previousSurgeriesHtml = history && history.previous_surgeries ?
+                `<div class="alert alert-secondary py-2">${history.previous_surgeries}</div>` :
+                `<p class="text-muted mb-2">No previous surgeries</p>`;
+            $('#previousSurgeriesSection').html(`
+                <h6 class="text-secondary"><i class="fas fa-cut"></i> Previous Surgeries:</h6>
+                ${previousSurgeriesHtml}
+            `);
+            
+            // Update Family History
+            const familyHistoryHtml = history && history.family_history ?
+                `<div class="alert alert-light border py-2">${history.family_history}</div>` :
+                `<p class="text-muted mb-2">No significant family history</p>`;
+            $('#familyHistorySection').html(`
+                <h6 class="text-primary"><i class="fas fa-users"></i> Family History:</h6>
+                ${familyHistoryHtml}
+            `);
+            
+            // Update Social History
+            let socialHistoryContent = '';
+            
+            if (history && (history.smoking_status || history.alcohol_use || history.social_history)) {
+                socialHistoryContent = '<div class="row">';
+                
+                if (history.smoking_status) {
+                    const smokingBadge = history.smoking_status === 'non_smoker' ? 'success' : 'warning';
+                    const smokingLabel = history.smoking_status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+                    socialHistoryContent += `
+                        <div class="col-6">
+                            <small><strong>Smoking:</strong> 
+                                <span class="badge bg-${smokingBadge}">${smokingLabel}</span>
+                            </small>
+                        </div>
+                    `;
+                }
+                
+                if (history.alcohol_use) {
+                    const alcoholBadge = history.alcohol_use === 'none' ? 'success' : 'warning';
+                    const alcoholLabel = history.alcohol_use.charAt(0).toUpperCase() + history.alcohol_use.slice(1);
+                    socialHistoryContent += `
+                        <div class="col-6">
+                            <small><strong>Alcohol:</strong> 
+                                <span class="badge bg-${alcoholBadge}">${alcoholLabel}</span>
+                            </small>
+                        </div>
+                    `;
+                }
+                
+                if (history.social_history) {
+                    socialHistoryContent += `
+                        <div class="col-12 mt-2">
+                            <small>${history.social_history}</small>
+                        </div>
+                    `;
+                }
+                
+                socialHistoryContent += '</div>';
+            } else {
+                socialHistoryContent = '<p class="text-muted mb-2">No social history recorded</p>';
+            }
+            
+            $('#socialHistorySection').html(`
+                <h6 class="text-dark"><i class="fas fa-user-friends"></i> Social History:</h6>
+                ${socialHistoryContent}
+            `);
+            
+            // Also refresh drug allergies list
+            if (typeof window.fetchDrugAllergiesList === 'function') {
+                window.fetchDrugAllergiesList();
+            }
+            
+            console.log('[Medical History] Display updated successfully');
+        }).fail(function(xhr) {
+            console.error('[Medical History] Failed to load display:', xhr);
+            toastr.error('Failed to refresh medical history display');
+        });
+    };
+    
+    /**
+     * Update the compact medical history display in clinical information tab
+     */
+    window.updateClinicalMedicalHistoryDisplay = function(history, drugAllergies = []) {
+        console.log('[Medical History] Updating clinical info display', {history, drugAllergies});
+        
+        // Build the updated HTML
+        let html = '<div class="mb-3"><div class="row g-2">';
+        
+        // Allergies - Drug and Other
+        html += `<div class="col-12"><small><p class="mb-1"><strong>Allergies:</strong></p>`;
+        
+        // Drug allergies
+        if (drugAllergies && drugAllergies.length > 0) {
+            const activeAllergies = drugAllergies.filter(a => a.is_active !== false);
+            if (activeAllergies.length > 0) {
+                const displayLimit = 3;
+                const displayAllergies = activeAllergies.slice(0, displayLimit).map(a => a.substance_name).join(', ');
+                const overflow = activeAllergies.length > displayLimit ? ` +${activeAllergies.length - displayLimit} more` : '';
+                html += `<p class="mb-1">Drugs: <span class="text-danger" title="Full drug allergy list">${displayAllergies}${overflow}</span></p>`;
+            } else {
+                html += `<p class="mb-1"><span class="text-muted">Drugs: None</span></p>`;
+            }
+        } else {
+            html += `<p class="mb-1"><span class="text-muted">Drugs: None</span></p>`;
+        }
+        
+        // Other allergies
+        if (history && history.allergies) {
+            const otherAllergies = history.allergies.substring(0, 80) + (history.allergies.length > 80 ? '...' : '');
+            html += `<p class="mb-0">Other:<span class="text-danger ms-1" title="Other allergies full text"> ${otherAllergies}</span></p>`;
+        } else {
+            html += `<p class="mb-0">Other:<span class="text-muted ms-1"> None</span></p>`;
+        }
+        
+        html += `</small></div>`;
+        
+        // Chronic Conditions
+        html += `
+            <div class="col-6">
+                <small><strong>Chronic Conditions:</strong>
+                    ${history && history.chronic_conditions ?
+                        `<span class="text-warning">${history.chronic_conditions.substring(0, 80)}${history.chronic_conditions.length > 80 ? '...' : ''}</span>` :
+                        `<span class="text-muted">None</span>`}
+                </small>
+            </div>
+        `;
+        
+        // Current Medications
+        html += `
+            <div class="col-6">
+                <small><strong>Current Medications:</strong>
+                    ${history && history.current_medications ?
+                        `<span class="text-info">${history.current_medications.substring(0, 80)}${history.current_medications.length > 80 ? '...' : ''}</span>` :
+                        `<span class="text-muted">None</span>`}
+                </small>
+            </div>
+        `;
+        
+        // Previous Surgeries
+        html += `
+            <div class="col-6">
+                <small><strong>Previous Surgeries:</strong>
+                    ${history && history.previous_surgeries ?
+                        `<span class="text-secondary">${history.previous_surgeries.substring(0, 80)}${history.previous_surgeries.length > 80 ? '...' : ''}</span>` :
+                        `<span class="text-muted">None</span>`}
+                </small>
+            </div>
+        `;
+        
+        // Family History
+        html += `
+            <div class="col-6">
+                <small><strong>Family History:</strong>
+                    ${history && history.family_history ?
+                        `<span class="text-dark">${history.family_history.substring(0, 80)}${history.family_history.length > 80 ? '...' : ''}</span>` :
+                        `<span class="text-muted">None</span>`}
+                </small>
+            </div>
+        `;
+        
+        // Smoking and Alcohol
+        const smokingBadge = history && history.smoking_status === 'non_smoker' ? 'success' : 'warning';
+        const smokingLabel = history && history.smoking_status ? 
+            history.smoking_status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Unknown';
+        const alcoholBadge = history && history.alcohol_use === 'none' ? 'success' : 'warning';
+        const alcoholLabel = history && history.alcohol_use ? 
+            history.alcohol_use.charAt(0).toUpperCase() + history.alcohol_use.slice(1) : 'Unknown';
+            
+        html += `
+            <div class="col-6">
+                <small>
+                    <strong>Smoking:</strong>
+                    <span class="badge bg-${smokingBadge}">${smokingLabel}</span>
+                    <span class="ms-2"><strong>Alcohol:</strong>
+                        <span class="badge bg-${alcoholBadge}">${alcoholLabel}</span>
+                    </span>
+                </small>
+            </div>
+        `;
+        
+        // Social History
+        html += `
+            <div class="col-6">
+                <small><strong>Social History:</strong>
+                    ${history && history.social_history ?
+                        `<span>${history.social_history.substring(0, 80)}${history.social_history.length > 80 ? '...' : ''}</span>` :
+                        `<span class="text-muted">None</span>`}
+                </small>
+            </div>
+        `;
+        
+        // Occupational History
+        html += `
+            <div class="col-6">
+                <small><strong>Occupational History:</strong>
+                    ${history && history.occupational_history ?
+                        `<span>${history.occupational_history.substring(0, 80)}${history.occupational_history.length > 80 ? '...' : ''}</span>` :
+                        `<span class="text-muted">None</span>`}
+                </small>
+            </div>
+        `;
+        
+        // Immunizations
+        html += `
+            <div class="col-6">
+                <small><strong>Immunizations:</strong>
+                    ${history && history.immunization_history ?
+                        `<span>${history.immunization_history.substring(0, 80)}${history.immunization_history.length > 80 ? '...' : ''}</span>` :
+                        `<span class="text-muted">None</span>`}
+                </small>
+            </div>
+        `;
+        
+        // Reproductive History
+        html += `
+            <div class="col-12">
+                <small><strong>Reproductive History:</strong>
+                    ${history && history.reproductive_history ?
+                        `<span>${history.reproductive_history.substring(0, 120)}${history.reproductive_history.length > 120 ? '...' : ''}</span>` :
+                        `<span class="text-muted">None</span>`}
+                </small>
+            </div>
+        `;
+        
+        html += '</div></div>';
+        
+        $('#medicalHistoryDisplay').html(html);
+    };
+    
+    /**
+     * Main function to refresh all medical history displays
+     * Called from the medical history modal after save
+     */
+    window.refreshAllMedicalHistory = function() {
+        const patientId = {{ $visit->patientInfo->id }};
+        
+        // Fetch both medical history and drug allergies
+        const medicalHistoryPromise = $.ajax({
+            url: `/patients/${patientId}/medical-history`,
+            method: 'GET'
+        });
+        
+        const allergiesPromise = $.ajax({
+            url: `/patients/${patientId}/allergies`,
+            method: 'GET'
+        });
+        
+        // Wait for both to complete
+        $.when(medicalHistoryPromise, allergiesPromise).done(function(medicalHistoryResp, allergiesResp) {
+            const history = medicalHistoryResp[0].data;
+            const drugAllergies = allergiesResp[0].data || [];
+            
+            // Update the clinical information tab display with drug allergies
+            window.updateClinicalMedicalHistoryDisplay(history, drugAllergies);
+            
+            // Update the patient profile tab display (this also refreshes drug allergies via fetchDrugAllergiesList)
+            window.loadMedicalHistoryDisplay();
+            
+            console.log('[Medical History] All displays refreshed');
+        }).fail(function(xhr) {
+            console.error('[Medical History] Failed to refresh:', xhr);
+        });
+    };
 
     // Mark a pane as saved: clear its unsaved indicator and switch back to Clinical Information tab
     function markPaneSaved(paneId) {
@@ -2412,29 +2530,23 @@
         // Map panes to save function names. Only panes that are active or have unsaved markers will be executed.
         // Use the actual function names implemented in the consultation JS modules so saveAll triggers them.
         const paneSaveMap = [
-            // Clinical info: consultation main form and medical history
+            // Clinical info: consultation main form (medical history now in modal)
             { pane: 'clinical-information', fn: 'saveConsultation' },
-            { pane: 'clinical-information', fn: 'saveMedicalHistory' },
             { pane: 'diagnosis', fn: 'saveDiagnosis' },
             { pane: 'remarks', fn: 'saveRemarks' },
             { pane: 'investigations', fn: 'saveInvestigation' },
             { pane: 'treatment', fn: 'savePrescription' },
-            // Examinations: quick vitals and systemic examination
-            { pane: 'examinations', fn: 'saveQuickVitals' },
-            { pane: 'examinations', fn: 'saveOrUpdateSystemicExamination' }
+            // Examinations: quick vitals (systemic examination now in modal)
+            { pane: 'examinations', fn: 'saveQuickVitals' }
         ];
 
         for (const map of paneSaveMap) {
             const paneId = map.pane;
             // Decide whether to attempt save for this mapping.
             // Default: attempt if pane is active or marked unsaved.
-            // Special-case: some save handlers (e.g. saveMedicalHistory) should only
-            // run when their pane is actively visible to avoid unexpected background
-            // execution when the tab merely has an unsaved indicator.
             const paneActive = isPaneActive(paneId);
             const paneUnsaved = paneHasUnsaved(paneId);
-            const onlyWhenActive = (map.fn === 'saveMedicalHistory');
-            if (paneActive || (!onlyWhenActive && paneUnsaved)) {
+            if (paneActive || paneUnsaved) {
                 // Validate required fields in that pane first. If invalid, abort the whole saveAll.
                 if (!validatePane(paneId)) {
                     // Re-enable beforeunload since we aborted
@@ -2503,81 +2615,9 @@
         return true;
     }
 
-    // Save or update systemic examination depending on edit state.
-    // Returns a Promise so saveAll can await it.
-    function saveOrUpdateSystemicExamination() {
-        const form = $('#systemicExaminationForm');
-        const examinationId = form.data('examination-id');
-        if (examinationId) {
-            return updateSystemicExamination();
-        }
-        return saveSystemicExamination();
-    }
-
-    // Delete the currently editing systemic examination, or reset the form if none selected.
-    function deleteSystemicExamination() {
-        const form = $('#systemicExaminationForm');
-        const examinationId = form.data('examination-id');
-        if (!examinationId) {
-            // Nothing to delete; just reset
-            resetExaminationForm();
-            markPaneSaved('examinations');
-            return Promise.resolve();
-        }
-
-        if (!confirm('Delete this systemic examination? This cannot be undone.')) {
-            return Promise.resolve();
-        }
-
-        const token = $('meta[name="csrf-token"]').attr('content');
-        // Try DELETE first (preferred). If server rejects with 405, retry with POST + _method (fallback).
-        return new Promise((resolve, reject) => {
-            $.ajax({
-                url: '/consultations/examinations/' + examinationId,
-                method: 'DELETE',
-                headers: { 'X-CSRF-TOKEN': token }
-            }).done(function(response) {
-                if (response && response.success !== false) {
-                    toastr.success(response.message || 'Systemic examination deleted');
-                    // Refresh the examinations list via AJAX partial
-                    refreshExaminationsList();
-                    resolve(response);
-                } else {
-                    toastr.error(response.message || 'Failed to delete systemic examination');
-                    resolve(response);
-                }
-            }).fail(function(xhr) {
-                // If server returned Method Not Allowed, try POST with _method override
-                if (xhr && xhr.status === 405) {
-                    $.ajax({
-                        url: '/consultations/examinations/' + examinationId,
-                        method: 'POST',
-                        data: { _method: 'DELETE', _token: token }
-                    }).done(function(resp2) {
-                        if (resp2 && resp2.success !== false) {
-                            toastr.success(resp2.message || 'Systemic examination deleted');
-                            refreshExaminationsList();
-                            resolve(resp2);
-                        } else {
-                            toastr.error(resp2.message || 'Failed to delete systemic examination');
-                            resolve(resp2);
-                        }
-                    }).fail(function(xhr2) {
-                        toastr.error('Failed to delete systemic examination');
-                        console.error(xhr2);
-                        reject(xhr2);
-                    });
-                } else {
-                    toastr.error('Failed to delete systemic examination');
-                    console.error(xhr);
-                    reject(xhr);
-                }
-            });
-        });
-    }
-
     // Fetch the examinations partial for this consultation and replace the DOM fragment.
-    function refreshExaminationsList() {
+    // Called by modal to refresh main page display
+    window.refreshExaminationsList = function() {
         const consultationId = '{{ $consultation->id ?? '' }}';
         if (!consultationId) return;
         const url = '/consultations/' + consultationId + '/examinations-partial';
@@ -2589,16 +2629,13 @@
         }).done(function(response) {
             if (response && response.success && response.html) {
                 $('#examinationsList').html(response.html);
-                // Reset the form now that the list is refreshed
-                resetExaminationForm();
-                markPaneSaved('examinations');
             } else {
                 console.warn('Failed to refresh examinations partial', response);
             }
         }).fail(function(xhr) {
             console.error('Error fetching examinations partial', xhr);
         });
-    }
+    };
 
     // Track unsaved state per-tab via their .unsaved-indicator elements
     (function setupUnsavedTracking() {
@@ -2674,10 +2711,9 @@
         const watchedSelectors = [
             '#diagnosisForm textarea, #diagnosisForm input, #diagnosisForm select, #diagnosisForm [contenteditable="true"]',
             '#remarksForm textarea, #remarksForm input, #remarksForm select, #remarksForm [contenteditable="true"]',
-            '#investigationFormElement input, #investigationFormElement textarea, #investigationFormElement select',
             '#prescriptionFormElement input, #prescriptionFormElement textarea, #prescriptionFormElement select',
-            '#systemicExaminationForm input, #systemicExaminationForm textarea, #systemicExaminationForm select',
             '#quickVitalsForm input, #quickVitalsForm textarea, #quickVitalsForm select'
+            // systemicExaminationForm removed - now in modal component
         ];
 
         // Attach input listeners to elements within a container (document or newly-added node)
@@ -2796,25 +2832,6 @@
         } catch (e) { console.error('discardPrescriptionForm', e); }
     }
 
-    function discardInvestigationForm() {
-        try {
-            const form = document.getElementById('investigationFormElement');
-            if (!form) return;
-            form.reset();
-            const sel = document.getElementById('selected_service_id'); if (sel) sel.value = '';
-            const svcInput = document.getElementById('service_search'); if (svcInput) { svcInput.value = ''; }
-            const sug = document.getElementById('service_suggestions'); if (sug) sug.classList.add('d-none');
-            const collapseEl = document.getElementById('investigationForm');
-            if (collapseEl && typeof bootstrap !== 'undefined') {
-                try { new bootstrap.Collapse(collapseEl, { toggle: false }).hide(); } catch (e) {}
-            }
-            form.querySelectorAll('input,textarea,select').forEach(i => {
-                try { i.dispatchEvent(new Event('change', { bubbles: true })); } catch (e) {}
-                try { i.dispatchEvent(new Event('input', { bubbles: true })); } catch (e) {}
-            });
-            try { markPaneSaved('investigations'); } catch (e) {}
-        } catch (e) { console.error('discardInvestigationForm', e); }
-    }
 
     // Defensive: ensure the save overlay is hidden on initial load and when
     // the page is restored from bfcache (back/forward navigation).
@@ -3253,6 +3270,53 @@ textarea.border-warning {
     background-color: #fefefe;
     border-color: #f0f0f0;
     color: #6c757d;
+}
+
+/* Patient Profile Sub-Tabs Styling */
+#home .nav-tabs {
+    border-bottom: 2px solid #dee2e6;
+    margin-bottom: 1.5rem;
+}
+
+#home .nav-tabs .nav-link {
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: #6c757d;
+    font-weight: 500;
+    padding: 0.75rem 1.5rem;
+    transition: all 0.3s ease;
+}
+
+#home .nav-tabs .nav-link:hover {
+    border-color: transparent;
+    color: #0d6efd;
+    background-color: #f8f9fa;
+}
+
+#home .nav-tabs .nav-link.active {
+    color: #0d6efd;
+    background-color: transparent;
+    border-color: transparent;
+    border-bottom-color: #0d6efd;
+}
+
+#home .nav-tabs .nav-link i {
+    margin-right: 0.5rem;
+}
+
+#home .tab-content {
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 </style>
 @endpush

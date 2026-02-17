@@ -117,14 +117,10 @@ class ConsultationController extends Controller
             ->get();
 
         // Get dropdown data using improved models
-        $medications = Medication::where('is_active', true)->where('stock_quantity', '>', 0)->orderBy('generic_name')->get();
+        // Note: medications, services, and icd10Codes now load via AJAX to improve performance
         $routes = AdministrationRoute::where('is_active', true)->orderBy('route_name')->get();
         $frequencies = MedicationFrequency::where('is_active', true)->orderBy('frequency_name')->get();
-        $services = MedicalService::where('is_active', true)->orderBy('name')->get();
         $serviceCategories = ServiceCategory::active()->orderBy('name')->get();
-        
-        // Get ICD-10 codes for diagnosis dropdown
-        $icd10Codes = \App\Models\Icd10::active()->orderBy('code')->get();
         
         // Get patient's past medical history
         $pastMedicalHistory = $visit->patientInfo->pastMedicalHistory;
@@ -216,12 +212,9 @@ class ConsultationController extends Controller
             'examinations',
             'prescriptions',
             'investigations',
-            'medications',
             'routes', 
             'frequencies',
-            'services',
             'serviceCategories',
-            'icd10Codes',
             'pastMedicalHistory',
             'icd_diagnoses',
             'testResults',
@@ -471,6 +464,77 @@ class ConsultationController extends Controller
     }
 
     /**
+     * Get examinations for a visit (for modal display)
+     */
+    public function getExaminationsByVisit($visitId)
+    {
+        $visit = PatientVisit::findOrFail($visitId);
+        
+        $examinations = SystemicExamination::where('visit_id', $visitId)
+            ->where('status', 'active')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'examinations' => $examinations
+        ]);
+    }
+
+    /**
+     * Store examination by visit ID (for modal)
+     */
+    public function storeExaminationByVisit(Request $request, $visitId)
+    {
+        $visit = PatientVisit::findOrFail($visitId);
+        
+        // Get consultation for this visit
+        $consultation = Consultation::where('visit_id', $visitId)->firstOrFail();
+
+        $request->validate([
+            'examination_type' => 'required|string',
+            'general_findings' => 'nullable|string',
+            'cardiovascular_system' => 'nullable|string',
+            'respiratory_system' => 'nullable|string',
+            'gastrointestinal_system' => 'nullable|string',
+            'nervous_system' => 'nullable|string',
+            'musculoskeletal_system' => 'nullable|string',
+            'genitourinary_system' => 'nullable|string',
+            'endocrine_system' => 'nullable|string',
+            'skin_examination' => 'nullable|string',
+            'psychiatric_assessment' => 'nullable|string',
+            'notes' => 'nullable|string'
+        ]);
+
+        $examination = SystemicExamination::create([
+            'consultation_id' => $consultation->id,
+            'visit_id' => $visit->id,
+            'patient_id' => $visit->patient,
+            'examination_type' => $request->examination_type,
+            'general_findings' => $request->general_findings,
+            'cardiovascular_system' => $request->cardiovascular_system,
+            'respiratory_system' => $request->respiratory_system,
+            'gastrointestinal_system' => $request->gastrointestinal_system,
+            'nervous_system' => $request->nervous_system,
+            'musculoskeletal_system' => $request->musculoskeletal_system,
+            'genitourinary_system' => $request->genitourinary_system,
+            'endocrine_system' => $request->endocrine_system,
+            'skin_examination' => $request->skin_examination,
+            'psychiatric_assessment' => $request->psychiatric_assessment,
+            'notes' => $request->notes,
+            'created_by' => Auth::id(),
+            'updated_by' => Auth::id(),
+            'status' => 'active'
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Systemic examination recorded successfully.',
+            'examination' => $examination
+        ]);
+    }
+
+    /**
      * Store systemic examination findings
      */
     public function storeExamination(Request $request, $consultationId)
@@ -631,7 +695,13 @@ class ConsultationController extends Controller
      */
     public function storePrescription(Request $request, $consultationId)
     {
-        $consultation = Consultation::findOrFail($consultationId);
+        // Try to find by consultation ID first
+        $consultation = Consultation::find($consultationId);
+        
+        // If not found, try to find by visit ID
+        if (!$consultation) {
+            $consultation = Consultation::where('visit_id', $consultationId)->firstOrFail();
+        }
 
         $request->validate([
             'medication_id' => 'required|exists:medications,id',
@@ -886,16 +956,24 @@ class ConsultationController extends Controller
     public function getInvestigationsPartial($consultationId)
     {
         try {
-            $consultation = Consultation::findOrFail($consultationId);
+            // Try to find by consultation ID first
+            $consultation = Consultation::with('patient', 'visit')->find($consultationId);
+            
+            // If not found, try to find by visit ID
+            if (!$consultation) {
+                $consultation = Consultation::with('patient', 'visit')
+                    ->where('visit_id', $consultationId)
+                    ->firstOrFail();
+            }
             
             // Get the patient category for pricing
             $patient = $consultation->patient;
             $patientCategoryId = $patient ? $patient->patient_category_id : null;
             
             // Get investigations for this consultation AND visit (includes lab-only investigations)
-            $investigations = Investigation::where(function($query) use ($consultationId, $consultation) {
+            $investigations = Investigation::where(function($query) use ($consultation) {
                     // Include investigations linked to this consultation
-                    $query->where('consultation_id', $consultationId)
+                    $query->where('consultation_id', $consultation->id)
                           // OR include investigations linked to this visit but without a consultation (lab-only)
                           ->orWhere(function($q) use ($consultation) {
                               $q->where('visit_id', $consultation->visit_id)
@@ -921,13 +999,19 @@ class ConsultationController extends Controller
             
             return response()->json([
                 'success' => true,
-                'html' => $html
+                'html' => $html,
+                'count' => $investigations->count()
             ]);
         } catch (\Exception $e) {
-            Log::error('Error fetching investigations partial: ' . $e->getMessage());
+            Log::error('Error fetching investigations partial', [
+                'consultation_id' => $consultationId,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to load investigations'
+                'message' => 'Failed to load investigations',
+                'error' => config('app.debug') ? $e->getMessage() : null
             ], 500);
         }
     }
@@ -937,12 +1021,29 @@ class ConsultationController extends Controller
      */
     public function getPrescriptionsPartial($consultationId)
     {
-        $consultation = Consultation::with(['prescriptions.medication', 'prescriptions.frequency', 'prescriptions.administrationRoute'])->findOrFail($consultationId);
+        // Try to find by consultation ID first
+        $consultation = Consultation::with(['prescriptions.medication', 'prescriptions.frequency', 'prescriptions.administrationRoute'])->find($consultationId);
+        
+        // If not found, try to find by visit ID
+        if (!$consultation) {
+            $consultation = Consultation::with(['prescriptions.medication', 'prescriptions.frequency', 'prescriptions.administrationRoute'])
+                ->where('visit_id', $consultationId)
+                ->firstOrFail();
+        }
+        
         $prescriptions = $consultation->prescriptions;
 
-        $html = view('consultations.partials.prescriptions', compact('prescriptions'))->render();
+        // Check if this is for modal (compact view) or page (full table view)
+        $forModal = request()->query('forModal', false);
+        $viewPath = $forModal ? 'partials.prescriptions_list' : 'consultations.partials.prescriptions';
+        
+        $html = view($viewPath, compact('prescriptions'))->render();
 
-        return response()->json(['success' => true, 'html' => $html]);
+        return response()->json([
+            'success' => true, 
+            'html' => $html,
+            'count' => $prescriptions->count()
+        ]);
     }
 
     /**
@@ -961,7 +1062,13 @@ class ConsultationController extends Controller
      */
     public function storeInvestigation(Request $request, $consultationId)
     {
-        $consultation = Consultation::findOrFail($consultationId);
+        // Try to find by consultation ID first
+        $consultation = Consultation::find($consultationId);
+        
+        // If not found, try to find by visit ID
+        if (!$consultation) {
+            $consultation = Consultation::where('visit_id', $consultationId)->firstOrFail();
+        }
 
         $request->validate([
             'medical_service_id' => 'required|exists:medical_services,id',
@@ -1159,6 +1266,27 @@ class ConsultationController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Past medical history saved successfully.',
+            'data' => $medicalHistory
+        ]);
+    }
+
+    /**
+     * Get patient's past medical history
+     */
+    public function getPatientMedicalHistory($patientId)
+    {
+        $medicalHistory = PastMedicalHistory::where('patient_id', $patientId)->first();
+
+        if (!$medicalHistory) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No medical history found for this patient.',
+                'data' => null
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
             'data' => $medicalHistory
         ]);
     }
