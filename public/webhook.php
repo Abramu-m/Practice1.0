@@ -92,8 +92,8 @@ Log::channel('webhook')->info('⚙️  Executing deployment commands');
 foreach ($commands as $command) {
     // Extract command name for cleaner display
     $commandName = 'Unknown';
-    if (strpos($command, 'git pumposer install') !== false) $commandName = 'Install Dependencies';
-    elseif (strpos($command, 'coll') !== false) $commandName = 'Git Pull';
+    if (strpos($command, 'composer install') !== false) $commandName = 'Install Dependencies';
+    elseif (strpos($command, 'git pull') !== false) $commandName = 'Git Pull';
     elseif (strpos($command, 'config:clear') !== false) $commandName = 'Clear Config Cache';
     elseif (strpos($command, 'cache:clear') !== false) $commandName = 'Clear App Cache';
     elseif (strpos($command, 'route:clear') !== false) $commandName = 'Clear Route Cache';
