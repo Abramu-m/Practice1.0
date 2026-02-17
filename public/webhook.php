@@ -71,7 +71,7 @@ $phpPath = '/usr/local/bin/php'; // Bluehost PHP path, adjust if needed
 
 $commands = [
     $gitCommand,
-    'cd ' . PROJECT_PATH . ' && /opt/cpanel/composer/bin/composer install --no-dev --optimize-autoloader 2>&1',
+    'cd ' . PROJECT_PATH . ' && HOME=' . PROJECT_PATH . '/storage/composer-home COMPOSER_HOME=' . PROJECT_PATH . '/storage/composer-home /opt/cpanel/composer/bin/composer install --no-dev --optimize-autoloader 2>&1',
     $phpPath . ' ' . PROJECT_PATH . '/artisan config:clear 2>&1',
     $phpPath . ' ' . PROJECT_PATH . '/artisan cache:clear 2>&1',
     $phpPath . ' ' . PROJECT_PATH . '/artisan route:clear 2>&1',

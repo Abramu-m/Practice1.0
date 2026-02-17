@@ -2,13 +2,17 @@
 
 DataTables is already loaded via CDN (no frontend installation needed), but you need to install the Laravel server-side package (`yajra/laravel-datatables-oracle`).
 
-## Option 1: Automatic (One-time Setup)
+## ⚠️ Important Fix Applied
+
+The installer script now automatically sets the `COMPOSER_HOME` environment variable, fixing the "HOME or COMPOSER_HOME environment variable must be set" error that occurs on shared hosting.
+
+## Option 1: Web Installer (Recommended for Shared Hosting)
 
 1. **Upload the installer script:**
    - Upload `public/install-dependencies.php` to your Bluehost public folder
 
 2. **Change the password:**
-   - Edit `install-dependencies.php` and change line 17:
+   - Edit `install-dependencies.php` and change line 22:
      ```php
      define('INSTALL_PASSWORD', 'your_secure_password_here');
      ```
@@ -16,6 +20,7 @@ DataTables is already loaded via CDN (no frontend installation needed), but you 
 3. **Run the installer:**
    - Visit: `https://janet-healthcare.com/install-dependencies.php?password=your_secure_password_here`
    - The script will:
+     - Set COMPOSER_HOME to `storage/composer-home`
      - Install composer dependencies
      - Clear Laravel caches
      - Display detailed logs
@@ -24,7 +29,9 @@ DataTables is already loaded via CDN (no frontend installation needed), but you 
    - Click the delete link shown in the script, OR
    - Manually delete via FTP/cPanel File Manager
 
-## Option 2: SSH (Recommended for recurring updates)
+## Option 2: SSH (If Available)
+
+If you have SSH access enabled on Bluehost:
 
 ```bash
 # Connect via SSH
@@ -33,7 +40,9 @@ ssh your-username@janet-healthcare.com
 # Navigate to project
 cd /home2/yyfcolmy/practice1.0/Practice1.0
 
-# Install dependencies
+# Set HOME for Composer and install
+HOME=/home2/yyfcolmy/practice1.0/Practice1.0/storage/composer-home \
+COMPOSER_HOME=/home2/yyfcolmy/practice1.0/Practice1.0/storage/composer-home \
 /opt/cpanel/composer/bin/composer install --no-dev --optimize-autoloader
 
 # Clear caches
@@ -81,6 +90,43 @@ cd /home2/yyfcolmy/practice1.0/Practice1.0
 ```
 
 You should see: `yajra/laravel-datatables-oracle`
+
+## Alternative: Upload Vendor Folder (Last Resort)
+
+If you cannot run Composer on Bluehost at all, you can install dependencies locally and upload the vendor folder:
+
+1. **On your local machine:**
+   ```bash
+   cd C:\xampp\htdocs\Practice1.0
+   composer install --no-dev --optimize-autoloader
+   ```
+
+2. **Upload to Bluehost:**
+   - Zip the `vendor` folder (this will be large, ~50-100MB)
+   - Upload via FTP or cPanel File Manager
+   - Extract on the server
+   - Ensure the path is: `/home2/yyfcolmy/practice1.0/Practice1.0/vendor`
+
+3. **Set permissions:**
+   - Make sure the vendor folder is readable (755 permissions)
+
+**Note:** This method is not ideal because:
+- The vendor folder is large (slow to upload)
+- You'll need to re-upload every time composer.json changes
+- The webhook won't be able to auto-update dependencies
+
+## Enabling SSH on Bluehost
+
+If you don't have SSH access but want it:
+
+1. Log into cPanel
+2. Go to **Security** → **SSH Access**
+3. Click **Manage SSH Keys**
+4. Generate a new key pair or upload your public key
+5. Authorize the key
+6. Use the key to connect via SSH
+
+SSH is the most reliable way to manage Composer dependencies on shared hosting.
 
 ## Security Note
 

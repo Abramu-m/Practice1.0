@@ -68,6 +68,17 @@ if (!isset($_GET['password']) || $_GET['password'] !== INSTALL_PASSWORD) {
     
     echo '<div class="log success">✓ Composer found at: ' . COMPOSER_PATH . '</div>';
     
+    // Set HOME environment variable for Composer
+    // Composer requires HOME to be set for its cache/config
+    $homeDir = PROJECT_PATH . '/storage/composer-home';
+    if (!is_dir($homeDir)) {
+        mkdir($homeDir, 0755, true);
+    }
+    putenv('HOME=' . $homeDir);
+    putenv('COMPOSER_HOME=' . $homeDir);
+    
+    echo '<div class="log info">🏠 Set COMPOSER_HOME: ' . $homeDir . '</div>';
+    
     // Run composer install
     echo '<div class="log info">⚙️  Running: composer install --no-dev --optimize-autoloader</div>';
     echo '<div class="log"><pre>';
