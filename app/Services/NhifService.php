@@ -548,7 +548,7 @@ class NhifService
     /**
      * Synchronize tariffs from NHIF API
      */
-    public function syncTariffs(string $facilityCode = null): array
+    public function syncTariffs(?string $facilityCode = null): array
     {
         try {
             $facilityCode = $facilityCode ?? ($this->config['facility_code'] ?? null) ?? config('nhif.facility_code');
