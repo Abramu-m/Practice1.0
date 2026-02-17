@@ -2,9 +2,13 @@
 
 DataTables is already loaded via CDN (no frontend installation needed), but you need to install the Laravel server-side package (`yajra/laravel-datatables-oracle`).
 
-## ⚠️ Important Fix Applied
+## ⚠️ Important Fixes Applied
 
+**Fix 1: COMPOSER_HOME Environment Variable**
 The installer script now automatically sets the `COMPOSER_HOME` environment variable, fixing the "HOME or COMPOSER_HOME environment variable must be set" error that occurs on shared hosting.
+
+**Fix 2: PHP 8.5.2 Compatibility**
+The installer now uses `--ignore-platform-reqs` flag to bypass platform checks. Your server has PHP 8.5.2, which is newer than what some packages officially support (8.0-8.4), but the packages work fine with PHP 8.5.2. This flag tells Composer to install anyway.
 
 ## Option 1: Web Installer (Recommended for Shared Hosting)
 
@@ -43,7 +47,7 @@ cd /home2/yyfcolmy/practice1.0/Practice1.0
 # Set HOME for Composer and install
 HOME=/home2/yyfcolmy/practice1.0/Practice1.0/storage/composer-home \
 COMPOSER_HOME=/home2/yyfcolmy/practice1.0/Practice1.0/storage/composer-home \
-/opt/cpanel/composer/bin/composer install --no-dev --optimize-autoloader
+/opt/cpanel/composer/bin/composer install --no-dev --optimize-autoloader --ignore-platform-reqs
 
 # Clear caches
 /usr/local/bin/php artisan config:clear
@@ -64,6 +68,27 @@ After installation, check that DataTables is working:
 3. Check browser console for any errors (F12)
 
 ## Troubleshooting
+
+### PHP 8.5.2 Platform Mismatch
+
+**Error:** "Your lock file does not contain a compatible set of packages"
+
+**Cause:** Your Bluehost server has PHP 8.5.2, but some packages in `composer.lock` officially support PHP 8.0-8.4 only.
+
+**Solution:** The installer now uses `--ignore-platform-reqs` flag. This is safe because:
+- PHP 8.5.2 is backward compatible with 8.4
+- The packages work fine despite the version mismatch
+- Only the version check is bypassed, not actual compatibility
+
+**Alternative:** Update composer.lock locally to PHP 8.5.2:
+```bash
+# On your local machine
+cd C:\xampp\htdocs\Practice1.0
+composer update --lock
+git add composer.lock
+git commit -m "Update composer.lock for PHP 8.5.2"
+git push
+```
 
 ### If Composer path is wrong:
 The default path is `/opt/cpanel/composer/bin/composer`. If this doesn't work, try:

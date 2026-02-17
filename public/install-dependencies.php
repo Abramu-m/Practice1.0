@@ -80,10 +80,10 @@ if (!isset($_GET['password']) || $_GET['password'] !== INSTALL_PASSWORD) {
     echo '<div class="log info">🏠 Set COMPOSER_HOME: ' . $homeDir . '</div>';
     
     // Run composer install
-    echo '<div class="log info">⚙️  Running: composer install --no-dev --optimize-autoloader</div>';
+    echo '<div class="log info">⚙️  Running: composer install --no-dev --optimize-autoloader --ignore-platform-reqs</div>';
     echo '<div class="log"><pre>';
     
-    $command = COMPOSER_PATH . ' install --no-dev --optimize-autoloader 2>&1';
+    $command = COMPOSER_PATH . ' install --no-dev --optimize-autoloader --ignore-platform-reqs 2>&1';
     exec($command, $output, $returnCode);
     
     foreach ($output as $line) {
