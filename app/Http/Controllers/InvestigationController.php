@@ -124,7 +124,7 @@ class InvestigationController extends Controller
                 ->addColumn('actions', function ($investigation) {
                     return view('investigations._actions', compact('investigation'))->render();
                 })
-                ->rawColumns(['id_display', 'patient_display', 'investigation_display', 'doctor_display', 'priority', 'status', 'ordered_date', 'price_display', 'actions'])
+                ->rawColumns(['id_display', 'patient_display', 'investigation_display', 'doctor_display', 'priority', 'status', 'actions'])
                 ->orderColumn('ordered_at', function ($query, $order) {
                     $query->orderBy('ordered_at', $order);
                 })

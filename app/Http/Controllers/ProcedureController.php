@@ -227,7 +227,7 @@ class ProcedureController extends Controller
                 ->addColumn('actions', function ($investigation) use ($user) {
                     return view('procedures._actions', compact('investigation', 'user'))->render();
                 })
-                ->rawColumns(['mr_number', 'patient_name', 'ordered_by', 'procedure_name', 'priority', 'status', 'result_status', 'actions'])
+                ->rawColumns(['mr_number', 'ordered_by', 'procedure_name', 'priority', 'status', 'result_status', 'actions'])
                 ->orderColumn('ordered_at', function ($query, $order) {
                     $query->orderBy('priority', 'desc')->orderBy('ordered_at', $order);
                 })
