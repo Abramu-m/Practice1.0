@@ -109,7 +109,7 @@
                         <div class="col-md-3">
                             <div class="card bg-warning text-white">
                                 <div class="card-body text-center">
-                                    <h4>{{ $investigations->total() }}</h4>
+                                    <h4 id="stat-total">-</h4>
                                     <p class="mb-0">
                                         @if($user->role === 'nurse')
                                             Nursing Procedures
@@ -127,7 +127,7 @@
                         <div class="col-md-3">
                             <div class="card bg-danger text-white">
                                 <div class="card-body text-center">
-                                    <h4>{{ $investigations->where('priority', 'urgent')->count() + $investigations->where('priority', 'stat')->count() }}</h4>
+                                    <h4 id="stat-urgent">-</h4>
                                     <p class="mb-0">Urgent/STAT</p>
                                 </div>
                             </div>
@@ -135,7 +135,7 @@
                         <div class="col-md-3">
                             <div class="card bg-info text-white">
                                 <div class="card-body text-center">
-                                    <h4>{{ $investigations->where('status', 'processing')->count() }}</h4>
+                                    <h4 id="stat-processing">-</h4>
                                     <p class="mb-0">In Progress</p>
                                 </div>
                             </div>
@@ -143,7 +143,7 @@
                         <div class="col-md-3">
                             <div class="card bg-primary text-white">
                                 <div class="card-body text-center">
-                                    <h4>{{ $investigations->where('status', 'collected')->count() }}</h4>
+                                    <h4 id="stat-collected">-</h4>
                                     <p class="mb-0">
                                         @if($user->role === 'nurse')
                                             Ready for Processing
@@ -158,7 +158,7 @@
 
                     <!-- Procedures Table -->
                     <div class="table-responsive">
-                        <table class="table table-striped table-hover">
+                        <table id="proceduresTable" class="table table-striped table-hover">
                             <thead class="table-dark">
                                 <tr>
                                     <th>SN</th>
@@ -185,282 +185,11 @@
                                     <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                @forelse($investigations as $index => $investigation)
-                                    <tr class="{{ $investigation->isOverdue() ? 'table-danger' : '' }} {{ $investigation->priority === 'stat' ? 'table-warning' : '' }}" data-investigation-id="{{ $investigation->id }}">
-                                        <td>{{ $index + 1 }}.</td>
-                                        <td>
-                                            <strong>{{ $investigation->patient->mr_number ?? 'N/A' }}</strong>
-                                            @if($investigation->isOverdue())
-                                                <br><span class="badge bg-danger">OVERDUE</span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            @if($investigation->patient)
-                                                {{ $investigation->patient->first_name }} {{ $investigation->patient->last_name }}
-                                            @else
-                                                <span class="text-muted">Unknown Patient</span>
-                                            @endif
-                                        </td>
-                                        <td>{{ $investigation->formatted_age ?? 'N/A' }}</td>
-                                        @if($user->role !== 'doctor')
-                                        <td>
-                                            @if($investigation->doctor)
-                                                Dr. {{ $investigation->doctor->user->first_name }} {{ $investigation->doctor->user->last_name }}
-                                            @else
-                                                <span class="text-muted">Unknown</span>
-                                            @endif
-                                        </td>
-                                        @endif
-                                        <td>
-                                            @if($investigation->medicalService)
-                                                <a href="{{ route('procedures.show', $investigation) }}" class="text-decoration-none">
-                                                    <strong>{{ $investigation->medicalService->name }}</strong>
-                                                </a>
-                                                @if($investigation->medicalService->requires_sample)
-                                                    <br><small class="text-info">Sample: {{ $investigation->medicalService->sample_type }}</small>
-                                                @endif
-                                            @else
-                                                <span class="text-muted">Unknown Service</span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            <span class="badge {{ $investigation->priority_badge_class }}">
-                                                {{ strtoupper($investigation->priority) }}
-                                            </span>
-                                        </td>
-                                        <td>{{ $investigation->ordered_at ? $investigation->ordered_at->format('M d, Y') : 'N/A' }}</td>
-                                        <td>{{ $investigation->ordered_at ? $investigation->ordered_at->format('H:i') : 'N/A' }}</td>
-                                        <td>
-                                            <span class="badge {{ $investigation->status_badge_class }}">
-                                                @if($investigation->status === 'ordered')
-                                                    Ordered
-                                                @elseif($investigation->status === 'collected')
-                                                    Sample Collected
-                                                @elseif($investigation->status === 'processing')
-                                                    Processing
-                                                @elseif($investigation->status === 'resulted')
-                                                    Resulted
-                                                @else
-                                                    {{ ucfirst($investigation->status) }}
-                                                @endif
-                                            </span>
-                                        </td>
-                                        <td>
-                                            @php
-                                                $result = $investigation->results->first();
-                                            @endphp
-                                            @if($result)
-                                                @if($result->form_status === 'draft')
-                                                    <span class="badge bg-secondary">
-                                                        <i class="fas fa-edit"></i> Draft
-                                                    </span>
-                                                @elseif($result->form_status === 'preliminary')
-                                                    <span class="badge bg-warning">
-                                                        <i class="fas fa-clock"></i> Preliminary
-                                                    </span>
-                                                @elseif($result->form_status === 'final')
-                                                    <span class="badge bg-success">
-                                                        <i class="fas fa-check"></i> Final
-                                                    </span>
-                                                @endif
-                                            @else
-                                                <span class="badge bg-light text-dark">
-                                                    <i class="fas fa-minus"></i> No Results
-                                                </span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            <div class="btn-group btn-group-sm">
-                                                @php
-                                                    $result = $investigation->results->first();
-                                                    $canEdit = $result && $result->form_status !== 'final';
-                                                @endphp
-                                                
-                                                <!-- Role-specific Main Action Button -->
-                                                @if($user->role === 'nurse')
-                                                    <!-- Nurse: Focus on procedures/starting -->
-                                                    @if($investigation->status === 'ordered')
-                                                        <button class="btn btn-sm btn-outline-primary" 
-                                                               onclick="updateInvestigationStatus({{ $investigation->id }}, 'processing')"
-                                                               title="Start Procedure">
-                                                            <i class="fas fa-play"></i> Start Procedure
-                                                        </button>
-                                                    @elseif($investigation->status === 'processing')
-                                                        <a href="{{ route('procedures.show', $investigation) }}" 
-                                                           class="btn btn-sm btn-outline-success" 
-                                                           title="Complete Procedure">
-                                                            <i class="fas fa-check"></i> Complete
-                                                        </a>
-                                                    @else
-                                                        <a href="{{ route('procedures.show', $investigation) }}" 
-                                                           class="btn btn-sm btn-outline-info" 
-                                                           title="View Procedure">
-                                                            <i class="fas fa-eye"></i> View
-                                                        </a>
-                                                    @endif
-                                                    
-                                                @elseif($user->role === 'radiologist')
-                                                    <!-- Radiologist: Focus on imaging studies -->
-                                                    @if(in_array($investigation->status, ['collected', 'processing']) || ($result && $result->form_status !== 'final'))
-                                                        @if(!$result || $result->form_status === 'draft' || $result->form_status === 'preliminary')
-                                                            <a href="{{ route('procedures.show', $investigation) }}" 
-                                                               class="btn btn-sm {{ $result ? 'btn-outline-warning' : 'btn-outline-success' }}" 
-                                                               title="{{ $result ? 'Edit Report' : 'Create Report' }}">
-                                                                <i class="fas {{ $result ? 'fa-edit' : 'fa-plus' }}"></i>
-                                                                {{ $result ? 'Edit Report' : 'Create Report' }}
-                                                            </a>
-                                                        @endif
-                                                    @endif
-                                                    
-                                                    @if($investigation->status === 'resulted' && $result)
-                                                        <a href="{{ route('procedures.show', $investigation) }}" 
-                                                           class="btn btn-sm btn-outline-info" 
-                                                           title="View Report">
-                                                            <i class="fas fa-eye"></i> View Report
-                                                        </a>
-                                                    @endif
-                                                    
-                                                @else
-                                                    <!-- Doctor/Lab: Standard result entry -->
-                                                    @if(in_array($investigation->status, ['collected', 'processing']) || ($result && $result->form_status !== 'final'))
-                                                        @if(!$result || $result->form_status === 'draft' || $result->form_status === 'preliminary')
-                                                            <a href="{{ route('procedures.show', $investigation) }}" 
-                                                               class="btn btn-sm {{ $result ? 'btn-outline-warning' : 'btn-outline-success' }}" 
-                                                               title="{{ $result ? 'Edit Results' : 'Add Results' }}">
-                                                                <i class="fas {{ $result ? 'fa-edit' : 'fa-plus' }}"></i>
-                                                                {{ $result ? 'Edit' : 'Add' }}
-                                                            </a>
-                                                        @endif
-                                                    @endif
-                                                    
-                                                    @if($investigation->status === 'resulted' && $result)
-                                                        <a href="{{ route('procedures.show', $investigation) }}" 
-                                                           class="btn btn-sm btn-outline-info" 
-                                                           title="View Results">
-                                                            <i class="fas fa-eye"></i> View
-                                                        </a>
-                                                    @endif
-                                                @endif
-
-                                                <!-- Role-specific Status Update Buttons -->
-                                                @if($user->role === 'nurse')
-                                                    <!-- Nurse-specific actions -->
-                                                    @if($investigation->status === 'ordered' && $investigation->medicalService && $investigation->medicalService->requires_sample)
-                                                        <button class="btn btn-sm btn-outline-info" 
-                                                                onclick="updateInvestigationStatus({{ $investigation->id }}, 'collected')"
-                                                                title="Mark Sample Collected (Stock will be deducted)">
-                                                            <i class="fas fa-flask"></i>
-                                                        </button>
-                                                    @endif
-                                                    @if($investigation->status === 'ordered' && (!$investigation->medicalService || !$investigation->medicalService->requires_sample))
-                                                        <button class="btn btn-sm btn-outline-primary" 
-                                                                onclick="updateInvestigationStatus({{ $investigation->id }}, 'processing')"
-                                                                title="Start Procedure (⚠️ Stock will be deducted)">
-                                                            <i class="fas fa-play"></i>
-                                                        </button>
-                                                    @endif
-                                                    @if($investigation->status === 'collected')
-                                                        <button class="btn btn-sm btn-outline-primary" 
-                                                                onclick="updateInvestigationStatus({{ $investigation->id }}, 'processing')"
-                                                                title="Start Procedure (No additional stock deduction)">
-                                                            <i class="fas fa-play"></i>
-                                                        </button>
-                                                    @endif
-                                                    
-                                                @elseif($user->role === 'radiologist')
-                                                    <!-- Radiologist-specific actions -->
-                                                    @if($investigation->status === 'ordered' && (!$investigation->medicalService || !$investigation->medicalService->requires_sample))
-                                                        <button class="btn btn-sm btn-outline-primary" 
-                                                                onclick="updateInvestigationStatus({{ $investigation->id }}, 'processing')"
-                                                                title="Start Study (⚠️ Stock will be deducted)">
-                                                            <i class="fas fa-x-ray"></i>
-                                                        </button>
-                                                    @endif
-                                                    @if($investigation->status === 'collected')
-                                                        <button class="btn btn-sm btn-outline-primary" 
-                                                                onclick="updateInvestigationStatus({{ $investigation->id }}, 'processing')"
-                                                                title="Start Study (No additional stock deduction)">
-                                                            <i class="fas fa-x-ray"></i>
-                                                        </button>
-                                                    @endif
-                                                    
-                                                @else
-                                                    <!-- Doctor/Lab actions -->
-                                                    @if($investigation->status === 'ordered' && $investigation->medicalService && $investigation->medicalService->requires_sample)
-                                                        <button class="btn btn-sm btn-outline-info" 
-                                                                onclick="updateInvestigationStatus({{ $investigation->id }}, 'collected')"
-                                                                title="Mark Sample Collected (Stock will be deducted)">
-                                                            <i class="fas fa-flask"></i>
-                                                        </button>
-                                                    @endif
-                                                    @if($investigation->status === 'ordered' && (!$investigation->medicalService || !$investigation->medicalService->requires_sample))
-                                                        <button class="btn btn-sm btn-outline-primary" 
-                                                                onclick="updateInvestigationStatus({{ $investigation->id }}, 'processing')"
-                                                                title="Start Processing (⚠️ Stock will be deducted)">
-                                                            <i class="fas fa-spinner"></i>
-                                                        </button>
-                                                    @endif
-                                                    @if($investigation->status === 'collected')
-                                                        <button class="btn btn-sm btn-outline-primary" 
-                                                                onclick="updateInvestigationStatus({{ $investigation->id }}, 'processing')"
-                                                                title="Start Processing (No additional stock deduction)">
-                                                            <i class="fas fa-spinner"></i>
-                                                        </button>
-                                                    @endif
-                                                @endif
-
-                                                <!-- Common action buttons -->
-                                                @if($result)
-                                                    <a href="{{ route('procedures.view-results', $investigation) }}" 
-                                                       class="btn btn-sm btn-outline-danger"
-                                                       title="Generate Report">
-                                                        <i class="fas fa-file-pdf"></i>
-                                                    </a>
-                                                @endif
-                                                
-                                                <button class="btn btn-sm btn-outline-secondary" 
-                                                        onclick="showStockDetailsForInvestigation({{ $investigation->id }})"
-                                                        title="Check Stock">
-                                                    <i class="fas fa-boxes"></i>
-                                                </button>
-                                                
-                                                @if(in_array($investigation->status, ['ordered', 'collected', 'processing']))
-                                                    <button class="btn btn-sm btn-outline-danger" 
-                                                            onclick="updateInvestigationStatus({{ $investigation->id }}, 'cancelled')"
-                                                            title="Cancel">
-                                                        <i class="fas fa-times"></i>
-                                                    </button>
-                                                @endif
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="{{ $user->role === 'doctor' ? '11' : '12' }}" class="text-center py-4">
-                                            <div class="text-muted">
-                                                <i class="fas fa-clipboard-list fa-3x mb-3"></i>
-                                                <p>
-                                                    @if($user->role === 'nurse')
-                                                        No nursing procedures awaiting attention
-                                                    @elseif($user->role === 'radiologist')
-                                                        No radiology studies awaiting reports
-                                                    @else
-                                                        No procedures awaiting results
-                                                    @endif
-                                                </p>
-                                                <small>All investigations are up to date!</small>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
                         </table>
                     </div>
 
                     <!-- Pagination -->
                     <div class="d-flex justify-content-center">
-                        {{ $investigations->appends(request()->query())->links() }}
                     </div>
                 </div>
             </div>
@@ -599,6 +328,67 @@
 
 @section('scripts')
 <script>
+$(document).ready(function() {
+    var userRole = '{{ $user->role }}';
+    var table = $('#proceduresTable').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: '{{ route("procedures.index") }}',
+            data: function(d) {
+                d.filter_type = $('select[name="filter_type"]').val();
+                d.service_category = $('select[name="service_category"]').val();
+                d.doctor_id = $('select[name="doctor_id"]').val();
+                d.priority = $('select[name="priority"]').val();
+                d.patient_search = $('input[name="patient_search"]').val();
+            },
+            error: function(xhr, error, code) {
+                console.error('DataTables AJAX error:', error);
+                console.error('Status:', xhr.status);
+                console.error('Response:', xhr.responseText);
+            }
+        },
+        columns: [
+            { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false, 
+              render: function(data, type, row, meta) {
+                  return meta.row + meta.settings._iDisplayStart + 1 + '.';
+              }
+            },
+            { data: 'mr_number', name: 'patient.mr_number', orderable: false },
+            { data: 'patient_name', name: 'patient.first_name', orderable: true },
+            { data: 'age', name: 'age', orderable: false, searchable: false },
+            @if($user->role !== 'doctor')
+            { data: 'ordered_by', name: 'doctor.user.first_name', orderable: true },
+            @endif
+            { data: 'procedure_name', name: 'medicalService.name', orderable: true },
+            { data: 'priority', name: 'priority', orderable: true },
+            { data: 'date', name: 'ordered_at', orderable: true },
+            { data: 'time', name: 'ordered_at', orderable: false, searchable: false },
+            { data: 'status', name: 'status', orderable: true },
+            { data: 'result_status', name: 'result_status', orderable: false, searchable: false },
+            { data: 'actions', name: 'actions', orderable: false, searchable: false }
+        ],
+        order: [[{{ $user->role === 'doctor' ? '6' : '7' }}, 'desc']],
+        pageLength: 20,
+        responsive: true,
+        createdRow: function(row, data, dataIndex) {
+            // Add row classes for overdue and stat priority
+            $(row).attr('data-investigation-id', data.id);
+        }
+    });
+
+    // Filter on form submit
+    $('form').on('submit', function(e) {
+        e.preventDefault();
+        table.draw();
+    });
+
+    // Refresh button
+    window.refreshList = function() {
+        table.ajax.reload();
+    };
+});
+
 function updateStatus(investigationId, newStatus) {
     if (confirm(`Mark investigation as ${newStatus}?`)) {
         fetch(`/investigations/${investigationId}/status`, {
