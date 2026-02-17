@@ -4,27 +4,17 @@
  * URL: https://janet-healthcare.com/webhook.php
  */
 
+// Bootstrap Laravel
+require __DIR__.'/../vendor/autoload.php';
+$app = require_once __DIR__.'/../bootstrap/app.php';
+$app->make('Illuminate\Contracts\Console\Kernel')->bootstrap();
+
+use Illuminate\Support\Facades\Log;
+
 // Configuration
 define('SECRET', 'my_secure_webhook_secret_2026'); // Match this with GitHub webhook secret
 define('PROJECT_PATH', '/home2/yyfcolmy/practice1.0/Practice1.0'); // Update with your actual Bluehost path
-define('LOG_FILE', PROJECT_PATH . '/storage/logs/webhook.log');
 define('BRANCH', 'master'); // or 'main' depending on your branch name
-
-// Function to log messages
-function logMessage($message, $indent = 0) {
-    $timestamp = date('Y-m-d H:i:s');
-    $indentation = str_repeat('  ', $indent);
-    $logEntry = "[{$timestamp}] {$indentation}{$message}\n";
-    file_put_contents(LOG_FILE, $logEntry, FILE_APPEND);
-    echo $logEntry;
-}
-
-// Function to log separator
-function logSeparator($char = '=', $length = 80) {
-    $line = str_repeat($char, $length) . "\n";
-    file_put_contents(LOG_FILE, $line, FILE_APPEND);
-    echo $line;
-}
 
 // Function to verify GitHub signature
 function verifyGitHubSignature($payload, $signature) {
@@ -36,10 +26,10 @@ function verifyGitHubSignature($payload, $signature) {
     return hash_equals($hash, $signature);
 }
 
-// Start
-logSeparator();
-logMessage("🚀 DEPLOYMENT STARTED");
-logSeparator();
+// Start deployment
+Log::channel('webhook')->info('==========================================================');
+Log::channel('webhook')->info('🚀 DEPLOYMENT STARTED');
+Log::channel('webhook')->info('==========================================================');
 
 // Get payload
 $payload = file_get_contents('php://input');
@@ -47,14 +37,14 @@ $signature = $_SERVER['HTTP_X_HUB_SIGNATURE_256'] ?? '';
 
 // Verify signature
 if (!verifyGitHubSignature($payload, $signature)) {
-    logMessage("❌ ERROR: Invalid signature", 1);
-    logSeparator();
+    Log::channel('webhook')->error('Invalid signature - deployment rejected');
+    Log::channel('webhook')->info('==========================================================');
     http_response_code(403);
     echo json_encode(['error' => 'Invalid signature']);
     exit;
 }
 
-logMessage("✓ Signature verified successfully", 1);
+Log::channel('webhook')->info('✓ Signature verified successfully');
 
 // Decode payload
 $data = json_decode($payload, true);
@@ -63,11 +53,12 @@ $commitMessage = $data['head_commit']['message'] ?? 'No message';
 $branch = $data['ref'] ?? 'refs/heads/' . BRANCH;
 $branch = str_replace('refs/heads/', '', $branch);
 
-logMessage("📝 DEPLOYMENT INFO:", 1);
-logMessage("Pusher: {$pusherName}", 2);
-logMessage("Branch: {$branch}", 2);
-logMessage("Commit: {$commitMessage}", 2);
-logSeparator('-');
+Log::channel('webhook')->info('📝 Deployment Info', [
+    'pusher' => $pusherName,
+    'branch' => $branch,
+    'commit' => $commitMessage
+]);
+Log::channel('webhook')->info('----------------------------------------------------------');
 
 // Change to project directory and execute deployment commands
 chdir(PROJECT_PATH);
@@ -95,7 +86,7 @@ $results = [];
 $allSuccess = true;
 $stepNumber = 1;
 
-logMessage("⚙️  EXECUTING DEPLOYMENT COMMANDS:", 1);
+Log::channel('webhook')->info('⚙️  Executing deployment commands');
 
 foreach ($commands as $command) {
     // Extract command name for cleaner display
@@ -110,35 +101,21 @@ foreach ($commands as $command) {
     elseif (strpos($command, 'view:cache') !== false) $commandName = 'Cache Views';
     elseif (strpos($command, 'migrate') !== false) $commandName = 'Run Migrations';
     
-    logMessage("", 0); // Empty line for spacing
-    logMessage("Step {$stepNumber}: {$commandName}", 2);
     exec($command, $output, $returnCode);
     
     $commandOutput = implode("\n", $output);
     
     if ($returnCode === 0) {
-        logMessage("✓ Success", 3);
-        if (!empty($commandOutput)) {
-            // Show condensed output for successful commands
-            $lines = explode("\n", trim($commandOutput));
-            $summaryLines = array_slice($lines, -3); // Show last 3 lines
-            foreach ($summaryLines as $line) {
-                if (!empty(trim($line))) {
-                    logMessage(trim($line), 4);
-                }
-            }
-        }
+        Log::channel('webhook')->info("✓ Step {$stepNumber}: {$commandName} - Success", [
+            'exit_code' => $returnCode,
+            'output' => !empty($commandOutput) ? array_slice(explode("\n", trim($commandOutput)), -3) : []
+        ]);
     } else {
-        logMessage("❌ Failed (exit code: {$returnCode})", 3);
+        Log::channel('webhook')->error("❌ Step {$stepNumber}: {$commandName} - Failed", [
+            'exit_code' => $returnCode,
+            'output' => !empty($commandOutput) ? explode("\n", trim($commandOutput)) : []
+        ]);
         $allSuccess = false;
-        // Show full output for failed commands
-        if (!empty($commandOutput)) {
-            foreach (explode("\n", $commandOutput) as $line) {
-                if (!empty(trim($line))) {
-                    logMessage(trim($line), 4);
-                }
-            }
-        }
     }
     
     $results[] = [
@@ -153,35 +130,32 @@ foreach ($commands as $command) {
     $stepNumber++;
 }
 
-logMessage("", 0); // Empty line
-logSeparator('-');
-
-logMessage("", 0); // Empty line
-logSeparator('-');
+Log::channel('webhook')->info('----------------------------------------------------------');
 
 // Summary
 $successCount = count(array_filter($results, fn($r) => $r['success']));
 $totalCount = count($results);
 
+$failedSteps = array_filter($results, fn($r) => !$r['success']);
+
 if ($allSuccess) {
-    logMessage("✅ DEPLOYMENT SUCCESSFUL", 1);
-    logMessage("All {$totalCount} steps completed successfully", 2);
+    Log::channel('webhook')->info('✅ DEPLOYMENT SUCCESSFUL', [
+        'total_steps' => $totalCount,
+        'successful_steps' => $successCount,
+        'timestamp' => date('Y-m-d H:i:s')
+    ]);
 } else {
-    logMessage("⚠️  DEPLOYMENT COMPLETED WITH ERRORS", 1);
-    logMessage("{$successCount}/{$totalCount} steps successful", 2);
-    logMessage("", 0);
-    logMessage("Failed steps:", 2);
-    foreach ($results as $result) {
-        if (!$result['success']) {
-            logMessage("• Step {$result['step']}: {$result['name']}", 3);
-        }
-    }
+    Log::channel('webhook')->warning('⚠️  DEPLOYMENT COMPLETED WITH ERRORS', [
+        'total_steps' => $totalCount,
+        'successful_steps' => $successCount,
+        'failed_steps' => $totalCount - $successCount,
+        'failed_step_names' => array_map(fn($r) => "Step {$r['step']}: {$r['name']}", array_values($failedSteps)),
+        'timestamp' => date('Y-m-d H:i:s')
+    ]);
 }
 
-logMessage("", 0);
-logMessage("Timestamp: " . date('Y-m-d H:i:s'), 2);
-logSeparator();
-logMessage("", 0); // Extra spacing between deployments
+Log::channel('webhook')->info('==========================================================');
+Log::channel('webhook')->info(''); // Extra spacing between deployments
 
 // Return response
 http_response_code($allSuccess ? 200 : 500);
