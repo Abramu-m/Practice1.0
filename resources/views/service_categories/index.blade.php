@@ -166,6 +166,30 @@
     </div>
 @endsection
 
+@endsection
+
+@section('scripts')
+<script>
+$(document).ready(function() {
+    $('.table').DataTable({
+        responsive: true,
+        order: [[0, 'asc']],
+        pageLength: 10,
+        columnDefs: [
+            { orderable: false, targets: [-1] }
+        ],
+        language: {
+            search: "Search categories:",
+            lengthMenu: "Show _MENU_ categories per page",
+            info: "Showing _START_ to _END_ of _TOTAL_ categories",
+            infoEmpty: "No categories found",
+            infoFiltered: "(filtered from _MAX_ total categories)"
+        }
+    });
+});
+</script>
+@endsection
+
 @push('styles')
 <style>
     .table th {

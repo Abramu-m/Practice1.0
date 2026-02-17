@@ -87,6 +87,23 @@
 
     <script>
         (function($){
+            // Initialize DataTable
+            $('.table').DataTable({
+                responsive: true,
+                order: [[0, 'asc']],
+                pageLength: 25,
+                columnDefs: [
+                    { orderable: false, targets: [-1] }
+                ],
+                language: {
+                    search: "Search ICD-10:",
+                    lengthMenu: "Show _MENU_ entries per page",
+                    info: "Showing _START_ to _END_ of _TOTAL_ ICD-10 codes",
+                    infoEmpty: "No ICD-10 codes found",
+                    infoFiltered: "(filtered from _MAX_ total codes)"
+                }
+            });
+
             // Mtuha select regular select2 with local options
             $('#mtuha_select').select2({
                 theme: 'classic',

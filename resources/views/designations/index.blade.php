@@ -61,5 +61,27 @@
 </div>
 @endsection
 
+@section('scripts')
+<script>
+$(document).ready(function() {
+    $('.table').DataTable({
+        responsive: true,
+        order: [[0, 'asc']],
+        pageLength: 10,
+        columnDefs: [
+            { orderable: false, targets: [-1] }
+        ],
+        language: {
+            search: "Search designations:",
+            lengthMenu: "Show _MENU_ designations per page",
+            info: "Showing _START_ to _END_ of _TOTAL_ designations",
+            infoEmpty: "No designations found",
+            infoFiltered: "(filtered from _MAX_ total designations)"
+        }
+    });
+});
+</script>
+@endsection
+
 @section('extra_footer_content')
 @endsection

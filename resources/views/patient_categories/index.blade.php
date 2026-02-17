@@ -96,5 +96,27 @@
     </div>
 @endsection
 
+@section('scripts')
+<script>
+$(document).ready(function() {
+    $('.table').DataTable({
+        responsive: true,
+        order: [[1, 'asc']],
+        pageLength: 10,
+        columnDefs: [
+            { orderable: false, targets: [-1] }
+        ],
+        language: {
+            search: "Search patient categories:",
+            lengthMenu: "Show _MENU_ categories per page",
+            info: "Showing _START_ to _END_ of _TOTAL_ categories",
+            infoEmpty: "No categories found",
+            infoFiltered: "(filtered from _MAX_ total categories)"
+        }
+    });
+});
+</script>
+@endsection
+
 @section('extra_footer_content')
 @endsection

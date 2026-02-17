@@ -59,5 +59,27 @@
 </div>
 @endsection
 
+@section('scripts')
+<script>
+$(document).ready(function() {
+    $('.table').DataTable({
+        responsive: true,
+        order: [[0, 'asc']],
+        pageLength: 10,
+        columnDefs: [
+            { orderable: false, targets: [-1] }
+        ],
+        language: {
+            search: "Search visit types:",
+            lengthMenu: "Show _MENU_ visit types per page",
+            info: "Showing _START_ to _END_ of _TOTAL_ visit types",
+            infoEmpty: "No visit types found",
+            infoFiltered: "(filtered from _MAX_ total visit types)"
+        }
+    });
+});
+</script>
+@endsection
+
 @section('extra_footer_content')
 @endsection
