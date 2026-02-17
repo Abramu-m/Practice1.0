@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Yajra\DataTables\Facades\DataTables;
 
 class ProcedureController extends Controller
 {
@@ -95,68 +96,149 @@ class ProcedureController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
-        $query = Investigation::with(['patient', 'doctor', 'medicalService.serviceCategory', 'results']);
+        
+        if ($request->ajax()) {
+            $query = Investigation::with(['patient', 'doctor', 'medicalService.serviceCategory', 'results']);
 
-        // Apply role-based filtering
-        $this->applyRoleBasedFiltering($query, $user);
+            // Apply role-based filtering
+            $this->applyRoleBasedFiltering($query, $user);
 
-        // Apply navigation filter type for doctors
-        if ($request->filled('filter_type') && $user->role === 'doctor') {
-            if ($request->filter_type === 'procedures') {
-                $query->whereHas('medicalService.serviceCategory', function($q) {
-                    $q->where('name', '=', 'Procedures');
-                });
-            } elseif ($request->filter_type === 'radiology') {
-                $query->whereHas('medicalService.serviceCategory', function($q) {
-                    $q->where('name', '=', 'Radiology');
+            // Apply navigation filter type for doctors
+            if ($request->filled('filter_type') && $user->role === 'doctor') {
+                if ($request->filter_type === 'procedures') {
+                    $query->whereHas('medicalService.serviceCategory', function($q) {
+                        $q->where('name', '=', 'Procedures');
+                    });
+                } elseif ($request->filter_type === 'radiology') {
+                    $query->whereHas('medicalService.serviceCategory', function($q) {
+                        $q->where('name', '=', 'Radiology');
+                    });
+                }
+            }
+
+            // Apply standard filters
+            if ($request->filled('service_category')) {
+                $query->whereHas('medicalService', function($q) use ($request) {
+                    $q->where('service_category_id', $request->service_category);
                 });
             }
+
+            if ($request->filled('doctor_id')) {
+                $query->where('doctor_id', $request->doctor_id);
+            }
+
+            if ($request->filled('priority')) {
+                $query->where('priority', $request->priority);
+            }
+
+            if ($request->filled('patient_search')) {
+                $search = $request->patient_search;
+                
+                $query->whereHas('patient', function($q) use ($search) {
+                    $q->where('first_name', 'like', '%' . $search . '%')
+                      ->orWhere('last_name', 'like', '%' . $search . '%');
+                      
+                    // Check if search looks like an MR number format and extract ID
+                    if (preg_match('/MR-\d{4}-(\d+)/', $search, $matches)) {
+                        $q->orWhere('id', intval($matches[1]));
+                    } elseif (is_numeric($search)) {
+                        // Also check for raw numeric ID
+                        $q->orWhere('id', $search);
+                    }
+                });
+            }
+
+            // Only show investigations from last 30 days
+            $query->where('ordered_at', '>=', now()->subDays(30));
+
+            return DataTables::of($query)
+                ->addColumn('mr_number', function ($investigation) {
+                    $html = '<strong>' . e($investigation->patient->mr_number ?? 'N/A') . '</strong>';
+                    if ($investigation->isOverdue()) {
+                        $html .= '<br><span class="badge bg-danger">OVERDUE</span>';
+                    }
+                    return $html;
+                })
+                ->addColumn('patient_name', function ($investigation) {
+                    if ($investigation->patient) {
+                        return e($investigation->patient->first_name . ' ' . $investigation->patient->last_name);
+                    }
+                    return '<span class="text-muted">Unknown Patient</span>';
+                })
+                ->addColumn('age', function ($investigation) {
+                    return e($investigation->formatted_age ?? 'N/A');
+                })
+                ->addColumn('ordered_by', function ($investigation) use ($user) {
+                    if ($user->role !== 'doctor') {
+                        if ($investigation->doctor) {
+                            return 'Dr. ' . e($investigation->doctor->user->first_name . ' ' . $investigation->doctor->user->last_name);
+                        }
+                        return '<span class="text-muted">Unknown</span>';
+                    }
+                    return null;
+                })
+                ->addColumn('procedure_name', function ($investigation) {
+                    if ($investigation->medicalService) {
+                        $html = '<a href="' . route('procedures.show', $investigation) . '" class="text-decoration-none">';
+                        $html .= '<strong>' . e($investigation->medicalService->name) . '</strong></a>';
+                        if ($investigation->medicalService->requires_sample) {
+                            $html .= '<br><small class="text-info">Sample: ' . e($investigation->medicalService->sample_type) . '</small>';
+                        }
+                        return $html;
+                    }
+                    return '<span class="text-muted">Unknown Service</span>';
+                })
+                ->addColumn('priority', function ($investigation) {
+                    return '<span class="badge ' . e($investigation->priority_badge_class) . '">' . 
+                           e(strtoupper($investigation->priority)) . '</span>';
+                })
+                ->addColumn('date', function ($investigation) {
+                    return $investigation->ordered_at ? $investigation->ordered_at->format('M d, Y') : 'N/A';
+                })
+                ->addColumn('time', function ($investigation) {
+                    return $investigation->ordered_at ? $investigation->ordered_at->format('H:i') : 'N/A';
+                })
+                ->addColumn('status', function ($investigation) {
+                    $statusText = ucfirst($investigation->status);
+                    if ($investigation->status === 'ordered') {
+                        $statusText = 'Ordered';
+                    } elseif ($investigation->status === 'collected') {
+                        $statusText = 'Sample Collected';
+                    } elseif ($investigation->status === 'processing') {
+                        $statusText = 'Processing';
+                    } elseif ($investigation->status === 'resulted') {
+                        $statusText = 'Resulted';
+                    }
+                    return '<span class="badge ' . e($investigation->status_badge_class) . '">' . e($statusText) . '</span>';
+                })
+                ->addColumn('result_status', function ($investigation) {
+                    $result = $investigation->results->first();
+                    if ($result) {
+                        if ($result->form_status === 'draft') {
+                            return '<span class="badge bg-secondary"><i class="fas fa-edit"></i> Draft</span>';
+                        } elseif ($result->form_status === 'preliminary') {
+                            return '<span class="badge bg-warning"><i class="fas fa-clock"></i> Preliminary</span>';
+                        } elseif ($result->form_status === 'final') {
+                            return '<span class="badge bg-success"><i class="fas fa-check"></i> Final</span>';
+                        }
+                    }
+                    return '<span class="badge bg-light text-dark"><i class="fas fa-minus"></i> No Results</span>';
+                })
+                ->addColumn('actions', function ($investigation) use ($user) {
+                    return view('procedures._actions', compact('investigation', 'user'))->render();
+                })
+                ->rawColumns(['mr_number', 'ordered_by', 'procedure_name', 'priority', 'status', 'result_status', 'actions'])
+                ->orderColumn('ordered_at', function ($query, $order) {
+                    $query->orderBy('priority', 'desc')->orderBy('ordered_at', $order);
+                })
+                ->make(true);
         }
-
-        // Apply standard filters
-        if ($request->filled('service_category')) {
-            $query->whereHas('medicalService', function($q) use ($request) {
-                $q->where('service_category_id', $request->service_category);
-            });
-        }
-
-        if ($request->filled('doctor_id')) {
-            $query->where('doctor_id', $request->doctor_id);
-        }
-
-        if ($request->filled('priority')) {
-            $query->where('priority', $request->priority);
-        }
-
-        if ($request->filled('patient_search')) {
-            $search = $request->patient_search;
-            
-            $query->whereHas('patient', function($q) use ($search) {
-                $q->where('first_name', 'like', '%' . $search . '%')
-                  ->orWhere('last_name', 'like', '%' . $search . '%');
-                  
-                // Check if search looks like an MR number format and extract ID
-                if (preg_match('/MR-\d{4}-(\d+)/', $search, $matches)) {
-                    $q->orWhere('id', intval($matches[1]));
-                } elseif (is_numeric($search)) {
-                    // Also check for raw numeric ID
-                    $q->orWhere('id', $search);
-                }
-            });
-        }
-
-        // Only show investigations from last 30 days
-        $query->where('ordered_at', '>=', now()->subDays(30));
-
-        $investigations = $query->orderBy('priority', 'desc')
-                               ->orderBy('ordered_at', 'desc')
-                               ->paginate(20);
 
         // Get role-specific service categories for filtering
         $serviceCategories = $this->getRoleSpecificServiceCategories($user, $request->input('filter_type'));
         $doctors = Doctor::active()->get();
 
-        return view('procedures.index', compact('investigations', 'serviceCategories', 'doctors', 'user'));
+        return view('procedures.index', compact('serviceCategories', 'doctors', 'user'));
     }
 
     /**

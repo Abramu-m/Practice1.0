@@ -23,7 +23,7 @@
                     @endif
 
                     <div class="table-responsive">
-                        <table class="table table-bordered table-striped">
+                        <table id="vitalsTable" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
                                     <th>Patient Name</th>
@@ -33,50 +33,8 @@
                                     <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                @forelse($visits as $visit)
-                                <tr>
-                                    <td>{{ $visit->patientInfo->first_name ?? 'N/A' }} {{ $visit->patientInfo->last_name ?? '' }}</td>
-                                    <td>{{ $visit->patientInfo->mr_number ?? 'N/A' }}</td>
-                                    <td>{{ $visit->visit_date ? $visit->visit_date->format('Y-m-d H:i') : 'N/A' }}</td>
-                                    <td>
-                                        @if($visit->vitalSigns && $visit->vitalSigns->count() > 0)
-                                            <span class="badge bg-success">
-                                                <i class="fas fa-check"></i> Recorded
-                                            </span>
-                                        @else
-                                            <span class="badge bg-danger">
-                                                <i class="fas fa-times"></i> Not Recorded
-                                            </span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        @if($visit->vitalSigns && $visit->vitalSigns->count() > 0)
-                                            <a href="{{ route('vitals.show', $visit->id) }}" class="btn btn-info btn-sm">
-                                                <i class="fas fa-eye"></i> View/Edit
-                                            </a>
-                                        @else
-                                            <a href="{{ route('vitals.show',  $visit->id) }}" class="btn btn-primary btn-sm">
-                                                <i class="fas fa-plus"></i> Record Vitals
-                                            </a>
-                                        @endif
-                                    </td>
-                                </tr>
-                                @empty
-                                <tr>
-                                    <td colspan="5" class="text-center">No patient visits found.</td>
-                                </tr>
-                                @endforelse
-                            </tbody>
                         </table>
                     </div>
-
-                    <!-- Pagination -->
-                    @if(method_exists($visits, 'links'))
-                    <div class="d-flex justify-content-center">
-                        {{ $visits->links() }}
-                    </div>
-                    @endif
                 </div>
             </div>
         </div>
@@ -133,6 +91,43 @@
 @section('scripts')
     <script>
         $(document).ready(function() {
+            var table = $('#vitalsTable').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: '{{ route("vitals.index") }}',
+                    data: function(d) {
+                        d.patient_search = $('#patient_search').val();
+                        d.visit_date = $('#visit_date').val();
+                        d.vitals_status = $('#vitals_status').val();
+                    }
+                },
+                columns: [
+                    { data: 'patient_name', name: 'patientInfo.first_name' },
+                    { data: 'mr_number', name: 'patientInfo.mr_number' },
+                    { data: 'visit_date_formatted', name: 'visit_date' },
+                    { data: 'vitals_status', name: 'vitals_status', orderable: false, searchable: false },
+                    { data: 'actions', name: 'actions', orderable: false, searchable: false }
+                ],
+                order: [[2, 'desc']],
+                pageLength: 25
+            });
+
+            // Filter form submission
+            $('#filterModal form').on('submit', function(e) {
+                e.preventDefault();
+                table.draw();
+                $('#filterModal').modal('hide');
+            });
+
+            // Clear filters
+            $('#filterModal .btn-outline-secondary').on('click', function(e) {
+                e.preventDefault();
+                $('#patient_search').val('');
+                $('#visit_date').val('');
+                $('#vitals_status').val('');
+                table.draw();
+            });
         });
     </script>
 @endsection

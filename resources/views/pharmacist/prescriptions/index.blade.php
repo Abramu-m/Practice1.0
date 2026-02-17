@@ -106,129 +106,18 @@
 
                         <!-- Prescriptions Table -->
                         <div class="card-body table-responsive p-0">
-                            <table class="table table-hover text-nowrap">
+                            <table id="prescriptionsTable" class="table table-hover text-nowrap">
                                 <thead>
                                     <tr>
                                         <th>Patient Information</th>
                                         <th>Visit Details</th>
                                         <th>Prescriptions</th>
-                                        <th>Payment Status</th>
                                         <th>Status</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    @forelse($prescriptions as $visit)
-                                        <tr>
-                                            <td>
-                                                <div>
-                                                    <strong>{{ $visit->patientInfo->first_name }} {{ $visit->patientInfo->last_name }}</strong>
-                                                    <br>
-                                                    <small class="text-muted">MR: {{ $visit->patientInfo->mr_number }}</small>
-                                                    <br>
-                                                    <small class="text-muted">Age: {{ $visit->patientInfo->age ?? 'N/A' }}</small>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <div>
-                                                    <strong>{{ $visit->created_at->format('M d, Y') }}</strong>
-                                                    <br>
-                                                    <small class="text-muted">{{ $visit->created_at->format('h:i A') }}</small>
-                                                    @if($visit->consultation && $visit->consultation->doctor)
-                                                        <br>
-                                                        <small class="text-muted">Dr. {{ $visit->consultation->doctor->name ?? 'N/A' }}</small>
-                                                    @endif
-                                                </div>
-                                            </td>
-                                            <td>
-                                                @if($visit->consultation && $visit->consultation->prescriptions->count() > 0)
-                                                    <div>
-                                        @php
-                                            $prescriptions = $visit->consultation->prescriptions;
-                                            $pendingCount = $prescriptions->filter(function($p) { 
-                                                return in_array($p->status, ['prescribed', 'prepared']); 
-                                            })->count();
-                                            $dispensedCount = $prescriptions->where('status', 'dispensed')->count();
-                                            $unavailableCount = $prescriptions->where('status', 'cancelled')->count();
-                                        @endphp                                                        <span class="badge badge-secondary">{{ $prescriptions->count() }} Total</span>
-                                                        
-                                                        @if($pendingCount > 0)
-                                                            <span class="badge badge-warning">{{ $pendingCount }} Pending</span>
-                                                        @endif
-                                                        
-                                                        @if($dispensedCount > 0)
-                                                            <span class="badge badge-success">{{ $dispensedCount }} Dispensed</span>
-                                                        @endif
-                                                        
-                                                        @if($unavailableCount > 0)
-                                                            <span class="badge badge-danger">{{ $unavailableCount }} Unavailable</span>
-                                                        @endif
-                                                    </div>
-                                                @else
-                                                    <span class="text-muted">No prescriptions</span>
-                                                @endif
-                                            </td>
-                                            <td>
-                                                <span class="badge badge-info">
-                                                    <i class="bi bi-info-circle"></i> Ready to Process
-                                                </span>
-                                            </td>
-                                            <td>
-                                                @if($visit->consultation && $visit->consultation->prescriptions->count() > 0)
-                                    @php
-                                        $allPrescriptions = $visit->consultation->prescriptions;
-                                        $hasPending = $allPrescriptions->filter(function($p) { 
-                                            return in_array($p->status, ['prescribed', 'prepared']); 
-                                        })->count() > 0;
-                                        $allDispensed = $allPrescriptions->every(function($p) { return $p->status === 'dispensed'; });
-                                        $hasUnavailable = $allPrescriptions->where('status', 'cancelled')->count() > 0;
-                                    @endphp                                                    @if($hasPending)
-                                                        <span class="badge badge-warning">Action Required</span>
-                                                    @elseif($allDispensed)
-                                                        <span class="badge badge-success">Completed</span>
-                                                    @elseif($hasUnavailable)
-                                                        <span class="badge badge-danger">Issues</span>
-                                                    @else
-                                                        <span class="badge badge-info">Processing</span>
-                                                    @endif
-                                                @else
-                                                    <span class="badge badge-secondary">No Prescriptions</span>
-                                                @endif
-                                            </td>
-                                            <td>
-                                                @if($visit->consultation && $visit->consultation->prescriptions->count() > 0)
-                                                    <a href="{{ route('pharmacist.prescriptions.show', $visit->id) }}" 
-                                                       class="btn btn-sm btn-primary">
-                                                        <i class="bi bi-eye"></i> View Details
-                                                    </a>
-                                                @else
-                                                    <span class="text-muted">No actions</span>
-                                                @endif
-                                            </td>
-                                        </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="6" class="text-center py-4">
-                                                <div class="text-muted">
-                                                    <i class="bi bi-inbox display-4"></i>
-                                                    <p class="mt-2">No prescriptions found with the current filters.</p>
-                                                    <a href="{{ route('pharmacist.prescriptions.index') }}" class="btn btn-outline-primary">
-                                                        Clear Filters
-                                                    </a>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    @endforelse
-                                </tbody>
                             </table>
                         </div>
-
-                        <!-- Pagination -->
-                        @if(method_exists($prescriptions, 'hasPages') && $prescriptions->hasPages())
-                            <div class="card-footer clearfix">
-                                {{ $prescriptions->appends(request()->query())->links() }}
-                            </div>
-                        @endif
                     </div>
                 </div>
             </div>
@@ -240,11 +129,48 @@
 @push('scripts')
 <script>
 $(document).ready(function() {
+    var table = $('#prescriptionsTable').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: '{{ route("pharmacist.prescriptions.index") }}',
+            data: function(d) {
+                d.status = $('#status').val();
+                d.search = $('#search').val();
+                d.date = $('#date').val();
+            }
+        },
+        columns: [
+            { data: 'patient_info', name: 'patientInfo.first_name' },
+            { data: 'visit_details', name: 'created_at' },
+            { data: 'prescriptions_info', name: 'prescriptions_info', orderable: false, searchable: false },
+            { data: 'status_badge', name: 'status_badge', orderable: false, searchable: false },
+            { data: 'actions', name: 'actions', orderable: false, searchable: false }
+        ],
+        order: [[1, 'desc']],
+        pageLength: 20
+    });
+
+    // Filter form submission
+    $('.card-body form').on('submit', function(e) {
+        e.preventDefault();
+        table.draw();
+    });
+
+    // Quick filter buttons
+    $('.btn-group a').on('click', function(e) {
+        e.preventDefault();
+        var url = $(this).attr('href');
+        var params = new URLSearchParams(url.split('?')[1]);
+        $('#status').val(params.get('status') || '');
+        table.draw();
+    });
+
     // Auto-refresh every 2 minutes for pending prescriptions
     @if(request('status') == 'pending' || !request()->has('status'))
         setInterval(function() {
             if (document.visibilityState === 'visible') {
-                location.reload();
+                table.ajax.reload(null, false);
             }
         }, 120000);
     @endif

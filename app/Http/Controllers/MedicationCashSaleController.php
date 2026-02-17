@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Yajra\DataTables\Facades\DataTables;
 
 class MedicationCashSaleController extends Controller
 {
@@ -29,60 +30,6 @@ class MedicationCashSaleController extends Controller
      */
     public function index(Request $request)
     {
-        $query = MedicationCashSale::with(['patientCategory', 'creator', 'items.medication'])
-            ->orderBy('created_at', 'desc');
-
-        // Filter by status
-        if ($request->filled('status')) {
-            if ($request->status === 'completed') {
-                // Special filter for completed sales (paid and dispensed)
-                $query->where('is_paid', true)->whereNotNull('dispensed_at');
-            } elseif ($request->status === 'ready_to_dispense') {
-                // Special filter for paid but not dispensed
-                $query->where('is_paid', true)->whereNull('dispensed_at');
-            } else {
-                $query->where('status', $request->status);
-            }
-        }
-
-        // Filter by sale type
-        if ($request->filled('sale_type')) {
-            $query->where('sale_type', $request->sale_type);
-        }
-
-        // Search by sale number
-        if ($request->filled('search')) {
-            $query->where('sale_number', 'like', '%' . $request->search . '%');
-        }
-
-        $cashSales = $query->paginate(15);
-
-        // Get stock information for each sale (excluding cancelled items)
-        $stockInfo = [];
-        foreach ($cashSales as $sale) {
-            $hasStockIssues = false;
-            $stockDetails = [];
-            
-            foreach ($sale->items as $item) {
-                $availableStock = $this->getAvailableStock($item->medication_id);
-                $stockDetails[$item->id] = [
-                    'available' => $availableStock,
-                    'required' => $item->quantity,
-                    'sufficient' => $availableStock >= $item->quantity
-                ];
-                
-                // Only consider stock issues for items that can still be dispensed
-                if ($item->canBeDispensed() && $availableStock < $item->quantity) {
-                    $hasStockIssues = true;
-                }
-            }
-            
-            $stockInfo[$sale->id] = [
-                'has_issues' => $hasStockIssues,
-                'details' => $stockDetails
-            ];
-        }
-
         // Statistics
         $stats = [
             'total_sales' => MedicationCashSale::count(),
@@ -96,7 +43,145 @@ class MedicationCashSaleController extends Controller
                 ->sum('final_amount'),
         ];
 
-        return view('medication_cash_sales.index', compact('cashSales', 'stats', 'stockInfo'));
+        if ($request->ajax()) {
+            $query = MedicationCashSale::with(['patientCategory', 'creator', 'items.medication'])
+                ->orderBy('created_at', 'desc');
+
+            // Filter by status
+            if ($request->filled('status')) {
+                if ($request->status === 'completed') {
+                    $query->where('is_paid', true)->whereNotNull('dispensed_at');
+                } elseif ($request->status === 'ready_to_dispense') {
+                    $query->where('is_paid', true)->whereNull('dispensed_at');
+                } else {
+                    $query->where('status', $request->status);
+                }
+            }
+
+            // Filter by sale type
+            if ($request->filled('sale_type')) {
+                $query->where('sale_type', $request->sale_type);
+            }
+
+            // Search by sale number - handle both DataTables global search and custom filter
+            if ($request->filled('search_param')) {
+                $query->where('sale_number', 'like', '%' . $request->search_param . '%');
+            } elseif ($request->has('search') && !empty($request->search['value'])) {
+                $search = $request->search['value'];
+                $query->where('sale_number', 'like', '%' . $search . '%');
+            }
+
+            return DataTables::of($query)
+                ->addColumn('sale_number_display', function ($sale) {
+                    $html = '<strong>' . e($sale->sale_number) . '</strong>';
+                    if ($sale->status === 'cancelled') {
+                        $html .= '<br><small class="text-danger"><i class="fas fa-ban"></i> Cancelled</small>';
+                    } else {
+                        $stockInfo = $this->getStockInfoForSale($sale);
+                        if ($stockInfo['has_issues']) {
+                            $html .= '<br><small class="text-danger"><i class="fas fa-exclamation-triangle"></i> Stock insufficient</small>';
+                        }
+                    }
+                    return $html;
+                })
+                ->addColumn('type_badge', function ($sale) {
+                    return '<span class="badge badge-info">' . ($sale->sale_type == 'otc' ? 'OTC' : 'External Rx') . '</span>';
+                })
+                ->addColumn('category', function ($sale) {
+                    return e($sale->patientCategory->description);
+                })
+                ->addColumn('items_count', function ($sale) {
+                    return $sale->items->count() . ' item(s)';
+                })
+                ->addColumn('amount', function ($sale) {
+                    return 'TSh ' . number_format($sale->final_amount, 2);
+                })
+                ->addColumn('status_badge', function ($sale) {
+                    return '<span class="badge badge-' . $sale->status_color . '">' . e($sale->status_label) . '</span>';
+                })
+                ->addColumn('creator_name', function ($sale) {
+                    return e($sale->creator->name);
+                })
+                ->addColumn('created_date', function ($sale) {
+                    return $sale->created_at->format('M d, Y H:i');
+                })
+                ->addColumn('actions', function ($sale) {
+                    $html = '<a href="' . route('medication-cash-sales.show', $sale) . '" class="btn btn-sm btn-primary">
+                                <i class="fas fa-eye"></i>
+                             </a> ';
+                    
+                    // Dispense button
+                    if ($sale->canBeDispensed() && (Auth::user()->isPharmacist() || (!Auth::user()->isCashier() && !Auth::user()->isReceptionist()))) {
+                        $stockInfo = $this->getStockInfoForSale($sale);
+                        if ($stockInfo['has_issues']) {
+                            $html .= '<button type="button" class="btn btn-sm btn-secondary" disabled title="Insufficient stock for some medications">
+                                        <i class="fas fa-pills"></i> Dispense
+                                      </button> ';
+                        } else {
+                            $html .= '<form method="POST" action="' . route('medication-cash-sales.dispense', $sale) . '" style="display:inline;">
+                                        ' . csrf_field() . '
+                                        <button type="submit" class="btn btn-sm btn-success" onclick="return confirm(\'Dispense this sale?\')">
+                                            <i class="fas fa-pills"></i> Dispense
+                                        </button>
+                                      </form> ';
+                        }
+                    }
+
+                    // Payment button
+                    if ($sale->canBePaid() && (Auth::user()->isReceptionist() || Auth::user()->isCashier() || Auth::user()->isAdmin())) {
+                        $html .= '<button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#paymentModal' . $sale->id . '">
+                                    <i class="fas fa-money-bill"></i> Pay
+                                  </button> ';
+                    }
+
+                    // Cancel button
+                    if (!$sale->is_paid && !$sale->dispensed_at) {
+                        $html .= '<form method="POST" action="' . route('medication-cash-sales.cancel', $sale) . '" style="display:inline;">
+                                    ' . csrf_field() . '
+                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm(\'Delete this sale?\')">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                  </form>';
+                    } elseif ($sale->is_paid && Auth::user()->isAdmin()) {
+                        $html .= '<button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#cancelModal' . $sale->id . '">
+                                    <i class="fas fa-times"></i>
+                                  </button>';
+                    }
+
+                    return $html;
+                })
+                ->rawColumns(['sale_number_display', 'type_badge', 'status_badge', 'actions'])
+                ->make(true);
+        }
+
+        return view('medication_cash_sales.index', compact('stats'));
+    }
+
+    /**
+     * Get stock information for a sale
+     */
+    private function getStockInfoForSale($sale)
+    {
+        $hasStockIssues = false;
+        $stockDetails = [];
+        
+        foreach ($sale->items as $item) {
+            $availableStock = $this->getAvailableStock($item->medication_id);
+            $stockDetails[$item->id] = [
+                'available' => $availableStock,
+                'required' => $item->quantity,
+                'sufficient' => $availableStock >= $item->quantity
+            ];
+            
+            if ($item->canBeDispensed() && $availableStock < $item->quantity) {
+                $hasStockIssues = true;
+            }
+        }
+        
+        return [
+            'has_issues' => $hasStockIssues,
+            'details' => $stockDetails
+        ];
     }
 
     /**

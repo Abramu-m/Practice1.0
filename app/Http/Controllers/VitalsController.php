@@ -8,6 +8,7 @@ use App\Models\Patient;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Yajra\DataTables\Facades\DataTables;
 
 class VitalsController extends Controller
 {
@@ -15,11 +16,65 @@ class VitalsController extends Controller
     /**
      * Display a listing of the vitals for the logged-in nurse
      */
-    public function index()
+    public function index(Request $request)
     {
-        $visits = PatientVisit::with(['patientInfo', 'consultation', 'vitalSigns'])->latest()->get();
-        
-        return view('vitals.index', compact('visits'));
+        if ($request->ajax()) {
+            $query = PatientVisit::with(['patientInfo', 'consultation', 'vitalSigns'])
+                ->orderBy('visit_date', 'desc');
+
+            // Apply filters
+            if ($request->filled('patient_search')) {
+                $search = $request->patient_search;
+                $query->whereHas('patientInfo', function($q) use ($search) {
+                    $q->where('first_name', 'like', "%{$search}%")
+                      ->orWhere('last_name', 'like', "%{$search}%")
+                      ->orWhere('mr_number', 'like', "%{$search}%");
+                });
+            }
+
+            if ($request->filled('visit_date')) {
+                $query->whereDate('visit_date', $request->visit_date);
+            }
+
+            if ($request->filled('vitals_status')) {
+                if ($request->vitals_status === 'recorded') {
+                    $query->has('vitalSigns');
+                } elseif ($request->vitals_status === 'not_recorded') {
+                    $query->doesntHave('vitalSigns');
+                }
+            }
+
+            return DataTables::of($query)
+                ->addColumn('patient_name', function ($visit) {
+                    return ($visit->patientInfo->first_name ?? 'N/A') . ' ' . ($visit->patientInfo->last_name ?? '');
+                })
+                ->addColumn('mr_number', function ($visit) {
+                    return $visit->patientInfo->mr_number ?? 'N/A';
+                })
+                ->addColumn('visit_date_formatted', function ($visit) {
+                    return $visit->visit_date ? $visit->visit_date->format('Y-m-d H:i') : 'N/A';
+                })
+                ->addColumn('vitals_status', function ($visit) {
+                    if ($visit->vitalSigns && $visit->vitalSigns->count() > 0) {
+                        return '<span class="badge bg-success"><i class="fas fa-check"></i> Recorded</span>';
+                    }
+                    return '<span class="badge bg-danger"><i class="fas fa-times"></i> Not Recorded</span>';
+                })
+                ->addColumn('actions', function ($visit) {
+                    if ($visit->vitalSigns && $visit->vitalSigns->count() > 0) {
+                        return '<a href="' . route('vitals.show', $visit->id) . '" class="btn btn-info btn-sm">
+                                    <i class="fas fa-eye"></i> View/Edit
+                                </a>';
+                    }
+                    return '<a href="' . route('vitals.show', $visit->id) . '" class="btn btn-primary btn-sm">
+                                <i class="fas fa-plus"></i> Record Vitals
+                            </a>';
+                })
+                ->rawColumns(['vitals_status', 'actions'])
+                ->make(true);
+        }
+
+        return view('vitals.index');
     }
     /**
      * Display vitals form for a patient visit

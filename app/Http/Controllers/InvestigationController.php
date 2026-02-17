@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Exception;
+use Yajra\DataTables\Facades\DataTables;
 
 class InvestigationController extends Controller
 {
@@ -21,50 +22,114 @@ class InvestigationController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Investigation::with(['patient', 'doctor', 'medicalService.serviceCategory'])
-            ->whereHas('medicalService.serviceCategory', function($q) {
-                $q->where('name', 'Laboratory');
-            });
+        if ($request->ajax()) {
+            $query = Investigation::with(['patient', 'doctor', 'medicalService.serviceCategory'])
+                ->whereHas('medicalService.serviceCategory', function($q) {
+                    $q->where('name', 'Laboratory');
+                });
 
-        // Apply filters
-        if ($request->filled('status')) {
-            $query->byStatus($request->status);
+            // Apply filters
+            if ($request->filled('status')) {
+                $query->byStatus($request->status);
+            }
+
+            if ($request->filled('priority')) {
+                $query->byPriority($request->priority);
+            }
+
+            if ($request->filled('doctor_id')) {
+                $query->where('doctor_id', $request->doctor_id);
+            }
+
+            if ($request->filled('patient_search')) {
+                $query->whereHas('patient', function($q) use ($request) {
+                    $q->where('first_name', 'like', '%' . $request->patient_search . '%')
+                      ->orWhere('last_name', 'like', '%' . $request->patient_search . '%')
+                      ->orWhere('patient_id', 'like', '%' . $request->patient_search . '%');
+                });
+            }
+
+            if ($request->filled('service_category')) {
+                $query->whereHas('medicalService', function($q) use ($request) {
+                    $q->where('service_category_id', $request->service_category);
+                });
+            }
+
+            if ($request->filled('date_from')) {
+                $query->whereDate('ordered_at', '>=', $request->date_from);
+            }
+
+            if ($request->filled('date_to')) {
+                $query->whereDate('ordered_at', '<=', $request->date_to);
+            }
+
+            return DataTables::of($query)
+                ->addColumn('id_display', function ($investigation) {
+                    $html = '<strong>#' . e($investigation->id) . '</strong>';
+                    if ($investigation->isOverdue()) {
+                        $html .= '<span class="badge bg-danger ms-1">OVERDUE</span>';
+                    }
+                    return $html;
+                })
+                ->addColumn('patient_display', function ($investigation) {
+                    if ($investigation->patient) {
+                        $html = '<div><strong>' . e($investigation->patient->first_name . ' ' . $investigation->patient->last_name) . '</strong><br>';
+                        $html .= '<small class="text-muted">' . e($investigation->patient->mr_number) . '</small></div>';
+                        return $html;
+                    }
+                    return '<span class="text-muted">Unknown Patient</span>';
+                })
+                ->addColumn('investigation_display', function ($investigation) {
+                    if ($investigation->medicalService) {
+                        $html = '<div><strong>' . e($investigation->medicalService->name) . '</strong><br>';
+                        $html .= '<small class="text-muted">' . e($investigation->medicalService->code) . '</small>';
+                        if ($investigation->medicalService->requires_sample) {
+                            $html .= '<br><span class="badge bg-info">Sample: ' . e($investigation->medicalService->sample_type) . '</span>';
+                        }
+                        $html .= '</div>';
+                        return $html;
+                    }
+                    return '<span class="text-muted">Unknown Service</span>';
+                })
+                ->addColumn('doctor_display', function ($investigation) {
+                    if ($investigation->doctor) {
+                        return 'Dr. ' . e($investigation->doctor->user->first_name . ' ' . $investigation->doctor->user->last_name);
+                    }
+                    return '<span class="text-muted">Unknown Doctor</span>';
+                })
+                ->addColumn('priority', function ($investigation) {
+                    return '<span class="badge ' . e($investigation->priority_badge_class) . '">' . 
+                           e($investigation->priority_label) . '</span>';
+                })
+                ->addColumn('status', function ($investigation) {
+                    return '<span class="badge ' . e($investigation->status_badge_class) . '">' . 
+                           e($investigation->status_label) . '</span>';
+                })
+                ->addColumn('ordered_date', function ($investigation) {
+                    $html = $investigation->ordered_at ? $investigation->ordered_at->format('M d, Y H:i') : 'N/A';
+                    if ($investigation->formatted_age) {
+                        $html .= '<br><small class="text-muted">' . e($investigation->formatted_age) . '</small>';
+                    }
+                    return $html;
+                })
+                ->addColumn('price_display', function ($investigation) {
+                    $html = '<div><strong>' . e($investigation->formatted_total_price) . '</strong>';
+                    if ($investigation->insurance_covered_amount > 0) {
+                        $html .= '<br><small class="text-success">Covered: $' . number_format($investigation->insurance_covered_amount, 2) . '</small>';
+                        $html .= '<br><small class="text-info">Effective: ' . e($investigation->formatted_effective_price) . '</small>';
+                    }
+                    $html .= '</div>';
+                    return $html;
+                })
+                ->addColumn('actions', function ($investigation) {
+                    return view('investigations._actions', compact('investigation'))->render();
+                })
+                ->rawColumns(['id_display', 'patient_display', 'investigation_display', 'doctor_display', 'priority', 'status', 'actions'])
+                ->orderColumn('ordered_at', function ($query, $order) {
+                    $query->orderBy('ordered_at', $order);
+                })
+                ->make(true);
         }
-
-        if ($request->filled('priority')) {
-            $query->byPriority($request->priority);
-        }
-
-        if ($request->filled('doctor_id')) {
-            $query->where('doctor_id', $request->doctor_id);
-        }
-
-        if ($request->filled('patient_search')) {
-            $query->whereHas('patient', function($q) use ($request) {
-                $q->where('first_name', 'like', '%' . $request->patient_search . '%')
-                  ->orWhere('last_name', 'like', '%' . $request->patient_search . '%')
-                  ->orWhere('patient_id', 'like', '%' . $request->patient_search . '%');
-            });
-        }
-
-        if ($request->filled('service_category')) {
-            $query->whereHas('medicalService', function($q) use ($request) {
-                $q->where('service_category_id', $request->service_category);
-            });
-        }
-
-        if ($request->filled('date_from')) {
-            $query->whereDate('ordered_at', '>=', $request->date_from);
-        }
-
-        if ($request->filled('date_to')) {
-            $query->whereDate('ordered_at', '<=', $request->date_to);
-        }
-
-        // Default sorting
-        $query->orderBy('ordered_at', 'desc');
-
-        $investigations = $query->paginate(20);
 
         // Get filter options
         $doctors = User::whereIn('id', function($query) {
@@ -72,7 +137,7 @@ class InvestigationController extends Controller
         })->get();
         $serviceCategories = \App\Models\ServiceCategory::active()->get();
 
-        return view('investigations.index', compact('investigations', 'doctors', 'serviceCategories'));
+        return view('investigations.index', compact('doctors', 'serviceCategories'));
     }
 
     /**

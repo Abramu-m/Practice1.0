@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Yajra\DataTables\Facades\DataTables;
 
 class PharmacistController extends Controller
 {
@@ -33,19 +34,94 @@ class PharmacistController extends Controller
     public function prescriptions(Request $request)
     {
         try {
-            $query = $this->buildPrescriptionsQuery($request);
-            
-            $prescriptions = $query->paginate(20);
-            
-            return view('pharmacist.prescriptions.index', compact('prescriptions'));
+            if ($request->ajax()) {
+                $query = $this->buildPrescriptionsQuery($request);
+                
+                return DataTables::of($query)
+                    ->addColumn('patient_info', function ($visit) {
+                        return '<div>
+                                    <strong>' . e($visit->patientInfo->first_name) . ' ' . e($visit->patientInfo->last_name) . '</strong>
+                                    <br><small class="text-muted">MR: ' . e($visit->patientInfo->mr_number) . '</small>
+                                    <br><small class="text-muted">Age: ' . e($visit->patientInfo->age ?? 'N/A') . '</small>
+                                </div>';
+                    })
+                    ->addColumn('visit_details', function ($visit) {
+                        $html = '<div><strong>' . $visit->created_at->format('M d, Y') . '</strong>
+                                 <br><small class="text-muted">' . $visit->created_at->format('h:i A') . '</small>';
+                        if ($visit->consultation && $visit->consultation->doctor) {
+                            $html .= '<br><small class="text-muted">Dr. ' . e($visit->consultation->doctor->name ?? 'N/A') . '</small>';
+                        }
+                        $html .= '</div>';
+                        return $html;
+                    })
+                    ->addColumn('prescriptions_info', function ($visit) {
+                        if ($visit->consultation && $visit->consultation->prescriptions->count() > 0) {
+                            $prescriptions = $visit->consultation->prescriptions;
+                            $pendingCount = $prescriptions->filter(function($p) { 
+                                return in_array($p->status, ['prescribed', 'prepared']); 
+                            })->count();
+                            $dispensedCount = $prescriptions->where('status', 'dispensed')->count();
+                            $unavailableCount = $prescriptions->where('status', 'cancelled')->count();
+                            
+                            $html = '<div>
+                                        <span class="badge badge-secondary">' . $prescriptions->count() . ' Total</span>';
+                            if ($pendingCount > 0) {
+                                $html .= ' <span class="badge badge-warning">' . $pendingCount . ' Pending</span>';
+                            }
+                            if ($dispensedCount > 0) {
+                                $html .= ' <span class="badge badge-success">' . $dispensedCount . ' Dispensed</span>';
+                            }
+                            if ($unavailableCount > 0) {
+                                $html .= ' <span class="badge badge-danger">' . $unavailableCount . ' Unavailable</span>';
+                            }
+                            $html .= '</div>';
+                            return $html;
+                        }
+                        return '<span class="text-muted">No prescriptions</span>';
+                    })
+                    ->addColumn('status_badge', function ($visit) {
+                        if ($visit->consultation && $visit->consultation->prescriptions->count() > 0) {
+                            $allPrescriptions = $visit->consultation->prescriptions;
+                            $hasPending = $allPrescriptions->filter(function($p) { 
+                                return in_array($p->status, ['prescribed', 'prepared']); 
+                            })->count() > 0;
+                            $allDispensed = $allPrescriptions->every(function($p) { return $p->status === 'dispensed'; });
+                            $hasUnavailable = $allPrescriptions->where('status', 'cancelled')->count() > 0;
+                            
+                            if ($hasPending) {
+                                return '<span class="badge badge-warning">Action Required</span>';
+                            } elseif ($allDispensed) {
+                                return '<span class="badge badge-success">Completed</span>';
+                            } elseif ($hasUnavailable) {
+                                return '<span class="badge badge-danger">Issues</span>';
+                            } else {
+                                return '<span class="badge badge-info">Processing</span>';
+                            }
+                        }
+                        return '<span class="badge badge-secondary">No Prescriptions</span>';
+                    })
+                    ->addColumn('actions', function ($visit) {
+                        if ($visit->consultation && $visit->consultation->prescriptions->count() > 0) {
+                            return '<a href="' . route('pharmacist.prescriptions.show', $visit->id) . '" 
+                                       class="btn btn-sm btn-primary">
+                                        <i class="bi bi-eye"></i> View Details
+                                    </a>';
+                        }
+                        return '<span class="text-muted">No actions</span>';
+                    })
+                    ->rawColumns(['patient_info', 'visit_details', 'prescriptions_info', 'status_badge', 'actions'])
+                    ->make(true);
+            }
+
+            return view('pharmacist.prescriptions.index');
         } catch (\Exception $e) {
             Log::error('Prescriptions query error: ' . $e->getMessage());
             
-            // Return empty paginated result on error
-            $prescriptions = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 20);
-            $prescriptions->withPath($request->url());
+            if ($request->ajax()) {
+                return response()->json(['error' => $e->getMessage()], 500);
+            }
             
-            return view('pharmacist.prescriptions.index', compact('prescriptions'));
+            return view('pharmacist.prescriptions.index');
         }
     }
 

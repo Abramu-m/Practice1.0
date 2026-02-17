@@ -18,19 +18,19 @@
                         </a>
                         <!-- Quick Stats - Same size as buttons -->
                         <div class="btn btn-primary d-flex align-items-center">
-                            <span class="fw-bold me-1">{{ $investigations->total() }}</span>
+                            <span class="fw-bold me-1" id="stat-total">-</span>
                             <span style="font-size: 0.85rem;">Total</span>
                         </div>
                         <div class="btn btn-warning d-flex align-items-center">
-                            <span class="fw-bold me-1">{{ $investigations->where('status', 'ordered')->count() + $investigations->where('status', 'collected')->count() }}</span>
+                            <span class="fw-bold me-1" id="stat-pending">-</span>
                             <span style="font-size: 0.85rem;">Pending</span>
                         </div>
                         <div class="btn btn-danger d-flex align-items-center">
-                            <span class="fw-bold me-1">{{ $investigations->where('priority', 'urgent')->count() + $investigations->where('priority', 'stat')->count() }}</span>
+                            <span class="fw-bold me-1" id="stat-urgent">-</span>
                             <span style="font-size: 0.85rem;">Urgent</span>
                         </div>
                         <div class="btn btn-success d-flex align-items-center">
-                            <span class="fw-bold me-1">{{ $investigations->where('status', 'resulted')->count() }}</span>
+                            <span class="fw-bold me-1" id="stat-completed">-</span>
                             <span style="font-size: 0.85rem;">Completed</span>
                         </div>
                     </div>
@@ -121,7 +121,7 @@
 
                     <!-- Investigations Table -->
                     <div class="table-responsive">
-                        <table class="table table-striped table-hover">
+                        <table id="investigationsTable" class="table table-striped table-hover">
                             <thead class="table-dark">
                                 <tr>
                                     <th>ID</th>
@@ -135,146 +135,11 @@
                                     <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                @forelse($investigations as $investigation)
-                                    <tr class="{{ $investigation->isOverdue() ? 'table-danger' : '' }}" data-investigation-id="{{ $investigation->id }}">
-                                        <td>
-                                            <strong>#{{ $investigation->id }}</strong>
-                                            @if($investigation->isOverdue())
-                                                <span class="badge bg-danger ms-1">OVERDUE</span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            @if($investigation->patient)
-                                                <div>
-                                                    <strong>{{ $investigation->patient->first_name }} {{ $investigation->patient->last_name }}</strong><br>
-                                                    <small class="text-muted">{{ $investigation->patient->mr_number }}</small>
-                                                </div>
-                                            @else
-                                                <span class="text-muted">Unknown Patient</span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            @if($investigation->medicalService)
-                                                <div>
-                                                    <strong>{{ $investigation->medicalService->name }}</strong><br>
-                                                    <small class="text-muted">{{ $investigation->medicalService->code }}</small>
-                                                    @if($investigation->medicalService->requires_sample)
-                                                        <br><span class="badge bg-info">Sample: {{ $investigation->medicalService->sample_type }}</span>
-                                                    @endif
-                                                </div>
-                                            @else
-                                                <span class="text-muted">Unknown Service</span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            @if($investigation->doctor)
-                                                Dr. {{ $investigation->doctor->user->first_name }} {{ $investigation->doctor->user->last_name }}
-                                            @else
-                                                <span class="text-muted">Unknown Doctor</span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            <span class="badge {{ $investigation->priority_badge_class }}">
-                                                {{ $investigation->priority_label }}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <span class="badge {{ $investigation->status_badge_class }}">
-                                                {{ $investigation->status_label }}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            {{ $investigation->ordered_at ? $investigation->ordered_at->format('M d, Y H:i') : 'N/A' }}
-                                            @if($investigation->formatted_age)
-                                                <br><small class="text-muted">{{ $investigation->formatted_age }}</small>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            <div>
-                                                <strong>{{ $investigation->formatted_total_price }}</strong>
-                                                @if($investigation->insurance_covered_amount > 0)
-                                                    <br><small class="text-success">Covered: ${{ number_format($investigation->insurance_covered_amount, 2) }}</small>
-                                                    <br><small class="text-info">Effective: {{ $investigation->formatted_effective_price }}</small>
-                                                @endif
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="btn-group btn-group-sm">
-                                                @if(Auth::user()->isAdmin())
-                                                    <a href="{{ route('investigations.show', $investigation) }}" 
-                                                    class="btn btn-outline-primary" title="View">
-                                                        <i class="fas fa-eye"></i>
-                                                    </a>
-                                                    @if(!in_array($investigation->status, ['collected', 'processing', 'resulted']))
-                                                        <a href="{{ route('investigations.edit', $investigation) }}" 
-                                                        class="btn btn-outline-warning" title="Edit">
-                                                            <i class="fas fa-edit"></i>
-                                                        </a>
-                                                    @endif
-                                                @endif
-                                                <div class="btn-group btn-group-sm">
-                                                    <button type="button" class="btn btn-outline-info dropdown-toggle" 
-                                                            data-bs-toggle="dropdown" title="Update Status">
-                                                        <i class="fas fa-tasks"></i>
-                                                    </button>
-                                                    <ul class="dropdown-menu">
-                                                        @if($investigation->status === 'ordered' && $investigation->medicalService && $investigation->medicalService->requires_sample)
-                                                            <li><a class="dropdown-item" href="#" onclick="updateStatus({{ $investigation->id }}, 'collected', 'stock')">Mark as Collected</a></li>
-                                                        @endif
-                                                        @if($investigation->status === 'collected')
-                                                            <li><a class="dropdown-item" href="#" onclick="updateStatus({{ $investigation->id }}, 'processing', 'simple')">Mark as Processing</a></li>
-                                                            <li><hr class="dropdown-divider"></li>
-                                                            <li><a class="dropdown-item" href="{{ route('lab.results.form', $investigation->id) }}?return_to=investigations.index">
-                                                                <i class="fas fa-edit"></i> Add Results
-                                                            </a></li>
-                                                        @endif
-                                                        @if($investigation->status === 'processing')
-                                                            <li><a class="dropdown-item" href="{{ route('lab.results.form', $investigation->id) }}?return_to=investigations.index">
-                                                                <i class="fas fa-edit"></i> Add Results
-                                                            </a></li>
-                                                        @endif
-                                                        @if($investigation->status === 'resulted')
-                                                            <li><a class="dropdown-item" href="{{ route('lab.investigations.view-results', $investigation->id) }}">
-                                                                <i class="fas fa-chart-line"></i> View Results
-                                                            </a></li>
-                                                        @endif
-                                                        <li><hr class="dropdown-divider"></li>
-                                                        @if($investigation->status === 'ordered')
-                                                            <li>
-                                                                <a class="dropdown-item" href="#" onclick="showStockDetailsForInvestigation({{ $investigation->id }})">
-                                                                    <i class="fas fa-boxes text-info"></i> Check Stock
-                                                                </a>
-                                                            </li>
-                                                        @endif
-                                                        @if(!in_array($investigation->status, ['resulted', 'cancelled']))
-                                                            <li><a class="dropdown-item text-danger" href="#" onclick="updateStatus({{ $investigation->id }}, 'cancelled', 'simple')">Cancel Investigation</a></li>
-                                                        @endif
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="9" class="text-center py-4">
-                                            <div class="text-muted">
-                                                <i class="fas fa-flask fa-3x mb-3"></i>
-                                                <p>No investigations found</p>
-                                                <a href="{{ route('investigations.create') }}" class="btn btn-primary">
-                                                    Order First Investigation
-                                                </a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
                         </table>
                     </div>
 
                     <!-- Pagination -->
                     <div class="d-flex justify-content-center">
-                        {{ $investigations->appends(request()->query())->links() }}
                     </div>
                 </div>
             </div>
@@ -318,6 +183,53 @@
 
 @section('scripts')
 <script>
+$(document).ready(function() {
+    var table = $('#investigationsTable').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: '{{ route("investigations.index") }}',
+            data: function(d) {
+                d.status = $('select[name="status"]').val();
+                d.priority = $('select[name="priority"]').val();
+                d.doctor_id = $('select[name="doctor_id"]').val();
+                d.service_category = $('select[name="service_category"]').val();
+                d.patient_search = $('input[name="patient_search"]').val();
+                d.date_from = $('input[name="date_from"]').val();
+                d.date_to = $('input[name="date_to"]').val();
+            },
+            error: function(xhr, error, code) {
+                console.error('DataTables AJAX error:', error);
+                console.error('Status:', xhr.status);
+                console.error('Response:', xhr.responseText);
+            }
+        },
+        columns: [
+            { data: 'id_display', name: 'id', orderable: true },
+            { data: 'patient_display', name: 'patient.first_name', orderable: true },
+            { data: 'investigation_display', name: 'medicalService.name', orderable: true },
+            { data: 'doctor_display', name: 'doctor.user.first_name', orderable: true },
+            { data: 'priority', name: 'priority', orderable: true },
+            { data: 'status', name: 'status', orderable: true },
+            { data: 'ordered_date', name: 'ordered_at', orderable: true },
+            { data: 'price_display', name: 'price_display', orderable: false, searchable: false },
+            { data: 'actions', name: 'actions', orderable: false, searchable: false }
+        ],
+        order: [[6, 'desc']],
+        pageLength: 20,
+        responsive: true,
+        createdRow: function(row, data, dataIndex) {
+            $(row).attr('data-investigation-id', data.id);
+        }
+    });
+
+    // Filter on form submit
+    $('form').on('submit', function(e) {
+        e.preventDefault();
+        table.draw();
+    });
+});
+
 function updateStatus(investigationId, newStatus, updateType = 'simple') {
     const modal = new bootstrap.Modal(document.getElementById('statusUpdateModal'));
     const form = document.getElementById('statusUpdateForm');
