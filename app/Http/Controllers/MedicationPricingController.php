@@ -7,6 +7,7 @@ use App\Models\Medication;
 use App\Models\PatientCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Yajra\DataTables\Facades\DataTables;
 
 class MedicationPricingController extends Controller
 {
@@ -15,41 +16,98 @@ class MedicationPricingController extends Controller
      */
     public function index(Request $request)
     {
-        $query = MedicationPricing::with(['medication', 'patientCategory']);
+        if ($request->ajax()) {
+            $query = MedicationPricing::with(['medication', 'patientCategory']);
 
-        // Filter by medication
-        if ($request->filled('medication_id')) {
-            $query->where('medication_id', $request->medication_id);
-        }
-
-        // Filter by patient category
-        if ($request->filled('patient_category_id')) {
-            $query->where('patient_category_id', $request->patient_category_id);
-        }
-
-        // Filter by status
-        if ($request->filled('status')) {
-            $query->where('is_active', $request->status === 'active');
-        }
-
-        // Filter by effective status
-        if ($request->filled('effective_status')) {
-            $now = now()->toDateString();
-            if ($request->effective_status === 'current') {
-                $query->current();
-            } elseif ($request->effective_status === 'future') {
-                $query->where('effective_from', '>', $now);
-            } elseif ($request->effective_status === 'expired') {
-                $query->where('effective_to', '<', $now);
+            // Filter by medication
+            if ($request->filled('medication_id')) {
+                $query->where('medication_id', $request->medication_id);
             }
+
+            // Filter by patient category
+            if ($request->filled('patient_category_id')) {
+                $query->where('patient_category_id', $request->patient_category_id);
+            }
+
+            // Filter by status
+            if ($request->filled('status')) {
+                $query->where('is_active', $request->status === 'active');
+            }
+
+            // Filter by effective status
+            if ($request->filled('effective_status')) {
+                $now = now()->toDateString();
+                if ($request->effective_status === 'current') {
+                    $query->current();
+                } elseif ($request->effective_status === 'future') {
+                    $query->where('effective_from', '>', $now);
+                } elseif ($request->effective_status === 'expired') {
+                    $query->where('effective_to', '<', $now);
+                }
+            }
+
+            return DataTables::of($query)
+                ->addColumn('medication_display', function ($price) {
+                    $html = '<strong>' . e($price->medication->generic_name) . '</strong>';
+                    if ($price->medication->brand_name) {
+                        $html .= '<br><small class="text-muted">' . e($price->medication->brand_name) . '</small>';
+                    }
+                    return $html;
+                })
+                ->addColumn('category_display', function ($price) {
+                    return '<span class="badge badge-info text-black">' . e($price->patientCategory->description) . '</span>';
+                })
+                ->addColumn('selling_price_display', function ($price) {
+                    return '$' . number_format($price->selling_price, 2);
+                })
+                ->addColumn('markup_display', function ($price) {
+                    if ($price->markup_percentage) {
+                        return number_format($price->markup_percentage, 1) . '%';
+                    }
+                    return '<span class="text-muted">--</span>';
+                })
+                ->addColumn('discount_display', function ($price) {
+                    if ($price->discount_percentage) {
+                        return '<span class="text-danger">' . number_format($price->discount_percentage, 1) . '%</span>';
+                    }
+                    return '<span class="text-muted">--</span>';
+                })
+                ->addColumn('effective_period', function ($price) {
+                    return '<small><strong>From:</strong> ' . $price->effective_from->format('M d, Y') . '<br>' .
+                           '<strong>To:</strong> ' . ($price->effective_to ? $price->effective_to->format('M d, Y') : 'Ongoing') . '</small>';
+                })
+                ->addColumn('status_display', function ($price) {
+                    $html = '<span class="text-black badge badge-' . ($price->is_active ? 'success' : 'danger') . '">';
+                    $html .= $price->is_active ? 'Active' : 'Inactive';
+                    $html .= '</span>';
+                    if ($price->isCurrent()) {
+                        $html .= ' <span class="badge badge-primary text-black">Current</span>';
+                    }
+                    return $html;
+                })
+                ->addColumn('actions', function ($price) {
+                    $html = '<div class="btn-group">';
+                    $html .= '<a href="' . route('medication-pricing.show', $price->id) . '" class="btn btn-sm btn-info"><i class="fas fa-eye"></i></a>';
+                    $html .= '<a href="' . route('medication-pricing.edit', $price->id) . '" class="btn btn-sm btn-primary"><i class="fas fa-edit"></i></a>';
+                    $html .= '<form action="' . route('medication-pricing.destroy', $price->id) . '" method="POST" style="display: inline;" onsubmit="return confirm(\'Are you sure?\')">';
+                    $html .= csrf_field() . method_field('DELETE');
+                    $html .= '<button type="submit" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>';
+                    $html .= '</form></div>';
+                    return $html;
+                })
+                ->rawColumns(['medication_display', 'category_display', 'markup_display', 'discount_display', 'effective_period', 'status_display', 'actions'])
+                ->make(true);
         }
 
-        $pricing = $query->latest()->paginate(20);
+        // Only load selected medication if filtered
+        $selectedMedication = null;
+        if ($request->filled('medication_id')) {
+            $selectedMedication = Medication::find($request->medication_id);
+        }
 
-        $medications = Medication::orderBy('generic_name')->get();
         $patientCategories = PatientCategory::orderBy('description')->get();
 
-        return view('medication-pricing.index', compact('pricing', 'medications', 'patientCategories'));
+        return view('medication-pricing.index', compact('selectedMedication', 'patientCategories'));
     }
 
     /**

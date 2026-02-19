@@ -257,6 +257,14 @@ class Medication extends Model
         return $this->generic_name;
     }
 
+    /**
+     * Get name attribute (alias for display_name)
+     */
+    public function getNameAttribute(): string
+    {
+        return $this->generic_name;
+    }
+
     /** */
     public function isMedication(): bool
     {

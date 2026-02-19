@@ -7,6 +7,7 @@ use App\Models\MedicalService;
 use App\Models\PatientCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Yajra\DataTables\Facades\DataTables;
 
 class MedicalServicePricingController extends Controller
 {
@@ -15,41 +16,99 @@ class MedicalServicePricingController extends Controller
      */
     public function index(Request $request)
     {
-        $query = MedicalServicePricing::with(['medicalService', 'patientCategory']);
+        if ($request->ajax()) {
+            $query = MedicalServicePricing::with(['medicalService.serviceCategory', 'patientCategory']);
 
-        // Filter by medical service
-        if ($request->filled('medical_service_id')) {
-            $query->where('medical_service_id', $request->medical_service_id);
-        }
-
-        // Filter by patient category
-        if ($request->filled('patient_category_id')) {
-            $query->where('patient_category_id', $request->patient_category_id);
-        }
-
-        // Filter by status
-        if ($request->filled('status')) {
-            $query->where('is_active', $request->status === 'active');
-        }
-
-        // Filter by effective status
-        if ($request->filled('effective_status')) {
-            $now = now()->toDateString();
-            if ($request->effective_status === 'current') {
-                $query->current();
-            } elseif ($request->effective_status === 'future') {
-                $query->where('effective_from', '>', $now);
-            } elseif ($request->effective_status === 'expired') {
-                $query->where('effective_to', '<', $now);
+            // Filter by medical service
+            if ($request->filled('medical_service_id')) {
+                $query->where('medical_service_id', $request->medical_service_id);
             }
-        }
 
-        $pricing = $query->latest()->paginate(20);
+            // Filter by patient category
+            if ($request->filled('patient_category_id')) {
+                $query->where('patient_category_id', $request->patient_category_id);
+            }
+
+            // Filter by status
+            if ($request->filled('status')) {
+                $query->where('is_active', $request->status === 'active');
+            }
+
+            // Filter by effective status
+            if ($request->filled('effective_status')) {
+                $now = now()->toDateString();
+                if ($request->effective_status === 'current') {
+                    $query->current();
+                } elseif ($request->effective_status === 'future') {
+                    $query->where('effective_from', '>', $now);
+                } elseif ($request->effective_status === 'expired') {
+                    $query->where('effective_to', '<', $now);
+                }
+            }
+
+            return DataTables::of($query)
+                ->addColumn('service_display', function ($price) {
+                    $html = '<strong>' . e($price->medicalService->name) . '</strong>';
+                    if ($price->medicalService->code) {
+                        $html .= '<br><small class="text-muted">' . e($price->medicalService->code) . '</small>';
+                    }
+                    return $html;
+                })
+                ->addColumn('category_display', function ($price) {
+                    $categoryName = $price->medicalService->serviceCategory->name ?? 'N/A';
+                    return '<span class="badge badge-secondary text-black">' . e($categoryName) . '</span>';
+                })
+                ->addColumn('patient_category_display', function ($price) {
+                    return '<span class="badge badge-info text-black">' . e($price->patientCategory->description) . '</span>';
+                })
+                ->addColumn('price_display', function ($price) {
+                    return 'TSh ' . number_format($price->selling_price, 2);
+                })
+                ->addColumn('markup_display', function ($price) {
+                    if ($price->markup_percentage) {
+                        return number_format($price->markup_percentage, 1) . '%';
+                    }
+                    return '<span class="text-muted">--</span>';
+                })
+                ->addColumn('discount_display', function ($price) {
+                    if ($price->discount_percentage) {
+                        return number_format($price->discount_percentage, 1) . '%';
+                    }
+                    return '<span class="text-muted">--</span>';
+                })
+                ->addColumn('effective_period', function ($price) {
+                    $from = $price->effective_from ? $price->effective_from->format('M j, Y') : 'Not set';
+                    $to = $price->effective_to ? $price->effective_to->format('M j, Y') : '<span class="text-muted">Indefinite</span>';
+                    return '<small><strong>From:</strong> ' . $from . '<br><strong>To:</strong> ' . $to . '</small>';
+                })
+                ->addColumn('status_display', function ($price) {
+                    $status = $price->status;
+                    $badgeClass = $status === 'Active' ? 'success' : 
+                                ($status === 'Future' ? 'warning' : 
+                                ($status === 'Expired' ? 'secondary' : 'danger'));
+                    return '<span class="badge badge-' . $badgeClass . '">' . e($status) . '</span>';
+                })
+                ->addColumn('actions', function ($price) {
+                    $viewBtn = '<a href="' . route('medical-service-pricing.show', $price) . '" class="btn btn-outline-info" title="View">' .
+                               '<i class="fas fa-eye"></i></a>';
+                    $editBtn = '<a href="' . route('medical-service-pricing.edit', $price) . '" class="btn btn-outline-primary" title="Edit">' .
+                               '<i class="fas fa-edit"></i></a>';
+                    $deleteBtn = '<form action="' . route('medical-service-pricing.destroy', $price) . '" method="POST" style="display: inline-block;" ' .
+                                 'onsubmit="return confirm(\'Are you sure you want to delete this pricing?\')">' .
+                                 csrf_field() . method_field('DELETE') .
+                                 '<button type="submit" class="btn btn-outline-danger" title="Delete">' .
+                                 '<i class="fas fa-trash"></i></button></form>';
+                    
+                    return '<div class="btn-group btn-group-sm">' . $viewBtn . $editBtn . $deleteBtn . '</div>';
+                })
+                ->rawColumns(['service_display', 'category_display', 'patient_category_display', 'markup_display', 'discount_display', 'effective_period', 'status_display', 'actions'])
+                ->make(true);
+        }
 
         $medicalServices = MedicalService::with('serviceCategory')->orderBy('name')->get();
         $patientCategories = PatientCategory::orderBy('description')->get();
 
-        return view('medical-service-pricing.index', compact('pricing', 'medicalServices', 'patientCategories'));
+        return view('medical-service-pricing.index', compact('medicalServices', 'patientCategories'));
     }
 
     /**

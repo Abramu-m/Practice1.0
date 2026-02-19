@@ -6,6 +6,7 @@ use App\Models\ResultTemplate;
 use App\Models\ServiceCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Yajra\DataTables\Facades\DataTables;
 
 class ResultTemplateController extends Controller
 {
@@ -14,29 +15,98 @@ class ResultTemplateController extends Controller
      */
     public function index(Request $request)
     {
-        $query = ResultTemplate::with('serviceCategory');
+        if ($request->ajax()) {
+            $query = ResultTemplate::with('serviceCategory');
 
-        // Apply filters
-        if ($request->filled('search')) {
-            $query->where(function($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->search . '%')
-                  ->orWhere('code', 'like', '%' . $request->search . '%')
-                  ->orWhere('description', 'like', '%' . $request->search . '%');
-            });
+            // Apply filters
+            if ($request->filled('search')) {
+                $query->where(function($q) use ($request) {
+                    $q->where('name', 'like', '%' . $request->search . '%')
+                      ->orWhere('code', 'like', '%' . $request->search . '%')
+                      ->orWhere('description', 'like', '%' . $request->search . '%');
+                });
+            }
+
+            if ($request->filled('service_category_id')) {
+                $query->where('service_category_id', $request->service_category_id);
+            }
+
+            if ($request->filled('status')) {
+                $query->where('is_active', $request->status === 'active');
+            }
+
+            return DataTables::of($query)
+                ->addColumn('name_display', function ($template) {
+                    $html = '<strong>' . e($template->name) . '</strong>';
+                    if ($template->description) {
+                        $html .= '<br><small class="text-muted">' . e(\Illuminate\Support\Str::limit($template->description, 50)) . '</small>';
+                    }
+                    return $html;
+                })
+                ->addColumn('code_display', function ($template) {
+                    return '<code>' . e($template->code) . '</code>';
+                })
+                ->addColumn('category_display', function ($template) {
+                    if ($template->serviceCategory) {
+                        return '<span class="badge bg-secondary">' . e($template->serviceCategory->name) . '</span>';
+                    }
+                    return '<span class="text-muted">All Categories</span>';
+                })
+                ->addColumn('type_display', function ($template) {
+                    if ($template->investigation_type) {
+                        return '<span class="badge bg-info">' . e($template->investigation_type) . '</span>';
+                    }
+                    return '<span class="text-muted">All Types</span>';
+                })
+                ->addColumn('sort_order_display', function ($template) {
+                    return '<span class="badge bg-light text-dark">' . e($template->sort_order) . '</span>';
+                })
+                ->addColumn('status_display', function ($template) {
+                    if ($template->is_active) {
+                        return '<span class="badge bg-success">Active</span>';
+                    }
+                    return '<span class="badge bg-danger">Inactive</span>';
+                })
+                ->addColumn('actions', function ($template) {
+                    $viewBtn = '<a href="' . route('result-templates.show', $template) . '" class="btn btn-info" title="View Details">' .
+                               '<i class="fas fa-eye"></i></a>';
+                    
+                    $previewBtn = '<button type="button" class="btn btn-primary preview-template-btn" title="Preview Template" ' .
+                                  'data-id="' . $template->id . '" ' .
+                                  'data-name="' . e($template->name) . '" ' .
+                                  'data-code="' . e($template->code) . '" ' .
+                                  'data-description="' . e($template->description) . '" ' .
+                                  'data-service_category="' . ($template->serviceCategory ? e($template->serviceCategory->name) : '') . '" ' .
+                                  'data-investigation_type="' . e($template->investigation_type) . '" ' .
+                                  'data-fields=\'' . json_encode($template->template_fields) . '\'>' .
+                                  '<i class="fas fa-eye-dropper"></i></button>';
+                    
+                    $editBtn = '<a href="' . route('result-templates.edit', $template) . '" class="btn btn-warning" title="Edit">' .
+                               '<i class="fas fa-edit"></i></a>';
+                    
+                    $toggleBtn = '<form method="POST" action="' . route('result-templates.toggle-status', $template) . '" class="d-inline">' .
+                                 csrf_field() . method_field('PATCH') .
+                                 '<button type="submit" class="btn btn-' . ($template->is_active ? 'secondary' : 'success') . '" ' .
+                                 'title="' . ($template->is_active ? 'Deactivate' : 'Activate') . '">' .
+                                 '<i class="fas fa-' . ($template->is_active ? 'pause' : 'play') . '"></i></button></form>';
+                    
+                    $deleteBtn = '<form method="POST" action="' . route('result-templates.destroy', $template) . '" class="d-inline" ' .
+                                 'onsubmit="return confirm(\'Are you sure you want to delete this template? This action cannot be undone.\')">' .
+                                 csrf_field() . method_field('DELETE') .
+                                 '<button type="submit" class="btn btn-danger" title="Delete">' .
+                                 '<i class="fas fa-trash"></i></button></form>';
+                    
+                    return '<div class="btn-group btn-group-sm" role="group">' . 
+                           $viewBtn . $previewBtn . $editBtn . $toggleBtn . $deleteBtn . 
+                           '</div>';
+                })
+                ->rawColumns(['name_display', 'code_display', 'category_display', 'type_display', 'sort_order_display', 'status_display', 'actions'])
+                ->make(true);
         }
 
-        if ($request->filled('service_category_id')) {
-            $query->where('service_category_id', $request->service_category_id);
-        }
-
-        if ($request->filled('status')) {
-            $query->where('is_active', $request->status === 'active');
-        }
-
-        $templates = $query->ordered()->paginate(20);
         $serviceCategories = ServiceCategory::active()->ordered()->get();
 
-        return view('result_templates.index', compact('templates', 'serviceCategories'));
+        return view('result_templates.index', compact('serviceCategories'));
     }
 
     /**

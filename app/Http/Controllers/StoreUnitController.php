@@ -5,16 +5,64 @@ namespace App\Http\Controllers;
 use App\Models\StoreUnit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Yajra\DataTables\Facades\DataTables;
 
 class StoreUnitController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $units = StoreUnit::orderBy('name')->get();
-        return view('store-units.index', compact('units'));
+        if ($request->ajax()) {
+            $query = StoreUnit::query();
+            
+            return DataTables::of($query)
+                ->addColumn('code_display', function ($unit) {
+                    return '<span class="badge badge-secondary">' . e($unit->code) . '</span>';
+                })
+                ->addColumn('type_display', function ($unit) {
+                    if ($unit->type === 'store') {
+                        return '<span class="badge badge-info">Store Only</span>';
+                    } elseif ($unit->type === 'dispensing') {
+                        return '<span class="badge badge-warning">Dispensing Only</span>';
+                    } else {
+                        return '<span class="badge badge-success">Both</span>';
+                    }
+                })
+                ->addColumn('description_display', function ($unit) {
+                    if ($unit->description) {
+                        return e(\Illuminate\Support\Str::limit($unit->description, 50));
+                    }
+                    return '<span class="text-muted">--</span>';
+                })
+                ->addColumn('status_display', function ($unit) {
+                    $btnClass = $unit->is_active ? 'btn-success' : 'btn-secondary';
+                    $statusText = $unit->is_active ? 'Active' : 'Inactive';
+                    return '<form action="' . route('store-units.toggle-status', $unit) . '" method="POST" style="display: inline-block;">' .
+                           csrf_field() .
+                           '<button type="submit" class="btn btn-sm ' . $btnClass . '">' .
+                           $statusText .
+                           '</button></form>';
+                })
+                ->addColumn('actions', function ($unit) {
+                    $viewBtn = '<a href="' . route('store-units.show', $unit) . '" class="btn btn-info btn-sm">' .
+                               '<i class="fas fa-eye"></i></a>';
+                    $editBtn = '<a href="' . route('store-units.edit', $unit) . '" class="btn btn-warning btn-sm">' .
+                               '<i class="fas fa-edit"></i></a>';
+                    $deleteBtn = '<form action="' . route('store-units.destroy', $unit) . '" method="POST" style="display: inline-block;">' .
+                                 csrf_field() .
+                                 method_field('DELETE') .
+                                 '<button type="submit" class="btn btn-danger btn-sm" onclick="return confirm(\'Are you sure you want to delete this unit?\')">' .
+                                 '<i class="fas fa-trash"></i></button></form>';
+                    
+                    return '<div class="btn-group" role="group">' . $viewBtn . $editBtn . $deleteBtn . '</div>';
+                })
+                ->rawColumns(['code_display', 'type_display', 'description_display', 'status_display', 'actions'])
+                ->make(true);
+        }
+        
+        return view('store-units.index');
     }
 
     /**

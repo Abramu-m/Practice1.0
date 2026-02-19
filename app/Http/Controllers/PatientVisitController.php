@@ -131,8 +131,7 @@ class PatientVisitController extends Controller
      */
     public function create(Request $request)
     {
-        // Get all necessary data for the form
-        $patients = \App\Models\Patient::where('status', 'active')->get();
+        // Get necessary data for the form (no longer loading all patients)
         $patientCategories = \App\Models\PatientCategory::all();
         $doctors = \App\Models\Doctor::where('status', 1)->get();
         $visitTypes = \App\Models\VisitType::all();
@@ -149,7 +148,6 @@ class PatientVisitController extends Controller
                         ->with('error', 'Cannot create new visit. Patient has an active visit that needs to be completed first.')
                         ->with('active_visit_id', $selectedPatient->active_visit->id);
                 }
-                $patients = collect([$selectedPatient]);
             } else {
                 // If patient not found, redirect back with error
                 return redirect()->back()->withErrors(['patient_id' => 'Selected patient does not exist.']);
@@ -162,7 +160,7 @@ class PatientVisitController extends Controller
             $selectedDoctor = \App\Models\Doctor::find($request->doctor_id);
         }
         
-        return view('patient_visits.create', compact('patients', 'patientCategories', 'doctors', 'visitTypes', 'selectedPatient', 'selectedDoctor'));
+        return view('patient_visits.create', compact('patientCategories', 'doctors', 'visitTypes', 'selectedPatient', 'selectedDoctor'));
     }
 
     /**

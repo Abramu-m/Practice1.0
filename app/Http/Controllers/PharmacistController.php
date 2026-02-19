@@ -256,13 +256,14 @@ class PharmacistController extends Controller
     {
         $query = PatientVisit::with([
             'patientInfo',
-            'consultation.prescriptions.medication'
+            'consultation.prescriptions.medication',
+            'consultation.doctor.user'
         ])
         ->whereHas('consultation.prescriptions')
         ->orderBy('created_at', 'desc');
 
         // Filter by prescription status
-        if ($request->filled('status')) {
+        if ($request->filled('status') && is_string($request->status)) {
             $status = $request->status;
             $query->whereHas('consultation.prescriptions', function($q) use ($status) {
                 // Map the filter status to database status values
@@ -284,8 +285,20 @@ class PharmacistController extends Controller
         // If no status filter is provided, show all visits with prescriptions (no status filter)
 
         // Filter by patient search
+        // Handle both custom search parameter and DataTables global search
+        $searchValue = null;
         if ($request->filled('search')) {
-            $search = $request->search;
+            if (is_array($request->search) && isset($request->search['value'])) {
+                // DataTables global search format
+                $searchValue = $request->search['value'];
+            } elseif (is_string($request->search)) {
+                // Custom search parameter
+                $searchValue = $request->search;
+            }
+        }
+        
+        if ($searchValue && strlen($searchValue) > 0) {
+            $search = $searchValue;
             $query->whereHas('patientInfo', function($q) use ($search) {
                 $q->where('first_name', 'like', "%{$search}%")
                   ->orWhere('last_name', 'like', "%{$search}%");
@@ -301,7 +314,7 @@ class PharmacistController extends Controller
         }
 
         // Filter by date
-        if ($request->filled('date')) {
+        if ($request->filled('date') && is_string($request->date)) {
             $query->whereDate('created_at', $request->date);
         }
 

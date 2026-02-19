@@ -414,4 +414,53 @@ class MedicationController extends Controller
             'count' => $lowStockItems->count()
         ]);
     }
+
+    /**
+     * Search medications for Select2 AJAX dropdown
+     */
+    public function search(Request $request)
+    {
+        $term = $request->input('q', '');
+        $page = $request->input('page', 1);
+        $perPage = 20;
+
+        $query = Medication::query()
+            ->orderBy('generic_name');
+
+        if ($term) {
+            $query->where(function($q) use ($term) {
+                $q->where('generic_name', 'like', '%' . $term . '%')
+                  ->orWhere('brand_name', 'like', '%' . $term . '%')
+                  ->orWhere('strength', 'like', '%' . $term . '%');
+            });
+        }
+
+        $total = $query->count();
+        $medications = $query
+            ->skip(($page - 1) * $perPage)
+            ->take($perPage)
+            ->get();
+
+        $results = $medications->map(function($medication) {
+            $text = $medication->generic_name;
+            if ($medication->brand_name) {
+                $text .= ' (' . $medication->brand_name . ')';
+            }
+            if ($medication->strength) {
+                $text .= ' - ' . $medication->strength;
+            }
+
+            return [
+                'id' => $medication->id,
+                'text' => $text
+            ];
+        });
+
+        return response()->json([
+            'results' => $results,
+            'pagination' => [
+                'more' => ($page * $perPage) < $total
+            ]
+        ]);
+    }
 }

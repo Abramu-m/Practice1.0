@@ -65,7 +65,7 @@
 
                     <!-- Templates Table -->
                     <div class="table-responsive">
-                        <table class="table table-bordered table-hover">
+                        <table id="templatesTable" class="table table-bordered table-hover">
                             <thead class="table-dark">
                                 <tr>
                                     <th>Template Name</th>
@@ -77,115 +77,7 @@
                                     <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                @forelse($templates as $template)
-                                    <tr>
-                                        <td>
-                                            <strong>{{ $template->name }}</strong>
-                                            @if($template->description)
-                                                <br>
-                                                <small class="text-muted">{{ Str::limit($template->description, 50) }}</small>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            <code>{{ $template->code }}</code>
-                                        </td>
-                                        <td>
-                                            @if($template->serviceCategory)
-                                                <span class="badge bg-secondary">{{ $template->serviceCategory->name }}</span>
-                                            @else
-                                                <span class="text-muted">All Categories</span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            @if($template->investigation_type)
-                                                <span class="badge bg-info">{{ $template->investigation_type }}</span>
-                                            @else
-                                                <span class="text-muted">All Types</span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            <span class="badge bg-light text-dark">{{ $template->sort_order }}</span>
-                                        </td>
-                                        <td>
-                                            @if($template->is_active)
-                                                <span class="badge bg-success">Active</span>
-                                            @else
-                                                <span class="badge bg-danger">Inactive</span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            <div class="btn-group btn-group-sm" role="group">
-                                                <a href="{{ route('result-templates.show', $template) }}" 
-                                                   class="btn btn-info" 
-                                                   title="View Details">
-                                                    <i class="fas fa-eye"></i>
-                                                </a>
-                        <button type="button" 
-                            class="btn btn-primary preview-template-btn" 
-                            title="Preview Template"
-                            data-id="{{ $template->id }}"
-                            data-name="{{ e($template->name) }}"
-                            data-code="{{ e($template->code) }}"
-                            data-description="{{ e($template->description) }}"
-                            data-service_category="{{ $template->serviceCategory ? e($template->serviceCategory->name) : '' }}"
-                            data-investigation_type="{{ e($template->investigation_type) }}"
-                            data-fields='@json($template->template_fields)'>
-                                                    <i class="fas fa-eye-dropper"></i>
-                                                </button>
-                                                <a href="{{ route('result-templates.edit', $template) }}" 
-                                                   class="btn btn-warning" 
-                                                   title="Edit">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
-                                                <form method="POST" 
-                                                      action="{{ route('result-templates.toggle-status', $template) }}" 
-                                                      class="d-inline">
-                                                    @csrf
-                                                    @method('PATCH')
-                                                    <button type="submit" 
-                                                            class="btn btn-{{ $template->is_active ? 'secondary' : 'success' }}" 
-                                                            title="{{ $template->is_active ? 'Deactivate' : 'Activate' }}">
-                                                        <i class="fas fa-{{ $template->is_active ? 'pause' : 'play' }}"></i>
-                                                    </button>
-                                                </form>
-                                                <form method="POST" 
-                                                      action="{{ route('result-templates.destroy', $template) }}" 
-                                                      class="d-inline">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" 
-                                                            class="btn btn-danger" 
-                                                            title="Delete"
-                                                            onclick="return confirm('Are you sure you want to delete this template? This action cannot be undone.')">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
-                                                </form>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="7" class="text-center text-muted">
-                                            No result templates found.
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
                         </table>
-                    </div>
-
-                    <!-- Pagination -->
-                    <div class="row mt-3">
-                        <div class="col-md-6">
-                            <p class="text-muted">
-                                Showing {{ $templates->firstItem() ?? 0 }} to {{ $templates->lastItem() ?? 0 }} 
-                                of {{ $templates->total() }} templates
-                            </p>
-                        </div>
-                        <div class="col-md-6">
-                            {{ $templates->links() }}
-                        </div>
                     </div>
                 </div>
             </div>
@@ -194,25 +86,52 @@
 </div>
 @endsection
 
-@endsection
-
 @section('scripts')
 <script>
 $(document).ready(function() {
-    $('.table').DataTable({
-        responsive: true,
-        order: [[1, 'asc']],
-        pageLength: 10,
-        columnDefs: [
-            { orderable: false, targets: [-1] }
+    var table = $('#templatesTable').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: '{{ route("result-templates.index") }}',
+            data: function(d) {
+                d.search = $('input[name="search"]').val();
+                d.service_category_id = $('select[name="service_category_id"]').val();
+                d.status = $('select[name="status"]').val();
+            }
+        },
+        columns: [
+            { data: 'name_display', name: 'name', orderable: true },
+            { data: 'code_display', name: 'code', orderable: true },
+            { data: 'category_display', name: 'serviceCategory.name', orderable: true },
+            { data: 'type_display', name: 'investigation_type', orderable: true },
+            { data: 'sort_order_display', name: 'sort_order', orderable: true },
+            { data: 'status_display', name: 'is_active', orderable: true },
+            { data: 'actions', name: 'actions', orderable: false, searchable: false }
         ],
-        language: {
-            search: "Search templates:",
-            lengthMenu: "Show _MENU_ templates per page",
-            info: "Showing _START_ to _END_ of _TOTAL_ templates",
-            infoEmpty: "No templates found",
-            infoFiltered: "(filtered from _MAX_ total templates)"
-        }
+        order: [[4, 'asc'], [0, 'asc']],
+        pageLength: 20,
+        responsive: true
+    });
+
+    // Reload table when filter button is clicked
+    $('form button[type="submit"]').on('click', function(e) {
+        e.preventDefault();
+        table.draw();
+    });
+
+    // Reload on filter changes
+    $('select[name="service_category_id"], select[name="status"]').on('change', function() {
+        table.draw();
+    });
+
+    // Reload on search input (with delay)
+    let searchTimeout;
+    $('input[name="search"]').on('keyup', function() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(function() {
+            table.draw();
+        }, 500);
     });
 });
 </script>

@@ -401,6 +401,68 @@ class PatientController extends Controller
     }
 
     /**
+     * AJAX endpoint for patient search (used by Select2)
+     */
+    public function search(Request $request)
+    {
+        $term = $request->input('q', '');
+        $page = $request->input('page', 1);
+        $perPage = 20;
+
+        $query = Patient::query()
+            ->where('status', 'active')
+            ->orderBy('first_name')
+            ->orderBy('last_name');
+
+        // Apply search filter
+        if ($term) {
+            $query->where(function($q) use ($term) {
+                // Check if it looks like an MR number
+                if (preg_match('/MR-\d{4}-(\d+)/', $term, $matches)) {
+                    $q->where('id', intval($matches[1]));
+                } elseif (ctype_digit($term) && strlen($term) <= 6) {
+                    // Treat short all-digit searches as ID lookup
+                    $q->where('id', intval($term));
+                } else {
+                    // Search across multiple fields
+                    $q->where('first_name', 'like', '%' . $term . '%')
+                      ->orWhere('last_name', 'like', '%' . $term . '%')
+                      ->orWhere('middle_name', 'like', '%' . $term . '%')
+                      ->orWhere('contact', 'like', '%' . $term . '%')
+                      ->orWhere('nida', 'like', '%' . $term . '%')
+                      ->orWhere('card_number', 'like', '%' . $term . '%');
+                }
+            });
+        }
+
+        // Get total count for pagination
+        $total = $query->count();
+
+        // Get paginated results
+        $patients = $query->skip(($page - 1) * $perPage)
+            ->take($perPage)
+            ->get();
+
+        // Format for Select2
+        $results = $patients->map(function($patient) {
+            return [
+                'id' => $patient->id,
+                'text' => $patient->full_name . ' - ' . ($patient->contact ?? 'No contact'),
+                'full_name' => $patient->full_name,
+                'contact' => $patient->contact,
+                'mr_number' => $patient->mr_number,
+            ];
+        });
+
+        return response()->json([
+            'results' => $results,
+            'pagination' => [
+                'more' => ($page * $perPage) < $total
+            ]
+        ]);
+    }
+
+    /**
      * Remove the specified resource from storage.
      */
     public function destroy(Patient $patient)

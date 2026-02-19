@@ -15,65 +15,7 @@
         </div>
     </div>
 
-    <!-- Quick Navigation Cards -->
-    <div class="row mb-4">
-        <div class="col-md-3">
-            <div class="small-box bg-info">
-                <div class="inner">
-                    <h3 id="total-units">{{ $units->count() }}</h3>
-                    <p>Total Units</p>
-                </div>
-                <div class="icon">
-                    <i class="fas fa-cubes"></i>
-                </div>
-                <a href="#" class="small-box-footer" onclick="$('#units-table').DataTable().search('').draw();">
-                    View All <i class="fas fa-arrow-circle-right"></i>
-                </a>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="small-box bg-success">
-                <div class="inner">
-                    <h3 id="active-units">{{ $units->where('is_active', true)->count() }}</h3>
-                    <p>Active Units</p>
-                </div>
-                <div class="icon">
-                    <i class="fas fa-check-circle"></i>
-                </div>
-                <a href="#" class="small-box-footer" onclick="filterByStatus('active');">
-                    View Active <i class="fas fa-arrow-circle-right"></i>
-                </a>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="small-box bg-warning">
-                <div class="inner">
-                    <h3 id="store-units">{{ $units->whereIn('type', ['store', 'both'])->count() }}</h3>
-                    <p>Store Units</p>
-                </div>
-                <div class="icon">
-                    <i class="fas fa-warehouse"></i>
-                </div>
-                <a href="#" class="small-box-footer" onclick="filterByType('store');">
-                    View Store <i class="fas fa-arrow-circle-right"></i>
-                </a>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="small-box bg-danger">
-                <div class="inner">
-                    <h3 id="dispensing-units">{{ $units->whereIn('type', ['dispensing', 'both'])->count() }}</h3>
-                    <p>Dispensing Units</p>
-                </div>
-                <div class="icon">
-                    <i class="fas fa-pills"></i>
-                </div>
-                <a href="#" class="small-box-footer" onclick="filterByType('dispensing');">
-                    View Dispensing <i class="fas fa-arrow-circle-right"></i>
-                </a>
-            </div>
-        </div>
-    </div>
+
 
     <!-- Quick Actions -->
     <div class="row mb-3">
@@ -192,62 +134,6 @@
                                     <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                @forelse($units as $unit)
-                                    <tr>
-                                        <td>{{ $unit->id }}</td>
-                                        <td>{{ $unit->name }}</td>
-                                        <td>
-                                            <span class="badge badge-secondary">{{ $unit->code }}</span>
-                                        </td>
-                                        <td>
-                                            @if($unit->type === 'store')
-                                                <span class="badge badge-info">Store Only</span>
-                                            @elseif($unit->type === 'dispensing')
-                                                <span class="badge badge-warning">Dispensing Only</span>
-                                            @else
-                                                <span class="badge badge-success">Both</span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            @if($unit->description)
-                                                {{ Str::limit($unit->description, 50) }}
-                                            @else
-                                                <span class="text-muted">--</span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            <form action="{{ route('store-units.toggle-status', $unit) }}" method="POST" style="display: inline-block;">
-                                                @csrf
-                                                <button type="submit" class="btn btn-sm {{ $unit->is_active ? 'btn-success' : 'btn-secondary' }}">
-                                                    {{ $unit->is_active ? 'Active' : 'Inactive' }}
-                                                </button>
-                                            </form>
-                                        </td>
-                                        <td>
-                                            <div class="btn-group" role="group">
-                                                <a href="{{ route('store-units.show', $unit) }}" class="btn btn-info btn-sm">
-                                                    <i class="fas fa-eye"></i>
-                                                </a>
-                                                <a href="{{ route('store-units.edit', $unit) }}" class="btn btn-warning btn-sm">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
-                                                <form action="{{ route('store-units.destroy', $unit) }}" method="POST" style="display: inline-block;">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this unit?')">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
-                                                </form>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="7" class="text-center">No store units found.</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -256,18 +142,28 @@
     </div>
 </div>
 
+@section('scripts')
 <script>
 $(document).ready(function() {
     const table = $('#units-table').DataTable({
-        responsive: true,
-        order: [[1, 'asc']],
-        columnDefs: [
-            { targets: -1, orderable: false }
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: '{{ route("store-units.index") }}',
+            type: 'GET'
+        },
+        columns: [
+            { data: 'id', name: 'id', orderable: true },
+            { data: 'name', name: 'name', orderable: true },
+            { data: 'code_display', name: 'code', orderable: true },
+            { data: 'type_display', name: 'type', orderable: true },
+            { data: 'description_display', name: 'description', orderable: true },
+            { data: 'status_display', name: 'is_active', orderable: true },
+            { data: 'actions', name: 'actions', orderable: false, searchable: false }
         ],
-        dom: 'Bfrtip',
-        buttons: [
-            'copy', 'csv', 'excel', 'pdf', 'print'
-        ]
+        order: [[1, 'asc']],
+        pageLength: 20,
+        responsive: true
     });
 
     // Make table variable global for filter functions
@@ -308,15 +204,8 @@ function filterByType(type) {
 }
 
 function exportTable() {
-    const table = window.unitsTable;
-    table.button(0).trigger(); // Trigger the first export button (copy)
-}
-
-// Reset all filters
-function resetFilters() {
-    const table = window.unitsTable;
-    table.search('').columns().search('').draw();
-    $('.btn-group .btn').removeClass('active');
+    // Export functionality can be added with DataTables buttons extension
+    alert('Export feature - requires DataTables Buttons extension');
 }
 
 // Quick search functionality
@@ -324,31 +213,6 @@ function quickSearch(searchTerm) {
     const table = window.unitsTable;
     table.search(searchTerm).draw();
 }
-
-// Status toggle with confirmation
-function toggleStatus(unitId, currentStatus) {
-    const statusText = currentStatus ? 'deactivate' : 'activate';
-    const confirmMessage = `Are you sure you want to ${statusText} this unit?`;
-    
-    if (confirm(confirmMessage)) {
-        // Submit the form
-        document.getElementById(`toggle-form-${unitId}`).submit();
-    }
-}
-
-// Bulk actions (future enhancement)
-function selectAll() {
-    const checkboxes = document.querySelectorAll('.unit-checkbox');
-    checkboxes.forEach(checkbox => {
-        checkbox.checked = true;
-    });
-}
-
-function deselectAll() {
-    const checkboxes = document.querySelectorAll('.unit-checkbox');
-    checkboxes.forEach(checkbox => {
-        checkbox.checked = false;
-    });
-}
 </script>
+@endsection
 @endsection

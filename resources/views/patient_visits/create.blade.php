@@ -28,13 +28,12 @@
                                 <div class="form-group mb-3">
                                     <label for="patient">Patient <span class="text-danger">*</span></label>
                                     <select class="form-control select2-patient @error('patient') is-invalid @enderror" id="patient" name="patient" required>
-                                        <option value="">Select Patient</option>
-                                        @foreach($patients as $patient)
-                                            <option value="{{ $patient->id }}" 
-                                                {{ (old('patient') == $patient->id || (isset($selectedPatient) && $selectedPatient->id == $patient->id)) ? 'selected' : '' }}>
-                                                {{ $patient->full_name }} - {{ $patient->contact }}
+                                        <option value="">Search and select patient...</option>
+                                        @if(isset($selectedPatient))
+                                            <option value="{{ $selectedPatient->id }}" selected>
+                                                {{ $selectedPatient->full_name }} - {{ $selectedPatient->contact }}
                                             </option>
-                                        @endforeach
+                                        @endif
                                     </select>
                                     @error('patient')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -216,34 +215,44 @@
 <!-- Select2 assets are loaded globally in the layout; only keep initialization below -->
 
 <script>
-// Initialize Select2 for patient dropdown
+// Initialize Select2 for patient dropdown with AJAX
 $(document).ready(function() {
     $('.select2-patient').select2({
-        theme: 'bootstrap',
-        placeholder: 'Search and select patient...',
+        placeholder: 'Type to search for patient...',
         allowClear: true,
         width: '100%',
-        // Enable searching/filtering
-        minimumInputLength: 0,
-        // Custom matcher for better search
-        matcher: function(params, data) {
-            // If there are no search terms, return all data
-            if ($.trim(params.term) === '') {
-                return data;
+        minimumInputLength: 2,
+        ajax: {
+            url: '{{ route('patients.search') }}',
+            dataType: 'json',
+            delay: 300,
+            data: function(params) {
+                return {
+                    q: params.term,
+                    page: params.page || 1
+                };
+            },
+            processResults: function(data, params) {
+                params.page = params.page || 1;
+                return {
+                    results: data.results,
+                    pagination: {
+                        more: data.pagination.more
+                    }
+                };
+            },
+            cache: true
+        },
+        language: {
+            inputTooShort: function() {
+                return 'Type 2 or more characters to search';
+            },
+            searching: function() {
+                return 'Searching patients...';
+            },
+            noResults: function() {
+                return 'No patients found';
             }
-
-            // Skip if there is no 'text' property
-            if (typeof data.text === 'undefined') {
-                return null;
-            }
-
-            // Check if the text contains the term (case insensitive)
-            if (data.text.toLowerCase().indexOf(params.term.toLowerCase()) > -1) {
-                return data;
-            }
-
-            // Return null if the term doesn't match
-            return null;
         }
     });
 

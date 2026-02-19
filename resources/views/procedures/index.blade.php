@@ -349,7 +349,7 @@ $(document).ready(function() {
             }
         },
         columns: [
-            { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false, 
+            { data: null, name: 'DT_RowIndex', orderable: false, searchable: false, 
               render: function(data, type, row, meta) {
                   return meta.row + meta.settings._iDisplayStart + 1 + '.';
               }
@@ -976,22 +976,5 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Auto-refresh removed to prevent CSRF token conflicts during form submission
-
-// Initialize DataTable
-$('.table').DataTable({
-    responsive: true,
-    order: [[5, 'desc']], // Order by date ordered (descending)
-    pageLength: 25,
-    columnDefs: [
-        { orderable: false, targets: [-1] } // Disable sorting on actions column
-    ],
-    language: {
-        search: "Search procedures:",
-        lengthMenu: "Show _MENU_ procedures per page",
-        info: "Showing _START_ to _END_ of _TOTAL_ procedures",
-        infoEmpty: "No procedures found",
-        infoFiltered: "(filtered from _MAX_ total procedures)"
-    }
-});
 </script>
 @endsection

@@ -19,13 +19,19 @@
                     <form method="GET" action="{{ route('medication-pricing.index') }}" class="mb-3">
                         <div class="row">
                             <div class="col-md-3">
-                                <select name="medication_id" class="form-control">
+                                <select name="medication_id" class="form-control select2-medication" style="width: 100%;">
                                     <option value="">All Medications</option>
-                                    @foreach($medications as $medication)
-                                        <option value="{{ $medication->id }}" {{ request('medication_id') == $medication->id ? 'selected' : '' }}>
-                                            {{ $medication->generic_name }}
+                                    @if($selectedMedication)
+                                        <option value="{{ $selectedMedication->id }}" selected>
+                                            {{ $selectedMedication->generic_name }}
+                                            @if($selectedMedication->brand_name)
+                                                ({{ $selectedMedication->brand_name }})
+                                            @endif
+                                            @if($selectedMedication->strength)
+                                                - {{ $selectedMedication->strength }}
+                                            @endif
                                         </option>
-                                    @endforeach
+                                    @endif
                                 </select>
                             </div>
                             <div class="col-md-3">
@@ -66,7 +72,7 @@
 
                     <!-- Pricing Table -->
                     <div class="table-responsive">
-                        <table class="table table-bordered table-striped">
+                        <table id="pricingTable" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
                                     <th>Medication</th>
@@ -79,87 +85,82 @@
                                     <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                @forelse($pricing as $price)
-                                    <tr>
-                                        <td>
-                                            <strong>{{ $price->medication->generic_name }}</strong>
-                                            @if($price->medication->brand_name)
-                                                <br><small class="text-muted">{{ $price->medication->brand_name }}</small>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            <span class="badge badge-info text-black">{{ $price->patientCategory->description }}</span>
-                                        </td>
-                                        <td>${{ number_format($price->selling_price, 2) }}</td>
-                                        <td>
-                                            @if($price->markup_percentage)
-                                                {{ number_format($price->markup_percentage, 1) }}%
-                                            @else
-                                                <span class="text-muted">--</span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            @if($price->discount_percentage)
-                                                <span class="text-danger">{{ number_format($price->discount_percentage, 1) }}%</span>
-                                            @else
-                                                <span class="text-muted">--</span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            <small>
-                                                <strong>From:</strong> {{ $price->effective_from->format('M d, Y') }}<br>
-                                                <strong>To:</strong> {{ $price->effective_to ? $price->effective_to->format('M d, Y') : 'Ongoing' }}
-                                            </small>
-                                        </td>
-                                        <td>
-                                            <span class="text-black badge badge-{{ $price->is_active ? 'success' : 'danger' }}">
-                                                {{ $price->is_active ? 'Active' : 'Inactive' }}
-                                            </span>
-                                            @if($price->isCurrent())
-                                                <span class="badge badge-primary text-black">Current</span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            <div class="btn-group">
-                                                <a href="{{ route('medication-pricing.show', $price->id) }}" class="btn btn-sm btn-info">
-                                                    <i class="fas fa-eye"></i>
-                                                </a>
-                                                <a href="{{ route('medication-pricing.edit', $price->id) }}" class="btn btn-sm btn-primary">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
-                                                <form action="{{ route('medication-pricing.destroy', $price->id) }}" method="POST" style="display: inline;">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this pricing?')">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
-                                                </form>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="8" class="text-center">
-                                            <div class="py-4">
-                                                <i class="fas fa-tags fa-3x text-muted mb-3"></i>
-                                                <p class="text-muted">No pricing records found.</p>
-                                                <a href="{{ route('medication-pricing.create') }}" class="btn btn-primary">
-                                                    <i class="fas fa-plus"></i> Add New Pricing
-                                                </a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
                         </table>
                     </div>
-
-                    <!-- Pagination -->
-                    {{ $pricing->links() }}
                 </div>
             </div>
         </div>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+$(document).ready(function() {
+    // Initialize Select2 for medication filter
+    $('.select2-medication').select2({
+        placeholder: 'Type to search for medication...',
+        allowClear: true,
+        minimumInputLength: 2,
+        ajax: {
+            url: '{{ route("medications.search") }}',
+            dataType: 'json',
+            delay: 300,
+            data: function(params) {
+                return {
+                    q: params.term,
+                    page: params.page || 1
+                };
+            },
+            processResults: function(data) {
+                return {
+                    results: data.results,
+                    pagination: {
+                        more: data.pagination.more
+                    }
+                };
+            },
+            cache: true
+        }
+    });
+
+    var table = $('#pricingTable').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: '{{ route("medication-pricing.index") }}',
+            data: function(d) {
+                d.medication_id = $('select[name="medication_id"]').val();
+                d.patient_category_id = $('select[name="patient_category_id"]').val();
+                d.status = $('select[name="status"]').val();
+                d.effective_status = $('select[name="effective_status"]').val();
+            }
+        },
+        columns: [
+            { data: 'medication_display', name: 'medication.generic_name', orderable: true },
+            { data: 'category_display', name: 'patientCategory.description', orderable: true },
+            { data: 'selling_price_display', name: 'selling_price', orderable: true },
+            { data: 'markup_display', name: 'markup_percentage', orderable: true },
+            { data: 'discount_display', name: 'discount_percentage', orderable: true },
+            { data: 'effective_period', name: 'effective_from', orderable: true },
+            { data: 'status_display', name: 'is_active', orderable: true },
+            { data: 'actions', name: 'actions', orderable: false, searchable: false }
+        ],
+        order: [[5, 'desc']],
+        pageLength: 20,
+        responsive: true
+    });
+
+    // Filter on change
+    $('select[name="medication_id"], select[name="patient_category_id"], select[name="status"], select[name="effective_status"]').on('change', function() {
+        table.draw();
+    });
+
+    // Prevent form submission and use DataTables filtering instead
+    $('form').on('submit', function(e) {
+        e.preventDefault();
+        table.draw();
+    });
+});
+</script>
 @endsection

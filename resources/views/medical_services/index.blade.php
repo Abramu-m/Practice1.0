@@ -251,8 +251,7 @@
             </div>
         </div>
     </div>
-@endsection
-
+</div>
 @endsection
 
 @section('scripts')

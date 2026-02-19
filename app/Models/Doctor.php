@@ -61,6 +61,14 @@ class Doctor extends Model
     }
 
     /**
+     * Get the doctor's name from the user relationship.
+     */
+    public function getNameAttribute()
+    {
+        return $this->user ? $this->user->name : 'N/A';
+    }
+
+    /**
      * Get consultations performed by this doctor
      */
     public function consultations()

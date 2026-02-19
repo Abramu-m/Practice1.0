@@ -66,7 +66,7 @@
 
                     <!-- Pricing Table -->
                     <div class="table-responsive">
-                        <table class="table table-bordered table-striped">
+                        <table id="pricingTable" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
                                     <th>Medical Service</th>
@@ -80,94 +80,8 @@
                                     <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                @forelse($pricing as $price)
-                                    <tr>
-                                        <td>
-                                            <strong>{{ $price->medicalService->name }}</strong>
-                                            @if($price->medicalService->code)
-                                                <br><small class="text-muted">{{ $price->medicalService->code }}</small>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            <span class="badge badge-secondary text-black">{{ $price->medicalService->serviceCategory->name ?? 'N/A' }}</span>
-                                        </td>
-                                        <td>
-                                            <span class="badge badge-info text-black">{{ $price->patientCategory->description }}</span>
-                                        </td>
-                                        <td>TSh {{ number_format($price->selling_price, 2) }}</td>
-                                        <td>
-                                            @if($price->markup_percentage)
-                                                {{ number_format($price->markup_percentage, 1) }}%
-                                            @else
-                                                <span class="text-muted">--</span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            @if($price->discount_percentage)
-                                                {{ number_format($price->discount_percentage, 1) }}%
-                                            @else
-                                                <span class="text-muted">--</span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            <small>
-                                                <strong>From:</strong> {{ $price->effective_from ? $price->effective_from->format('M j, Y') : 'Not set' }}
-                                                @if($price->effective_to)
-                                                    <br><strong>To:</strong> {{ $price->effective_to->format('M j, Y') }}
-                                                @else
-                                                    <br><strong>To:</strong> <span class="text-muted">Indefinite</span>
-                                                @endif
-                                            </small>
-                                        </td>
-                                        <td>
-                                            @php
-                                                $status = $price->status;
-                                                $badgeClass = $status === 'Active' ? 'success' : 
-                                                            ($status === 'Future' ? 'warning' : 
-                                                            ($status === 'Expired' ? 'secondary' : 'danger'));
-                                            @endphp
-                                            <span class="badge badge-{{ $badgeClass }}">{{ $status }}</span>
-                                        </td>
-                                        <td>
-                                            <div class="btn-group btn-group-sm">
-                                                <a href="{{ route('medical-service-pricing.show', $price) }}" 
-                                                   class="btn btn-outline-info" title="View">
-                                                    <i class="fas fa-eye"></i>
-                                                </a>
-                                                <a href="{{ route('medical-service-pricing.edit', $price) }}" 
-                                                   class="btn btn-outline-primary" title="Edit">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
-                                                <form action="{{ route('medical-service-pricing.destroy', $price) }}" 
-                                                      method="POST" style="display: inline-block;"
-                                                      onsubmit="return confirm('Are you sure you want to delete this pricing?')">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-outline-danger" title="Delete">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
-                                                </form>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="9" class="text-center text-muted">
-                                            <i class="fas fa-info-circle"></i> No pricing records found
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
                         </table>
                     </div>
-
-                    <!-- Pagination -->
-                    @if($pricing->hasPages())
-                        <div class="d-flex justify-content-center">
-                            {{ $pricing->appends(request()->query())->links() }}
-                        </div>
-                    @endif
                 </div>
             </div>
         </div>
@@ -178,9 +92,43 @@
 @section('scripts')
 <script>
 $(document).ready(function() {
-    // Auto-submit filter form when selections change
-    $('select[name="medical_service_id"], select[name="patient_category_id"], select[name="status"], select[name="effective_status"]').change(function() {
-        $(this).closest('form').submit();
+    var table = $('#pricingTable').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: '{{ route("medical-service-pricing.index") }}',
+            data: function(d) {
+                d.medical_service_id = $('select[name="medical_service_id"]').val();
+                d.patient_category_id = $('select[name="patient_category_id"]').val();
+                d.status = $('select[name="status"]').val();
+                d.effective_status = $('select[name="effective_status"]').val();
+            }
+        },
+        columns: [
+            { data: 'service_display', name: 'medicalService.name', orderable: true },
+            { data: 'category_display', name: 'medicalService.serviceCategory.name', orderable: true },
+            { data: 'patient_category_display', name: 'patientCategory.description', orderable: true },
+            { data: 'price_display', name: 'selling_price', orderable: true },
+            { data: 'markup_display', name: 'markup_percentage', orderable: true },
+            { data: 'discount_display', name: 'discount_percentage', orderable: true },
+            { data: 'effective_period', name: 'effective_from', orderable: true },
+            { data: 'status_display', name: 'is_active', orderable: true },
+            { data: 'actions', name: 'actions', orderable: false, searchable: false }
+        ],
+        order: [[0, 'asc']],
+        pageLength: 20,
+        responsive: true
+    });
+
+    // Reload table when filters change
+    $('select[name="medical_service_id"], select[name="patient_category_id"], select[name="status"], select[name="effective_status"]').on('change', function() {
+        table.draw();
+    });
+
+    // Prevent form submission
+    $('form').on('submit', function(e) {
+        e.preventDefault();
+        table.draw();
     });
 });
 </script>

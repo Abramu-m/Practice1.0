@@ -105,18 +105,22 @@
                         </div>
 
                         <!-- Prescriptions Table -->
-                        <div class="card-body table-responsive p-0">
-                            <table id="prescriptionsTable" class="table table-hover text-nowrap">
-                                <thead>
-                                    <tr>
-                                        <th>Patient Information</th>
-                                        <th>Visit Details</th>
-                                        <th>Prescriptions</th>
-                                        <th>Status</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                            </table>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table id="prescriptionsTable" class="table table-hover table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Patient Information</th>
+                                            <th>Visit Details</th>
+                                            <th>Prescriptions</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -126,7 +130,7 @@
 </div>
 @endsection
 
-@push('scripts')
+@section('scripts')
 <script>
 $(document).ready(function() {
     var table = $('#prescriptionsTable').DataTable({
@@ -135,45 +139,72 @@ $(document).ready(function() {
         ajax: {
             url: '{{ route("pharmacist.prescriptions.index") }}',
             data: function(d) {
-                d.status = $('#status').val();
-                d.search = $('#search').val();
-                d.date = $('#date').val();
+                d.status = $('#status').val() || '';
+                d.search = $('#search').val() || '';
+                d.date = $('#date').val() || '';
             }
         },
         columns: [
-            { data: 'patient_info', name: 'patientInfo.first_name' },
-            { data: 'visit_details', name: 'created_at' },
-            { data: 'prescriptions_info', name: 'prescriptions_info', orderable: false, searchable: false },
-            { data: 'status_badge', name: 'status_badge', orderable: false, searchable: false },
-            { data: 'actions', name: 'actions', orderable: false, searchable: false }
+            { 
+                data: 'patient_info', 
+                name: 'patientInfo.first_name', 
+                orderable: false,
+                defaultContent: '<span class="text-muted">N/A</span>'
+            },
+            { 
+                data: 'visit_details', 
+                name: 'created_at',
+                defaultContent: '<span class="text-muted">N/A</span>'
+            },
+            { 
+                data: 'prescriptions_info', 
+                name: 'prescriptions_info', 
+                orderable: false, 
+                searchable: false,
+                defaultContent: '<span class="text-muted">N/A</span>'
+            },
+            { 
+                data: 'status_badge', 
+                name: 'status_badge', 
+                orderable: false, 
+                searchable: false,
+                defaultContent: '<span class="text-muted">N/A</span>'
+            },
+            { 
+                data: 'actions', 
+                name: 'actions', 
+                orderable: false, 
+                searchable: false,
+                defaultContent: '<span class="text-muted">No actions</span>'
+            }
         ],
         order: [[1, 'desc']],
         pageLength: 20
     });
 
     // Filter form submission
-    $('.card-body form').on('submit', function(e) {
-        e.preventDefault();
-        table.draw();
-    });
+        $('.card-body form').on('submit', function(e) {
+            e.preventDefault();
+            table.draw();
+        });
 
-    // Quick filter buttons
-    $('.btn-group a').on('click', function(e) {
-        e.preventDefault();
-        var url = $(this).attr('href');
-        var params = new URLSearchParams(url.split('?')[1]);
-        $('#status').val(params.get('status') || '');
-        table.draw();
-    });
+        // Quick filter buttons
+        $('.btn-group a').on('click', function(e) {
+            e.preventDefault();
+            var url = $(this).attr('href');
+            var params = new URLSearchParams(url.split('?')[1]);
+            $('#status').val(params.get('status') || '');
+            table.draw();
+        });
 
-    // Auto-refresh every 2 minutes for pending prescriptions
-    @if(request('status') == 'pending' || !request()->has('status'))
-        setInterval(function() {
-            if (document.visibilityState === 'visible') {
-                table.ajax.reload(null, false);
-            }
-        }, 120000);
+        // Auto-refresh every 2 minutes for pending prescriptions
+        @if(request('status') == 'pending' || !request()->has('status'))
+            setInterval(function() {
+                if (document.visibilityState === 'visible') {
+                    table.ajax.reload(null, false);
+                }
+            }, 120000);
     @endif
 });
 </script>
-@endpush
+@endsection

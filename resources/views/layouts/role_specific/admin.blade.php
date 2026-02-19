@@ -262,12 +262,6 @@
                         </a>
                       </li>
                       <li class="nav-item">
-                        <a href="{{ route('medications.stock.grn.index') }}" class="nav-link nav-sub-sub-item">
-                          <i class="nav-icon bi bi-receipt-cutoff text-info"></i>
-                          <p>GRN Management</p>
-                        </a>
-                      </li>
-                      <li class="nav-item">
                         <a href="{{ route('medications.stock.suppliers.index') }}" class="nav-link nav-sub-sub-item">
                           <i class="nav-icon bi bi-building text-warning"></i>
                           <p>Suppliers</p>

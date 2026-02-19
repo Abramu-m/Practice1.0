@@ -182,6 +182,8 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsVerified::class])->g
     })->name('clinical.dashboard');
 
     // Patient Management
+    Route::get('patients/search', [PatientController::class, 'search'])->name('patients.search');
+Route::get('medications/search', [\App\Http\Controllers\MedicationController::class, 'search'])->name('medications.search');
     Route::resource('patients', PatientController::class);
     Route::get('patients/visits/{visit}/investigations-partial', [PatientController::class, 'getVisitInvestigationsPartial'])->name('patients.visit_investigations_partial');
     Route::resource('patient_categories', PatientCategoryController::class);
