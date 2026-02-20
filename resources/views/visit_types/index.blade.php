@@ -4,10 +4,6 @@
     {{ 'Visit Types' }}
  @endsection
 
-@section('Content_Description')
-    {{ 'Manage visit types.' }}
-@endsection
-
 @section('main_content')
 <div class="container">
     <div class="row justify-content-center">

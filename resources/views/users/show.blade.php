@@ -5,10 +5,6 @@
     {{ 'User Details' }}
  @endsection
 
-@section('Content_Description')
-    {{ 'User information and details.' }}
-@endsection
-
 @section('main_content')
     <div class="card">
         <div class="card-header">

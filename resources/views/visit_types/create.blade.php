@@ -4,10 +4,6 @@
     {{ 'Create Visit Type' }}
  @endsection
 
-@section('Content_Description')
-    {{ 'Create a new visit type.' }}
-@endsection
-
 
 @section('main_content')
 <div class="container">

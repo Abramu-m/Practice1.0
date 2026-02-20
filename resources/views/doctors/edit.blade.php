@@ -4,10 +4,6 @@
     {{ 'Edit Doctor - ' . ($doctor->user->name ?? 'Unknown') }}
  @endsection
 
-@section('Content_Description')
-    {{ 'Update doctor information for Dr. ' . ($doctor->user->name ?? 'Unknown') }}
-@endsection
-
 @section('main_content')
 <div class="container-fluid">
     <div class="row">

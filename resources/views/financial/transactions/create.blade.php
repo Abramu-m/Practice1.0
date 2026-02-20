@@ -4,10 +4,6 @@
     {{ 'Create Financial Transaction' }}
  @endsection
 
-@section('Content_Description')
-    {{ 'Create a new financial transaction record in the system.' }}
-@endsection
-
 @section('main_content')
 <div class="container-fluid">
     <div class="row justify-content-center">

@@ -4,10 +4,6 @@
     {{ 'Doctor Details - ' . ($doctor->user->name ?? 'Unknown') }}
  @endsection
 
-@section('Content_Description')
-    {{ 'View detailed information and statistics for Dr. ' . ($doctor->user->name ?? 'Unknown') }}
-@endsection
-
 @section('main_content')
 <div class="container-fluid">
     <div class="row">

@@ -4,10 +4,6 @@
     {{ 'Edit Consultation Fee' }}
  @endsection
 
-@section('Content_Description')
-    {{ 'Modify the consultation fee structure for doctor, patient category, and visit type combination.' }}
-@endsection
-
 @section('main_content')
 <div class="container-fluid">
     <div class="row">

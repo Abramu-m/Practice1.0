@@ -10,16 +10,6 @@
     @endif
  @endsection
 
-@section('Content_Description')
-    @if(request('category') == 'investigations')
-        {{ 'Manage medical investigations (all medical services except procedures).' }}
-    @elseif(request('category') == 'procedures')
-        {{ 'Manage medical procedures.' }}
-    @else
-        {{ 'Manage medical services and investigations.' }}
-    @endif
-@endsection
-
 @section('main_content')
 <div class="container-fluid">
     <div class="row">

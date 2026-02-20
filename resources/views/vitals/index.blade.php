@@ -2,8 +2,6 @@
 
 @section('page_title', 'Patient Visits - Vitals Recording')
 
-@section('Content_Description', 'Manage Patient Visits and Record Vital Signs')
-
  
 
 @section('main_content')

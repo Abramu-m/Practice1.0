@@ -5,10 +5,6 @@
     {{ 'Add Patient' }}
  @endsection
 
-@section('Content_Description')
-    {{ 'Register a new patient.' }}
-@endsection
-
 @section('main_content')
     <div class="card">
         <div class="card-header">

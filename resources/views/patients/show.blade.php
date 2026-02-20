@@ -5,10 +5,6 @@
     {{ 'Patient Details' }}
  @endsection
 
-@section('Content_Description')
-    {{ 'View patient details.' }}
-@endsection
-
 @section('main_content')
 
     <div class="card">

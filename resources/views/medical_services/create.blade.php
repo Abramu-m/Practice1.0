@@ -4,10 +4,6 @@
     {{ 'Create Medical Service' }}
  @endsection
 
-@section('Content_Description')
-    {{ 'Create a new medical service.' }}
-@endsection
-
 @section('main_content')
 <div class="container-fluid">
     <div class="row">

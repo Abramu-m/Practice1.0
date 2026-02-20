@@ -4,10 +4,6 @@
     {{ 'Patient Visit Details' }}
  @endsection
 
-@section('Content_Description')
-    {{ 'View detailed information about the patient visit.' }}
-@endsection
-
 @section('main_content')
 <div class="container">
     <div class="row justify-content-center">

@@ -4,10 +4,6 @@
     {{ 'Edit Patient Visit' }}
  @endsection
 
-@section('Content_Description')
-    {{ 'Update patient visit information.' }}
-@endsection
-
 @section('main_content')
 <div class="container">
     <div class="row justify-content-center">

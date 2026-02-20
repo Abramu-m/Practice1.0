@@ -4,10 +4,6 @@
     {{'Create User' }}
  @endsection
 
-@section('Content_Description')
-        {{'Create User' }}
-@endsection
-
 @section('main_content')
     <div class="row">
         <div class="col-sm-12">

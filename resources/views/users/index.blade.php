@@ -4,10 +4,6 @@
     {{ 'Users' }}
  @endsection
 
-@section('Content_Description')
-    {{ 'List of Users.' }}
-@endsection
-
 @section('main_content')
     <div class="row mb-3">
         <div class="col-md-8">

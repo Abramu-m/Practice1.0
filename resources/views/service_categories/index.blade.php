@@ -4,10 +4,6 @@
     {{ 'Service Categories' }}
  @endsection
 
-@section('Content_Description')
-    {{ 'Manage service categories for medical services.' }}
-@endsection
-
 @section('main_content')
 <div class="container-fluid">
     <div class="row">

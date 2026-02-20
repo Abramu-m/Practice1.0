@@ -4,10 +4,6 @@
     {{ 'Edit Medical Service' }}
  @endsection
 
-@section('Content_Description')
-    {{ 'Edit medical service: ' . $medicalService->name }}
-@endsection
-
 @section('main_content')
 <div class="container-fluid">
     <div class="row">

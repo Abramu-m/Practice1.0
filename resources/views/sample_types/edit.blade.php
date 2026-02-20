@@ -4,10 +4,6 @@
     {{ 'Edit Sample Type' }}
  @endsection
 
-@section('Content_Description')
-    {{ 'Edit sample type: ' . $sampleType->name }}
-@endsection
-
 @section('main_content')
 <div class="container-fluid">
     <div class="row">
