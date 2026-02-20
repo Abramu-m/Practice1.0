@@ -28,19 +28,21 @@ The Reconciliation feature accomplishes the following primary objectives:
 
 The reconciliation routes are organized under the `/medications/reconciliation` prefix with the following endpoints:
 
+**Note:** All paths shown below are relative to the `/medications/reconciliation` prefix. Full paths are `/medications/reconciliation/{path}`.
+
 | Route | Method | Controller Method | Purpose |
 |-------|--------|------------------|---------|
-| `/reconciliation` | GET | `index()` | Main dashboard |
-| `/reconciliation/integrity-check` | POST | `runIntegrityCheck()` | Run stock integrity check (AJAX) |
-| `/reconciliation/auto-correct` | POST | `autoCorrectDiscrepancies()` | Auto-correct minor issues |
-| `/reconciliation/discrepancies` | GET | `showDiscrepancyReport()` | Detailed discrepancy report |
-| `/reconciliation/medications/{id}/validate` | GET | `validateMedicationBalance()` | Validate specific medication |
-| `/reconciliation/corrections` | GET | `showStockCorrection()` | Manual correction form |
-| `/reconciliation/corrections` | POST | `processStockCorrection()` | Process manual correction |
-| `/reconciliation/audit` | GET | `showAuditTrail()` | View audit trail |
-| `/reconciliation/comparison/{medicationId?}` | GET | `showStockComparison()` | Compare ledger vs location stock |
-| `/reconciliation/export` | POST | `exportReport()` | Export reconciliation reports |
-| `/reconciliation/metrics` | GET | `getDashboardMetrics()` | Get dashboard metrics (AJAX) |
+| `/` | GET | `index()` | Main dashboard |
+| `/integrity-check` | POST | `runIntegrityCheck()` | Run stock integrity check (AJAX) |
+| `/auto-correct` | POST | `autoCorrectDiscrepancies()` | Auto-correct minor issues |
+| `/discrepancies` | GET | `showDiscrepancyReport()` | Detailed discrepancy report |
+| `/medications/{id}/validate` | GET | `validateMedicationBalance()` | Validate specific medication |
+| `/corrections` | GET | `showStockCorrection()` | Manual correction form |
+| `/corrections` | POST | `processStockCorrection()` | Process manual correction |
+| `/audit` | GET | `showAuditTrail()` | View audit trail |
+| `/comparison/{medicationId?}` | GET | `showStockComparison()` | Compare ledger vs location stock |
+| `/export` | POST | `exportReport()` | Export reconciliation reports |
+| `/metrics` | GET | `getDashboardMetrics()` | Get dashboard metrics (AJAX) |
 
 ### 2. Controller (`app/Http/Controllers/ReconciliationController.php`)
 
@@ -54,7 +56,7 @@ The reconciliation routes are organized under the `/medications/reconciliation` 
 
 - **`runIntegrityCheck()`**: AJAX endpoint that runs comprehensive stock integrity validation
 
-- **`autoCorrectDiscrepancies()`**: Automatically fixes minor discrepancies (< 5 units difference)
+- **`autoCorrectDiscrepancies()`**: Automatically fixes minor discrepancies (≤5 units difference). **Note:** This method returns a redirect response (HTML), not JSON, despite being called via AJAX in the frontend. The frontend expects JSON but receives HTML, indicating a mismatch that should be addressed.
 
 - **`validateMedicationBalance()`**: Validates stock balance for a specific medication
 
@@ -179,7 +181,7 @@ The reconciliation feature interacts with the following models:
 - **System Health Stats**: Total medications, accuracy rate, corrections count, last check time
 - **Interactive Features**:
   - Run Integrity Check (AJAX)
-  - Auto Correct (AJAX)
+  - Auto Correct (standard POST with redirect response; frontend calls via AJAX expecting JSON, but controller returns redirect - implementation mismatch)
   - Filter discrepancies (all/critical/minor)
   - Export reports
 
@@ -188,11 +190,13 @@ The reconciliation feature interacts with the following models:
 **Features:**
 - Medication and location selection
 - Correction type: Ledger or Location Stock
-- Field to correct
+- Field to correct (currently only supports `quantity_in_stock` for ledger and `quantity` for location stock)
 - Current value vs Corrected value
 - Reason (required, max 500 chars)
 - Notes (optional, max 1000 chars)
 - Form validation
+
+**Implementation Limitation:** The "current stock" section uses a simulated placeholder (`// Simulate API call (replace with actual endpoint)`) and does not load real-time values from the backend. The system does not automatically populate current values before user edits.
 
 #### Additional Views
 
@@ -256,7 +260,7 @@ The system identifies:
 ### 6. Reporting
 - **Dashboard metrics**: Real-time overview of stock health
 - **Accuracy percentage**: Calculates inventory accuracy
-- **Export capability**: PDF and Excel exports (PDF implemented)
+- **Export capability**: Backend PDF generation is implemented via `ReconciliationController::exportReport()`, but the frontend views call export using GET URLs and/or the route name `medications.reconciliation.export-report`, while the defined route is `medications.reconciliation.export` and is POST-only. As a result, end-to-end export from the UI is not yet fully wired, and Excel export remains a planned enhancement.
 - **Historical data**: Recent corrections list
 
 ---
@@ -266,7 +270,7 @@ The system identifies:
 ### Integrity Check Flow
 ```
 1. User triggers integrity check
-2. System runs four validation checks in parallel:
+2. System runs four validation checks sequentially:
    a. Medication stock vs ledger totals
    b. Ledger entries vs GRN items
    c. Location stock vs movements
@@ -279,8 +283,8 @@ The system identifies:
 ### Manual Correction Flow
 ```
 1. User selects medication and location
-2. System loads current values
-3. User enters corrected value and reason
+2. User manually enters current and corrected values
+3. User enters reason and optional notes
 4. Validation checks performed
 5. Transaction begins
 6. Correction applied to database
@@ -288,6 +292,8 @@ The system identifies:
 8. Transaction committed
 9. User redirected to dashboard with success message
 ```
+
+> **Implementation Note:** Step 2 describes the current behavior. The UI includes a "current stock" section with a simulated placeholder (`// Simulate API call (replace with actual endpoint)`) that does not load real-time values from the backend. Implementing an endpoint to auto-populate current values remains a pending enhancement.
 
 ### Auto-Correction Flow
 ```
@@ -305,7 +311,7 @@ The system identifies:
 
 ### Validation
 - All user inputs are validated using Laravel's validation rules
-- Quantity checks ensure no negative values
+- Quantity inputs are validated as numeric and checked against business rules (Note: current validation rules use `numeric` without `min:0` constraint, so negative values could pass validation)
 - Existence checks for medication and location IDs
 - Date validation for audit trail filters
 
@@ -346,7 +352,7 @@ The system identifies:
 
 ## Current Limitations & TODOs
 
-Based on code comments, several features are planned but not yet implemented:
+Based on code comments and implementation analysis, several features are planned but not yet implemented:
 
 1. **Stock Correction Logging Table**: 
    - TODO: Implement dedicated table for correction history
@@ -364,6 +370,27 @@ Based on code comments, several features are planned but not yet implemented:
 4. **Stock Comparison View**:
    - Route exists but view not fully analyzed
    - Located at `stock-comparison.blade.php`
+
+5. **Auto-Correct AJAX Implementation Mismatch**:
+   - Frontend (`index.blade.php`) calls auto-correct endpoint via `fetch()` expecting JSON response
+   - Backend (`ReconciliationController::autoCorrectDiscrepancies()`) returns redirect (HTML)
+   - This mismatch causes the frontend to fail parsing the response
+   - Should either return JSON from controller or use standard form POST in frontend
+
+6. **Manual Correction Current Values Loading**:
+   - UI includes placeholder for loading current stock values
+   - No backend endpoint currently implemented to provide real-time values
+   - Users must manually enter both current and corrected values
+
+7. **Export Route Wiring**:
+   - Backend route defined as `medications.reconciliation.export` (POST)
+   - Frontend may reference non-existent route names or use GET URLs
+   - End-to-end export from UI not fully functional
+
+8. **Validation Gaps**:
+   - Stock correction validation accepts `numeric` values without `min:0` constraint
+   - Negative quantity values could pass validation in manual corrections
+   - Only validates `quantity_in_stock` for ledger and `quantity` for location stock; other fields are not supported
 
 ---
 
