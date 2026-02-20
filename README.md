@@ -13,6 +13,7 @@
 
 This application includes a comprehensive inventory management system for medications and medical supplies. For detailed documentation:
 
+- **[🧭 Documentation Index by Role](MEDICATIONS_DOCUMENTATION_INDEX.md)** - Find the right documentation based on your role (e.g. pharmacist, admin, developer)
 - **[📋 Quick Reference Guide](MEDICATIONS_SYSTEM_SUMMARY.md)** - Start here for a quick overview of the system
 - **[📖 Complete Architecture Guide](MEDICATIONS_SYSTEM_ARCHITECTURE.md)** - In-depth documentation of the entire system
 - **[🎨 Visual Guide with Diagrams](docs/MEDICATIONS_SYSTEM_VISUAL_GUIDE.md)** - Visual representations and workflows

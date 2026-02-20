@@ -72,8 +72,8 @@ This document provides visual representations of the medications/items managemen
 │  │ StoreCategory  │     │                 │     │                │ │
 │  │ MedicationUnit │     │ StoreLocation   │     │ GoodsReceived  │ │
 │  │ Medication     │     │   Stock         │     │   Note         │ │
-│  │   Formulation  │     │ - Qty per       │     │ StoreRequisit  │ │
-│  │ MedicationPrice│     │   location      │     │   ion          │ │
+│  │   Formulation  │     │ - Qty per       │     │ StoreReq       │ │
+│  │ MedicationPrice│     │   location      │     │   uisition     │ │
 │  │ StoreSupplier  │     │   per batch     │     │                │ │
 │  │ StoreLocation  │     │                 │     │                │ │
 │  └────────────────┘     └─────────────────┘     └────────────────┘ │
@@ -419,7 +419,7 @@ MedicationLedger.quantity_current = Sum of StoreLocationStock.quantity for that 
                               └──────────────┘  │-Requisition│ │- Physical│
                                                 │- Direct   │  │  count   │
                                                 │  transfer │  │- Error   │
-                                                └───────────┘  │  correc  │
+                                                └───────────┘  │  correct.│
                                                                └──────────┘
 ```
 
