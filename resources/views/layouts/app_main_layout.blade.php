@@ -338,24 +338,6 @@
       <!--end::Sidebar-->
       <!--begin::App Main-->
       <main class="app-main">
-        <!--begin::App Content Header-->
-        <div class="app-content-header" style="display: none;">
-          <!--begin::Container-->
-          <div class="container-fluid">
-            <!--begin::Row-->
-            <div class="row">
-              <div class="col-sm-6"><h3 class="mb-0">@yield("Content_Description")</h3></div>
-              <div class="col-sm-6">
-                <ol class="breadcrumb float-sm-end">
-                  <li class="breadcrumb-item"><a href="#">Home</a></li>
-                  <li class="breadcrumb-item active" aria-current="page">@yield("page_title")</li>
-                </ol>
-              </div>
-            </div>
-            <!--end::Row-->
-          </div>
-          <!--end::Container-->
-        </div>
         <div class="app-content">
           <!--begin::Container-->
           @yield("infoboxes")
