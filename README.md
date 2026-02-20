@@ -7,6 +7,35 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
+## Documentation
+
+### Medications/Items Management System
+
+This application includes a comprehensive inventory management system for medications and medical supplies. For detailed documentation:
+
+- **[🧭 Documentation Index by Role](MEDICATIONS_DOCUMENTATION_INDEX.md)** - Find the right documentation based on your role (e.g. pharmacist, admin, developer)
+- **[📋 Quick Reference Guide](MEDICATIONS_SYSTEM_SUMMARY.md)** - Start here for a quick overview of the system
+- **[📖 Complete Architecture Guide](MEDICATIONS_SYSTEM_ARCHITECTURE.md)** - In-depth documentation of the entire system
+- **[🎨 Visual Guide with Diagrams](docs/MEDICATIONS_SYSTEM_VISUAL_GUIDE.md)** - Visual representations and workflows
+
+Key features:
+- ✅ Multi-location inventory management with hierarchical storage
+- ✅ Batch tracking with expiry date management
+- ✅ Complete audit trail for all stock movements
+- ✅ Procurement workflow (Goods Received Notes)
+- ✅ Inter-location transfers with approval workflows
+- ✅ Comprehensive reporting and analytics
+- ✅ Real-time stock status monitoring
+
+### Additional Documentation
+
+- [Admin Interface Fixes](ADMIN_INTERFACE_FIXES.md)
+- [AJAX Optimization](AJAX_OPTIMIZATION_COMPLETE.md)
+- [CDS Implementation](CDS_IMPLEMENTATION_COMPLETE.md)
+- [Redundancy Analysis](REDUNDANCY_ANALYSIS_IMPLEMENTATION.md)
+- [Relationship Fixes](RELATIONSHIP_FIXES.md)
+- [Bluehost DataTables Install](BLUEHOST_DATATABLES_INSTALL.md)
+
 ## About Laravel
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
