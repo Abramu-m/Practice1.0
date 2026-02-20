@@ -4,10 +4,6 @@
     {{ 'Medical Service Details' }}
  @endsection
 
-@section('Content_Description')
-    {{ 'Medical service: ' . $medicalService->name }}
-@endsection
-
 @section('main_content')
 <div class="container-fluid">
     <div class="row">

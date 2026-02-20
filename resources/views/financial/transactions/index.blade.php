@@ -4,10 +4,6 @@
     {{ 'Financial Transactions' }}
  @endsection
 
-@section('Content_Description')
-    {{ 'Manage and view all financial transactions in the system.' }}
-@endsection
-
 @section('main_content')
 <div class="container-fluid">
     <!-- Filter Form -->

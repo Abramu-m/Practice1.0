@@ -4,10 +4,6 @@
     {{ 'Transaction Details' }}
  @endsection
 
-@section('Content_Description')
-    {{ 'View financial transaction details and related information.' }}
-@endsection
-
 @section('main_content')
 <div class="container-fluid">
     <div class="row">

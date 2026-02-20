@@ -4,10 +4,6 @@
     {{ 'Sample Types' }}
  @endsection
 
-@section('Content_Description')
-    {{ 'Manage sample types for medical investigations.' }}
-@endsection
-
 @section('main_content')
 <div class="container-fluid">
     <div class="row">

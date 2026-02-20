@@ -1,8 +1,6 @@
 @extends('layouts.app_main_layout')
 
 @section('page_title', 'Vital Signs Management')
-@section('Content_Description', 'Record and Manage Vital Signs')
-
 @section('main_content')
 <div class="container-fluid">
     <div class="row">

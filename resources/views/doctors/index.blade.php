@@ -4,10 +4,6 @@
     {{ 'Doctors Management' }}
  @endsection
 
-@section('Content_Description')
-    {{ 'Manage doctors and medical staff.' }}
-@endsection
-
 @section('main_content')
 <div class="container-fluid">
     <div class="row">

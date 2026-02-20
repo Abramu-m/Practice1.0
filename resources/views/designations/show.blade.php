@@ -4,10 +4,6 @@
     {{ 'Designation Details' }}
  @endsection
 
-@section('Content_Description')
-    {{ 'View detailed information about the designation.' }}
-@endsection
-
 @section('main_content')
 <div class="container">
     <div class="row justify-content-center">

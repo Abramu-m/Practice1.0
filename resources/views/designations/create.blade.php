@@ -4,10 +4,6 @@
     {{ 'Create Designation' }}
  @endsection
 
-@section('Content_Description')
-    {{ 'Add a new designation to the system.' }}
-@endsection
-
 @section('main_content')
 <div class="container">
     <div class="row justify-content-center">

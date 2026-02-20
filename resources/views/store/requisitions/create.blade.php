@@ -1,8 +1,6 @@
 @extends('layouts.app_main_layout')
 
 @section('page_title', 'Create Store Requisition')
-@section('Content_Description', 'Store Requisitions')
-
 @section('main_content')
 <div class="container-fluid">
     <div class="row">

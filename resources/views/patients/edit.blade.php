@@ -5,10 +5,6 @@
     {{ 'Edit Patient' }}
  @endsection
 
-@section('Content_Description')
-    {{ 'Edit patient information.' }}
-@endsection
-
 @section('main_content')
     <div class="card">
         <div class="card-header">

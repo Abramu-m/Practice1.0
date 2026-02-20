@@ -4,10 +4,6 @@
     {{ 'Consultation Fees Management' }}
  @endsection
 
-@section('Content_Description')
-    {{ 'Manage consultation fees based on doctor, patient category, and visit type.' }}
-@endsection
-
 @section('main_content')
 <div class="container-fluid">
     <div class="row">

@@ -4,10 +4,6 @@
     {{ 'Profile Settings' }}
  @endsection
 
-@section('Content_Description')
-    {{ 'Manage your profile information.' }}
-@endsection
-
 @section('main_content')
     <div class="row">
         <div class="col-md-8">

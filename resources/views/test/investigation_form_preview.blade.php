@@ -3,10 +3,6 @@
 
 @section('page_title', 'Investigation Form Preview')
 
-@section('Content_Description')
-    <small class="text-muted">Preview investigation forms</small>
-@endsection
-
 @section('main_content')
 <div class="container-fluid">
     <div class="row">

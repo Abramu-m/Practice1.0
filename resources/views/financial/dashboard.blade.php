@@ -23,10 +23,6 @@
                 </div>
 @endsection
 
-@section('Content_Description')
-    {{ 'Real-time financial tracking and analytics dashboard.' }}
-@endsection
-
 @section('main_content')
 <div class="container-fluid">
     <!-- Summary Cards Row -->

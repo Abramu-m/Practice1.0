@@ -4,10 +4,6 @@
     {{'Edit User' }}
  @endsection
 
-@section('Content_Description')
-        {{'Edit User' }}
-@endsection
-
 @section('main_content')
     <div class="row">
         <div class="col-sm-12">

@@ -4,10 +4,6 @@
     {{ 'Sample Type Details' }}
  @endsection
 
-@section('Content_Description')
-    {{ 'Sample type: ' . $sampleType->name }}
-@endsection
-
 @section('main_content')
 <div class="container-fluid">
     <div class="row">

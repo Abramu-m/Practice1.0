@@ -4,10 +4,6 @@
     {{ 'Consultation Fee Details' }}
  @endsection
 
-@section('Content_Description')
-    {{ 'View detailed information for this consultation fee structure.' }}
-@endsection
-
 @section('main_content')
 <div class="container-fluid">
     <div class="row">

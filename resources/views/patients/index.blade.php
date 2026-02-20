@@ -4,10 +4,6 @@
     {{ 'Patients' }}
  @endsection
 
-@section('Content_Description')
-    {{ 'Manage patients.' }}
-@endsection
-
 @section('main_content')
     <div class="row mb-2">
         <div class="col-md-6">

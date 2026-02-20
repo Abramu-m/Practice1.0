@@ -4,10 +4,6 @@
     {{ 'Create Sample Type' }}
  @endsection
 
-@section('Content_Description')
-    {{ 'Create a new sample type.' }}
-@endsection
-
 @section('main_content')
 <div class="container-fluid">
     <div class="row">

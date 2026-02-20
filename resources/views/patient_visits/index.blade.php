@@ -4,10 +4,6 @@
     {{ isset($selectedPatient) ? 'Visits for ' . $selectedPatient->full_name : (isset($selectedDoctor) ? 'Visits by Dr. ' . $selectedDoctor->user->name : 'Patient Visits') }}
  @endsection
 
-@section('Content_Description')
-    {{ isset($selectedPatient) ? 'Manage visits for patient: ' . $selectedPatient->full_name : (isset($selectedDoctor) ? 'Manage visits by Dr. ' . $selectedDoctor->user->name : 'Manage patient visits and appointments.') }}
-@endsection
-
 @section('main_content')
 <div class="container-fluid">
     <div class="row">

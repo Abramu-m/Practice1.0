@@ -4,10 +4,6 @@
     Create Doctor
 @endsection
 
-@section('Content_Description')
-    Add a new doctor.
-@endsection
-
 @section('main_content')
 <div class="container-fluid">
     <div class="row">

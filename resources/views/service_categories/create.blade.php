@@ -4,10 +4,6 @@
     {{ 'Create Service Category' }}
  @endsection
 
-@section('Content_Description')
-    {{ 'Create a new service category.' }}
-@endsection
-
 @section('main_content')
 <div class="container-fluid">
     <div class="row">

@@ -5,10 +5,6 @@
     {{ 'Patient Categories' }}
  @endsection
 
-@section('Content_Description')
-    {{ 'Manage patient categories.' }}
-@endsection
-
 @section('main_content')
     <div class="row mb-3">
         <div class="col-md-6">

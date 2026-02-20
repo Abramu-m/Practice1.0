@@ -4,10 +4,6 @@
     {{ 'Designations' }}
  @endsection
 
-@section('Content_Description')
-    {{ 'Manage doctors NHIF designations.' }}
-@endsection
-
 @section('main_content')
 <div class="container">
     <div class="row justify-content-center">

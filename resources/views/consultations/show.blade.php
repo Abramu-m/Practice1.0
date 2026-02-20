@@ -6,10 +6,6 @@
     <span class="text-muted">Patient: {{ $visit->patientInfo->first_name }} {{ $visit->patientInfo->middle_name ?? '' }} {{ $visit->patientInfo->last_name }}</span>
 @endsection
 
-@section('Content_Description')
-    <small class="text-muted">Patient Consultation</small>
-@endsection
-
 @section('styles')
 <link rel="stylesheet" href="{{ asset('css/lab-investigation-modal.css') }}">
 <link rel="stylesheet" href="{{ asset('css/prescription-modal.css') }}">

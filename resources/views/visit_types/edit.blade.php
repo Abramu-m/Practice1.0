@@ -4,10 +4,6 @@
     {{ 'Edit Visit Type' }}
  @endsection
 
-@section('Content_Description')
-    {{ 'Edit an existing visit type.' }}
-@endsection
-
 @section('main_content')
 <div class="container">
     <div class="row justify-content-center">

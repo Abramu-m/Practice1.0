@@ -4,10 +4,6 @@
     {{ 'Add Patient Category' }}
 @endsection
 
-@section('Content_Description')
-    {{ 'Create a new patient category.' }}
-@endsection
-
 @section('main_content')
     <div class="card">
         <div class="card-header">
@@ -60,10 +56,6 @@
 @section('page_title')
     {{ 'Add Patient Category' }}
  @endsection
-
-@section('Content_Description')
-    {{ 'Create a new patient category.' }}
-@endsection
 
 @section('main_content')
     <div class="card">
