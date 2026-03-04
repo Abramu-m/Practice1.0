@@ -640,7 +640,7 @@
                         <a href="{{ url('consultation_fees') }}" class="nav-link nav-sub-sub-item">
                           <i class="nav-icon bi bi-currency-dollar text-success"></i>
                           <p>
-                            Consultation Charges
+                            Consultation Fees
                           </p>
                         </a>
                       </li>
