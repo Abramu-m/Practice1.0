@@ -131,7 +131,7 @@
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a href="{{ route('pharmacist.prescriptions.index') }}" class="nav-link nav-sub-item {{ nav_active_class(['pharmacist.prescriptions.index']) }}">
+                    <a href="{{ route('pharmacist.prescriptions.index') }}" class="nav-link nav-sub-item {{ nav_active_query_class(['pharmacist.prescriptions.index'], ['status' => null]) }}">
                       <i class="nav-icon bi bi-list-check text-info"></i>
                       <p>
                         All Prescriptions
@@ -139,7 +139,7 @@
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a href="{{ route('pharmacist.prescriptions.index', ['status' => 'pending']) }}" class="nav-link nav-sub-item {{ nav_active_class(['pharmacist.prescriptions.index']) }}">
+                    <a href="{{ route('pharmacist.prescriptions.index', ['status' => 'pending']) }}" class="nav-link nav-sub-item {{ nav_active_query_class(['pharmacist.prescriptions.index'], ['status' => 'pending']) }}">
                       <i class="nav-icon bi bi-clock-history text-warning"></i>
                       <p>
                         Pending Prescriptions
@@ -148,13 +148,13 @@
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a href="{{ route('pharmacist.prescriptions.index', ['status' => 'dispensed']) }}" class="nav-link nav-sub-item {{ nav_active_class(['pharmacist.prescriptions.index']) }}">
+                    <a href="{{ route('pharmacist.prescriptions.index', ['status' => 'dispensed']) }}" class="nav-link nav-sub-item {{ nav_active_query_class(['pharmacist.prescriptions.index'], ['status' => 'dispensed']) }}">
                       <i class="nav-icon bi bi-check-circle-fill text-success"></i>
                       <p>Dispensed Prescriptions</p>
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a href="{{ route('pharmacist.prescriptions.index', ['status' => 'unavailable']) }}" class="nav-link nav-sub-item {{ nav_active_class(['pharmacist.prescriptions.index']) }}">
+                    <a href="{{ route('pharmacist.prescriptions.index', ['status' => 'unavailable']) }}" class="nav-link nav-sub-item {{ nav_active_query_class(['pharmacist.prescriptions.index'], ['status' => 'unavailable']) }}">
                       <i class="nav-icon bi bi-x-circle-fill text-danger"></i>
                       <p>Unavailable Items</p>
                     </a>
@@ -201,17 +201,17 @@
                 </ul>
               </li>
               <!-- Store Manager // New Store Management -->
-              <li class="nav-item has-treeview">
-                <a href="#" class="nav-link nav-header">
+              <li class="nav-item has-treeview {{ nav_menu_open_class(['medications.*', 'medication-pricing.*', 'store-categories.*', 'store-units.*', 'medication-units.*', 'store.requisitions.*', 'store-locations.*', 'store-locations-stock.*', 'store-stock-movements.*']) }}">
+                <a href="#" class="nav-link nav-header {{ nav_active_class(['medications.*', 'medication-pricing.*', 'store-categories.*', 'store-units.*', 'medication-units.*', 'store.requisitions.*', 'store-locations.*', 'store-locations-stock.*', 'store-stock-movements.*']) }}">
                   <i class="nav-icon bi bi-shop-window text-warning"></i>
                   <p class="text-bold">
                     Store Management
                     <i class="nav-arrow bi bi-chevron-right"></i>
                   </p>
                 </a>
-                <ul class="nav nav-treeview">
+                <ul class="nav nav-treeview" style="{{ nav_display_style(['medications.*', 'medication-pricing.*', 'store-categories.*', 'store-units.*', 'medication-units.*', 'store.requisitions.*', 'store-locations.*', 'store-locations-stock.*', 'store-stock-movements.*']) }}">
                   <li class="nav-item">
-                    <a href="{{ route('medications.dashboard') }}" class="nav-link nav-sub-item">
+                    <a href="{{ route('medications.dashboard') }}" class="nav-link nav-sub-item {{ nav_active_class(['medications.dashboard']) }}">
                       <i class="nav-icon bi bi-speedometer2 text-primary"></i>
                       <p>Primary Dashboard</p>
                     </a>
@@ -226,19 +226,19 @@
                     </a>
                     <ul class="nav nav-treeview">
                       <li class="nav-item">
-                        <a href="{{ route('medications.index') }}" class="nav-link nav-sub-sub-item">
+                        <a href="{{ route('medications.index') }}" class="nav-link nav-sub-sub-item {{ nav_active_class(['medications.index']) }}">
                           <i class="nav-icon bi bi-capsule text-primary"></i>
                           <p>Medications/Items</p>
                         </a>
                       </li>
                       <li class="nav-item">
-                        <a href="{{ route('medication-pricing.index') }}" class="nav-link nav-sub-sub-item">
+                        <a href="{{ route('medication-pricing.index') }}" class="nav-link nav-sub-sub-item {{ nav_active_class(['medication-pricing.*']) }}">
                           <i class="nav-icon bi bi-currency-dollar text-success"></i>
                           <p>Medication Pricing</p>
                         </a>
                       </li>
                       <li class="nav-item">
-                        <a href="{{ route('store-categories.index') }}" class="nav-link nav-sub-sub-item">
+                        <a href="{{ route('store-categories.index') }}" class="nav-link nav-sub-sub-item {{ nav_active_class(['store-categories.*']) }}">
                           <i class="nav-icon bi bi-tags text-warning"></i>
                           <p>Categories</p>
                         </a>
@@ -256,25 +256,25 @@
                     </a>
                     <ul class="nav nav-treeview">
                       <li class="nav-item">
-                        <a href="{{ route('medications.stock.grn.index') }}" class="nav-link nav-sub-sub-item">
+                        <a href="{{ route('medications.stock.grn.index') }}" class="nav-link nav-sub-sub-item {{ nav_active_class(['medications.stock.grn.*']) }}">
                           <i class="nav-icon bi bi-receipt text-info"></i>
                           <p>Goods Received Notes</p>
                         </a>
                       </li>
                       <li class="nav-item">
-                        <a href="{{ route('medications.stock.suppliers.index') }}" class="nav-link nav-sub-sub-item">
+                        <a href="{{ route('medications.stock.suppliers.index') }}" class="nav-link nav-sub-sub-item {{ nav_active_class(['medications.stock.suppliers.*']) }}">
                           <i class="nav-icon bi bi-building text-warning"></i>
                           <p>Suppliers</p>
                         </a>
                       </li>
                       <li class="nav-item">
-                        <a href="{{ route('store-units.index') }}" class="nav-link nav-sub-sub-item">
+                        <a href="{{ route('store-units.index') }}" class="nav-link nav-sub-sub-item {{ nav_active_class(['store-units.*']) }}">
                           <i class="nav-icon bi bi-rulers text-primary"></i>
                           <p>Store Units</p>
                         </a>
                       </li>
                       <li class="nav-item">
-                        <a href="{{ route('medication-units.index') }}" class="nav-link nav-sub-sub-item">
+                        <a href="{{ route('medication-units.index') }}" class="nav-link nav-sub-sub-item {{ nav_active_class(['medication-units.*']) }}">
                           <i class="nav-icon bi bi-calculator text-success"></i>
                           <p>Medications Units</p>
                         </a>
@@ -292,49 +292,49 @@
                     </a>
                     <ul class="nav nav-treeview">
                       <li class="nav-item">
-                        <a href="{{ route('medications.stock.ledger.index') }}" class="nav-link nav-sub-sub-item">
+                        <a href="{{ route('medications.stock.ledger.index') }}" class="nav-link nav-sub-sub-item {{ nav_active_class(['medications.stock.ledger.*']) }}">
                           <i class="nav-icon bi bi-journal-text text-info"></i>
                           <p>Medication Ledger</p>
                         </a>
                       </li>
                       <li class="nav-item">
-                        <a href="{{ route('store.requisitions.index') }}" class="nav-link nav-sub-sub-item">
+                        <a href="{{ route('store.requisitions.index') }}" class="nav-link nav-sub-sub-item {{ nav_active_class(['store.requisitions.*']) }}">
                           <i class="nav-icon bi bi-clipboard-data text-warning"></i>
                           <p>Restocking Requests</p>
                         </a>
                       </li>
                       <li class="nav-item">
-                        <a href="{{ route('medications.stock.transfers.index') }}" class="nav-link nav-sub-sub-item">
+                        <a href="{{ route('medications.stock.transfers.index') }}" class="nav-link nav-sub-sub-item {{ nav_active_class(['medications.stock.transfers.*']) }}">
                           <i class="nav-icon bi bi-arrow-left-right text-primary"></i>
                           <p>Stock Transfers</p>
                         </a>
                       </li>
                       <li class="nav-item">
-                        <a href="{{ route('medications.stock.adjustments.index') }}" class="nav-link nav-sub-sub-item">
+                        <a href="{{ route('medications.stock.adjustments.index') }}" class="nav-link nav-sub-sub-item {{ nav_active_class(['medications.stock.adjustments.*']) }}">
                           <i class="nav-icon bi bi-sliders text-success"></i>
                           <p>Adjustments</p>
                         </a>
                       </li>
                       <li class="nav-item">
-                        <a href="{{ route('medications.stock.disposal.index') }}" class="nav-link nav-sub-sub-item">
+                        <a href="{{ route('medications.stock.disposal.index') }}" class="nav-link nav-sub-sub-item {{ nav_active_class(['medications.stock.disposal.*']) }}">
                           <i class="nav-icon bi bi-trash text-danger"></i>
                           <p>Disposal</p>
                         </a>
                       </li>
                       <li class="nav-item">
-                        <a href="{{ route('store-locations.index') }}" class="nav-link nav-sub-sub-item">
+                        <a href="{{ route('store-locations.index') }}" class="nav-link nav-sub-sub-item {{ nav_active_class(['store-locations.index']) }}">
                           <i class="nav-icon bi bi-building text-primary"></i>
                           <p>Store Locations</p>
                         </a>
                       </li>
                       <li class="nav-item">
-                        <a href="{{ route('store-locations-stock.index') }}" class="nav-link nav-sub-sub-item">
+                        <a href="{{ route('store-locations-stock.index') }}" class="nav-link nav-sub-sub-item {{ nav_active_class(['store-locations-stock.*']) }}">
                           <i class="nav-icon bi bi-geo-alt text-info"></i>
                           <p>Location Stock</p>
                         </a>
                       </li>
                       <li class="nav-item">
-                        <a href="{{ route('store-stock-movements.index') }}" class="nav-link nav-sub-sub-item">
+                        <a href="{{ route('store-stock-movements.index') }}" class="nav-link nav-sub-sub-item {{ nav_active_class(['store-stock-movements.*']) }}">
                           <i class="nav-icon bi bi-arrow-up-down text-warning"></i>
                           <p>Stock Movements</p>
                         </a>
@@ -351,19 +351,19 @@
                     </a>
                     <ul class="nav nav-treeview">
                       <li class="nav-item">
-                        <a href="{{ route('medications.consumption.index') }}" class="nav-link nav-sub-sub-item">
+                        <a href="{{ route('medications.consumption.index') }}" class="nav-link nav-sub-sub-item {{ nav_active_class(['medications.consumption.index']) }}">
                           <i class="nav-icon bi bi-eye text-primary"></i>
                           <p>Overview</p>
                         </a>
                       </li>
                       <li class="nav-item">
-                        <a href="{{ route('medications.consumption.prescriptions.index') }}" class="nav-link nav-sub-sub-item">
+                        <a href="{{ route('medications.consumption.prescriptions.index') }}" class="nav-link nav-sub-sub-item {{ nav_active_class(['medications.consumption.prescriptions.*']) }}">
                           <i class="nav-icon bi bi-prescription2 text-success"></i>
                           <p>Prescriptions</p>
                         </a>
                       </li>
                       <li class="nav-item">
-                        <a href="{{ route('medications.consumption.analytics') }}" class="nav-link nav-sub-sub-item">
+                        <a href="{{ route('medications.consumption.analytics') }}" class="nav-link nav-sub-sub-item {{ nav_active_class(['medications.consumption.analytics']) }}">
                           <i class="nav-icon bi bi-bar-chart text-warning"></i>
                           <p>Analytics</p>
                         </a>
@@ -380,31 +380,31 @@
                     </a>
                     <ul class="nav nav-treeview">
                       <li class="nav-item">
-                        <a href="{{ route('medications.reconciliation.index') }}" class="nav-link nav-sub-sub-item">
+                        <a href="{{ route('medications.reconciliation.index') }}" class="nav-link nav-sub-sub-item {{ nav_active_class(['medications.reconciliation.index']) }}">
                           <i class="nav-icon bi bi-speedometer text-primary"></i>
                           <p>Dashboard</p>
                         </a>
                       </li>
                       <li class="nav-item">
-                        <a href="{{ route('medications.reconciliation.discrepancies') }}" class="nav-link nav-sub-sub-item">
+                        <a href="{{ route('medications.reconciliation.discrepancies') }}" class="nav-link nav-sub-sub-item {{ nav_active_class(['medications.reconciliation.discrepancies']) }}">
                           <i class="nav-icon bi bi-exclamation-triangle text-warning"></i>
                           <p>Discrepancies</p>
                         </a>
                       </li>
                       <li class="nav-item">
-                        <a href="{{ route('medications.reconciliation.audit') }}" class="nav-link nav-sub-sub-item">
+                        <a href="{{ route('medications.reconciliation.audit') }}" class="nav-link nav-sub-sub-item {{ nav_active_class(['medications.reconciliation.audit']) }}">
                           <i class="nav-icon bi bi-clipboard-data text-info"></i>
                           <p>Audit Trail</p>
                         </a>
                       </li>
                       <li class="nav-item">
-                        <a href="{{ route('medications.reconciliation.comparison') }}" class="nav-link nav-sub-sub-item">
+                        <a href="{{ route('medications.reconciliation.comparison') }}" class="nav-link nav-sub-sub-item {{ nav_active_class(['medications.reconciliation.comparison']) }}">
                           <i class="nav-icon bi bi-arrow-left-right text-primary"></i>
                           <p>Stock Comparison</p>
                         </a>
                       </li>
                       <li class="nav-item">
-                        <a href="{{ route('medications.reconciliation.corrections.form') }}" class="nav-link nav-sub-sub-item">
+                        <a href="{{ route('medications.reconciliation.corrections.form') }}" class="nav-link nav-sub-sub-item {{ nav_active_class(['medications.reconciliation.corrections.*']) }}">
                           <i class="nav-icon bi bi-pencil-square text-danger"></i>
                           <p>Manual Corrections</p>
                         </a>
@@ -415,17 +415,17 @@
               </li>
 
               <!-- Accounting -->
-              <li class="nav-item has-treeview">
-                <a href="#" class="nav-link nav-header">
+              <li class="nav-item has-treeview {{ nav_menu_open_class(['financial.*']) }}">
+                <a href="#" class="nav-link nav-header {{ nav_active_class(['financial.*']) }}">
                   <i class="nav-icon bi bi-calculator-fill text-success"></i>
                   <p class="text-bold">
                     Financial Management
                     <i class="nav-arrow bi bi-chevron-right"></i>
                   </p>
                 </a>
-                <ul class="nav nav-treeview">
+                <ul class="nav nav-treeview" style="{{ nav_display_style(['financial.*']) }}">
                   <li class="nav-item">
-                    <a href="{{ route('financial.dashboard') }}" class="nav-link nav-sub-item">
+                    <a href="{{ route('financial.dashboard') }}" class="nav-link nav-sub-item {{ nav_active_class(['financial.dashboard']) }}">
                       <i class="nav-icon bi bi-speedometer2 text-primary"></i>
                       <p>
                         Financial Dashboard
@@ -434,7 +434,7 @@
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a href="{{ route('financial.transactions.index') }}" class="nav-link nav-sub-item">
+                    <a href="{{ route('financial.transactions.index') }}" class="nav-link nav-sub-item {{ nav_active_query_class(['financial.transactions.index'], ['transaction_type' => null, 'status' => null]) }}">
                       <i class="nav-icon bi bi-list-task text-info"></i>
                       <p>
                         All Transactions
@@ -443,25 +443,25 @@
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a href="{{ route('financial.transactions.create') }}" class="nav-link nav-sub-item">
+                    <a href="{{ route('financial.transactions.create') }}" class="nav-link nav-sub-item {{ nav_active_class(['financial.transactions.create']) }}">
                       <i class="nav-icon bi bi-plus-circle-fill text-success"></i>
                       <p>New Transaction</p>
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a href="{{ route('financial.transactions.index', ['transaction_type' => 'income']) }}" class="nav-link nav-sub-item">
+                    <a href="{{ route('financial.transactions.index', ['transaction_type' => 'income']) }}" class="nav-link nav-sub-item {{ nav_active_query_class(['financial.transactions.index'], ['transaction_type' => 'income']) }}">
                       <i class="nav-icon bi bi-arrow-up-circle-fill text-success"></i>
                       <p>Income Transactions</p>
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a href="{{ route('financial.transactions.index', ['transaction_type' => 'expense']) }}" class="nav-link nav-sub-item">
+                    <a href="{{ route('financial.transactions.index', ['transaction_type' => 'expense']) }}" class="nav-link nav-sub-item {{ nav_active_query_class(['financial.transactions.index'], ['transaction_type' => 'expense']) }}">
                       <i class="nav-icon bi bi-arrow-down-circle-fill text-danger"></i>
                       <p>Expense Transactions</p>
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a href="{{ route('financial.transactions.index', ['status' => 'pending']) }}" class="nav-link nav-sub-item">
+                    <a href="{{ route('financial.transactions.index', ['status' => 'pending']) }}" class="nav-link nav-sub-item {{ nav_active_query_class(['financial.transactions.index'], ['status' => 'pending']) }}">
                       <i class="nav-icon bi bi-clock-history text-warning"></i>
                       <p>
                         Pending Approvals
@@ -470,19 +470,19 @@
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a href="{{ route('financial.transactions.export') }}" class="nav-link nav-sub-item">
+                    <a href="{{ route('financial.transactions.export') }}" class="nav-link nav-sub-item {{ nav_active_class(['financial.transactions.export']) }}">
                       <i class="nav-icon bi bi-download text-primary"></i>
                       <p>Export Reports</p>
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a href="{{ route('financial.receipts.index') }}" class="nav-link nav-sub-item">
+                    <a href="{{ route('financial.receipts.index') }}" class="nav-link nav-sub-item {{ nav_active_query_class(['financial.receipts.index'], ['view' => null]) }}">
                       <i class="nav-icon bi bi-receipt-cutoff text-success"></i>
                       <p>Receipt Management</p>
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a href="{{ route('financial.receipts.daily.summary') }}" class="nav-link nav-sub-item">
+                    <a href="{{ route('financial.receipts.daily.summary') }}" class="nav-link nav-sub-item {{ nav_active_class(['financial.receipts.daily.*']) }}">
                       <i class="nav-icon bi bi-calendar-day text-info"></i>
                       <p>Daily Summary</p>
                     </a>
@@ -491,17 +491,17 @@
               </li>
 
               <!-- NHIF Integration -->
-              <li class="nav-item has-treeview">
-                <a href="#" class="nav-link nav-header">
+              <li class="nav-item has-treeview {{ nav_menu_open_class(['nhif.*']) }}">
+                <a href="#" class="nav-link nav-header {{ nav_active_class(['nhif.*']) }}">
                   <i class="nav-icon bi bi-shield-check text-primary"></i>
                   <p class="text-bold">
                     NHIF Integration
                     <i class="nav-arrow bi bi-chevron-right"></i>
                   </p>
                 </a>
-                <ul class="nav nav-treeview">
+                <ul class="nav nav-treeview" style="{{ nav_display_style(['nhif.*']) }}">
                   <li class="nav-item">
-                    <a href="{{ route('nhif.index') }}" class="nav-link nav-sub-item">
+                    <a href="{{ route('nhif.index') }}" class="nav-link nav-sub-item {{ nav_active_class(['nhif.index']) }}">
                       <i class="nav-icon bi bi-speedometer2 text-primary"></i>
                       <p>
                         NHIF Dashboard
@@ -510,7 +510,7 @@
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a href="{{ route('nhif.verify') }}" class="nav-link nav-sub-item">
+                    <a href="{{ route('nhif.verify') }}" class="nav-link nav-sub-item {{ nav_active_class(['nhif.verify']) }}">
                       <i class="nav-icon bi bi-person-check-fill text-success"></i>
                       <p>
                         Member Verification
@@ -518,7 +518,7 @@
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a href="{{ route('nhif.tariffs') }}" class="nav-link nav-sub-item">
+                    <a href="{{ route('nhif.tariffs') }}" class="nav-link nav-sub-item {{ nav_active_class(['nhif.tariffs']) }}">
                       <i class="nav-icon bi bi-download text-info"></i>
                       <p>
                         Sync Tariffs
@@ -527,7 +527,7 @@
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a href="{{ route('nhif.claims') }}" class="nav-link nav-sub-item">
+                    <a href="{{ route('nhif.claims') }}" class="nav-link nav-sub-item {{ nav_active_class(['nhif.claims']) }}">
                       <i class="nav-icon bi bi-file-medical text-warning"></i>
                       <p>
                         Claims Management
@@ -536,7 +536,7 @@
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a href="{{ route('nhif.reports') }}" class="nav-link nav-sub-item">
+                    <a href="{{ route('nhif.reports') }}" class="nav-link nav-sub-item {{ nav_active_class(['nhif.reports']) }}">
                       <i class="nav-icon bi bi-graph-up text-purple"></i>
                       <p>
                         NHIF Reports
@@ -548,17 +548,17 @@
               </li>
 
               <!-- User Management -->
-              <li class="nav-item has-treeview">
-                <a href="#" class="nav-link nav-header">
+              <li class="nav-item has-treeview {{ nav_menu_open_class(['users.*']) }}">
+                <a href="#" class="nav-link nav-header {{ nav_active_class(['users.*']) }}">
                   <i class="nav-icon bi bi-shield-lock-fill text-warning"></i>
                   <p class="text-bold">
                     User Management
                     <i class="nav-arrow bi bi-chevron-right"></i>
                   </p>
                 </a>
-                <ul class="nav nav-treeview">
+                <ul class="nav nav-treeview" style="{{ nav_display_style(['users.*']) }}">
                   <li class="nav-item">
-                    <a href="{{ route('users.index') }}" class="nav-link nav-sub-item">
+                    <a href="{{ route('users.index') }}" class="nav-link nav-sub-item {{ nav_active_query_class(['users.index'], ['view' => null]) }}">
                       <i class="nav-icon bi bi-people-fill text-primary"></i>
                       <p>
                         All Users
@@ -566,7 +566,7 @@
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a href="{{ route('users.pending-verification') }}" class="nav-link nav-sub-item">
+                    <a href="{{ route('users.pending-verification') }}" class="nav-link nav-sub-item {{ nav_active_class(['users.pending-verification']) }}">
                       <i class="nav-icon bi bi-person-exclamation text-warning"></i>
                       <p>
                         Pending Verification
@@ -574,7 +574,7 @@
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a href="{{ route('users.password.reset') }}" class="nav-link nav-sub-item">
+                    <a href="{{ route('users.password.reset') }}" class="nav-link nav-sub-item {{ nav_active_class(['users.password.reset']) }}">
                       <i class="nav-icon bi bi-key-fill text-danger"></i>
                       <p>Reset Password</p>
                     </a>
@@ -589,12 +589,12 @@
               </li>
 
               <!-- System Settings -->
-              <li class="nav-item has-treeview">
-                <a href="#" class="nav-link nav-header">
+              <li class="nav-item has-treeview {{ nav_menu_open_class(['medical_services.*', 'medical-service-pricing.*', 'service_categories.*', 'sample_types.*', 'lab.service-consumables.*', 'result-templates.*', 'form-templates.*', 'icd10.*'], ['doctors', 'patient_categories', 'visit_types', 'designations', 'consultation_fees']) }}">
+                <a href="#" class="nav-link nav-header {{ nav_active_class(['medical_services.*', 'medical-service-pricing.*', 'service_categories.*', 'sample_types.*', 'lab.service-consumables.*', 'result-templates.*', 'form-templates.*', 'icd10.*'], ['doctors', 'patient_categories', 'visit_types', 'designations', 'consultation_fees']) }}">
                   <i class="nav-icon bi bi-gear-fill text-secondary"></i>
                   <p class="text-bold">System Management<i class="nav-arrow bi bi-chevron-right"></i></p>
                 </a>
-                <ul class="nav nav-treeview">
+                <ul class="nav nav-treeview" style="{{ nav_display_style(['medical_services.*', 'medical-service-pricing.*', 'service_categories.*', 'sample_types.*', 'lab.service-consumables.*', 'result-templates.*', 'form-templates.*', 'icd10.*'], ['doctors', 'patient_categories', 'visit_types', 'designations', 'consultation_fees']) }}">
                   <li class="nav-item has-treeview">
                     <a href="#" class="nav-link nav-sub-header">
                       <i class="nav-icon bi bi-hospital text-info"></i>
@@ -605,7 +605,7 @@
                     </a>
                     <ul class="nav nav-treeview">
                       <li class="nav-item">
-                        <a href="{{ url('doctors') }}" class="nav-link nav-sub-sub-item">
+                        <a href="{{ url('doctors') }}" class="nav-link nav-sub-sub-item {{ nav_active_class([], ['doctors', 'doctors/*']) }}">
                           <i class="nav-icon bi bi-person-badge text-primary"></i>
                           <p>
                             Doctors
@@ -613,7 +613,7 @@
                         </a>
                       </li>
                       <li class="nav-item">
-                        <a href="{{ url('patient_categories') }}" class="nav-link nav-sub-sub-item">
+                        <a href="{{ url('patient_categories') }}" class="nav-link nav-sub-sub-item {{ nav_active_class([], ['patient_categories', 'patient_categories/*']) }}">
                           <i class="nav-icon bi bi-tags text-warning"></i>
                           <p>
                             Patient Categories
@@ -621,7 +621,7 @@
                         </a>
                       </li>
                       <li class="nav-item">
-                        <a href="{{ url('visit_types') }}" class="nav-link nav-sub-sub-item">
+                        <a href="{{ url('visit_types') }}" class="nav-link nav-sub-sub-item {{ nav_active_class([], ['visit_types', 'visit_types/*']) }}">
                           <i class="nav-icon bi bi-calendar-event text-info"></i>
                           <p>
                             Visit Types 
@@ -629,7 +629,7 @@
                         </a>
                       </li>
                       <li class="nav-item">
-                        <a href="{{ url('designations') }}" class="nav-link nav-sub-sub-item">
+                        <a href="{{ url('designations') }}" class="nav-link nav-sub-sub-item {{ nav_active_class([], ['designations', 'designations/*']) }}">
                           <i class="nav-icon bi bi-award text-purple"></i>
                           <p>
                             Designations
@@ -637,7 +637,7 @@
                         </a>
                       </li>
                       <li class="nav-item">
-                        <a href="{{ url('consultation_fees') }}" class="nav-link nav-sub-sub-item">
+                        <a href="{{ url('consultation_fees') }}" class="nav-link nav-sub-sub-item {{ nav_active_class([], ['consultation_fees', 'consultation_fees/*']) }}">
                           <i class="nav-icon bi bi-currency-dollar text-success"></i>
                           <p>
                             Consultation Fees
@@ -656,37 +656,37 @@
                     </a>
                     <ul class="nav nav-treeview">
                       <li class="nav-item">
-                        <a href="{{ route('medical_services.index') }}" class="nav-link nav-sub-sub-item">
+                        <a href="{{ route('medical_services.index') }}" class="nav-link nav-sub-sub-item {{ nav_active_query_class(['medical_services.index'], ['category' => null]) }}">
                           <i class="nav-icon bi bi-speedometer text-primary"></i>
                           <p>All Medical Services</p>
                         </a>
                       </li>
                       <li class="nav-item">
-                        <a href="{{ route('medical_services.index', ['category' => 'investigations']) }}" class="nav-link nav-sub-sub-item">
+                        <a href="{{ route('medical_services.index', ['category' => 'investigations']) }}" class="nav-link nav-sub-sub-item {{ nav_active_query_class(['medical_services.index'], ['category' => 'investigations']) }}">
                           <i class="nav-icon bi bi-search text-info"></i>
                           <p>Investigations</p>
                         </a>
                       </li>
                       <li class="nav-item">
-                        <a href="{{ route('medical_services.index', ['category' => 'procedures']) }}" class="nav-link nav-sub-sub-item">
+                        <a href="{{ route('medical_services.index', ['category' => 'procedures']) }}" class="nav-link nav-sub-sub-item {{ nav_active_query_class(['medical_services.index'], ['category' => 'procedures']) }}">
                           <i class="nav-icon bi bi-clipboard-plus text-success"></i>
                           <p>Medical Procedures</p>
                         </a>
                       </li>
                       <li class="nav-item">
-                        <a href="{{ route('medical-service-pricing.index') }}" class="nav-link nav-sub-item">
+                        <a href="{{ route('medical-service-pricing.index') }}" class="nav-link nav-sub-item {{ nav_active_class(['medical-service-pricing.*']) }}">
                           <i class="nav-icon bi bi-currency-dollar text-success"></i>
                           <p>Service Pricing</p>
                         </a>
                       </li>
                       <li class="nav-item">
-                        <a href="{{ route('service_categories.index') }}" class="nav-link nav-sub-item">
+                        <a href="{{ route('service_categories.index') }}" class="nav-link nav-sub-item {{ nav_active_class(['service_categories.*']) }}">
                           <i class="nav-icon bi bi-tags-fill text-success"></i>
                           <p>Service Categories</p>
                         </a>
                       </li>
                       <li class="nav-item">
-                        <a href="{{ route('sample_types.index') }}" class="nav-link nav-sub-item">
+                        <a href="{{ route('sample_types.index') }}" class="nav-link nav-sub-item {{ nav_active_class(['sample_types.*']) }}">
                           <i class="nav-icon bi bi-droplet-fill text-warning"></i>
                           <p>Sample Types</p>
                         </a>
@@ -722,7 +722,7 @@
                     </a>
                     <ul class="nav nav-treeview">
                       <li class="nav-item">
-                          <a href="{{ route('icd10.index') }}" class="nav-link nav-sub-sub-item">
+                          <a href="{{ route('icd10.index') }}" class="nav-link nav-sub-sub-item {{ nav_active_class(['icd10.*']) }}">
                             <i class="nav-icon bi bi-gear-fill text-secondary"></i>
                             <p>Mtuha</p>
                           </a>
@@ -733,15 +733,15 @@
               </li>
 
               <!-- Clinical Decision Support (CDS) -->
-              <li class="nav-item has-treeview">
-                <a href="#" class="nav-link nav-header">
+              <li class="nav-item has-treeview {{ nav_menu_open_class(['admin.cds.*']) }}">
+                <a href="#" class="nav-link nav-header {{ nav_active_class(['admin.cds.*']) }}">
                   <i class="nav-icon bi bi-lightbulb-fill text-warning"></i>
                   <p class="text-bold">
                     Clinical Decision Support
                     <i class="nav-arrow bi bi-chevron-right"></i>
                   </p>
                 </a>
-                <ul class="nav nav-treeview">
+                <ul class="nav nav-treeview" style="{{ nav_display_style(['admin.cds.*']) }}">
                   <!-- CDS Dashboard -->
                   <li class="nav-item">
                     <a href="{{ route('admin.cds.dashboard') }}" class="nav-link nav-sub-item {{ nav_active_class(['admin.cds.dashboard']) }}">
@@ -764,7 +764,7 @@
                     </a>
                     <ul class="nav nav-treeview">
                       <li class="nav-item">
-                        <a href="{{ route('admin.cds.rules.index') }}" class="nav-link nav-sub-sub-item {{ nav_active_class(['admin.cds.rules.index']) }}">
+                        <a href="{{ route('admin.cds.rules.index') }}" class="nav-link nav-sub-sub-item {{ nav_active_query_class(['admin.cds.rules.index'], ['status' => null, 'category' => null, 'type' => null, 'view' => null, 'sort' => null]) }}">
                           <i class="nav-icon bi bi-list-ul text-primary"></i>
                           <p>All Rules</p>
                         </a>
@@ -776,13 +776,13 @@
                         </a>
                       </li>
                       <li class="nav-item">
-                        <a href="{{ route('admin.cds.rules.index', ['status' => 'active']) }}" class="nav-link nav-sub-sub-item">
+                        <a href="{{ route('admin.cds.rules.index', ['status' => 'active']) }}" class="nav-link nav-sub-sub-item {{ nav_active_query_class(['admin.cds.rules.index'], ['status' => 'active']) }}">
                           <i class="nav-icon bi bi-check-circle-fill text-success"></i>
                           <p>Active Rules</p>
                         </a>
                       </li>
                       <li class="nav-item">
-                        <a href="{{ route('admin.cds.rules.index', ['status' => 'inactive']) }}" class="nav-link nav-sub-sub-item">
+                        <a href="{{ route('admin.cds.rules.index', ['status' => 'inactive']) }}" class="nav-link nav-sub-sub-item {{ nav_active_query_class(['admin.cds.rules.index'], ['status' => 'inactive']) }}">
                           <i class="nav-icon bi bi-x-circle text-secondary"></i>
                           <p>Inactive Rules</p>
                         </a>
@@ -807,19 +807,19 @@
                         </a>
                       </li>
                       <li class="nav-item">
-                        <a href="{{ route('admin.cds.rules.index', ['category' => 'medication']) }}" class="nav-link nav-sub-sub-item">
+                        <a href="{{ route('admin.cds.rules.index', ['category' => 'medication']) }}" class="nav-link nav-sub-sub-item {{ nav_active_query_class(['admin.cds.rules.index'], ['category' => 'medication', 'type' => null]) }}">
                           <i class="nav-icon bi bi-capsule text-info"></i>
                           <p>Drug Interaction Rules</p>
                         </a>
                       </li>
                       <li class="nav-item">
-                        <a href="{{ route('admin.cds.rules.index', ['category' => 'medication', 'type' => 'allergy_check']) }}" class="nav-link nav-sub-sub-item">
+                        <a href="{{ route('admin.cds.rules.index', ['category' => 'medication', 'type' => 'allergy_check']) }}" class="nav-link nav-sub-sub-item {{ nav_active_query_class(['admin.cds.rules.index'], ['category' => 'medication', 'type' => 'allergy_check']) }}">
                           <i class="nav-icon bi bi-exclamation-triangle text-warning"></i>
                           <p>Allergy Checks</p>
                         </a>
                       </li>
                       <li class="nav-item">
-                        <a href="{{ route('admin.cds.rules.index', ['category' => 'medication', 'type' => 'dose_check']) }}" class="nav-link nav-sub-sub-item">
+                        <a href="{{ route('admin.cds.rules.index', ['category' => 'medication', 'type' => 'dose_check']) }}" class="nav-link nav-sub-sub-item {{ nav_active_query_class(['admin.cds.rules.index'], ['category' => 'medication', 'type' => 'dose_check']) }}">
                           <i class="nav-icon bi bi-calculator text-success"></i>
                           <p>Dose Range Rules</p>
                         </a>
@@ -838,19 +838,19 @@
                     </a>
                     <ul class="nav nav-treeview">
                       <li class="nav-item">
-                        <a href="{{ route('admin.cds.rules.index', ['category' => 'laboratory']) }}" class="nav-link nav-sub-sub-item">
+                        <a href="{{ route('admin.cds.rules.index', ['category' => 'laboratory']) }}" class="nav-link nav-sub-sub-item {{ nav_active_query_class(['admin.cds.rules.index'], ['category' => 'laboratory', 'type' => null]) }}">
                           <i class="nav-icon bi bi-vial text-primary"></i>
                           <p>Lab Result Rules</p>
                         </a>
                       </li>
                       <li class="nav-item">
-                        <a href="{{ route('admin.cds.rules.index', ['category' => 'laboratory', 'type' => 'critical_value']) }}" class="nav-link nav-sub-sub-item">
+                        <a href="{{ route('admin.cds.rules.index', ['category' => 'laboratory', 'type' => 'critical_value']) }}" class="nav-link nav-sub-sub-item {{ nav_active_query_class(['admin.cds.rules.index'], ['category' => 'laboratory', 'type' => 'critical_value']) }}">
                           <i class="nav-icon bi bi-exclamation-octagon text-danger"></i>
                           <p>Critical Value Alerts</p>
                         </a>
                       </li>
                       <li class="nav-item">
-                        <a href="{{ route('admin.cds.rules.index', ['category' => 'laboratory', 'type' => 'follow_up']) }}" class="nav-link nav-sub-sub-item">
+                        <a href="{{ route('admin.cds.rules.index', ['category' => 'laboratory', 'type' => 'follow_up']) }}" class="nav-link nav-sub-sub-item {{ nav_active_query_class(['admin.cds.rules.index'], ['category' => 'laboratory', 'type' => 'follow_up']) }}">
                           <i class="nav-icon bi bi-arrow-repeat text-info"></i>
                           <p>Follow-up Recommendations</p>
                         </a>
@@ -869,19 +869,19 @@
                     </a>
                     <ul class="nav nav-treeview">
                       <li class="nav-item">
-                        <a href="{{ route('admin.cds.rules.index', ['category' => 'workflow']) }}" class="nav-link nav-sub-sub-item">
+                        <a href="{{ route('admin.cds.rules.index', ['category' => 'workflow']) }}" class="nav-link nav-sub-sub-item {{ nav_active_query_class(['admin.cds.rules.index'], ['category' => 'workflow', 'type' => null]) }}">
                           <i class="nav-icon bi bi-flow-chart text-primary"></i>
                           <p>All Workflow Rules</p>
                         </a>
                       </li>
                       <li class="nav-item">
-                        <a href="{{ route('admin.cds.rules.index', ['type' => 'order_set']) }}" class="nav-link nav-sub-sub-item">
+                        <a href="{{ route('admin.cds.rules.index', ['type' => 'order_set']) }}" class="nav-link nav-sub-sub-item {{ nav_active_query_class(['admin.cds.rules.index'], ['type' => 'order_set']) }}">
                           <i class="nav-icon bi bi-list-task text-success"></i>
                           <p>Order Sets</p>
                         </a>
                       </li>
                       <li class="nav-item">
-                        <a href="{{ route('admin.cds.rules.index', ['type' => 'guideline_prompt']) }}" class="nav-link nav-sub-sub-item">
+                        <a href="{{ route('admin.cds.rules.index', ['type' => 'guideline_prompt']) }}" class="nav-link nav-sub-sub-item {{ nav_active_query_class(['admin.cds.rules.index'], ['type' => 'guideline_prompt']) }}">
                           <i class="nav-icon bi bi-book text-info"></i>
                           <p>Clinical Guidelines</p>
                         </a>
@@ -900,19 +900,19 @@
                     </a>
                     <ul class="nav nav-treeview">
                       <li class="nav-item">
-                        <a href="{{ route('admin.cds.rules.index', ['view' => 'categories']) }}" class="nav-link nav-sub-sub-item">
+                        <a href="{{ route('admin.cds.rules.index', ['view' => 'categories']) }}" class="nav-link nav-sub-sub-item {{ nav_active_query_class(['admin.cds.rules.index'], ['view' => 'categories']) }}">
                           <i class="nav-icon bi bi-tags text-warning"></i>
                           <p>Rule Categories</p>
                         </a>
                       </li>
                       <li class="nav-item">
-                        <a href="{{ route('admin.cds.rules.index', ['view' => 'types']) }}" class="nav-link nav-sub-sub-item">
+                        <a href="{{ route('admin.cds.rules.index', ['view' => 'types']) }}" class="nav-link nav-sub-sub-item {{ nav_active_query_class(['admin.cds.rules.index'], ['view' => 'types']) }}">
                           <i class="nav-icon bi bi-collection text-primary"></i>
                           <p>Rule Types</p>
                         </a>
                       </li>
                       <li class="nav-item">
-                        <a href="{{ route('admin.cds.rules.index', ['sort' => 'priority']) }}" class="nav-link nav-sub-sub-item">
+                        <a href="{{ route('admin.cds.rules.index', ['sort' => 'priority']) }}" class="nav-link nav-sub-sub-item {{ nav_active_query_class(['admin.cds.rules.index'], ['sort' => 'priority']) }}">
                           <i class="nav-icon bi bi-sort-numeric-down text-info"></i>
                           <p>Priority Management</p>
                         </a>
@@ -931,19 +931,19 @@
                     </a>
                     <ul class="nav nav-treeview">
                       <li class="nav-item">
-                        <a href="{{ route('admin.cds.dashboard') }}#alerts" class="nav-link nav-sub-sub-item">
+                        <a href="{{ route('admin.cds.dashboard') }}#alerts" class="nav-link nav-sub-sub-item {{ nav_active_class(['admin.cds.dashboard']) }}">
                           <i class="nav-icon bi bi-bell text-warning"></i>
                           <p>Alert Statistics</p>
                         </a>
                       </li>
                       <li class="nav-item">
-                        <a href="{{ route('admin.cds.dashboard') }}#performance" class="nav-link nav-sub-sub-item">
+                        <a href="{{ route('admin.cds.dashboard') }}#performance" class="nav-link nav-sub-sub-item {{ nav_active_class(['admin.cds.dashboard']) }}">
                           <i class="nav-icon bi bi-speedometer text-primary"></i>
                           <p>Rule Performance</p>
                         </a>
                       </li>
                       <li class="nav-item">
-                        <a href="{{ route('admin.cds.dashboard') }}#audit" class="nav-link nav-sub-sub-item">
+                        <a href="{{ route('admin.cds.dashboard') }}#audit" class="nav-link nav-sub-sub-item {{ nav_active_class(['admin.cds.dashboard']) }}">
                           <i class="nav-icon bi bi-file-text text-info"></i>
                           <p>Audit Trail</p>
                         </a>
@@ -954,15 +954,15 @@
               </li>
 
               <!-- Reports -->
-              <li class="nav-item has-treeview">
-                <a href="#" class="nav-link nav-header">
+              <li class="nav-item has-treeview {{ nav_menu_open_class(['reports.mtuha.*']) }}">
+                <a href="#" class="nav-link nav-header {{ nav_active_class(['reports.mtuha.*']) }}">
                   <i class="nav-icon bi bi-file-earmark-text-fill text-secondary"></i>
                   <p class="text-bold">
                     Reports
                     <i class="nav-arrow bi bi-chevron-right"></i>
                   </p>
                 </a>
-                <ul class="nav nav-treeview">
+                <ul class="nav nav-treeview" style="{{ nav_display_style(['reports.mtuha.*']) }}">
                   <li class="nav-item">
                     <a href="{{ route('reports.mtuha.month') }}" class="nav-link nav-sub-item {{ nav_active_class(['reports.mtuha.*']) }}">
                       <i class="nav-icon bi bi-list-columns-reverse text-primary"></i>
@@ -971,15 +971,15 @@
                   </li>
                 </ul>
               </li>
-              <li class="nav-item has-treeview">
-                <a href="#" class="nav-link nav-header">
+              <li class="nav-item has-treeview {{ nav_menu_open_class(['system.logs.*', 'admin.redundancy-analysis.*']) }}">
+                <a href="#" class="nav-link nav-header {{ nav_active_class(['system.logs.*', 'admin.redundancy-analysis.*']) }}">
                   <i class="nav-icon bi bi-file-earmark-text-fill text-secondary"></i>
                   <p class="text-bold">
                     Logs
                     <i class="nav-arrow bi bi-chevron-right"></i>
                   </p>
                 </a>
-                <ul class="nav nav-treeview">
+                <ul class="nav nav-treeview" style="{{ nav_display_style(['system.logs.*', 'admin.redundancy-analysis.*']) }}">
                   <li class="nav-item">
                     <a href="{{ route('system.logs.index') }}" class="nav-link nav-sub-item {{ nav_active_class(['system.logs.*']) }}">
                       <i class="nav-icon bi bi-list-columns-reverse text-primary"></i>
