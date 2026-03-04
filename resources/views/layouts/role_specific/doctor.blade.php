@@ -1,6 +1,6 @@
 <!-- Doctor Dashboard -->
 <li class="nav-item">
-  <a href="{{ route('dashboard.doctor') }}" class="nav-link nav-header">
+  <a href="{{ route('dashboard.doctor') }}" class="nav-link nav-header {{ nav_active_class(['dashboard.doctor']) }}">
     <i class="nav-icon bi bi-speedometer2 text-primary"></i>
     <p class="text-bold">
       Doctor Dashboard
@@ -11,7 +11,7 @@
 
 <!-- Patient Consultations -->
 <li class="nav-item">
-  <a href="{{ route('patient_visits.index') }}" class="nav-link nav-header">
+  <a href="{{ route('patient_visits.index') }}" class="nav-link nav-header {{ nav_active_class(['patient_visits.*']) }}">
     <i class="nav-icon bi bi-calendar-check-fill text-primary"></i>
     <p class="text-bold">
       Patient Consultations
@@ -20,23 +20,23 @@
 </li>
 
 <!-- Medical Procedures -->
-<li class="nav-item has-treeview">
-  <a href="#" class="nav-link nav-header">
+<li class="nav-item has-treeview {{ nav_menu_open_class(['procedures.*']) }}">
+  <a href="#" class="nav-link nav-header {{ nav_active_class(['procedures.*']) }}">
     <i class="nav-icon bi bi-clipboard-plus-fill text-success"></i>
     <p class="text-bold">
       Medical Procedures
       <i class="nav-arrow bi bi-chevron-right"></i>
     </p>
   </a>
-  <ul class="nav nav-treeview">
+  <ul class="nav nav-treeview" style="{{ nav_display_style(['procedures.*']) }}">
     <li class="nav-item">
-      <a href="{{ route('procedures.index', ['filter_type' => 'procedures']) }}" class="nav-link nav-sub-item">
+      <a href="{{ route('procedures.index', ['filter_type' => 'procedures']) }}" class="nav-link nav-sub-item {{ nav_active_class(['procedures.index']) }}">
         <i class="nav-icon bi bi-clipboard-check-fill text-primary"></i>
         <p>General Procedures</p>
       </a>
     </li>
     <li class="nav-item">
-      <a href="{{ route('procedures.index', ['filter_type' => 'radiology']) }}" class="nav-link nav-sub-item">
+      <a href="{{ route('procedures.index', ['filter_type' => 'radiology']) }}" class="nav-link nav-sub-item {{ nav_active_class(['procedures.index']) }}">
         <i class="nav-icon bi bi-radioactive text-warning"></i>
         <p>Radiology Investigations</p>
       </a>
@@ -45,23 +45,23 @@
 </li>
 
 <!-- Claims Management -->
-<li class="nav-item has-treeview">
-  <a href="#" class="nav-link nav-header">
+<li class="nav-item has-treeview {{ nav_menu_open_class([], ['PostClaim', 'failedClaim']) }}">
+  <a href="#" class="nav-link nav-header {{ nav_active_class([], ['PostClaim', 'failedClaim']) }}">
     <i class="nav-icon bi bi-file-medical-fill text-warning"></i>
     <p class="text-bold">
       Claims Management
       <i class="nav-arrow bi bi-chevron-right"></i>
     </p>
   </a>
-  <ul class="nav nav-treeview">
+  <ul class="nav nav-treeview" style="{{ nav_display_style([], ['PostClaim', 'failedClaim']) }}">
     <li class="nav-item">
-      <a href="{{ url('PostClaim') }}" class="nav-link nav-sub-item">
+      <a href="{{ url('PostClaim') }}" class="nav-link nav-sub-item {{ nav_active_class([], ['PostClaim']) }}">
         <i class="nav-icon bi bi-check-circle-fill text-success"></i>
         <p>Posted Claims</p>
       </a>
     </li>
     <li class="nav-item">
-      <a href="{{ url('failedClaim') }}" class="nav-link nav-sub-item">
+      <a href="{{ url('failedClaim') }}" class="nav-link nav-sub-item {{ nav_active_class([], ['failedClaim']) }}">
         <i class="nav-icon bi bi-x-circle-fill text-danger"></i>
         <p>Failed Claims</p>
       </a>
@@ -69,23 +69,23 @@
   </ul>
 </li>
 <!-- Stock Management -->
-<li class="nav-item has-treeview">
-  <a href="#" class="nav-link nav-header">
+<li class="nav-item has-treeview {{ nav_menu_open_class(['store.requisitions.*', 'store-locations-stock.*']) }}">
+  <a href="#" class="nav-link nav-header {{ nav_active_class(['store.requisitions.*', 'store-locations-stock.*']) }}">
     <i class="nav-icon bi bi-clipboard-data-fill text-info"></i>
     <p class="text-bold">
       Radiology Stock Management
       <i class="nav-arrow bi bi-chevron-right"></i>
     </p>
   </a>
-  <ul class="nav nav-treeview">
+  <ul class="nav nav-treeview" style="{{ nav_display_style(['store.requisitions.*', 'store-locations-stock.*']) }}">
     <li class="nav-item">
-      <a href="{{ route('store.requisitions.index') }}" class="nav-link nav-sub-item">
+      <a href="{{ route('store.requisitions.index') }}" class="nav-link nav-sub-item {{ nav_active_class(['store.requisitions.*']) }}">
         <i class="nav-icon bi bi-clipboard-data text-warning"></i>
         <p>Supply Requests</p>
       </a>
     </li>
     <li class="nav-item">
-      <a href="{{ route('store-locations-stock.index') }}" class="nav-link nav-sub-item">
+      <a href="{{ route('store-locations-stock.index') }}" class="nav-link nav-sub-item {{ nav_active_class(['store-locations-stock.*']) }}">
         <i class="nav-icon bi bi-hospital text-primary"></i>
         <p>Stock Levels</p>
       </a>
