@@ -7,7 +7,7 @@
    Shared across all role-specific navigation partials.
    ============================================================ */
 
-.nav-header .nav-link {
+.nav-header.nav-link {
     background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
     border-left: 4px solid #007bff;
     margin: 2px 0;
@@ -17,14 +17,14 @@
     transition: all 0.3s ease;
 }
 
-.nav-header .nav-link:hover {
+.nav-header.nav-link:hover {
     background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
     border-left-color: #2196f3;
     transform: translateX(2px);
     box-shadow: 0 2px 8px rgba(0,123,255,0.15);
 }
 
-.nav-sub-header .nav-link {
+.nav-sub-header.nav-link {
     background: rgba(0,123,255,0.1);
     border-left: 3px solid #28a745;
     margin: 1px 0;
@@ -35,13 +35,13 @@
     transition: all 0.3s ease;
 }
 
-.nav-sub-header .nav-link:hover {
+.nav-sub-header.nav-link:hover {
     background: rgba(40,167,69,0.15);
     border-left-color: #20c997;
     transform: translateX(2px);
 }
 
-.nav-sub-item .nav-link {
+.nav-sub-item.nav-link {
     margin-left: 20px;
     padding-left: 15px;
     border-left: 2px solid #6c757d;
@@ -49,13 +49,13 @@
     font-size: 0.85rem;
 }
 
-.nav-sub-item .nav-link:hover {
+.nav-sub-item.nav-link:hover {
     background: rgba(108,117,125,0.1);
     border-left-color: #495057;
     transform: translateX(2px);
 }
 
-.nav-sub-sub-item .nav-link {
+.nav-sub-sub-item.nav-link {
     margin-left: 35px;
     padding-left: 12px;
     border-left: 1px solid #adb5bd;
@@ -63,7 +63,7 @@
     transition: all 0.3s ease;
 }
 
-.nav-sub-sub-item .nav-link:hover {
+.nav-sub-sub-item.nav-link:hover {
     background: rgba(173,181,189,0.1);
     border-left-color: #6c757d;
     transform: translateX(2px);
@@ -121,15 +121,15 @@
 }
 
 @media (max-width: 768px) {
-    .nav-header .nav-link,
-    .nav-sub-header .nav-link,
-    .nav-sub-item .nav-link,
-    .nav-sub-sub-item .nav-link {
+    .nav-header.nav-link,
+    .nav-sub-header.nav-link,
+    .nav-sub-item.nav-link,
+    .nav-sub-sub-item.nav-link {
         margin-left: 5px;
         font-size: 0.8rem;
     }
 
-    .nav-sub-sub-item .nav-link {
+    .nav-sub-sub-item.nav-link {
         margin-left: 15px;
     }
 }
@@ -162,15 +162,15 @@
     border-left: 2px solid rgba(0,123,255,0.3);
 }
 
-.nav-item.menu-open > .nav-header .nav-link {
+.nav-item.menu-open > .nav-header.nav-link {
     background: linear-gradient(135deg, #343a40 0%, #495057 100%);
     color: #ffffff !important;
     border-left-color: #ffc107;
     box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
 
-.nav-item.menu-open > .nav-header .nav-link .nav-icon,
-.nav-item.menu-open > .nav-header .nav-link .text-bold {
+.nav-item.menu-open > .nav-header.nav-link .nav-icon,
+.nav-item.menu-open > .nav-header.nav-link .text-bold {
     color: #ffffff !important;
 }
 
@@ -179,13 +179,13 @@
     border-left: 2px solid rgba(40,167,69,0.4);
 }
 
-.nav-item.menu-open .nav-item.menu-open > .nav-sub-header .nav-link {
+.nav-item.menu-open .nav-item.menu-open > .nav-sub-header.nav-link {
     background: linear-gradient(135deg, #495057 0%, #6c757d 100%);
     color: #ffffff !important;
     border-left-color: #20c997;
 }
 
-.nav-item.menu-open .nav-item.menu-open > .nav-sub-header .nav-link .nav-icon {
+.nav-item.menu-open .nav-item.menu-open > .nav-sub-header.nav-link .nav-icon {
     color: #ffffff !important;
 }
 
