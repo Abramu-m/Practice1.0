@@ -77,6 +77,41 @@ if (!function_exists('nav_display_style')) {
     }
 }
 
+if (!function_exists('nav_active_query_class')) {
+    /**
+     * Return 'active' class if the given route is active and all query parameters match.
+     *
+     * Useful when multiple sub-items share the same route but differ only by query string
+     * (e.g. ?status=pending vs ?status=dispensed).
+     *
+     * @param array $routes      Array of route name patterns
+     * @param array $queryParams Associative array of expected query parameters
+     * @return string
+     */
+    function nav_active_query_class(array $routes = [], array $queryParams = []): string
+    {
+        foreach ($routes as $route) {
+            if (request()->routeIs($route)) {
+                foreach ($queryParams as $key => $value) {
+                    if ($value === null) {
+                        // Expect this query key to be absent
+                        if (request()->query($key) !== null) {
+                            return '';
+                        }
+                    } else {
+                        if (request()->query($key) !== $value) {
+                            return '';
+                        }
+                    }
+                }
+                return 'active';
+            }
+        }
+
+        return '';
+    }
+}
+
 if (!function_exists('current_route_name')) {
     /**
      * Get the current route name (useful for debugging)

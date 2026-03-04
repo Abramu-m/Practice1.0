@@ -692,19 +692,19 @@
                         </a>
                       </li>
                       <li class="nav-item">
-                        <a href="{{ route('lab.service-consumables.index') }}" class="nav-link nav-sub-item {{ request()->routeIs('lab.service-consumables.*') ? 'active' : '' }}">
+                        <a href="{{ route('lab.service-consumables.index') }}" class="nav-link nav-sub-item {{ nav_active_class(['lab.service-consumables.*']) }}">
                           <i class="nav-icon bi bi-clipboard2-data text-info"></i>
                           <p>Service Consumable Templates</p>
                         </a>
                       </li>
                       <li class="nav-item">
-                        <a href="{{ route('result-templates.index') }}" class="nav-link nav-sub-item {{ request()->routeIs('result-templates.*') ? 'active' : '' }}">
+                        <a href="{{ route('result-templates.index') }}" class="nav-link nav-sub-item {{ nav_active_class(['result-templates.*']) }}">
                           <i class="nav-icon bi bi-file-medical text-primary"></i>
                           <p>Result Templates</p>
                         </a>
                       </li>
                       <li class="nav-item">
-                        <a href="{{ route('form-templates.index') }}" class="nav-link nav-sub-item {{ request()->routeIs('form-templates.*') ? 'active' : '' }}">
+                        <a href="{{ route('form-templates.index') }}" class="nav-link nav-sub-item {{ nav_active_class(['form-templates.*']) }}">
                           <i class="nav-icon bi bi-file-medical text-primary"></i>
                           <p>Form Templates</p>
                         </a>
@@ -744,7 +744,7 @@
                 <ul class="nav nav-treeview">
                   <!-- CDS Dashboard -->
                   <li class="nav-item">
-                    <a href="{{ route('admin.cds.dashboard') }}" class="nav-link nav-sub-item {{ request()->routeIs('admin.cds.dashboard') ? 'active' : '' }}">
+                    <a href="{{ route('admin.cds.dashboard') }}" class="nav-link nav-sub-item {{ nav_active_class(['admin.cds.dashboard']) }}">
                       <i class="nav-icon bi bi-speedometer2 text-primary"></i>
                       <p>
                         CDS Dashboard
@@ -764,13 +764,13 @@
                     </a>
                     <ul class="nav nav-treeview">
                       <li class="nav-item">
-                        <a href="{{ route('admin.cds.rules.index') }}" class="nav-link nav-sub-sub-item {{ request()->routeIs('admin.cds.rules.index') ? 'active' : '' }}">
+                        <a href="{{ route('admin.cds.rules.index') }}" class="nav-link nav-sub-sub-item {{ nav_active_class(['admin.cds.rules.index']) }}">
                           <i class="nav-icon bi bi-list-ul text-primary"></i>
                           <p>All Rules</p>
                         </a>
                       </li>
                       <li class="nav-item">
-                        <a href="{{ route('admin.cds.rules.create') }}" class="nav-link nav-sub-sub-item {{ request()->routeIs('admin.cds.rules.create') ? 'active' : '' }}">
+                        <a href="{{ route('admin.cds.rules.create') }}" class="nav-link nav-sub-sub-item {{ nav_active_class(['admin.cds.rules.create']) }}">
                           <i class="nav-icon bi bi-plus-circle-fill text-success"></i>
                           <p>Create New Rule</p>
                         </a>
@@ -801,7 +801,7 @@
                     </a>
                     <ul class="nav nav-treeview">
                       <li class="nav-item">
-                        <a href="{{ route('admin.cds.medication-policies.index') }}" class="nav-link nav-sub-sub-item {{ request()->routeIs('admin.cds.medication-policies.*') ? 'active' : '' }}">
+                        <a href="{{ route('admin.cds.medication-policies.index') }}" class="nav-link nav-sub-sub-item {{ nav_active_class(['admin.cds.medication-policies.*']) }}">
                           <i class="nav-icon bi bi-file-medical text-primary"></i>
                           <p>Medication Policies</p>
                         </a>
@@ -964,7 +964,7 @@
                 </a>
                 <ul class="nav nav-treeview">
                   <li class="nav-item">
-                    <a href="{{ route('reports.mtuha.month') }}" class="nav-link nav-sub-item {{ request()->routeIs('reports.mtuha.*') ? 'active' : '' }}">
+                    <a href="{{ route('reports.mtuha.month') }}" class="nav-link nav-sub-item {{ nav_active_class(['reports.mtuha.*']) }}">
                       <i class="nav-icon bi bi-list-columns-reverse text-primary"></i>
                       <p>MTUHA Monthly Report</p>
                     </a>
@@ -981,13 +981,13 @@
                 </a>
                 <ul class="nav nav-treeview">
                   <li class="nav-item">
-                    <a href="{{ route('system.logs.index') }}" class="nav-link nav-sub-item {{ request()->routeIs('system.logs.*') ? 'active' : '' }}">
+                    <a href="{{ route('system.logs.index') }}" class="nav-link nav-sub-item {{ nav_active_class(['system.logs.*']) }}">
                       <i class="nav-icon bi bi-list-columns-reverse text-primary"></i>
                       <p>All logs</p>
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a href="{{ route('admin.redundancy-analysis.index') }}" class="nav-link nav-sub-item {{ request()->routeIs('admin.redundancy-analysis.*') ? 'active' : '' }}">
+                    <a href="{{ route('admin.redundancy-analysis.index') }}" class="nav-link nav-sub-item {{ nav_active_class(['admin.redundancy-analysis.*']) }}">
                       <i class="nav-icon bi bi-diagram-3 text-warning"></i>
                       <p>Redundancy Analysis</p>
                     </a>
@@ -1065,208 +1065,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
-<style>
-/* Navigation Menu Styling */
-.nav-header .nav-link {
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    border-left: 4px solid #007bff;
-    margin: 2px 0;
-    border-radius: 0 6px 6px 0;
-    font-weight: 600;
-    font-size: 0.95rem;
-    transition: all 0.3s ease;
-}
-
-.nav-header .nav-link:hover {
-    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-    border-left-color: #2196f3;
-    transform: translateX(2px);
-    box-shadow: 0 2px 8px rgba(0,123,255,0.15);
-}
-
-.nav-sub-header .nav-link {
-    background: rgba(0,123,255,0.1);
-    border-left: 3px solid #28a745;
-    margin: 1px 0;
-    margin-left: 15px;
-    border-radius: 0 5px 5px 0;
-    font-weight: 500;
-    font-size: 0.9rem;
-    transition: all 0.3s ease;
-}
-
-.nav-sub-header .nav-link:hover {
-    background: rgba(40,167,69,0.15);
-    border-left-color: #20c997;
-    transform: translateX(2px);
-}
-
-.nav-sub-item .nav-link {
-    margin-left: 20px;
-    padding-left: 15px;
-    border-left: 2px solid #6c757d;
-    transition: all 0.3s ease;
-    font-size: 0.85rem;
-}
-
-.nav-sub-item .nav-link:hover {
-    background: rgba(108,117,125,0.1);
-    border-left-color: #495057;
-    transform: translateX(2px);
-}
-
-.nav-sub-sub-item .nav-link {
-    margin-left: 35px;
-    padding-left: 12px;
-    border-left: 1px solid #adb5bd;
-    font-size: 0.8rem;
-    transition: all 0.3s ease;
-}
-
-.nav-sub-sub-item .nav-link:hover {
-    background: rgba(173,181,189,0.1);
-    border-left-color: #6c757d;
-    transform: translateX(2px);
-}
-
-/* Icon enhancements */
-.nav-icon {
-    margin-right: 8px;
-    font-size: 1.1rem;
-    width: 20px;
-    text-align: center;
-}
-
-.nav-header .nav-icon {
-    font-size: 1.2rem;
-}
-
-.nav-sub-header .nav-icon {
-    font-size: 1.05rem;
-}
-
-.nav-sub-sub-item .nav-icon {
-    font-size: 0.9rem;
-}
-
-/* Text and badge styling */
-.text-bold {
-    font-weight: 700;
-}
-
-.ms-auto {
-    margin-left: auto !important;
-}
-
-/* Custom color classes */
-.text-purple {
-    color: #6f42c1 !important;
-}
-
-/* Badge positioning */
-.badge.right {
-    margin-left: auto;
-}
-
-/* Animation for pulse effect */
-.pulse {
-    animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-    0% {
-        box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7);
-    }
-    70% {
-        box-shadow: 0 0 0 10px rgba(255, 193, 7, 0);
-    }
-    100% {
-        box-shadow: 0 0 0 0 rgba(255, 193, 7, 0);
-    }
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .nav-header .nav-link,
-    .nav-sub-header .nav-link,
-    .nav-sub-item .nav-link,
-    .nav-sub-sub-item .nav-link {
-        margin-left: 5px;
-        font-size: 0.8rem;
-    }
-    
-    .nav-sub-sub-item .nav-link {
-        margin-left: 15px;
-    }
-}
-
-/* Active state styling */
-.nav-link.active {
-    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
-    color: white !important;
-    border-left-color: #ffc107;
-}
-
-.nav-link.active .nav-icon {
-    color: white !important;
-}
-
-/* Hover effects for tree items */
-.nav-treeview {
-    transition: all 0.3s ease;
-}
-
-.nav-item.has-treeview > .nav-link.active ~ .nav-treeview {
-    background: rgba(0,123,255,0.05);
-    border-radius: 0 8px 8px 0;
-    margin-right: 5px;
-}
-
-/* Expanded/Open section styling */
-.nav-item.menu-open > .nav-treeview {
-    background: linear-gradient(135deg, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.12) 100%);
-    border-radius: 0 8px 8px 0;
-    margin-right: 5px;
-    padding: 5px 0;
-    border-left: 2px solid rgba(0,123,255,0.3);
-}
-
-.nav-item.menu-open > .nav-header .nav-link {
-    background: linear-gradient(135deg, #343a40 0%, #495057 100%);
-    color: #ffffff !important;
-    border-left-color: #ffc107;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-}
-
-.nav-item.menu-open > .nav-header .nav-link .nav-icon {
-    color: #ffffff !important;
-}
-
-.nav-item.menu-open > .nav-header .nav-link .text-bold {
-    color: #ffffff !important;
-}
-
-/* Nested expanded sections */
-.nav-item.menu-open .nav-item.menu-open > .nav-treeview {
-    background: linear-gradient(135deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.20) 100%);
-    border-left: 2px solid rgba(40,167,69,0.4);
-}
-
-.nav-item.menu-open .nav-item.menu-open > .nav-sub-header .nav-link {
-    background: linear-gradient(135deg, #495057 0%, #6c757d 100%);
-    color: #ffffff !important;
-    border-left-color: #20c997;
-}
-
-.nav-item.menu-open .nav-item.menu-open > .nav-sub-header .nav-link .nav-icon {
-    color: #ffffff !important;
-}
-
-/* Open section border enhancement */
-.nav-item.menu-open {
-    border-radius: 0 8px 8px 0;
-    margin: 2px 0;
-}
 
 <!-- Confirmation modal for admin direct 'set user password' actions -->
 <div class="modal fade" id="adminResetConfirmModal" tabindex="-1" aria-labelledby="adminResetConfirmLabel" aria-hidden="true">
@@ -1355,4 +1153,3 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 </script>
-</style>
