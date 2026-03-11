@@ -1,4 +1,7 @@
 @extends('layouts.app_main_layout')
+@section('page_title')
+    System Logs
+@endsection
 
 @section('main_content')
 <div class="container-fluid">

@@ -118,12 +118,6 @@ class DashboardController extends Controller
         $totalMedicalServices = MedicalService::where('is_active', true)->count();
         $patientCategories = PatientCategory::where('is_active', true)->count();
         
-        // Recent financial transactions for quick view
-        $recentTransactions = FinancialTransaction::with(['patient', 'creator'])
-                                                ->orderBy('created_at', 'desc')
-                                                ->take(5)
-                                                ->get();
-        
         // System alerts
         $systemAlerts = [
             'low_stock' => $lowStockMedications,
@@ -149,7 +143,6 @@ class DashboardController extends Controller
             'todaysRevenue',
             'monthlyRevenue',
             'pendingPayments',
-            'recentTransactions',
             // Medication & Store stats
             'totalMedications',
             'lowStockMedications',

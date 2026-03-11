@@ -137,6 +137,61 @@
             <!--end::Not Auth User Menu-->
             <!--begin::User Menu Dropdown-->
             @else
+            @php
+              $currentUser = Auth::user();
+
+              // Role label
+              if ($currentUser->isSuperAdmin()) {
+                $role = 'Super Admin';
+              } elseif ($currentUser->isAdmin()) {
+                $role = 'Admin';
+              } elseif ($currentUser->isReceptionist()) {
+                $role = 'Receptionist';
+              } elseif ($currentUser->isDoctor()) {
+                $role = 'Doctor';
+              } elseif ($currentUser->isCashier()) {
+                $role = 'Cashier';
+              } elseif ($currentUser->isLabTechnician()) {
+                $role = 'Lab Technician';
+              } elseif ($currentUser->isPharmacist()) {
+                $role = 'Pharmacist';
+              } elseif ($currentUser->isNurse()) {
+                $role = 'Nurse';
+              } elseif ($currentUser->isRadiologist()) {
+                $role = 'Radiologist';
+              } else {
+                $role = $currentUser->role;
+              }
+
+              // Clinical icon — admin/super have no clinical role icon
+              if ($currentUser->isReceptionist()) {
+                $roleIcon = 'fas fa-headset';
+              } elseif ($currentUser->isDoctor()) {
+                $roleIcon = 'fas fa-stethoscope';
+              } elseif ($currentUser->isCashier()) {
+                $roleIcon = 'fas fa-cash-register';
+              } elseif ($currentUser->isLabTechnician()) {
+                $roleIcon = 'fas fa-flask-vial';
+              } elseif ($currentUser->isPharmacist()) {
+                $roleIcon = 'fas fa-capsules';
+              } elseif ($currentUser->isNurse()) {
+                $roleIcon = 'fas fa-user-nurse';
+              } elseif ($currentUser->isRadiologist()) {
+                $roleIcon = 'fas fa-x-ray';
+              } else {
+                $roleIcon = null;
+              }
+
+              // Name color for admin/super only
+              $nameColorClass = '';
+              $nameColorStyle = '';
+
+              if ($currentUser->isSuperAdmin()) {
+                $nameColorStyle = 'color: #d4af37;';
+              } elseif ($currentUser->isAdmin()) {
+                $nameColorClass = 'text-success';
+              }
+            @endphp
             <li class="nav-item dropdown user-menu">
               <a href="#" class="nav-link dropdown-toggle d-flex align-items-center" data-bs-toggle="dropdown">
                 @if(Auth::user()->profile_picture && file_exists(storage_path('app/public/' . Auth::user()->profile_picture)))
@@ -152,7 +207,9 @@
                     {{ strtoupper(substr(Auth::user()->first_name, 0, 1)) }}{{ strtoupper(substr(Auth::user()->last_name, 0, 1)) }}
                   </div>
                 @endif
-                <span class="d-none d-md-inline">{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</span>
+                <span class="d-none d-md-inline {{ $nameColorClass }}" style="{{ $nameColorStyle }}">
+                  @if($roleIcon)<i class="{{ $roleIcon }} me-1"></i>@endif{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}
+                </span>
               </a>
               <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
                 <!--begin::User Image-->
@@ -172,30 +229,10 @@
                       </div>
                     @endif
                     <p class="mb-0">
-                      {{ Auth::user()->first_name }} {{ Auth::user()->last_name }} - 
-                      @php
-                        if (Auth::user()->isSuperAdmin()) {
-                          $role = 'Super Admin';
-                        } elseif (Auth::user()->isAdmin()) {
-                          $role = 'Admin';
-                        } elseif (Auth::user()->isReceptionist()) {
-                          $role = 'Receptionist';
-                        } elseif (Auth::user()->isDoctor()) {
-                          $role = 'Doctor';
-                        } elseif (Auth::user()->isCashier()) {
-                          $role = 'Cashier';
-                        } elseif (Auth::user()->isLabTechnician()) {
-                          $role = 'Lab Technician';
-                        } elseif (Auth::user()->isPharmacist()) {
-                          $role = 'Pharmacist';
-                        } elseif (Auth::user()->isNurse()) {
-                          $role = 'Nurse';
-                        } elseif (Auth::user()->isRadiologist()) {
-                          $role = 'Radiologist';
-                        } else {
-                          $role = Auth::user()->role; // Fallback to the role field
-                        }
-                      @endphp
+                      <span class="{{ $nameColorClass }}" style="{{ $nameColorStyle }}">
+                        @if($roleIcon)<i class="{{ $roleIcon }} me-1"></i>@endif{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}
+                      </span>
+                      -
                       {{ $role }}
                       <small class="d-block">User since {{ Auth::user()->created_at->format('M Y') }}</small>
                     </p>
