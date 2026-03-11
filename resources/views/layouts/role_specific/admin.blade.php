@@ -1,13 +1,13 @@
               <!-- Cashier -->
-              <li class="nav-item has-treeview {{ nav_menu_open_class(['cashier.*'], ['patients']) }}">
-                <a href="#" class="nav-link nav-header {{ nav_active_class(['cashier.*'], ['patients']) }}">
+              <li class="nav-item has-treeview {{ nav_menu_open_class(['cashier.*', 'patient_visits.*'], ['patients', 'patient_visits']) }}">
+                <a href="#" class="nav-link nav-header {{ nav_active_class(['cashier.*', 'patient_visits.*'], ['patients', 'patient_visits']) }}">
                   <i class="nav-icon bi bi-cash-stack text-success"></i>
                   <p class="text-bold">
                     Cashier Operations
                     <i class="nav-arrow bi bi-chevron-right"></i>
                   </p>
                 </a>
-                <ul class="nav nav-treeview" style="{{ nav_display_style(['cashier.*'], ['patients']) }}">
+                <ul class="nav nav-treeview" style="{{ nav_display_style(['cashier.*', 'patient_visits.*'], ['patients', 'patient_visits']) }}">
                   <li class="nav-item">
                     <a href="{{ route('cashier.index') }}" class="nav-link nav-sub-item {{ nav_active_class(['cashier.index']) }}">
                       <i class="nav-icon bi bi-speedometer2 text-primary"></i>
@@ -23,7 +23,7 @@
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a href="{{ route('patient_visits.index') }}" class="nav-link nav-sub-item {{ nav_active_class(['patient_visits.index']) }}">
+                    <a href="{{ route('patient_visits.index') }}" class="nav-link nav-sub-item {{ nav_active_class(['patient_visits.*']) }}">
                       <i class="nav-icon bi bi-calendar2-week text-warning"></i>
                       <p>Patient Visits</p>
                     </a>

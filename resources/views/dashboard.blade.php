@@ -79,7 +79,7 @@
                         <div class="col-md-3">
                             <div class="alert alert-danger">
                                 <strong>{{ $systemAlerts['pending_payments'] }}</strong> payments pending
-                                <br><a href="{{ route('financial.transactions.index') }}" class="btn btn-sm btn-danger mt-1">View Payments</a>
+                                <br><a href="{{ route('cashier.index') }}" class="btn btn-sm btn-danger mt-1">View Payments</a>
                             </div>
                         </div>
                         @endif

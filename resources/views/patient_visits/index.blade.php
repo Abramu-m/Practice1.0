@@ -63,8 +63,7 @@
                                 @if(!isset($selectedDoctor))
                                     <th>Doctor</th>
                                 @endif
-                                <th>Cash Amount</th>
-                                <th>Covered Amount</th>
+                                <th>Cash/Covered</th>
                                 <th>Status</th>
                                 <th>Actions</th>
                             </tr>
@@ -96,8 +95,20 @@ $(document).ready(function() {
         @if(!isset($selectedDoctor))
         { data: 'doctor_name', name: 'doctorInfo.user.name' },
         @endif
-        { data: 'cash_amount', name: 'amount_cash', orderable: true },
-        { data: 'covered_amount', name: 'amount_covered', orderable: true },
+        {
+            data: 'cash_amount',
+            name: 'amount_cash',
+            orderable: true,
+            render: function(data, type, row) {
+                if (type === 'sort' || type === 'type') {
+                    return data;
+                }
+
+                var cash = row.cash_amount || '$0.00';
+                var covered = row.covered_amount || '$0.00';
+                return cash + ' / ' + covered;
+            }
+        },
         { data: 'status', name: 'visit_status' },
         { data: 'actions', name: 'actions', orderable: false, searchable: false }
     ];
