@@ -168,15 +168,15 @@
                       <p>Primary Dashboard</p>
                     </a>
                   </li>
-                  <li class="nav-item has-treeview">
-                    <a href="#" class="nav-link nav-sub-header">
+                  <li class="nav-item has-treeview {{ nav_menu_open_class(['medications.index', 'medication-pricing.*', 'store-categories.*']) }}">
+                    <a href="#" class="nav-link nav-sub-header {{ nav_active_class(['medications.index', 'medication-pricing.*', 'store-categories.*']) }}">
                       <i class="nav-icon bi bi-box-seam-fill text-info"></i>
                       <p>
                         Items Management
                         <i class="nav-arrow bi bi-chevron-right"></i>
                       </p>
                     </a>
-                    <ul class="nav nav-treeview">
+                    <ul class="nav nav-treeview" style="{{ nav_display_style(['medications.index', 'medication-pricing.*', 'store-categories.*']) }}">
                       <li class="nav-item">
                         <a href="{{ route('medications.index') }}" class="nav-link nav-sub-sub-item {{ nav_active_class(['medications.index']) }}">
                           <i class="nav-icon bi bi-capsule text-primary"></i>
@@ -198,15 +198,15 @@
                     </ul>
                   </li>
                   <!-- Procurement -->
-                  <li class="nav-item has-treeview">
-                    <a href="#" class="nav-link nav-sub-header">
+                  <li class="nav-item has-treeview {{ nav_menu_open_class(['medications.stock.grn.*', 'medications.stock.suppliers.*', 'store-units.*', 'medication-units.*']) }}">
+                    <a href="#" class="nav-link nav-sub-header {{ nav_active_class(['medications.stock.grn.*', 'medications.stock.suppliers.*', 'store-units.*', 'medication-units.*']) }}">
                       <i class="nav-icon bi bi-cart-plus-fill text-success"></i>
                       <p>
                         Procurement
                         <i class="nav-arrow bi bi-chevron-right"></i>
                       </p>
                     </a>
-                    <ul class="nav nav-treeview">
+                    <ul class="nav nav-treeview" style="{{ nav_display_style(['medications.stock.grn.*', 'medications.stock.suppliers.*', 'store-units.*', 'medication-units.*']) }}">
                       <li class="nav-item">
                         <a href="{{ route('medications.stock.grn.index') }}" class="nav-link nav-sub-sub-item {{ nav_active_class(['medications.stock.grn.*']) }}">
                           <i class="nav-icon bi bi-receipt text-info"></i>
@@ -234,15 +234,15 @@
                     </ul>
                   </li>
                   <!-- Stock Management -->
-                  <li class="nav-item has-treeview">
-                    <a href="#" class="nav-link nav-sub-header">
+                  <li class="nav-item has-treeview {{ nav_menu_open_class(['medications.stock.ledger.*', 'store.requisitions.*', 'medications.stock.transfers.*', 'medications.stock.adjustments.*', 'medications.stock.disposal.*', 'store-locations.*', 'store-locations-stock.*', 'store-stock-movements.*']) }}">
+                    <a href="#" class="nav-link nav-sub-header {{ nav_active_class(['medications.stock.ledger.*', 'store.requisitions.*', 'medications.stock.transfers.*', 'medications.stock.adjustments.*', 'medications.stock.disposal.*', 'store-locations.*', 'store-locations-stock.*', 'store-stock-movements.*']) }}">
                       <i class="nav-icon bi bi-boxes text-danger"></i>
                       <p>
                         Stock Management
                         <i class="nav-arrow bi bi-chevron-right"></i>
                       </p>
                     </a>
-                    <ul class="nav nav-treeview">
+                    <ul class="nav nav-treeview" style="{{ nav_display_style(['medications.stock.ledger.*', 'store.requisitions.*', 'medications.stock.transfers.*', 'medications.stock.adjustments.*', 'medications.stock.disposal.*', 'store-locations.*', 'store-locations-stock.*', 'store-stock-movements.*']) }}">
                       <li class="nav-item">
                         <a href="{{ route('medications.stock.ledger.index') }}" class="nav-link nav-sub-sub-item {{ nav_active_class(['medications.stock.ledger.*']) }}">
                           <i class="nav-icon bi bi-journal-text text-info"></i>
@@ -293,15 +293,15 @@
                       </li>
                     </ul>
                   </li>
-                  <li class="nav-item has-treeview">
-                    <a href="#" class="nav-link nav-sub-header">
+                  <li class="nav-item has-treeview {{ nav_menu_open_class(['medications.consumption.*']) }}">
+                    <a href="#" class="nav-link nav-sub-header {{ nav_active_class(['medications.consumption.*']) }}">
                       <i class="nav-icon bi bi-graph-down text-info"></i>
                       <p>
                         Consumption Tracking
                         <i class="nav-arrow bi bi-chevron-right"></i>
                       </p>
                     </a>
-                    <ul class="nav nav-treeview">
+                    <ul class="nav nav-treeview" style="{{ nav_display_style(['medications.consumption.*']) }}">
                       <li class="nav-item">
                         <a href="{{ route('medications.consumption.index') }}" class="nav-link nav-sub-sub-item {{ nav_active_class(['medications.consumption.index']) }}">
                           <i class="nav-icon bi bi-eye text-primary"></i>
@@ -322,15 +322,15 @@
                       </li>
                     </ul>
                   </li>
-                  <li class="nav-item has-treeview">
-                    <a href="#" class="nav-link nav-sub-header">
+                  <li class="nav-item has-treeview {{ nav_menu_open_class(['medications.reconciliation.*']) }}">
+                    <a href="#" class="nav-link nav-sub-header {{ nav_active_class(['medications.reconciliation.*']) }}">
                       <i class="nav-icon bi bi-check2-square text-success"></i>
                       <p>
                         Reconciliation
                         <i class="nav-arrow bi bi-chevron-right"></i>
                       </p>
                     </a>
-                    <ul class="nav nav-treeview">
+                    <ul class="nav nav-treeview" style="{{ nav_display_style(['medications.reconciliation.*']) }}">
                       <li class="nav-item">
                         <a href="{{ route('medications.reconciliation.index') }}" class="nav-link nav-sub-sub-item {{ nav_active_class(['medications.reconciliation.index']) }}">
                           <i class="nav-icon bi bi-speedometer text-primary"></i>
