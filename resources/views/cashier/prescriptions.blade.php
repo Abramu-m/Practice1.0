@@ -146,7 +146,7 @@
                                 <div class="btn-group-vertical btn-group-sm">
                                     <button class="btn btn-success btn-sm" 
                                             onclick="markRxAsPaid({{ $prescription->id }}, {{ $prescription->total_price }})">
-                                        <i class="bi bi-check-circle"></i> Mark Paid
+                                        <i class="bi bi-check-circle"></i> Process Payment
                                     </button>
                                     <button class="btn btn-danger btn-sm" 
                                             onclick="cancelPrescription({{ $prescription->id }})">
