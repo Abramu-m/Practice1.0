@@ -157,6 +157,7 @@
                                             onclick="markAsPaid({{ $investigation->id }}, {{ $investigation->total_price }})">
                                         <i class="bi bi-check-circle"></i> Process Payment
                                     </button>
+                                    <br>
                                     <button class="btn btn-danger btn-sm" 
                                             onclick="cancelInvestigation({{ $investigation->id }})">
                                         <i class="bi bi-x-circle"></i> Cancel

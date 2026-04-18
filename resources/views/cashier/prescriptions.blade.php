@@ -148,6 +148,7 @@
                                             onclick="markRxAsPaid({{ $prescription->id }}, {{ $prescription->total_price }})">
                                         <i class="bi bi-check-circle"></i> Process Payment
                                     </button>
+                                    <br>
                                     <button class="btn btn-danger btn-sm" 
                                             onclick="cancelPrescription({{ $prescription->id }})">
                                         <i class="bi bi-x-circle"></i> Cancel
