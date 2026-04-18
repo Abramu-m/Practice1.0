@@ -70,21 +70,10 @@ class DashboardController extends Controller
             $activeConsultations = PatientVisit::where('visit_status', 1)
                                              ->where('doctor', $currentDoctorId)
                                              ->count();
-            $recentPendingVisits = PatientVisit::with(['patientInfo', 'doctorInfo.user'])
-                                              ->where('visit_status', 0)
-                                              ->where('doctor', $currentDoctorId)
-                                              ->orderBy('visit_date', 'desc')
-                                              ->take(5)
-                                              ->get();
         } else {
             // Admin users see all consultations
             $pendingConsultations = PatientVisit::where('visit_status', 0)->count();
             $activeConsultations = PatientVisit::where('visit_status', 1)->count();
-            $recentPendingVisits = PatientVisit::with(['patientInfo', 'doctorInfo.user'])
-                                              ->where('visit_status', 0)
-                                              ->orderBy('visit_date', 'desc')
-                                              ->take(5)
-                                              ->get();
         }
         
         // Admin-specific stats
@@ -135,7 +124,6 @@ class DashboardController extends Controller
             // Consultation stats
             'pendingConsultations',
             'activeConsultations', 
-            'recentPendingVisits',
             // User management stats
             'verifiedUsers',
             'pendingUsers',

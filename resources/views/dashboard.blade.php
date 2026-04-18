@@ -9,42 +9,46 @@
     <div class="row mb-4">
         <div class="col-12">
             <div class="card border-warning">
-                <div class="card-header bg-warning">
+                <div class="card-header bg-warning m-0 p-1">
                     <h3 class="card-title">
                         <i class="fas fa-exclamation-triangle"></i> System Alerts
                     </h3>
                 </div>
-                <div class="card-body">
+                <div class="card-body m-0 p-1">
                     <div class="row">
                         @if($systemAlerts['low_stock'] > 0)
                         <div class="col-md-3">
                             <div class="alert alert-warning">
-                                <strong>{{ $systemAlerts['low_stock'] }}</strong> medications are low on stock
-                                <br><a href="{{ route('medications.index') }}" class="btn btn-sm btn-warning mt-1">View Medications</a>
+                                <a href="{{ route('medications.index') }}">
+                                    <strong>{{ $systemAlerts['low_stock'] }}</strong> medications are low on stock
+                                </a> 
                             </div>
                         </div>
                         @endif
                         @if($systemAlerts['pending_users'] > 0)
                         <div class="col-md-3">
                             <div class="alert alert-info">
-                                <strong>{{ $systemAlerts['pending_users'] }}</strong> users pending verification
-                                <br><a href="{{ route('users.pending-verification') }}" class="btn btn-sm btn-info mt-1">Review Users</a>
+                                <a href="{{ route('users.pending-verification') }}">
+                                    <strong>{{ $systemAlerts['pending_users'] }}</strong> users pending verification
+                                </a>
                             </div>
                         </div>
                         @endif
                         @if($systemAlerts['pending_requisitions'] > 0)
                         <div class="col-md-3">
                             <div class="alert alert-primary">
-                                <strong>{{ $systemAlerts['pending_requisitions'] }}</strong> store requisitions pending
-                                <br><a href="{{ route('store.requisitions.index') }}" class="btn btn-sm btn-primary mt-1">View Requisitions</a>
+                                <a href="{{ route('store.requisitions.index') }}">
+                                    <strong>{{ $systemAlerts['pending_requisitions'] }}</strong> store requisitions pending
+                                </a>
                             </div>
                         </div>
                         @endif
                         @if($systemAlerts['pending_payments'] > 0)
                         <div class="col-md-3">
                             <div class="alert alert-danger">
-                                <strong>{{ $systemAlerts['pending_payments'] }}</strong> payments pending
-                                <br><a href="{{ route('cashier.index') }}" class="btn btn-sm btn-danger mt-1">View Payments</a>
+                                <a href="{{ route('cashier.index') }}">
+                                    <strong>{{ $systemAlerts['pending_payments'] }}</strong> payments pending
+                                </a>
                             </div>
                         </div>
                         @endif
@@ -77,11 +81,19 @@
         <div class="col-6 col-md-4 col-lg-3 col-xl-2">
             <div class="small-box bg-success">
                 <div class="inner">
-                    <h3>{{ $todaysVisits }}</h3>
-                    <p>Today's Visits</p>
+                    <div class="row">
+                        <div class="col-6">
+                            <h3>{{ $todaysVisits }}</h3>
+                            <p>Today's</p>
+                        </div>
+                        <div class="col-6">
+                            <h3>{{ $pendingConsultations }}</h3>
+                            <p>Pending</p>
+                        </div>
+                    </div>
                 </div>
                 <div class="icon">
-                    <i class="fas fa-calendar-check"></i>
+                    <i class="fas fa-user-md"></i> Consultations
                 </div>
                 <a href="{{ route('patient_visits.index') }}" class="small-box-footer">
                     More info <i class="fas fa-arrow-circle-right"></i>
@@ -89,35 +101,6 @@
             </div>
         </div>
 
-        <div class="col-6 col-md-4 col-lg-3 col-xl-2">
-            <div class="small-box bg-warning">
-                <div class="inner">
-                    <h3>{{ $pendingConsultations }}</h3>
-                    <p>Pending Consultations</p>
-                </div>
-                <div class="icon">
-                    <i class="fas fa-clock"></i>
-                </div>
-                <a href="{{ route('patient_visits.index') }}" class="small-box-footer">
-                    More info <i class="fas fa-arrow-circle-right"></i>
-                </a>
-            </div>
-        </div>
-
-        <div class="col-6 col-md-4 col-lg-3 col-xl-2">
-            <div class="small-box bg-primary">
-                <div class="inner">
-                    <h3>{{ $activeConsultations }}</h3>
-                    <p>Active Consultations</p>
-                </div>
-                <div class="icon">
-                    <i class="fas fa-user-md"></i>
-                </div>
-                <a href="{{ route('patient_visits.index') }}" class="small-box-footer">
-                    More info <i class="fas fa-arrow-circle-right"></i>
-                </a>
-            </div>
-        </div>
     <!-- Financial & Investigation Statistics -->
     @if(auth()->user()->is_admin|| auth()->user()->is_super)
         <div class="col-6 col-md-4 col-lg-3 col-xl-2">
@@ -138,121 +121,27 @@
         <div class="col-6 col-md-4 col-lg-3 col-xl-2">
             <div class="small-box bg-gradient-info">
                 <div class="inner">
-                    <h3>{{ $totalInvestigations }}</h3>
-                    <p>Total Investigations</p>
+                    <div class="row">
+                        <div class="col-6">
+                                <h3>{{ $totalInvestigations }}</h3>
+                                <p>Total</p>
+                        </div>
+                        <div class="col-6">
+                                <h3>{{ $pendingInvestigations }}</h3>
+                                <p>Pending</p>
+                        </div>
+                    </div>
                 </div>
                 <div class="icon">
-                    <i class="fas fa-microscope"></i>
+                    <i class="fas fa-microscope"></i>Investigations
                 </div>
                 <a href="{{ route('investigations.index') }}" class="small-box-footer">
                     More info <i class="fas fa-arrow-circle-right"></i>
                 </a>
             </div>
         </div>
-
-        <div class="col-6 col-md-4 col-lg-3 col-xl-2">
-            <div class="small-box bg-gradient-warning">
-                <div class="inner">
-                    <h3>{{ $pendingInvestigations }}</h3>
-                    <p>Pending Investigations</p>
-                </div>
-                <div class="icon">
-                    <i class="fas fa-flask"></i>
-                </div>
-                <a href="{{ route('investigations.index') }}" class="small-box-footer">
-                    More info <i class="fas fa-arrow-circle-right"></i>
-                </a>
-            </div>
-        </div>
-
-        <div class="col-6 col-md-4 col-lg-3 col-xl-2">
-            <div class="small-box bg-gradient-danger">
-                <div class="inner">
-                    <h3>{{ $totalMedications }}</h3>
-                    <p>Medications Available</p>
-                </div>
-                <div class="icon">
-                    <i class="fas fa-pills"></i>
-                </div>
-                <a href="{{ route('medications.index') }}" class="small-box-footer">
-                    More info <i class="fas fa-arrow-circle-right"></i>
-                </a>
-            </div>
-        </div>
     @endif
     </div>
-
-    <!-- Pending Consultations Quick Access -->
-    @if(auth()->user()->role === 'doctor' && $recentPendingVisits->count() > 0)
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">
-                        <i class="fas fa-stethoscope"></i> Pending Consultations - Quick Start
-                    </h3>
-                    <div class="card-tools">
-                        <a href="{{ route('patient_visits.index') }}" class="btn btn-primary btn-sm">
-                            <i class="fas fa-list"></i> View All Visits
-                        </a>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-sm table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Patient</th>
-                                    <th>Visit Date</th>
-                                    <th>Doctor</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($recentPendingVisits as $visit)
-                                    <tr>
-                                        <td>
-                                            <strong>{{ $visit->patientInfo->full_name ?? 'Unknown' }}</strong><br>
-                                            <small class="text-muted">{{ $visit->patientInfo->mr_number ?? 'N/A' }}</small>
-                                        </td>
-                                        <td>{{ $visit->visit_date ? \Carbon\Carbon::parse($visit->visit_date)->format('d/m/Y H:i') : 'N/A' }}</td>
-                                        <td>{{ optional(optional($visit->doctorInfo)->user)->name ?? 'N/A' }}</td>
-                                        <td>
-                                            <span class="badge badge-warning">
-                                                <i class="fas fa-clock"></i> Waiting
-                                            </span>
-                                        </td>
-                                        <td>
-                                            @if($visit->visitType && stripos($visit->visitType->description, 'lab only') === false && 
-                                                (auth()->user()->is_admin || auth()->user()->is_super || 
-                                                 (auth()->user()->role === 'doctor' && auth()->user()->doctor && 
-                                                  auth()->user()->doctor->doctor_id == $visit->doctor)))
-                                                <a href="{{ route('consultations.show', $visit->id) }}" class="btn btn-success btn-sm">
-                                                    <i class="fas fa-user-md"></i> Start Consultation
-                                                </a>
-                                            @elseif($visit->visitType && stripos($visit->visitType->description, 'lab only') !== false)
-                                                <a href="{{ route('patient_visits.index') }}?search={{ $visit->patientInfo->mr_number ?? '' }}" 
-                                                   class="btn btn-warning btn-sm" 
-                                                   title="Add lab investigations for this visit">
-                                                    <i class="fas fa-flask"></i> Add Labs
-                                                </a>
-                                            @else
-                                                <span class="text-muted">
-                                                    <i class="fas fa-lock"></i> Not Assigned
-                                                </span>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    @endif
 
     <!-- Admin Management Sections -->
     @if(auth()->user()->is_admin|| auth()->user()->is_super)
