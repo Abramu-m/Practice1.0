@@ -132,18 +132,20 @@
 
                         <!-- Action Buttons -->
                         <div class="d-flex justify-content-between">
-                            @if(auth()->user()->isNurse())
-                            <a href="{{ url('vitals') }}" class="btn btn-secondary">
-                                <i class="fas fa-arrow-left"></i> Back to Vitals
-                            </a>
-                            @else
-                            <a href="{{ url('vitals') }}" class="btn btn-success">
-                                <i class="fas fa-arrow-left"></i> Back to Vitals
-                            </a>
-                            <a href="{{ route('consultations.show', $visit->id) }}" class="btn btn-secondary">
-                                <i class="fas fa-arrow-left"></i> Back to Consultation
-                            </a>
-                            @endif
+                                @php
+                                    $referrer = request()->headers->get('referer');
+                                    $referrerHost = $referrer ? parse_url($referrer, PHP_URL_HOST) : null;
+                                    $currentUrl = url()->current();
+                                    $backUrl = route('vitals.index');
+
+                                    if ($referrer && ($referrerHost === null || $referrerHost === request()->getHost()) && $referrer !== $currentUrl) {
+                                        $backUrl = $referrer;
+                                    }
+                                @endphp
+
+                                <a href="{{ $backUrl }}" class="btn btn-secondary">
+                                    <i class="fas fa-arrow-left"></i> Back
+                                </a>
 
                             <button type="submit" class="btn btn-primary">
                                 <i class="fas fa-save"></i> {{ $vitals ? 'Update' : 'Save' }} Vitals
