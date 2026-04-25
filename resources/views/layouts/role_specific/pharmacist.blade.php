@@ -4,7 +4,6 @@
     <i class="nav-icon bi bi-speedometer2 text-primary"></i>
     <p class="text-bold">
       Pharmacist Dashboard
-      <i class="bi bi-house-fill text-success ms-auto"></i>
     </p>
   </a>
 </li>
@@ -41,7 +40,7 @@
   <a href="#" class="nav-link nav-header {{ nav_active_class(['store.requisitions.*', 'store-locations-stock.*']) }}">
     <i class="nav-icon bi bi-boxes text-warning"></i>
     <p class="text-bold">
-      Pharmacy Stock Management
+      Stock Management
       <i class="nav-arrow bi bi-chevron-right"></i>
     </p>
   </a>
@@ -49,13 +48,13 @@
     <li class="nav-item">
       <a href="{{ route('store.requisitions.index') }}" class="nav-link nav-sub-item {{ nav_active_class(['store.requisitions.*']) }}">
         <i class="nav-icon bi bi-clipboard-data text-warning"></i>
-        <p>Pharmacy Requisitions</p>
+        <p>Requisitions</p>
       </a>
     </li>
     <li class="nav-item">
       <a href="{{ route('store-locations-stock.index') }}" class="nav-link nav-sub-item {{ nav_active_class(['store-locations-stock.*']) }}">
         <i class="nav-icon bi bi-capsule text-primary"></i>
-        <p>Pharmacy Stock Levels</p>
+        <p>Stock Levels</p>
       </a>
     </li>
   </ul>
