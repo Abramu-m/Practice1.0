@@ -181,6 +181,7 @@
                                     </div>
                                 </td>
                                 <td>
+                                    @if($investigation->is_paid)
                                     <div class="btn-group-vertical btn-group-sm" role="group">
                                         @if(in_array($investigation->status, ['ordered', 'collected', 'processing']))
                                             @if($investigation->status === 'ordered')
@@ -205,18 +206,13 @@
                                         @endif
 
                                         <!-- Status Update Dropdown -->
+                                        @if(!in_array($investigation->status, ['resulted', 'cancelled']))
                                         <div class="btn-group" role="group">
                                             <button type="button" class="btn btn-outline-secondary dropdown-toggle" 
                                                     data-bs-toggle="dropdown" title="Update Status">
                                                 <i class="fas fa-cog"></i>
                                             </button>
                                             <ul class="dropdown-menu">
-                                                @if($investigation->status === 'ordered')
-                                                    <li><button class="dropdown-item" 
-                                                               onclick="updateInvestigationStatus({{ $investigation->id }}, 'collected')">
-                                                        <i class="fas fa-flask text-info"></i> Mark Collected
-                                                    </button></li>
-                                                @endif
                                                 @if(in_array($investigation->status, ['ordered', 'collected']))
                                                     <li><button class="dropdown-item" 
                                                                onclick="updateInvestigationStatus({{ $investigation->id }}, 'processing')">
@@ -232,7 +228,11 @@
                                                 @endif
                                             </ul>
                                         </div>
+                                        @endif
                                     </div>
+                                    @else
+                                    <span class="badge bg-warning text-dark">Pending Payment</span>
+                                    @endif
                                 </td>
                             </tr>
                             @endforeach

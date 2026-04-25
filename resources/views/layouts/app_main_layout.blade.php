@@ -506,8 +506,10 @@
     
     <!-- Page-specific scripts -->
     @yield('scripts')
+    @stack('scripts')
   <!-- Page-specific footer scripts (kept separate for big pages) -->
   @yield('footer_scripts')
+  @stack('footer_scripts')
   <!-- Logout Confirmation Modal -->
   <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">

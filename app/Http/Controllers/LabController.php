@@ -97,9 +97,9 @@ class LabController extends Controller
             }
 
             // Only show visits from the last 7 days by default
-            if (!$request->filled('date_from') && !$request->filled('date_to')) {
-                $query->where('visit_date', '>=', now()->subDays(7));
-            }
+            // if (!$request->filled('date_from') && !$request->filled('date_to')) {
+            //     $query->where('visit_date', '>=', now()->subDays(7));
+            // }
 
             $query->orderBy('visit_date', 'desc');
 

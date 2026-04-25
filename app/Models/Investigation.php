@@ -190,6 +190,21 @@ class Investigation extends Model
     }
 
     /**
+     * Get status order for progression comparisons
+     */
+    public static function getStatusOrder()
+    {
+        return [
+            self::STATUS_DRAFT => 1,
+            self::STATUS_ORDERED => 2,
+            self::STATUS_COLLECTED => 3,
+            self::STATUS_PROCESSING => 4,
+            self::STATUS_RESULTED => 5,
+            self::STATUS_CANCELLED => 6,
+        ];
+    }
+
+    /**
      * Get priority options
      */
     public static function getPriorityOptions()
@@ -208,6 +223,19 @@ class Investigation extends Model
     {
         $statuses = self::getStatusOptions();
         return $statuses[$this->status] ?? 'Unknown';
+    }
+
+    /**
+     * Check if investigation can be deleted (up to ordered status)
+     */
+    public function canBeDeleted()
+    {
+        $order = self::getStatusOrder();
+        if (!isset($order[$this->status])) {
+            return false;
+        }
+
+        return $order[$this->status] <= $order[self::STATUS_ORDERED];
     }
 
     /**

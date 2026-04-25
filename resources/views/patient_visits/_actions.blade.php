@@ -35,9 +35,11 @@
     @endif
     
     {{-- View --}}
+    {{-- 
     <a href="{{ route('patient_visits.show', $visit->id) }}" class="btn btn-sm btn-info flex-fill" title="View Visit">
         <i class="fas fa-eye"></i>
     </a>
+    --}}
     
     {{-- Edit --}}
     <a href="{{ route('patient_visits.edit', $visit->id) }}" class="btn btn-sm btn-warning flex-fill" title="Edit Visit">

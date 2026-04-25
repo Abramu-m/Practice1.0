@@ -136,6 +136,13 @@
 
 @push('scripts')
 <script>
+$.ajaxSetup({
+    headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    }
+});
+
 $(document).ready(function() {
     var table = $('#labVisitsTable').DataTable({
         processing: true,

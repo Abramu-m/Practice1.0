@@ -29,29 +29,8 @@
       <a href="{{ route('pharmacist.prescriptions.index') }}" class="nav-link nav-sub-item {{ nav_active_query_class(['pharmacist.prescriptions.index'], ['status' => null]) }}">
         <i class="nav-icon bi bi-list-check text-info"></i>
         <p>
-          All Prescriptions
+          Prescriptions
         </p>
-      </a>
-    </li>
-    <li class="nav-item">
-      <a href="{{ route('pharmacist.prescriptions.index', ['status' => 'pending']) }}" class="nav-link nav-sub-item {{ nav_active_query_class(['pharmacist.prescriptions.index'], ['status' => 'pending']) }}">
-        <i class="nav-icon bi bi-clock-history text-warning"></i>
-        <p>
-          Pending Prescriptions
-          <span class="badge badge-warning right" id="pending-prescriptions-count">0</span>
-        </p>
-      </a>
-    </li>
-    <li class="nav-item">
-      <a href="{{ route('pharmacist.prescriptions.index', ['status' => 'dispensed']) }}" class="nav-link nav-sub-item {{ nav_active_query_class(['pharmacist.prescriptions.index'], ['status' => 'dispensed']) }}">
-        <i class="nav-icon bi bi-check-circle-fill text-success"></i>
-        <p>Dispensed Prescriptions</p>
-      </a>
-    </li>
-    <li class="nav-item">
-      <a href="{{ route('pharmacist.prescriptions.index', ['status' => 'unavailable']) }}" class="nav-link nav-sub-item {{ nav_active_query_class(['pharmacist.prescriptions.index'], ['status' => 'unavailable']) }}">
-        <i class="nav-icon bi bi-x-circle-fill text-danger"></i>
-        <p>Unavailable Items</p>
       </a>
     </li>
   </ul>
