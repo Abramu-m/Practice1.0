@@ -135,7 +135,6 @@ Route::prefix('medications')->name('medications.')->group(function () {
         Route::get('/prescriptions', [ConsumptionTrackingController::class, 'prescriptionsIndex'])->name('prescriptions.index');
         Route::get('/prescriptions/{id}', [ConsumptionTrackingController::class, 'showPrescription'])->name('prescriptions.show');
         Route::post('/prescriptions/{id}/dispense', [ConsumptionTrackingController::class, 'dispensePrescription'])->name('prescriptions.dispense');
-        Route::post('/prescriptions/{id}/items/{itemId}/dispense', [ConsumptionTrackingController::class, 'dispensePrescriptionItem'])->name('prescriptions.items.dispense');
         
         // Investigation Consumption
         Route::post('/investigations/{id}/record', [ConsumptionTrackingController::class, 'recordInvestigationConsumption'])->name('investigations.record');
