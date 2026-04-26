@@ -71,6 +71,9 @@ class MedicationCashSaleController extends Controller
                 $query->where('sale_number', 'like', '%' . $search . '%');
             }
 
+            /** @var \App\Models\User $currentUser */
+            $currentUser = Auth::user();
+
             return DataTables::of($query)
                 ->addColumn('sale_number_display', function ($sale) {
                     $html = '<strong>' . e($sale->sale_number) . '</strong>';
@@ -105,13 +108,13 @@ class MedicationCashSaleController extends Controller
                 ->addColumn('created_date', function ($sale) {
                     return $sale->created_at->format('M d, Y H:i');
                 })
-                ->addColumn('actions', function ($sale) {
+                ->addColumn('actions', function ($sale) use ($currentUser) {
                     $html = '<a href="' . route('medication-cash-sales.show', $sale) . '" class="btn btn-sm btn-primary">
                                 <i class="fas fa-eye"></i>
                              </a> ';
                     
                     // Dispense button
-                    if ($sale->canBeDispensed() && (Auth::user()->isPharmacist() || (!Auth::user()->isCashier() && !Auth::user()->isReceptionist()))) {
+                    if ($sale->canBeDispensed() && ($currentUser->isPharmacist() || (!$currentUser->isCashier() && !$currentUser->isReceptionist()))) {
                         $stockInfo = $this->getStockInfoForSale($sale);
                         if ($stockInfo['has_issues']) {
                             $html .= '<button type="button" class="btn btn-sm btn-secondary" disabled title="Insufficient stock for some medications">
@@ -128,7 +131,7 @@ class MedicationCashSaleController extends Controller
                     }
 
                     // Payment button
-                    if ($sale->canBePaid() && (Auth::user()->isReceptionist() || Auth::user()->isCashier() || Auth::user()->isAdmin())) {
+                    if ($sale->canBePaid() && ($currentUser->isReceptionist() || $currentUser->isCashier() || $currentUser->isAdmin())) {
                         $html .= '<button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#paymentModal' . $sale->id . '">
                                     <i class="fas fa-money-bill"></i> Pay
                                   </button> ';
@@ -142,7 +145,7 @@ class MedicationCashSaleController extends Controller
                                         <i class="fas fa-times"></i>
                                     </button>
                                   </form>';
-                    } elseif ($sale->is_paid && Auth::user()->isAdmin()) {
+                    } elseif ($sale->is_paid && $currentUser->isAdmin() && $sale->status !== 'cancelled' && !$sale->dispensed_at) {
                         $html .= '<button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#cancelModal' . $sale->id . '">
                                     <i class="fas fa-times"></i>
                                   </button>';
@@ -620,10 +623,9 @@ class MedicationCashSaleController extends Controller
         // For paid sales - require admin permissions and reason
         if ($medicationCashSale->is_paid) {
             // Check if user is admin
-            $user = Auth::user();
-            $isAdmin = method_exists($user, 'role') && in_array($user->role, ['admin', 'super_admin']);
-            
-            if (!$isAdmin) {
+            /** @var \App\Models\User $authUser */
+            $authUser = Auth::user();
+            if (!$authUser->isAdmin()) {
                 return back()->with('error', 'Only administrators can cancel paid sales.');
             }
 
@@ -866,10 +868,9 @@ class MedicationCashSaleController extends Controller
     {
         try {
             // Prevent cashiers and receptionists from cancelling paid sales
-            $user = Auth::user();
-            $isAdmin = method_exists($user, 'role') && in_array($user->role, ['admin', 'super_admin']);
-            
-            if (!$isAdmin) {
+            /** @var \App\Models\User $authUser */
+            $authUser = Auth::user();
+            if (!$authUser->isAdmin()) {
                 return redirect()->route('medication-cash-sales.show', $medicationCashSale)
                     ->with('error', 'Unauthorized action. Only Admins can cancel paid sales.');
             }
