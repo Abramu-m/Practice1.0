@@ -110,6 +110,53 @@ class Medication extends Model
     }
 
     /**
+     * All store location stock rows for this medication
+     */
+    public function locationStocks()
+    {
+        return $this->hasMany(StoreLocationStock::class);
+    }
+
+    /**
+     * Active (non-depleted) store location stock rows
+     */
+    public function activeLocationStocks()
+    {
+        return $this->hasMany(StoreLocationStock::class)
+            ->where('status', StoreLocationStock::STATUS_ACTIVE);
+    }
+
+    /**
+     * Active stock rows at a specific location (matched by name pattern)
+     */
+    public function stockAtLocation(string $locationName)
+    {
+        return $this->hasMany(StoreLocationStock::class)
+            ->where('status', StoreLocationStock::STATUS_ACTIVE)
+            ->whereHas('location', fn($q) => $q->where('name', 'like', "%{$locationName}%"));
+    }
+
+    /**
+     * Sum of active stock across all locations
+     */
+    public function getTotalStock(): float|int
+    {
+        return $this->activeLocationStocks()->sum('quantity');
+    }
+
+    /**
+     * Sum of active stock at a specific location (matched by name pattern)
+     */
+    public function getTotalStockAt(string $locationName): float|int
+    {
+        return $this->hasMany(StoreLocationStock::class)
+            ->where('status', StoreLocationStock::STATUS_ACTIVE)
+            ->join('store_locations', 'store_locations_stock.location_id', '=', 'store_locations.id')
+            ->where('store_locations.name', 'like', "%{$locationName}%")
+            ->sum('store_locations_stock.quantity');
+    }
+
+    /**
      * Get price for specific patient category
      */
     public function getPriceForCategory($categoryId)
@@ -230,7 +277,7 @@ class Medication extends Model
      */
     public function getCurrentStockFromBatches()
     {
-        return $this->activeBatches()->sum('quantity_current');
+        return $this->activeBatches()->sum('quantity_received');
     }
 
     /**
@@ -276,5 +323,27 @@ class Medication extends Model
         return $this->category_id == 2;
     }   
 
+    /**
+     * Get total stock quantity in Main Pharmacy
+     */
+    public function getTotalStockInMainPharmacy(): float|int
+    {
+        return $this->getTotalStockAt('Main Pharmacy');
+    }
 
+    /**
+     * Get total stock quantity in Lab
+     */
+    public function getTotalStockInLab(): float|int
+    {
+        return $this->getTotalStockAt('Lab');
+    }
+
+    /**
+     * Get total stock quantity in Ward
+     */
+    public function getTotalStockInWard(): float|int
+    {
+        return $this->getTotalStockAt('Ward');
+    }
 }

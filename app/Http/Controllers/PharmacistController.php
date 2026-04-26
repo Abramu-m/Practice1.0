@@ -136,8 +136,12 @@ class PharmacistController extends Controller
             'consultation.prescriptions.frequency',
             'consultation.prescriptions.administrationRoute'
         ]);
-        
-        return view('pharmacist.prescriptions.show', compact('visit'));
+
+        // Change this per context: 'Main Pharmacy', 'Lab', 'Ward', etc.
+        // Could also be driven by Auth::user()->storeLocation->name or role
+        $dispensingLocation = 'Main Pharmacy';
+
+        return view('pharmacist.prescriptions.show', compact('visit', 'dispensingLocation'));
     }
 
     /**

@@ -79,24 +79,6 @@
                             </dl>
                         </div>
                     </div>
-
-                    <!-- System Status -->
-                    <div class="card card-success">
-                        <div class="card-header">
-                            <h3 class="card-title">
-                                <i class="bi bi-check-circle"></i>
-                                System Status
-                            </h3>
-                        </div>
-                        <div class="card-body">
-                            <div class="alert alert-info">
-                                <i class="bi bi-info-circle"></i>
-                                <strong>Ready to Process</strong>
-                                <br>
-                                Prescriptions are available for dispensing.
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
                 <!-- Prescriptions -->
@@ -178,15 +160,30 @@
 
                                                 <!-- Actions -->
                                                 @if(in_array($prescription->status, ['prescribed', 'prepared']))
+                                                    @php
+                                                        $availableStock = $prescription->medication->getTotalStockAt($dispensingLocation);
+                                                        $hasEnoughStock = $availableStock >= $prescription->quantity;
+                                                    @endphp
+                                                    <div class="mb-1">
+                                                        <small class="text-muted">
+                                                            Stock ({{ $dispensingLocation }}): 
+                                                            <strong class="{{ $hasEnoughStock ? 'text-success' : 'text-danger' }}">
+                                                                {{ $availableStock }}
+                                                            </strong>
+                                                        </small>
+                                                    </div>
                                                     <div class="btn-group-vertical d-block">
-                                                        <button type="button" class="btn btn-success btn-sm mb-1" 
-                                                                onclick="dispensePrescription({{ $prescription->id }})">
-                                                            <i class="bi bi-check"></i> Dispense
-                                                        </button>
-                                                        <button type="button" class="btn btn-warning btn-sm" 
-                                                                onclick="markUnavailable({{ $prescription->id }})">
-                                                            <i class="bi bi-x"></i> Mark Unavailable
-                                                        </button>
+                                                        @if($hasEnoughStock)
+                                                            <button type="button" class="btn btn-success btn-sm mb-1" 
+                                                                    onclick="dispensePrescription({{ $prescription->id }})">
+                                                                <i class="bi bi-check"></i> Dispense
+                                                            </button>
+                                                        @else
+                                                            <button type="button" class="btn btn-success btn-sm mb-1" disabled
+                                                                    title="Insufficient stock at {{ $dispensingLocation }}">
+                                                                <i class="bi bi-x-circle"></i> Low Stock
+                                                            </button>
+                                                        @endif
                                                     </div>
                                                 @elseif($prescription->status === 'dispensed')
                                                     <div class="text-muted">
@@ -273,35 +270,6 @@
     </div>
 </div>
 
-<!-- Unavailable Modal -->
-<div class="modal fade" id="unavailableModal" tabindex="-1" role="dialog" aria-labelledby="unavailableModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <form id="unavailableForm" method="POST">
-                @csrf
-                <div class="modal-header">
-                    <h5 class="modal-title" id="unavailableModalLabel">Mark as Unavailable</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="reason">Reason</label>
-                        <textarea class="form-control" id="reason" name="reason" rows="3" required
-                                  placeholder="Please specify why this medication is unavailable..."></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-warning">
-                        <i class="bi bi-x"></i> Mark Unavailable
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 @endsection
 
 @section('scripts')
@@ -322,14 +290,6 @@ function dispensePrescription(prescriptionId) {
     $('#dispenseModal').modal('show');
 }
 
-function markUnavailable(prescriptionId) {
-    // Set up the form
-    document.getElementById('unavailableForm').action = `{{ url('/pharmacist/prescriptions') }}/${prescriptionId}/unavailable`;
-    
-    // Show modal
-    $('#unavailableModal').modal('show');
-}
-
 $(document).ready(function() {
     // Handle form submissions
     $('#dispenseForm').on('submit', function(e) {
@@ -348,21 +308,6 @@ $(document).ready(function() {
         });
     });
     
-    $('#unavailableForm').on('submit', function(e) {
-        e.preventDefault();
-        
-        $.ajax({
-            url: this.action,
-            method: 'POST',
-            data: $(this).serialize(),
-            success: function(response) {
-                location.reload();
-            },
-            error: function(xhr) {
-                alert('Error: ' + xhr.responseJSON.message);
-            }
-        });
-    });
 });
 </script>
 @endsection
