@@ -145,7 +145,7 @@
                                         @php
                                             $priorityColors = ['normal' => 'success', 'urgent' => 'warning', 'emergency' => 'danger'];
                                         @endphp
-                                        <span class="badge badge-{{ $priorityColors[$requisition->priority] ?? 'secondary' }}">
+                                        <span class="badge bg-{{ $priorityColors[$requisition->priority] ?? 'secondary' }}">
                                             {{ ucfirst($requisition->priority) }}
                                         </span>
                                     </td>
@@ -160,7 +160,7 @@
                                                 'partially_approved' => 'warning'
                                             ];
                                         @endphp
-                                        <span class="badge badge-{{ $statusColors[$requisition->status] ?? 'secondary' }}">
+                                        <span class="badge bg-{{ $statusColors[$requisition->status] ?? 'secondary' }}">
                                             {{ ucwords(str_replace('_', ' ', $requisition->status)) }}
                                         </span>
                                     </td>

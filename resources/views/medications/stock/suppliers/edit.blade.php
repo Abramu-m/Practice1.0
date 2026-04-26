@@ -86,7 +86,7 @@
                                 <strong>Supplier ID:</strong> #{{ $supplier->id }}<br>
                                 <strong>Created:</strong> {{ $supplier->created_at->format('M d, Y') }}<br>
                                 <strong>Status:</strong> 
-                                <span class="badge badge-{{ $supplier->is_active ? 'success' : 'danger' }}">
+                                <span class="badge bg-{{ $supplier->is_active ? 'success' : 'danger' }}">
                                     {{ $supplier->is_active ? 'Active' : 'Inactive' }}
                                 </span>
                             </div>

@@ -110,7 +110,7 @@ function displayTestResults(results) {
         '<span class="badge bg-warning">Yes</span>' : 
         '<span class="badge bg-success">No</span>';
     html += '<br><strong>Severity:</strong> ';
-    html += `<span class="badge badge-${results.severity === 'critical' ? 'danger' : (results.severity === 'warning' ? 'warning' : 'info')}">${results.severity}</span>`;
+    html += `<span class="badge bg-${results.severity === 'critical' ? 'danger' : (results.severity === 'warning' ? 'warning' : 'info')}">${results.severity}</span>`;
     html += '</div>';
     html += '<div class="col-md-6">';
     html += '<strong>Message:</strong><br>' + results.message;

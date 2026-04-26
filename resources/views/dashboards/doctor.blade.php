@@ -174,7 +174,7 @@
                                 <small class="text-muted">{{ $appointment->visit_type ?? 'General Consultation' }}</small>
                             </div>
                             <div>
-                                <span class="badge badge-{{ $appointment->status == 'completed' ? 'success' : 'warning' }}">
+                                <span class="badge bg-{{ $appointment->status == 'completed' ? 'success' : 'warning' }}">
                                     {{ ucfirst($appointment->status ?? 'pending') }}
                                 </span>
                             </div>

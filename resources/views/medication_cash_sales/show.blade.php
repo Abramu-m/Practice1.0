@@ -32,7 +32,7 @@
                         @endif
                     </div>
                     <div class="col-md-4 text-end">
-                        <span class="badge bg-danger badge-pill px-3 py-2" style="font-size: 1rem;">
+                        <span class="badge bg-danger rounded-pill px-3 py-2" style="font-size: 1rem;">
                             CANCELLED
                         </span>
                     </div>
@@ -53,7 +53,7 @@
                         </p>
                     </div>
                     <div class="col-md-4 text-end">
-                        <span class="badge bg-warning badge-pill px-3 py-2" style="font-size: 1rem;">
+                        <span class="badge bg-warning rounded-pill px-3 py-2" style="font-size: 1rem;">
                             STOCK ISSUES
                         </span>
                     </div>
@@ -161,7 +161,7 @@
                                     </p>
                                 </div>
                                 <div class="col-md-4 text-end">
-                                    <span class="badge bg-success badge-pill px-3 py-2" style="font-size: 1.1rem;">
+                                    <span class="badge bg-success rounded-pill px-3 py-2" style="font-size: 1.1rem;">
                                         <i class="fas fa-check-circle"></i> COMPLETED
                                     </span>
                                 </div>
@@ -193,7 +193,7 @@
                                     </p>
                                 </div>
                                 <div class="col-md-4 text-end">
-                                    <span class="badge bg-info badge-pill px-3 py-2" style="font-size: 1.1rem;">
+                                    <span class="badge bg-info rounded-pill px-3 py-2" style="font-size: 1.1rem;">
                                         <i class="fas fa-clock"></i> IN PROGRESS
                                     </span>
                                 </div>
@@ -208,7 +208,7 @@
             <div class="card shadow mb-4">
                 <div class="card-header py-3 d-flex justify-content-between align-items-center">
                     <h6 class="m-0 fw-bold text-primary">Sale Information</h6>
-                    <span class="badge badge-{{ $medicationCashSale->status_color }} badge-pill">
+                    <span class="badge bg-{{ $medicationCashSale->status_color }} rounded-pill">
                         {{ $medicationCashSale->status_label }}
                     </span>
                 </div>
@@ -374,7 +374,7 @@
                                     <td>TSh {{ number_format($item->unit_price, 2) }}</td>
                                     <td>TSh {{ number_format($item->total_price, 2) }}</td>
                                     <td>
-                                        <span class="badge badge-{{ $item->status_color }}">
+                                        <span class="badge bg-{{ $item->status_color }}">
                                             {{ ucwords($item->status) }}
                                         </span>
                                         @if($item->dispensed_at)

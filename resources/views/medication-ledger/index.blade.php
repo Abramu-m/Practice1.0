@@ -102,18 +102,18 @@
                                             <span class="badge bg-warning">{{ number_format($entry->quantity_dispensed) }}</span>
                                         </td>
                                         <td>
-                                            <span class="text-black badge badge-{{ $entry->quantity_remaining > 0 ? 'success' : 'danger' }}">
+                                            <span class="text-black badge bg-{{ $entry->quantity_remaining > 0 ? 'success' : 'danger' }}">
                                                 {{ number_format($entry->quantity_remaining) }}
                                             </span>
                                         </td>
                                         <td>${{ number_format($entry->unit_cost, 2) }}</td>
                                         <td>
-                                            <span class="text-black badge badge-{{ $entry->expiry_date->isPast() ? 'danger' : ($entry->expiry_date->diffInDays() <= 30 ? 'warning' : 'success') }}">
+                                            <span class="text-black badge bg-{{ $entry->expiry_date->isPast() ? 'danger' : ($entry->expiry_date->diffInDays() <= 30 ? 'warning' : 'success') }}">
                                                 {{ $entry->expiry_date->format('M d, Y') }}
                                             </span>
                                         </td>
                                         <td>
-                                            <span class="text-black badge badge-{{ $entry->status_badge_class }}">
+                                            <span class="text-black badge bg-{{ $entry->status_badge_class }}">
                                                 {{ ucfirst($entry->status) }}
                                             </span>
                                         </td>

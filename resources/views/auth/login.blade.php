@@ -51,11 +51,11 @@
             padding: 2rem;
         }
         
-        .mb-3 {
+        .login-body .mb-3 {
             margin-bottom: 1.5rem;
         }
         
-        .mb-3 label {
+        .login-body .mb-3 label {
             font-weight: 500;
             color: #333;
             margin-bottom: 0.5rem;

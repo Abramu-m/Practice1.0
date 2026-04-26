@@ -282,7 +282,7 @@
                                 <small class="text-muted">Last: {{ $status['last_maintenance'] }}</small>
                             </div>
                             <div>
-                                <span class="badge badge-{{ $status['status'] == 'operational' ? 'success' : ($status['status'] == 'maintenance' ? 'warning' : 'danger') }}">
+                                <span class="badge bg-{{ $status['status'] == 'operational' ? 'success' : ($status['status'] == 'maintenance' ? 'warning' : 'danger') }}">
                                     {{ ucfirst($status['status']) }}
                                 </span>
                             </div>

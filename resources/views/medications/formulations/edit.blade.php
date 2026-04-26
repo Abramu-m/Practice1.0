@@ -91,7 +91,7 @@
                         <tr>
                             <th>Status:</th>
                             <td>
-                                <span class="text-black badge badge-{{ $formulation->is_active ? 'success' : 'secondary' }}">
+                                <span class="text-black badge bg-{{ $formulation->is_active ? 'success' : 'secondary' }}">
                                     {{ $formulation->is_active ? 'Active' : 'Inactive' }}
                                 </span>
                             </td>

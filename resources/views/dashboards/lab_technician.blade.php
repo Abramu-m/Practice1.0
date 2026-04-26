@@ -443,7 +443,7 @@
                                 <small class="text-muted">{{ $test['test_type'] ?? 'Specialized test' }}</small>
                             </div>
                             <div class="text-end">
-                                <span class="badge badge-{{ $test['status'] == 'completed' ? 'success' : 'warning' }}">
+                                <span class="badge bg-{{ $test['status'] == 'completed' ? 'success' : 'warning' }}">
                                     {{ ucfirst($test['status'] ?? 'pending') }}
                                 </span>
                             </div>

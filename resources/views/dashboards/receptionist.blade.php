@@ -280,7 +280,7 @@
                                 <small class="text-muted">{{ $appointment['doctor'] ?? 'Dr. Available' }}</small>
                             </div>
                             <div>
-                                <span class="badge badge-{{ $appointment['status'] == 'completed' ? 'success' : ($appointment['status'] == 'in_progress' ? 'warning' : 'primary') }}">
+                                <span class="badge bg-{{ $appointment['status'] == 'completed' ? 'success' : ($appointment['status'] == 'in_progress' ? 'warning' : 'primary') }}">
                                     {{ ucfirst($appointment['status'] ?? 'scheduled') }}
                                 </span>
                             </div>

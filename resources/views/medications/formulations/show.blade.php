@@ -44,7 +44,7 @@
                                 <tr>
                                     <th>Status:</th>
                                     <td>
-                                        <span class="text-black badge badge-{{ $formulation->is_active ? 'success' : 'secondary' }} p-2">
+                                        <span class="text-black badge bg-{{ $formulation->is_active ? 'success' : 'secondary' }} p-2">
                                             {{ $formulation->is_active ? 'Active' : 'Inactive' }}
                                         </span>
                                     </td>
@@ -108,7 +108,7 @@
                                     <td>{{ $medication->brand_name ?? '-' }}</td>
                                     <td>{{ $medication->strength ?? '-' }}</td>
                                     <td>
-                                        <span class="text-black badge badge-{{ $medication->is_active ? 'success' : 'secondary' }}">
+                                        <span class="text-black badge bg-{{ $medication->is_active ? 'success' : 'secondary' }}">
                                             {{ $medication->is_active ? 'Active' : 'Inactive' }}
                                         </span>
                                     </td>

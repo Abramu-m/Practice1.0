@@ -22,7 +22,7 @@
                                 'rejected' => 'danger'
                             ];
                         @endphp
-                        <span class="badge badge-{{ $statusColors[$requisition->status] ?? 'secondary' }} badge-lg">
+                        <span class="badge bg-{{ $statusColors[$requisition->status] ?? 'secondary' }} badge-lg">
                             {{ ucwords(str_replace('_', ' ', $requisition->status)) }}
                         </span>
                         
@@ -54,7 +54,7 @@
                                         @php
                                             $priorityColors = ['normal' => 'success', 'urgent' => 'warning', 'emergency' => 'danger'];
                                         @endphp
-                                        <span class="badge badge-{{ $priorityColors[$requisition->priority] ?? 'secondary' }}">
+                                        <span class="badge bg-{{ $priorityColors[$requisition->priority] ?? 'secondary' }}">
                                             {{ ucfirst($requisition->priority) }}
                                         </span>
                                     </td>
@@ -70,7 +70,7 @@
                                 <tr>
                                     <td><strong>Status:</strong></td>
                                     <td>
-                                        <span class="badge badge-{{ $statusColors[$requisition->status] ?? 'secondary' }}">
+                                        <span class="badge bg-{{ $statusColors[$requisition->status] ?? 'secondary' }}">
                                             {{ ucwords(str_replace('_', ' ', $requisition->status)) }}
                                         </span>
                                     </td>
@@ -219,7 +219,7 @@
                                                         'partially_issued' => 'warning'
                                                     ];
                                                 @endphp
-                                                <span class="badge badge-{{ $itemStatusColors[$item->status ?? 'pending'] ?? 'secondary' }}">
+                                                <span class="badge bg-{{ $itemStatusColors[$item->status ?? 'pending'] ?? 'secondary' }}">
                                                     {{ ucwords(str_replace('_', ' ', $item->status ?? 'pending')) }}
                                                 </span>
                                             </td>

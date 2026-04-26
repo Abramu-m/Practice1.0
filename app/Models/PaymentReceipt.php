@@ -200,10 +200,10 @@ class PaymentReceipt extends Model
     public function getStatusBadgeAttribute(): string
     {
         return match($this->status) {
-            'draft' => 'badge-secondary',
-            'printed' => 'badge-success',
-            'cancelled' => 'badge-danger',
-            default => 'badge-secondary'
+            'draft' => 'bg-secondary',
+            'printed' => 'bg-success',
+            'cancelled' => 'bg-danger',
+            default => 'bg-secondary'
         };
     }
 

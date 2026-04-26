@@ -67,7 +67,7 @@ class MedicationController extends Controller
                     if ($medication->dispensing_unit_id) {
                         $unit = \App\Models\MedicationUnit::find($medication->dispensing_unit_id);
                         if ($unit) {
-                            return '<span class="badge badge-secondary">' . e($unit->unit_code) . '</span>' .
+                            return '<span class="badge bg-secondary">' . e($unit->unit_code) . '</span>' .
                                    '<small class="text-muted d-block">' . e($unit->unit_name) . '</small>';
                         }
                     }
@@ -93,9 +93,9 @@ class MedicationController extends Controller
                 })
                 ->addColumn('status', function ($medication) {
                     if ($medication->is_active) {
-                        return '<span class="badge badge-success text-black">Active</span>';
+                        return '<span class="badge bg-success text-black">Active</span>';
                     }
-                    return '<span class="badge badge-danger text-black">Inactive</span>';
+                    return '<span class="badge bg-danger text-black">Inactive</span>';
                 })
                 ->addColumn('actions', function ($medication) {
                     return view('medications._actions', compact('medication'))->render();

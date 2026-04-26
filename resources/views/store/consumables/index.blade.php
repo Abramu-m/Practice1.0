@@ -56,7 +56,7 @@
                                         @endif
                                     </td>
                                     <td>
-                                        <span class="text-black badge badge-{{ $consumable->current_stock > 0 ? 'success' : 'danger' }}">
+                                        <span class="text-black badge bg-{{ $consumable->current_stock > 0 ? 'success' : 'danger' }}">
                                             {{ number_format($consumable->current_stock) }}
                                         </span>
                                     </td>
@@ -69,7 +69,7 @@
                                         @endif
                                     </td>
                                     <td>
-                                        <span class="text-black badge badge-{{ $consumable->stock_status_color }}">
+                                        <span class="text-black badge bg-{{ $consumable->stock_status_color }}">
                                             {{ ucfirst(str_replace('_', ' ', $consumable->stock_status)) }}
                                         </span>
                                     </td>

@@ -274,16 +274,16 @@ class GoodsReceivedNote extends Model
     {
         switch ($this->status) {
             case 'posted':
-                return 'badge-success';
+                return 'bg-success';
             case 'verified':
-                return 'badge-info';
+                return 'bg-info';
             case 'received':
-                return 'badge-primary';
+                return 'bg-primary';
             case 'cancelled':
-                return 'badge-danger';
+                return 'bg-danger';
             case 'draft':
             default:
-                return 'badge-warning';
+                return 'bg-warning';
         }
     }
 }

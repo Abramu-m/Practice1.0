@@ -91,7 +91,7 @@
                             <div class="mb-3">
                                 <label>Status:</label>
                                 <p class="form-control-plaintext">
-                                    <span class="text-black badge badge-{{ $medicationPricing->is_active ? 'success' : 'danger' }}">
+                                    <span class="text-black badge bg-{{ $medicationPricing->is_active ? 'success' : 'danger' }}">
                                         {{ $medicationPricing->is_active ? 'Active' : 'Inactive' }}
                                     </span>
                                     @if($medicationPricing->isCurrent())

@@ -180,7 +180,7 @@
                                                     'waste' => 'trash'
                                                 ];
                                             @endphp
-                                            <span class="badge badge-{{ $typeColors[$movement->movement_type] ?? 'secondary' }}">
+                                            <span class="badge bg-{{ $typeColors[$movement->movement_type] ?? 'secondary' }}">
                                                 <i class="fas fa-{{ $typeIcons[$movement->movement_type] ?? 'question' }}"></i>
                                                 {{ ucfirst($movement->movement_type) }}
                                             </span>
@@ -219,7 +219,7 @@
                                             @endif
                                         </td>
                                         <td>
-                                            <span class="badge badge-{{ $movement->movement_type === 'in' ? 'success' : 'danger' }}">
+                                            <span class="badge bg-{{ $movement->movement_type === 'in' ? 'success' : 'danger' }}">
                                                 {{ $movement->movement_type === 'in' ? '+' : '-' }}{{ number_format($movement->quantity) }}
                                             </span>
                                         </td>

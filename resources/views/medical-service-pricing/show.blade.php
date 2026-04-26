@@ -55,7 +55,7 @@
                                                         ($status === 'Future' ? 'warning' : 
                                                         ($status === 'Expired' ? 'secondary' : 'danger'));
                                         @endphp
-                                        <span class="badge badge-{{ $badgeClass }}">{{ $status }}</span>
+                                        <span class="badge bg-{{ $badgeClass }}">{{ $status }}</span>
                                     </td>
                                 </tr>
                             </table>

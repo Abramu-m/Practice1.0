@@ -66,15 +66,15 @@ class PharmacistController extends Controller
                             $unavailableCount = $prescriptions->where('status', 'cancelled')->count();
                             
                             $html = '<div>
-                                        <span class="badge badge-secondary">' . $prescriptions->count() . ' Total</span>';
+                                        <span class="badge bg-secondary">' . $prescriptions->count() . ' Total</span>';
                             if ($pendingCount > 0) {
-                                $html .= ' <span class="badge badge-warning">' . $pendingCount . ' Pending</span>';
+                                $html .= ' <span class="badge bg-warning">' . $pendingCount . ' Pending</span>';
                             }
                             if ($dispensedCount > 0) {
-                                $html .= ' <span class="badge badge-success">' . $dispensedCount . ' Dispensed</span>';
+                                $html .= ' <span class="badge bg-success">' . $dispensedCount . ' Dispensed</span>';
                             }
                             if ($unavailableCount > 0) {
-                                $html .= ' <span class="badge badge-danger">' . $unavailableCount . ' Unavailable</span>';
+                                $html .= ' <span class="badge bg-danger">' . $unavailableCount . ' Unavailable</span>';
                             }
                             $html .= '</div>';
                             return $html;
@@ -91,16 +91,16 @@ class PharmacistController extends Controller
                             $hasUnavailable = $allPrescriptions->where('status', 'cancelled')->count() > 0;
                             
                             if ($hasPending) {
-                                return '<span class="badge badge-warning">Action Required</span>';
+                                return '<span class="badge bg-warning">Action Required</span>';
                             } elseif ($allDispensed) {
-                                return '<span class="badge badge-success">Completed</span>';
+                                return '<span class="badge bg-success">Completed</span>';
                             } elseif ($hasUnavailable) {
-                                return '<span class="badge badge-danger">Issues</span>';
+                                return '<span class="badge bg-danger">Issues</span>';
                             } else {
-                                return '<span class="badge badge-info">Processing</span>';
+                                return '<span class="badge bg-info">Processing</span>';
                             }
                         }
-                        return '<span class="badge badge-secondary">No Prescriptions</span>';
+                        return '<span class="badge bg-secondary">No Prescriptions</span>';
                     })
                     ->addColumn('actions', function ($visit) {
                         if ($visit->consultation && $visit->consultation->prescriptions->count() > 0) {

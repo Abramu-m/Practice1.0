@@ -243,12 +243,12 @@ class GeneralExpense extends Model
     public function getStatusBadgeAttribute(): string
     {
         return match($this->status) {
-            'draft' => 'badge-secondary',
-            'pending_approval' => 'badge-warning',
-            'approved' => 'badge-info',
-            'paid' => 'badge-success',
-            'cancelled' => 'badge-danger',
-            default => 'badge-secondary'
+            'draft' => 'bg-secondary',
+            'pending_approval' => 'bg-warning',
+            'approved' => 'bg-info',
+            'paid' => 'bg-success',
+            'cancelled' => 'bg-danger',
+            default => 'bg-secondary'
         };
     }
 

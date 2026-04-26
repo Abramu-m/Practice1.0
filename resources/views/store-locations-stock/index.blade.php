@@ -165,12 +165,12 @@
                                                 $isExpiringSoon = $entry->expiry_date->diffInDays() <= 30;
                                                 $badgeClass = $isExpired ? 'danger' : ($isExpiringSoon ? 'warning' : 'success');
                                             @endphp
-                                            <span class="badge badge-{{ $badgeClass }}">
+                                            <span class="badge bg-{{ $badgeClass }}">
                                                 {{ $entry->expiry_date->format('M d, Y') }}
                                             </span>
                                         </td>
                                         <td>
-                                            <span class="badge badge-{{ $entry->quantity > 0 ? 'success' : 'danger' }}">
+                                            <span class="badge bg-{{ $entry->quantity > 0 ? 'success' : 'danger' }}">
                                                 {{ number_format($entry->quantity) }}
                                             </span>
                                         </td>
@@ -192,7 +192,7 @@
                                                     'depleted' => 'secondary'
                                                 ];
                                             @endphp
-                                            <span class="badge badge-{{ $statusColors[$entry->status] ?? 'secondary' }}">
+                                            <span class="badge bg-{{ $statusColors[$entry->status] ?? 'secondary' }}">
                                                 {{ ucfirst($entry->status) }}
                                             </span>
                                         </td>

@@ -1149,7 +1149,7 @@ class ConsultationController extends Controller
             'sample_type' => $service->sample_type,
             'turnaround_time' => $service->turnaround_time_hours . ' hours',
             'status_label' => ucfirst($investigation->status),
-            'priority_badge_class' => 'badge-' . ($investigation->priority === 'stat' ? 'danger' : ($investigation->priority === 'urgent' ? 'warning' : 'info'))
+            'priority_badge_class' => 'bg-' . ($investigation->priority === 'stat' ? 'danger' : ($investigation->priority === 'urgent' ? 'warning' : 'info'))
         ]);
     }
 

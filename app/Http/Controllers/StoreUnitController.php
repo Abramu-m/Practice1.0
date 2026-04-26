@@ -19,15 +19,15 @@ class StoreUnitController extends Controller
             
             return DataTables::of($query)
                 ->addColumn('code_display', function ($unit) {
-                    return '<span class="badge badge-secondary">' . e($unit->code) . '</span>';
+                    return '<span class="badge bg-secondary">' . e($unit->code) . '</span>';
                 })
                 ->addColumn('type_display', function ($unit) {
                     if ($unit->type === 'store') {
-                        return '<span class="badge badge-info">Store Only</span>';
+                        return '<span class="badge bg-info">Store Only</span>';
                     } elseif ($unit->type === 'dispensing') {
-                        return '<span class="badge badge-warning">Dispensing Only</span>';
+                        return '<span class="badge bg-warning">Dispensing Only</span>';
                     } else {
-                        return '<span class="badge badge-success">Both</span>';
+                        return '<span class="badge bg-success">Both</span>';
                     }
                 })
                 ->addColumn('description_display', function ($unit) {

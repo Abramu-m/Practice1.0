@@ -112,12 +112,12 @@
                                         <span class="badge bg-info">{{ $rule->ruleType->display_name ?? 'No Type' }}</span>
                                     </td>
                                     <td>
-                                        <span class="badge badge-{{ $rule->priority >= 8 ? 'danger' : ($rule->priority >= 5 ? 'warning' : 'secondary') }}">
+                                        <span class="badge bg-{{ $rule->priority >= 8 ? 'danger' : ($rule->priority >= 5 ? 'warning' : 'secondary') }}">
                                             {{ $rule->priority }}
                                         </span>
                                     </td>
                                     <td>
-                                        <span class="badge badge-{{ $rule->severity === 'critical' ? 'danger' : ($rule->severity === 'warning' ? 'warning' : 'info') }}">
+                                        <span class="badge bg-{{ $rule->severity === 'critical' ? 'danger' : ($rule->severity === 'warning' ? 'warning' : 'info') }}">
                                             {{ ucfirst($rule->severity) }}
                                         </span>
                                     </td>

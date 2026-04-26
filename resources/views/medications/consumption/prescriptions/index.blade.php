@@ -328,7 +328,7 @@
                                             <br>
                                             <small class="text-muted">{{ $topMed->prescription_count }} prescriptions</small>
                                         </div>
-                                        <span class="badge bg-primary badge-pill">{{ number_format($topMed->total_dispensed) }}</span>
+                                        <span class="badge bg-primary rounded-pill">{{ number_format($topMed->total_dispensed) }}</span>
                                     </li>
                                 @endforeach
                             </ul>

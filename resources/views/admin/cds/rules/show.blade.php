@@ -58,13 +58,13 @@
                         </div>
                         <div class="col-md-3">
                             <strong>Priority:</strong><br>
-                            <span class="badge badge-{{ $rule->priority >= 8 ? 'danger' : ($rule->priority >= 5 ? 'warning' : 'secondary') }}">
+                            <span class="badge bg-{{ $rule->priority >= 8 ? 'danger' : ($rule->priority >= 5 ? 'warning' : 'secondary') }}">
                                 {{ $rule->priority }}
                             </span>
                         </div>
                         <div class="col-md-3">
                             <strong>Severity:</strong><br>
-                            <span class="badge badge-{{ $rule->severity === 'critical' ? 'danger' : ($rule->severity === 'warning' ? 'warning' : 'info') }}">
+                            <span class="badge bg-{{ $rule->severity === 'critical' ? 'danger' : ($rule->severity === 'warning' ? 'warning' : 'info') }}">
                                 {{ ucfirst($rule->severity) }}
                             </span>
                         </div>
@@ -187,7 +187,7 @@
                     <div class="mb-3">
                         <label>Status:</label>
                         <div>
-                            <span class="badge badge-{{ $rule->is_active ? 'success' : 'secondary' }} badge-lg">
+                            <span class="badge bg-{{ $rule->is_active ? 'success' : 'secondary' }} badge-lg">
                                 {{ $rule->is_active ? 'Active' : 'Inactive' }}
                             </span>
                         </div>

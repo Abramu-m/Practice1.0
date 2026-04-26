@@ -118,7 +118,7 @@
                             <div class="mb-3">
                                 <label>Stock Status:</label>
                                 <p class="form-control-plaintext">
-                                    <span class="text-black badge badge-{{ $medication->stock_badge_class }} text-black">
+                                    <span class="text-black badge bg-{{ $medication->stock_badge_class }} text-black">
                                         {{ $medication->stock_status }}
                                     </span>
                                 </p>

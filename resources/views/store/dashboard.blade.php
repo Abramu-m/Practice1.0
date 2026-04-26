@@ -337,7 +337,7 @@ $(document).ready(function() {
                     '<td>' + item.current_stock + ' ' + item.unit + '</td>' +
                     '<td>' + item.consumption_rate + '/day</td>' +
                     '<td>' + item.days_until_reorder + '</td>' +
-                    '<td><span class="badge badge-' + statusClass + '">' + item.status + '</span></td>' +
+                    '<td><span class="badge bg-' + statusClass + '">' + item.status + '</span></td>' +
                     '</tr>'
                 );
             });

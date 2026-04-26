@@ -82,10 +82,10 @@ class InvestigationTemplateResult extends Model
     public function getStatusBadgeClassAttribute()
     {
         return match($this->form_status) {
-            self::FORM_STATUS_DRAFT => 'badge-warning',
-            self::FORM_STATUS_PRELIMINARY => 'badge-info',
-            self::FORM_STATUS_FINAL => 'badge-success',
-            default => 'badge-secondary'
+            self::FORM_STATUS_DRAFT => 'bg-warning',
+            self::FORM_STATUS_PRELIMINARY => 'bg-info',
+            self::FORM_STATUS_FINAL => 'bg-success',
+            default => 'bg-secondary'
         };
     }
 
