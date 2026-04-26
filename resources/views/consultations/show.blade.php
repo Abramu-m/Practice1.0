@@ -1234,6 +1234,7 @@
                                                         </span>
                                                     </td>
                                                     <td>
+                                                        @if(!$prescription->is_paid)
                                                         <div class="btn-group" role="group">
                                                             <button type="button" class="btn btn-sm btn-outline-info" 
                                                                     onclick="updatePrescriptionStatus({{ $prescription->id }})"
@@ -1245,6 +1246,7 @@
                                                                 <i class="fas fa-trash"></i>
                                                             </button>
                                                         </div>
+                                                        @endif
                                                     </td>
                                                 </tr>
                                                 @endforeach

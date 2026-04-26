@@ -47,14 +47,6 @@
             <textarea name="instructions" id="edit_instructions" class="form-control" rows="3">{{ $prescription->instructions }}</textarea>
         </div>
 
-        <div class="mb-3">
-            <label for="edit_status" class="form-label">Status</label>
-            <select name="status" id="edit_status" class="form-control">
-                <option value="prescribed" {{ $prescription->status == 'prescribed' ? 'selected' : '' }}>Prescribed</option>
-                <option value="dispensed" {{ $prescription->status == 'dispensed' ? 'selected' : '' }}>Dispensed</option>
-                <option value="cancelled" {{ $prescription->status == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
-            </select>
-        </div>
     </form>
 </div>
 <div class="modal-footer">

@@ -30,6 +30,7 @@
                 }}">
                     {{ ucfirst($prescription->status) }}
                 </span>
+                @if(!$prescription->is_paid)
                 <div class="prescription-actions">
                     <button type="button" 
                             class="btn btn-sm btn-outline-danger" 
@@ -38,6 +39,7 @@
                         <i class="fas fa-trash"></i>
                     </button>
                 </div>
+                @endif
             </div>
         </div>
     @endforeach

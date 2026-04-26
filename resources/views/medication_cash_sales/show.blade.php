@@ -435,6 +435,12 @@
                                                             <i class="fas fa-pills"></i>
                                                         </button>
                                                         <br><small class="text-danger">Stock: {{ $availableStock }}/{{ $item->quantity }}</small>
+                                                        <br>
+                                                        <button type="button" class="btn btn-sm btn-info mt-1"
+                                                                onclick="checkRequisitions({{ $item->medication_id }}, '{{ addslashes($item->medication->generic_name) }}')"
+                                                                title="Check / create stock requisition">
+                                                            <i class="fas fa-boxes"></i> Request Stock
+                                                        </button>
                                                     @endif
                                                 @endif
                                                 
@@ -520,12 +526,6 @@
                                 </form>
                             @endif
                         @endif
-                    @endif
-
-                    @if($medicationCashSale->canBePaid() && (Auth::user()->isReceptionist() || Auth::user()->isCashier() || Auth::user()->isAdmin()))
-                    <button type="button" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#paymentModal">
-                        <i class="fas fa-money-bill"></i> Process Payment
-                    </button>
                     @endif
 
                     {{-- Administrative Actions - Only for non-cashier/non-receptionist roles --}}
@@ -741,6 +741,83 @@
 @endif
 
 <!-- Cancel Item Modals -->
+<!-- Requisitions Modal -->
+<div class="modal fade" id="requisitionsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-boxes"></i> Open Requisitions &mdash; Main Pharmacy
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="csRequisitionsLoading" class="text-center py-3">
+                    <div class="spinner-border text-primary" role="status"></div>
+                    <p class="mt-2 text-muted">Loading...</p>
+                </div>
+                <div id="csRequisitionsContent" style="display:none">
+                    <p id="csRequisitionsEmpty" class="text-center text-muted py-3" style="display:none">
+                        <i class="fas fa-inbox"></i> No open requisitions from Main Pharmacy.
+                    </p>
+                    <table class="table table-sm table-bordered" id="csRequisitionsTable" style="display:none">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Req #</th>
+                                <th>From</th>
+                                <th>Requested By</th>
+                                <th>Date</th>
+                                <th>Required By</th>
+                                <th>Items</th>
+                                <th>Status</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="csRequisitionsTableBody"></tbody>
+                    </table>
+                    <div id="csReqItemsPanel" class="card card-body bg-light mt-2" style="display:none">
+                        <strong id="csReqItemsPanelTitle" class="d-block mb-2"></strong>
+                        <ul id="csReqItemsList" class="mb-0 ps-3"></ul>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="csOpenNewRequisitionModal()">
+                    <i class="fas fa-plus"></i> New Requisition
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add to Requisition Modal -->
+<div class="modal fade" id="csAddItemModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="csAddItemModalTitle"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-2">Medication: <strong id="csAddItemMedName"></strong></p>
+                <div class="mb-3">
+                    <label for="csAddItemQty">Quantity <span class="text-danger">*</span></label>
+                    <input type="number" id="csAddItemQty" class="form-control" min="1" step="1" placeholder="Enter quantity">
+                    <div id="csAddItemError" class="invalid-feedback"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="csAddItemCancelBtn">Cancel</button>
+                <button type="button" class="btn btn-primary" id="csAddItemSubmitBtn" onclick="csSubmitAddItem()">
+                    <span id="csAddItemBtnText">Add Item</span>
+                    <span id="csAddItemSpinner" class="spinner-border spinner-border-sm ms-1" style="display:none" role="status"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @foreach($medicationCashSale->items as $item)
 @if($item->status === 'pending')
 <div class="modal fade" id="cancelItemModal{{ $item->id }}" tabindex="-1">
@@ -789,6 +866,184 @@
 
 @section('scripts')
 <script>
+// ── Requisitions helpers (reuse pharmacist routes) ──────────────────────────
+const csOpenRequisitionsUrl = '{{ route("pharmacist.requisitions.open") }}';
+const csAddItemBaseUrl      = '{{ url("/pharmacist/requisitions") }}';
+const csNewWithItemUrl      = '{{ route("pharmacist.requisitions.new-with-item") }}';
+const csCsrfToken           = '{{ csrf_token() }}';
+
+let _csMedId   = null;
+let _csMedName = '';
+let _csTargetReqId = null;
+
+const csBsModal = (id) => bootstrap.Modal.getOrCreateInstance(document.getElementById(id));
+
+function checkRequisitions(medicationId, medicationName) {
+    _csMedId   = medicationId;
+    _csMedName = medicationName;
+    document.getElementById('csRequisitionsLoading').style.display = 'block';
+    document.getElementById('csRequisitionsContent').style.display = 'none';
+    csBsModal('requisitionsModal').show();
+
+    $.get(csOpenRequisitionsUrl)
+        .done(function(data) {
+            document.getElementById('csRequisitionsLoading').style.display = 'none';
+            document.getElementById('csRequisitionsContent').style.display = 'block';
+
+            const reqs = data.requisitions;
+            if (!reqs.length) {
+                document.getElementById('csRequisitionsEmpty').style.display = 'block';
+                document.getElementById('csRequisitionsTable').style.display = 'none';
+                return;
+            }
+            document.getElementById('csRequisitionsEmpty').style.display = 'none';
+            document.getElementById('csRequisitionsTable').style.display = 'table';
+
+            const statusBadge = (s) => ({
+                draft:            '<span class="badge bg-secondary">Draft</span>',
+                submitted:        '<span class="badge bg-info">Submitted</span>',
+                verified:         '<span class="badge bg-primary">Verified</span>',
+                approved:         '<span class="badge bg-warning">Approved</span>',
+                partially_issued: '<span class="badge bg-warning">Part. Issued</span>',
+            }[s] || '<span class="badge bg-light">' + s + '</span>');
+
+            const rows = reqs.map(r => {
+                const existingItem = r.medication_items.find(i => i.medication_id == _csMedId);
+                const alreadyIn = !!existingItem;
+                const alreadyBadge = alreadyIn
+                    ? ' <span class="badge bg-warning" title="Already requested: ' + existingItem.requested_quantity + ' units">Already in req</span>'
+                    : '';
+                const addBtn = alreadyIn
+                    ? '<button class="btn btn-sm btn-warning me-1" onclick="csOpenAddToReq(' + r.id + ', \'' + r.requisition_number.replace(/\'/g, "\\'") + '\', ' + existingItem.requested_quantity + ')">' +
+                        '<i class="fas fa-plus"></i> Add more</button>'
+                    : '<button class="btn btn-sm btn-success me-1" onclick="csOpenAddToReq(' + r.id + ', \'' + r.requisition_number.replace(/\'/g, "\\'") + '\', 0)">' +
+                        '<i class="fas fa-plus"></i> Add to Req</button>';
+                const itemsCell = r.medication_items.length
+                    ? '<button class="btn btn-sm btn-link p-0" onclick="csShowReqItems(' + r.id + ', \'' + r.requisition_number.replace(/\'/g, "\\'") + '\')">'
+                        + r.items_count + ' item(s)</button>'
+                    : '0';
+                return '<tr>' +
+                    '<td>' + r.requisition_number + alreadyBadge + '</td>' +
+                    '<td>' + r.requesting_location + '</td>' +
+                    '<td>' + r.requested_by + '</td>' +
+                    '<td>' + (r.requisition_date || '-') + '</td>' +
+                    '<td>' + (r.required_date || '-') + '</td>' +
+                    '<td>' + itemsCell + '</td>' +
+                    '<td>' + statusBadge(r.status) + '</td>' +
+                    '<td class="text-nowrap">' + addBtn +
+                        '<a href="' + r.show_url + '" class="btn btn-sm btn-outline-primary" target="_blank">View</a>' +
+                    '</td></tr>';
+            }).join('');
+            document.getElementById('csRequisitionsTableBody').innerHTML = rows;
+            window._csReqData = reqs;
+        })
+        .fail(function() {
+            document.getElementById('csRequisitionsLoading').style.display = 'none';
+            document.getElementById('csRequisitionsContent').style.display = 'block';
+            document.getElementById('csRequisitionsEmpty').style.display = 'block';
+            document.getElementById('csRequisitionsEmpty').textContent = 'Error loading requisitions.';
+        });
+}
+
+function csShowReqItems(reqId, reqNumber) {
+    const req = (window._csReqData || []).find(r => r.id == reqId);
+    const panel = document.getElementById('csReqItemsPanel');
+    const title = document.getElementById('csReqItemsPanelTitle');
+    const list  = document.getElementById('csReqItemsList');
+    if (!req || !req.medication_items.length) { panel.style.display = 'none'; return; }
+    title.textContent = 'Items in ' + reqNumber + ':';
+    list.innerHTML = req.medication_items.map(i =>
+        '<li>' + i.name + ' &mdash; Requested: <strong>' + i.requested_quantity + '</strong>' +
+        (i.issued_quantity > 0 ? ', Issued: <strong>' + i.issued_quantity + '</strong>' : '') +
+        (i.medication_id == _csMedId ? ' <span class="badge bg-warning">Current med</span>' : '') +
+        '</li>'
+    ).join('');
+    panel.style.display = 'block';
+    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function csOpenAddToReq(reqId, reqNumber, existingQty) {
+    _csTargetReqId = reqId;
+    document.getElementById('csAddItemModalTitle').textContent = 'Add to Requisition: ' + reqNumber;
+    document.getElementById('csAddItemMedName').textContent = _csMedName;
+    document.getElementById('csAddItemQty').value = '';
+    document.getElementById('csAddItemQty').classList.remove('is-invalid');
+    document.getElementById('csAddItemBtnText').textContent = 'Add Item';
+    let warningEl = document.getElementById('csAddItemWarning');
+    if (!warningEl) {
+        warningEl = document.createElement('div');
+        warningEl.id = 'csAddItemWarning';
+        warningEl.className = 'alert alert-warning py-1 px-2 mt-2 mb-0';
+        document.getElementById('csAddItemQty').parentNode.insertAdjacentElement('afterend', warningEl);
+    }
+    if (existingQty > 0) {
+        warningEl.style.display = 'block';
+        warningEl.innerHTML = '<i class="fas fa-exclamation-triangle"></i> <strong>' + _csMedName + '</strong> is already in this requisition with <strong>' + existingQty + '</strong> unit(s). Submitting will add to the existing quantity.';
+    } else {
+        warningEl.style.display = 'none';
+    }
+    document.getElementById('csAddItemCancelBtn').onclick = function() { csBsModal('csAddItemModal').hide(); csBsModal('requisitionsModal').show(); };
+    csBsModal('requisitionsModal').hide();
+    csBsModal('csAddItemModal').show();
+}
+
+function csOpenNewRequisitionModal() {
+    _csTargetReqId = null;
+    document.getElementById('csAddItemModalTitle').textContent = 'New Requisition';
+    document.getElementById('csAddItemMedName').textContent = _csMedName;
+    document.getElementById('csAddItemQty').value = '';
+    document.getElementById('csAddItemQty').classList.remove('is-invalid');
+    document.getElementById('csAddItemBtnText').textContent = 'Create Requisition';
+    const warningEl = document.getElementById('csAddItemWarning');
+    if (warningEl) warningEl.style.display = 'none';
+    document.getElementById('csAddItemCancelBtn').onclick = function() { csBsModal('csAddItemModal').hide(); csBsModal('requisitionsModal').show(); };
+    csBsModal('requisitionsModal').hide();
+    csBsModal('csAddItemModal').show();
+}
+
+function csSubmitAddItem() {
+    const qty = parseInt(document.getElementById('csAddItemQty').value);
+    const qtyInput = document.getElementById('csAddItemQty');
+    const errDiv   = document.getElementById('csAddItemError');
+    if (!qty || qty < 1) {
+        qtyInput.classList.add('is-invalid');
+        errDiv.textContent = 'Please enter a valid quantity (minimum 1).';
+        return;
+    }
+    qtyInput.classList.remove('is-invalid');
+    const url  = _csTargetReqId ? (csAddItemBaseUrl + '/' + _csTargetReqId + '/add-item') : csNewWithItemUrl;
+    const btn  = document.getElementById('csAddItemSubmitBtn');
+    const spin = document.getElementById('csAddItemSpinner');
+    btn.disabled = true;
+    spin.style.display = 'inline-block';
+    $.ajax({
+        url: url,
+        method: 'POST',
+        data: { medication_id: _csMedId, quantity: qty, _token: csCsrfToken },
+        success: function(res) {
+            btn.disabled = false;
+            spin.style.display = 'none';
+            csBsModal('csAddItemModal').hide();
+            const toast = document.createElement('div');
+            toast.className = 'alert alert-success alert-dismissible fade show position-fixed';
+            toast.style.cssText = 'bottom:20px;right:20px;z-index:9999;min-width:280px';
+            toast.innerHTML = '<i class="fas fa-check-circle"></i> ' + res.message +
+                (res.show_url ? ' <a href="' + res.show_url + '" target="_blank" class="alert-link ms-1">View</a>' : '') +
+                '<button type="button" class="btn-close ms-2" data-bs-dismiss="alert" aria-label="Close"></button>';
+            document.body.appendChild(toast);
+            setTimeout(function() { toast.remove(); }, 5000);
+        },
+        error: function(xhr) {
+            btn.disabled = false;
+            spin.style.display = 'none';
+            const msg = xhr.responseJSON ? xhr.responseJSON.message : 'Request failed.';
+            qtyInput.classList.add('is-invalid');
+            errDiv.textContent = msg;
+        }
+    });
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
 $(document).ready(function() {
     console.log('Document ready - payment form loaded');
     

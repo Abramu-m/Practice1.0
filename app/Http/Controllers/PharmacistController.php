@@ -161,7 +161,7 @@ class PharmacistController extends Controller
     public function dispensePrescription(Request $request, Prescription $prescription)
     {
         $request->validate([
-            'quantity_dispensed' => 'required|numeric|min:0|max:' . $prescription->quantity,
+            'quantity_dispensed' => 'required|integer|min:0|max:' . $prescription->quantity,
             'notes' => 'nullable|string|max:500'
         ]);
 

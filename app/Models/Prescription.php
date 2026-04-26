@@ -48,12 +48,12 @@ class Prescription extends Model
 
     protected $casts = [
         'duration_days' => 'integer',
-        'quantity' => 'decimal:2',
-        'quantity_dispensed' => 'decimal:2',
+        'quantity' => 'integer',
+        'quantity_dispensed' => 'integer',
         'batches_used' => 'array',
         'unit_price' => 'decimal:2',
         'total_price' => 'decimal:2',
-        'discount_percent' => 'decimal:2',
+        'discount_percent' => 'integer',
         'amount_paid' => 'decimal:2',
         'is_paid' => 'boolean',
         'is_discount' => 'boolean',
@@ -187,7 +187,7 @@ class Prescription extends Model
     protected static function booted()
     {
         static::saving(function ($prescription) {
-            $prescription->total_price = floatval($prescription->quantity) * floatval($prescription->unit_price);
+            $prescription->total_price = intval($prescription->quantity) * floatval($prescription->unit_price);
         });
     }
 

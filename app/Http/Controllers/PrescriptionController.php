@@ -66,7 +66,6 @@ class PrescriptionController extends Controller
             'frequency_id' => 'required|exists:medication_frequencies,id',
             'duration_days' => 'nullable|integer|min:1',
             'instructions' => 'nullable|string',
-            'status' => 'required|in:prescribed,dispensed,cancelled',
         ]);
 
         $prescription->update($validatedData);

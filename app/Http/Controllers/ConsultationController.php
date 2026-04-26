@@ -709,7 +709,7 @@ class ConsultationController extends Controller
             'administration_route_id' => 'required|exists:administration_routes,id',
             'frequency_id' => 'required|exists:medication_frequencies,id',
             'duration_days' => 'required|numeric|min:1|max:365',
-            'quantity' => 'required|numeric|min:0.1',
+            'quantity' => 'required|integer|min:1',
             'instructions' => 'nullable|string',
             'notes' => 'nullable|string',
             'override_alerts' => 'nullable|boolean',
