@@ -1,5 +1,7 @@
 @extends('layouts.app_main_layout')
 
+@section('page_title', 'Cashier Dashboard')
+
 @section('main_content')
 <div class="content-wrapper">
     <!-- Main content -->
