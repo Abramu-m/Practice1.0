@@ -270,26 +270,14 @@ class ConsumptionTrackingController extends Controller
                 ->whereNotNull('dispensed_at');
 
             if ($storeLocation !== 'all') {
-                $query->whereExists(function($q) use ($storeLocation) {
-                    $q->select(DB::raw(1))
-                        ->from('store_location_stocks')
-                        ->whereColumn('store_location_stocks.id', 'prescription_items.location_stock_id')
-                        ->where('store_location_id', $storeLocation);
-                });
+                $query->where('dispensed_from_location_id', $storeLocation);
             }
 
             $totalConsumption = (clone $query)->sum('quantity_dispensed');
             $uniqueMedications = (clone $query)->distinct()->count('medication_id');
 
-            // Calculate total cost (with fallback for missing unit_cost)
-            $totalCost = 0;
-            $items = (clone $query)->leftJoin('store_location_stocks', 'prescription_items.location_stock_id', '=', 'store_location_stocks.id')
-                ->select('prescription_items.quantity_dispensed', 'store_location_stocks.unit_cost')
-                ->get();
-            foreach ($items as $item) {
-                $unitCost = $item->unit_cost ?? 0;
-                $totalCost += $item->quantity_dispensed * $unitCost;
-            }
+            // Calculate total cost using unit_cost_at_dispensing stored on each item
+            $totalCost = (clone $query)->sum('unit_cost_at_dispensing');
 
             $days = max(1, \Carbon\Carbon::parse($dateFrom)->diffInDays(\Carbon\Carbon::parse($dateTo)) + 1);
             $avgDailyConsumption = $totalConsumption / $days;
@@ -326,12 +314,7 @@ class ConsumptionTrackingController extends Controller
                 ->whereNotNull('dispensed_at');
 
             if ($storeLocation !== 'all') {
-                $query->whereExists(function($q) use ($storeLocation) {
-                    $q->select(DB::raw(1))
-                        ->from('store_location_stocks')
-                        ->whereColumn('store_location_stocks.id', 'prescription_items.location_stock_id')
-                        ->where('store_location_id', $storeLocation);
-                });
+                $query->where('dispensed_from_location_id', $storeLocation);
             }
 
             return $query->groupBy('date')
@@ -363,12 +346,7 @@ class ConsumptionTrackingController extends Controller
                 ->whereNotNull('dispensed_at');
 
             if ($storeLocation !== 'all') {
-                $query->whereExists(function($q) use ($storeLocation) {
-                    $q->select(DB::raw(1))
-                        ->from('store_location_stocks')
-                        ->whereColumn('store_location_stocks.id', 'prescription_items.location_stock_id')
-                        ->where('store_location_id', $storeLocation);
-                });
+                $query->where('dispensed_from_location_id', $storeLocation);
             }
 
             return $query->groupBy('medication_id')
@@ -406,12 +384,7 @@ class ConsumptionTrackingController extends Controller
                     ->whereNotNull('prescription_items.dispensed_at');
 
                 if ($storeLocation !== 'all') {
-                    $query->whereExists(function($q) use ($storeLocation) {
-                        $q->select(DB::raw(1))
-                            ->from('store_location_stocks')
-                            ->whereColumn('store_location_stocks.id', 'prescription_items.location_stock_id')
-                            ->where('store_location_id', $storeLocation);
-                    });
+                    $query->where('prescription_items.dispensed_from_location_id', $storeLocation);
                 }
 
                 return $query->groupBy('medications.category')
@@ -433,12 +406,7 @@ class ConsumptionTrackingController extends Controller
                     ->whereNotNull('prescription_items.dispensed_at');
 
                 if ($storeLocation !== 'all') {
-                    $query->whereExists(function($q) use ($storeLocation) {
-                        $q->select(DB::raw(1))
-                            ->from('store_location_stocks')
-                            ->whereColumn('store_location_stocks.id', 'prescription_items.location_stock_id')
-                            ->where('store_location_id', $storeLocation);
-                    });
+                    $query->where('prescription_items.dispensed_from_location_id', $storeLocation);
                 }
 
                 return $query->groupBy('store_categories.name')
@@ -465,12 +433,11 @@ class ConsumptionTrackingController extends Controller
     {
         try {
             return DB::table('prescription_items')
-                ->selectRaw('store_location_stocks.store_location_id, store_locations.name, SUM(prescription_items.quantity_dispensed) as total')
-                ->join('store_location_stocks', 'prescription_items.store_location_stock_id', '=', 'store_location_stocks.id')
-                ->join('store_locations', 'store_location_stocks.store_location_id', '=', 'store_locations.id')
+                ->selectRaw('store_locations.id as store_location_id, store_locations.name, SUM(prescription_items.quantity_dispensed) as total')
+                ->join('store_locations', 'prescription_items.dispensed_from_location_id', '=', 'store_locations.id')
                 ->whereBetween('prescription_items.dispensed_at', [$dateFrom, $dateTo])
                 ->whereNotNull('prescription_items.dispensed_at')
-                ->groupBy('store_location_stocks.store_location_id', 'store_locations.name')
+                ->groupBy('store_locations.id', 'store_locations.name')
                 ->orderBy('total', 'desc')
                 ->get()
                 ->map(function($item) {
@@ -519,18 +486,12 @@ class ConsumptionTrackingController extends Controller
     {
         try {
             $query = DB::table('prescription_items')
-                ->leftJoin('store_location_stocks', 'prescription_items.location_stock_id', '=', 'store_location_stocks.id')
-                ->select('prescription_items.quantity_dispensed', 'store_location_stocks.unit_cost')
+                ->select('prescription_items.quantity_dispensed', 'prescription_items.unit_cost_at_dispensing')
                 ->whereBetween('prescription_items.dispensed_at', [$dateFrom, $dateTo])
                 ->whereNotNull('prescription_items.dispensed_at');
 
             if ($storeLocation !== 'all') {
-                $query->whereExists(function($q) use ($storeLocation) {
-                    $q->select(DB::raw(1))
-                        ->from('store_location_stocks as sls_filter')
-                        ->whereColumn('sls_filter.id', 'prescription_items.location_stock_id')
-                        ->where('sls_filter.store_location_id', $storeLocation);
-                });
+                $query->where('prescription_items.dispensed_from_location_id', $storeLocation);
             }
 
             $items = $query->get();
@@ -538,7 +499,7 @@ class ConsumptionTrackingController extends Controller
             $itemCount = 0;
 
             foreach ($items as $item) {
-                $unitCost = $item->unit_cost ?? 0;
+                $unitCost = $item->unit_cost_at_dispensing ?? 0;
                 $totalCost += $item->quantity_dispensed * $unitCost;
                 $itemCount++;
             }
@@ -574,12 +535,7 @@ class ConsumptionTrackingController extends Controller
                 ->whereNotNull('dispensed_at');
 
             if ($storeLocation !== 'all') {
-                $consumptionQuery->whereExists(function($q) use ($storeLocation) {
-                    $q->select(DB::raw(1))
-                        ->from('store_location_stocks')
-                        ->whereColumn('store_location_stocks.id', 'prescription_items.location_stock_id')
-                        ->where('store_location_id', $storeLocation);
-                });
+                $consumptionQuery->where('dispensed_from_location_id', $storeLocation);
             }
 
             $consumption = $consumptionQuery->groupBy('medication_id')->get();
@@ -589,9 +545,9 @@ class ConsumptionTrackingController extends Controller
                 // Get current stock level
                 $stockQuery = \App\Models\StoreLocationStock::where('medication_id', $item->medication_id);
                 if ($storeLocation !== 'all') {
-                    $stockQuery->where('store_location_id', $storeLocation);
+                    $stockQuery->where('location_id', $storeLocation);
                 }
-                $currentStock = $stockQuery->sum('quantity_available');
+                $currentStock = $stockQuery->sum('quantity');
                 
                 $turnoverRatio = $currentStock > 0 ? $item->total_consumed / $currentStock : 0;
                 
