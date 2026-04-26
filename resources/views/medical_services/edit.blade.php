@@ -45,21 +45,6 @@
 
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="code" class="form-label">Service Code <span class="text-danger">*</span></label>
-                                    <input type="text" 
-                                           name="code" 
-                                           id="code"
-                                           class="form-control @error('code') is-invalid @enderror" 
-                                           value="{{ old('code', $medicalService->code) }}" 
-                                           required>
-                                    @error('code')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="mb-3">
                                     <label for="service_category_id" class="form-label">Category <span class="text-danger">*</span></label>
                                     <select name="service_category_id" 
                                             id="service_category_id" 
