@@ -18,18 +18,14 @@
                     @if(session('success'))
                         <div class="alert alert-success alert-dismissible fade show" role="alert">
                             {{ session('success') }}
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     @endif
 
                     @if(session('error'))
                         <div class="alert alert-danger alert-dismissible fade show" role="alert">
                             {{ session('error') }}
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     @endif
 
@@ -51,12 +47,12 @@
                                         <td>{{ $frequency->display_order }}</td>
                                         <td>{{ $frequency->frequency_name }}</td>
                                         <td>
-                                            <span class="badge badge-secondary">{{ $frequency->frequency_code }}</span>
+                                            <span class="badge bg-secondary">{{ $frequency->frequency_code }}</span>
                                         </td>
                                         <td>
                                             @if($frequency->administration_times)
                                                 @foreach($frequency->administration_times as $time)
-                                                    <span class="badge badge-info mr-1">{{ $time }}</span>
+                                                    <span class="badge bg-info me-1">{{ $time }}</span>
                                                 @endforeach
                                             @else
                                                 <span class="text-muted">Not specified</span>

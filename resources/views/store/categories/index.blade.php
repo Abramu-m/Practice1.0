@@ -80,7 +80,7 @@
                                                 <strong>{{ $category->description }}</strong>
                                             </td>
                                             <td>
-                                                <span class="badge badge-info text-black">{{ $category->medications_count }}</span>
+                                                <span class="badge bg-info text-black">{{ $category->medications_count }}</span>
                                             </td>
                                             <td>
                                                 {{ $category->created_at->format('M d, Y') }}

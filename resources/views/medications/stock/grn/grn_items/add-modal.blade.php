@@ -4,7 +4,7 @@
         <div class="modal-content">
             <div class="modal-header bg-primary text-white">
                 <h5 class="modal-title" id="addItemModalLabel">
-                    <i class="fas fa-plus mr-2"></i>Add Item to GRN
+                    <i class="fas fa-plus me-2"></i>Add Item to GRN
                 </h5>
                 <button type="button" class="close text-white" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -20,8 +20,8 @@
                     <div class="row">
                         <!-- Item Selection -->
                         <div class="col-md-12">
-                            <div class="form-group">
-                                <label for="item_id" class="font-weight-bold">Select Medication <span class="text-danger">*</span></label>
+                            <div class="mb-3">
+                                <label for="item_id" class="fw-bold">Select Medication <span class="text-danger">*</span></label>
                                 <select name="item_id" id="item_id" class="form-control" required>
                                     <option value="">Select Medication</option>
                                 </select>
@@ -35,13 +35,13 @@
                         <div class="col-12">
                             <div class="card bg-light">
                                 <div class="card-header">
-                                    <h6 class="mb-0"><i class="fas fa-balance-scale mr-2"></i>Unit Configuration</h6>
+                                    <h6 class="mb-0"><i class="fas fa-balance-scale me-2"></i>Unit Configuration</h6>
                                 </div>
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label for="store_unit_id" class="font-weight-bold">Store Unit <span class="text-danger">*</span></label>
+                                            <div class="mb-3">
+                                                <label for="store_unit_id" class="fw-bold">Store Unit <span class="text-danger">*</span></label>
                                                 <select name="store_unit_id" id="store_unit_id" class="form-control" required>
                                                     <option value="">Select Store Unit</option>
                                                 </select>
@@ -50,8 +50,8 @@
                                         </div>
                                         
                                         <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label for="dispensing_unit_id" class="font-weight-bold">Dispensing Unit <span class="text-danger">*</span></label>
+                                            <div class="mb-3">
+                                                <label for="dispensing_unit_id" class="fw-bold">Dispensing Unit <span class="text-danger">*</span></label>
                                                 <select name="dispensing_unit_id" id="dispensing_unit_id" class="form-control" required>
                                                     <option value="">Select Dispensing Unit</option>
                                                 </select>
@@ -60,8 +60,8 @@
                                         </div>
                                         
                                         <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label for="conversion_factor" class="font-weight-bold">Conversion Factor <span class="text-danger">*</span></label>
+                                            <div class="mb-3">
+                                                <label for="conversion_factor" class="fw-bold">Conversion Factor <span class="text-danger">*</span></label>
                                                 <input type="number" name="conversion_factor" id="conversion_factor" 
                                                        class="form-control" step="0.0001" min="0.0001" required>
                                                 <small class="form-text text-muted">Dispensing units per store unit</small>
@@ -72,7 +72,7 @@
                                     <div class="row">
                                         <div class="col-12">
                                             <div class="alert alert-info mb-0" id="conversionDisplay" style="display: none;">
-                                                <i class="fas fa-info-circle mr-2"></i>
+                                                <i class="fas fa-info-circle me-2"></i>
                                                 <span id="conversionText"></span>
                                             </div>
                                         </div>
@@ -85,22 +85,22 @@
                     <div class="row">
                         <!-- Batch Information -->
                         <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="batch_number" class="font-weight-bold">Batch Number <span class="text-danger">*</span></label>
+                            <div class="mb-3">
+                                <label for="batch_number" class="fw-bold">Batch Number <span class="text-danger">*</span></label>
                                 <input type="text" name="batch_number" id="batch_number" class="form-control" required>
                             </div>
                         </div>
                         
                         <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="manufacture_date" class="font-weight-bold">Manufacture Date</label>
+                            <div class="mb-3">
+                                <label for="manufacture_date" class="fw-bold">Manufacture Date</label>
                                 <input type="date" name="manufacture_date" id="manufacture_date" class="form-control">
                             </div>
                         </div>
                         
                         <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="expiry_date" class="font-weight-bold">Expiry Date <span class="text-danger">*</span></label>
+                            <div class="mb-3">
+                                <label for="expiry_date" class="fw-bold">Expiry Date <span class="text-danger">*</span></label>
                                 <input type="date" name="expiry_date" id="expiry_date" class="form-control" required>
                             </div>
                         </div>
@@ -109,8 +109,8 @@
                     <div class="row">
                         <!-- Quantity and Cost -->
                         <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="received_quantity" class="font-weight-bold">Store Unit Quantity <span class="text-danger">*</span></label>
+                            <div class="mb-3">
+                                <label for="received_quantity" class="fw-bold">Store Unit Quantity <span class="text-danger">*</span></label>
                                 <input type="number" name="received_quantity" id="received_quantity" 
                                        class="form-control" step="0.01" min="0" required>
                                 <small class="form-text text-muted">Enter quantity in store units (e.g., number of boxes)</small>
@@ -118,8 +118,8 @@
                         </div>
                         
                         <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="unit_cost" class="font-weight-bold">Store Unit Cost <span class="text-danger">*</span></label>
+                            <div class="mb-3">
+                                <label for="unit_cost" class="fw-bold">Store Unit Cost <span class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text">$</span>
@@ -135,16 +135,16 @@
                     <div class="row">
                         <!-- Discount and Tax -->
                         <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="discount_percentage" class="font-weight-bold">Discount %</label>
+                            <div class="mb-3">
+                                <label for="discount_percentage" class="fw-bold">Discount %</label>
                                 <input type="number" name="discount_percentage" id="discount_percentage" 
                                        class="form-control" step="0.01" min="0" max="100">
                             </div>
                         </div>
                         
                         <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="tax_percentage" class="font-weight-bold">Tax %</label>
+                            <div class="mb-3">
+                                <label for="tax_percentage" class="fw-bold">Tax %</label>
                                 <input type="number" name="tax_percentage" id="tax_percentage" 
                                        class="form-control" step="0.01" min="0" max="100">
                             </div>
@@ -170,15 +170,15 @@
                                 </div>
                                 <div class="col-md-3">
                                     <strong>Net Amount:</strong><br>
-                                    <span id="net_amount_display" class="text-success font-weight-bold">$0.00</span>
+                                    <span id="net_amount_display" class="text-success fw-bold">$0.00</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                     
                     <!-- Notes -->
-                    <div class="form-group">
-                        <label for="notes" class="font-weight-bold">Notes</label>
+                    <div class="mb-3">
+                        <label for="notes" class="fw-bold">Notes</label>
                         <textarea name="notes" id="notes" class="form-control" rows="3" 
                                   placeholder="Any additional notes about this item..."></textarea>
                     </div>
@@ -186,10 +186,10 @@
                 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        <i class="fas fa-times mr-1"></i>Cancel
+                        <i class="fas fa-times me-1"></i>Cancel
                     </button>
                     <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-plus mr-1"></i>Add Item
+                        <i class="fas fa-plus me-1"></i>Add Item
                     </button>
                 </div>
             </form>

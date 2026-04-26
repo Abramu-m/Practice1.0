@@ -12,14 +12,14 @@
                     <div class="row align-items-center">
                         <div class="col-md-8">
                             <h2 class="mb-1">
-                                <i class="fas fa-user-tie mr-2"></i>
+                                <i class="fas fa-user-tie me-2"></i>
                                 Welcome, {{ auth()->user()->name }}
                             </h2>
                             <p class="mb-0 opacity-75">Reception & Cashier Dashboard - {{ date('l, F j, Y') }}</p>
                         </div>
-                        <div class="col-md-4 text-right">
+                        <div class="col-md-4 text-end">
                             <div class="small">
-                                <i class="fas fa-clock mr-1"></i>
+                                <i class="fas fa-clock me-1"></i>
                                 {{ now()->format('H:i:s') }}
                             </div>
                         </div>
@@ -34,12 +34,12 @@
         <div class="col-lg-3 col-md-6">
             <div class="card border-left-primary shadow h-100 py-2">
                 <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                    <div class="row g-0 align-items-center">
+                        <div class="col me-2">
+                            <div class="text-xs fw-bold text-primary text-uppercase mb-1">
                                 Today's Registrations
                             </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            <div class="h5 mb-0 fw-bold text-gray-800">
                                 {{ $todaysRegistrations ?? 0 }}
                             </div>
                         </div>
@@ -59,12 +59,12 @@
         <div class="col-lg-3 col-md-6">
             <div class="card border-left-success shadow h-100 py-2">
                 <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                    <div class="row g-0 align-items-center">
+                        <div class="col me-2">
+                            <div class="text-xs fw-bold text-success text-uppercase mb-1">
                                 Today's Revenue
                             </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            <div class="h5 mb-0 fw-bold text-gray-800">
                                 TSh {{ number_format($todaysRevenue ?? 0, 0) }}
                             </div>
                         </div>
@@ -84,12 +84,12 @@
         <div class="col-lg-3 col-md-6">
             <div class="card border-left-warning shadow h-100 py-2">
                 <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                    <div class="row g-0 align-items-center">
+                        <div class="col me-2">
+                            <div class="text-xs fw-bold text-warning text-uppercase mb-1">
                                 Pending Visits
                             </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            <div class="h5 mb-0 fw-bold text-gray-800">
                                 {{ $pendingVisits ?? 0 }}
                             </div>
                         </div>
@@ -109,12 +109,12 @@
         <div class="col-lg-3 col-md-6">
             <div class="card border-left-info shadow h-100 py-2">
                 <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                    <div class="row g-0 align-items-center">
+                        <div class="col me-2">
+                            <div class="text-xs fw-bold text-info text-uppercase mb-1">
                                 Ready Results
                             </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            <div class="h5 mb-0 fw-bold text-gray-800">
                                 {{ $readyResults ?? 0 }}
                             </div>
                         </div>
@@ -138,7 +138,7 @@
             <div class="card shadow">
                 <div class="card-header bg-primary text-white">
                     <h5 class="mb-0">
-                        <i class="fas fa-desktop mr-2"></i>
+                        <i class="fas fa-desktop me-2"></i>
                         Reception Desk Operations
                     </h5>
                 </div>
@@ -147,20 +147,20 @@
                         <div class="col-md-6">
                             <h6 class="text-muted mb-3">Quick Registration</h6>
                             <div class="mb-3">
-                                <a href="{{ url('patients') }}?action=new" class="btn btn-primary btn-block">
-                                    <i class="fas fa-user-plus mr-2"></i>
+                                <a href="{{ url('patients') }}?action=new" class="btn btn-primary w-100">
+                                    <i class="fas fa-user-plus me-2"></i>
                                     Register New Patient
                                 </a>
                             </div>
                             <div class="mb-3">
-                                <a href="{{ route('patient_visits.index') }}?action=new" class="btn btn-success btn-block">
-                                    <i class="fas fa-calendar-plus mr-2"></i>
+                                <a href="{{ route('patient_visits.index') }}?action=new" class="btn btn-success w-100">
+                                    <i class="fas fa-calendar-plus me-2"></i>
                                     Schedule Visit
                                 </a>
                             </div>
                             <div class="mb-3">
-                                <a href="{{ url('readyInvResults') }}" class="btn btn-info btn-block">
-                                    <i class="fas fa-file-download mr-2"></i>
+                                <a href="{{ url('readyInvResults') }}" class="btn btn-info w-100">
+                                    <i class="fas fa-file-download me-2"></i>
                                     Collect Results
                                 </a>
                             </div>
@@ -176,7 +176,7 @@
                                 </div>
                             </div>
                             <div class="small text-muted mb-3">
-                                <i class="fas fa-info-circle mr-1"></i>
+                                <i class="fas fa-info-circle me-1"></i>
                                 Quick search by name, phone, or patient number
                             </div>
                             
@@ -188,9 +188,9 @@
                                         @if(isset($recentActivities) && count($recentActivities) > 0)
                                             @foreach($recentActivities as $activity)
                                             <div class="d-flex align-items-center mb-2">
-                                                <i class="fas fa-{{ $activity['icon'] ?? 'circle' }} text-{{ $activity['color'] ?? 'muted' }} mr-2"></i>
+                                                <i class="fas fa-{{ $activity['icon'] ?? 'circle' }} text-{{ $activity['color'] ?? 'muted' }} me-2"></i>
                                                 <small>{{ $activity['description'] ?? 'Activity recorded' }}</small>
-                                                <small class="text-muted ml-auto">{{ $activity['time'] ?? 'Now' }}</small>
+                                                <small class="text-muted ms-auto">{{ $activity['time'] ?? 'Now' }}</small>
                                             </div>
                                             @endforeach
                                         @else
@@ -209,7 +209,7 @@
             <div class="card shadow">
                 <div class="card-header bg-success text-white">
                     <h5 class="mb-0">
-                        <i class="fas fa-cash-register mr-2"></i>
+                        <i class="fas fa-cash-register me-2"></i>
                         Cashier Summary
                     </h5>
                 </div>
@@ -245,11 +245,11 @@
                     </div>
                 </div>
                 <div class="card-footer text-center">
-                    <a href="{{ route('cashier.index') }}" class="btn btn-success btn-sm mr-2">
-                        <i class="fas fa-eye mr-1"></i>Cashier Desk
+                    <a href="{{ route('cashier.index') }}" class="btn btn-success btn-sm me-2">
+                        <i class="fas fa-eye me-1"></i>Cashier Desk
                     </a>
                     <a href="{{ route('financial.receipts.daily.summary') }}" class="btn btn-info btn-sm">
-                        <i class="fas fa-chart-line mr-1"></i>Reports
+                        <i class="fas fa-chart-line me-1"></i>Reports
                     </a>
                 </div>
             </div>
@@ -262,7 +262,7 @@
             <div class="card shadow">
                 <div class="card-header bg-warning text-white">
                     <h5 class="mb-0">
-                        <i class="fas fa-calendar-alt mr-2"></i>
+                        <i class="fas fa-calendar-alt me-2"></i>
                         Today's Schedule
                     </h5>
                 </div>
@@ -270,12 +270,12 @@
                     @if(isset($todaysSchedule) && count($todaysSchedule) > 0)
                         @foreach($todaysSchedule as $appointment)
                         <div class="d-flex align-items-center mb-3 p-2 border-left border-{{ $appointment['status'] == 'completed' ? 'success' : ($appointment['status'] == 'in_progress' ? 'warning' : 'primary') }} bg-light rounded">
-                            <div class="mr-3 text-center">
-                                <div class="font-weight-bold text-primary">{{ $appointment['time'] ?? '09:00' }}</div>
+                            <div class="me-3 text-center">
+                                <div class="fw-bold text-primary">{{ $appointment['time'] ?? '09:00' }}</div>
                                 <small class="text-muted">{{ $appointment['type'] ?? 'Visit' }}</small>
                             </div>
                             <div class="flex-grow-1">
-                                <div class="font-weight-bold">{{ $appointment['patient_name'] ?? 'Walk-in Patient' }}</div>
+                                <div class="fw-bold">{{ $appointment['patient_name'] ?? 'Walk-in Patient' }}</div>
                                 <small class="text-muted d-block">{{ $appointment['service'] ?? 'General consultation' }}</small>
                                 <small class="text-muted">{{ $appointment['doctor'] ?? 'Dr. Available' }}</small>
                             </div>
@@ -291,7 +291,7 @@
                         <i class="fas fa-calendar-times fa-3x mb-3"></i>
                         <p>No appointments scheduled</p>
                         <a href="{{ route('patient_visits.index') }}" class="btn btn-primary btn-sm">
-                            <i class="fas fa-plus mr-1"></i>Schedule Visit
+                            <i class="fas fa-plus me-1"></i>Schedule Visit
                         </a>
                     </div>
                     @endif
@@ -300,15 +300,15 @@
                     <div class="row text-center">
                         <div class="col-4">
                             <small class="text-muted">Scheduled</small>
-                            <div class="font-weight-bold text-primary">{{ $scheduleStats['scheduled'] ?? 0 }}</div>
+                            <div class="fw-bold text-primary">{{ $scheduleStats['scheduled'] ?? 0 }}</div>
                         </div>
                         <div class="col-4">
                             <small class="text-muted">In Progress</small>
-                            <div class="font-weight-bold text-warning">{{ $scheduleStats['in_progress'] ?? 0 }}</div>
+                            <div class="fw-bold text-warning">{{ $scheduleStats['in_progress'] ?? 0 }}</div>
                         </div>
                         <div class="col-4">
                             <small class="text-muted">Completed</small>
-                            <div class="font-weight-bold text-success">{{ $scheduleStats['completed'] ?? 0 }}</div>
+                            <div class="fw-bold text-success">{{ $scheduleStats['completed'] ?? 0 }}</div>
                         </div>
                     </div>
                 </div>
@@ -319,7 +319,7 @@
             <div class="card shadow">
                 <div class="card-header bg-info text-white">
                     <h5 class="mb-0">
-                        <i class="fas fa-chart-pie mr-2"></i>
+                        <i class="fas fa-chart-pie me-2"></i>
                         Daily Operations Summary
                     </h5>
                 </div>
@@ -373,13 +373,13 @@
                 <div class="card-footer">
                     <div class="row">
                         <div class="col-6">
-                            <a href="{{ route('financial.transactions.create') }}" class="btn btn-primary btn-sm btn-block">
-                                <i class="fas fa-plus mr-1"></i>Cash Book
+                            <a href="{{ route('financial.transactions.create') }}" class="btn btn-primary btn-sm w-100">
+                                <i class="fas fa-plus me-1"></i>Cash Book
                             </a>
                         </div>
                         <div class="col-6">
-                            <a href="{{ route('financial.receipts.index') }}" class="btn btn-success btn-sm btn-block">
-                                <i class="fas fa-receipt mr-1"></i>Receipts
+                            <a href="{{ route('financial.receipts.index') }}" class="btn btn-success btn-sm w-100">
+                                <i class="fas fa-receipt me-1"></i>Receipts
                             </a>
                         </div>
                     </div>
@@ -424,7 +424,7 @@ setInterval(function() {
     const now = new Date();
     const timeElement = document.querySelector('.card-body .small');
     if (timeElement) {
-        timeElement.innerHTML = '<i class="fas fa-clock mr-1"></i>' + now.toLocaleTimeString();
+        timeElement.innerHTML = '<i class="fas fa-clock me-1"></i>' + now.toLocaleTimeString();
     }
 }, 1000);
 </script>

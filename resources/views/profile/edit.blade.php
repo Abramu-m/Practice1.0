@@ -33,19 +33,19 @@
 
                         <div class="row mb-3">
                             <div class="col-md-4">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="first_name">First Name</label>
                                     <input type="text" name="first_name" class="form-control" value="{{ old('first_name', $user->first_name) }}" required>
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="middle_name">Middle Name</label>
                                     <input type="text" name="middle_name" class="form-control" value="{{ old('middle_name', $user->middle_name) }}">
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="last_name">Last Name</label>
                                     <input type="text" name="last_name" class="form-control" value="{{ old('last_name', $user->last_name) }}" required>
                                 </div>
@@ -54,13 +54,13 @@
                         <hr>
                         <div class="row mb-3">
                             <div class="col-md-4">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="username">Username</label>
                                     <input type="text" name="username" class="form-control" value="{{ old('username', $user->username) }}" required>
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="email">Email</label>
                                     <input type="email" name="email" class="form-control" value="{{ old('email', $user->email) }}" required>
                                     @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())
@@ -72,7 +72,7 @@
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="phone">Phone</label>
                                     <input type="text" name="phone" class="form-control" value="{{ old('phone', $user->phone) }}">
                                 </div>
@@ -81,13 +81,13 @@
                         <hr>
                         <div class="row mb-3">
                             <div class="col-md-4">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="date_of_birth">Date of Birth</label>
                                     <input type="date" name="date_of_birth" class="form-control" value="{{ old('date_of_birth', $user->date_of_birth ? $user->date_of_birth->format('Y-m-d') : '') }}">
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="gender">Gender</label>
                                     <select name="gender" class="form-control">
                                         <option value="">Select Gender</option>
@@ -98,7 +98,7 @@
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="address">Address</label>
                                     <input type="text" name="address" class="form-control" value="{{ old('address', $user->address) }}">
                                 </div>
@@ -112,7 +112,7 @@
                             @endif
                         </div>
 
-                        <div class="form-group mb-3">
+                        <div class="mb-3">
                             <label for="profile_picture">Profile Picture</label>
                             <input type="file" name="profile_picture" class="form-control" accept="image/*">
                             @if($user->profile_picture)
@@ -135,17 +135,17 @@
                         @csrf
                         @method('put')
                         <div class="card-body">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label for="current_password">Current Password</label>
                                 <input type="password" name="current_password" class="form-control" required>
                             </div>
 
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label for="password">New Password</label>
                                 <input type="password" name="password" class="form-control" required>
                             </div>
 
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label for="password_confirmation">Confirm Password</label>
                                 <input type="password" name="password_confirmation" class="form-control" required>
                             </div>

@@ -31,8 +31,8 @@
                         </p>
                         @endif
                     </div>
-                    <div class="col-md-4 text-right">
-                        <span class="badge badge-danger badge-pill px-3 py-2" style="font-size: 1rem;">
+                    <div class="col-md-4 text-end">
+                        <span class="badge bg-danger badge-pill px-3 py-2" style="font-size: 1rem;">
                             CANCELLED
                         </span>
                     </div>
@@ -52,8 +52,8 @@
                             Some medications in this sale have insufficient stock for dispensing. Please check individual items below.
                         </p>
                     </div>
-                    <div class="col-md-4 text-right">
-                        <span class="badge badge-warning badge-pill px-3 py-2" style="font-size: 1rem;">
+                    <div class="col-md-4 text-end">
+                        <span class="badge bg-warning badge-pill px-3 py-2" style="font-size: 1rem;">
                             STOCK ISSUES
                         </span>
                     </div>
@@ -76,7 +76,7 @@
                                     <h4 class="mb-0">Sale: <strong>{{ $medicationCashSale->sale_number }}</strong></h4>
                                     <p class="text-muted mb-2">{{ $medicationCashSale->items->count() }} item(s) ready for payment</p>
                                 </div>
-                                <div class="col-md-4 text-right">
+                                <div class="col-md-4 text-end">
                                     <h3 class="text-primary mb-2">TSh {{ number_format($medicationCashSale->final_amount, 2) }}</h3>
                                     <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#paymentModal">
                                         <i class="fas fa-money-bill"></i> Process Payment
@@ -99,7 +99,7 @@
                                         via {{ ucfirst(str_replace('_', ' ', $medicationCashSale->payment_method)) }}
                                     </p>
                                 </div>
-                                <div class="col-md-4 text-right">
+                                <div class="col-md-4 text-end">
                                     <h3 class="text-success mb-0">TSh {{ number_format($medicationCashSale->amount_paid, 2) }}</h3>
                                     @if($medicationCashSale->amount_paid > $medicationCashSale->final_amount)
                                     <small class="text-muted">Change: TSh {{ number_format($medicationCashSale->amount_paid - $medicationCashSale->final_amount, 2) }}</small>
@@ -129,7 +129,7 @@
                                     </p>
                                     @endif
                                 </div>
-                                <div class="col-md-4 text-right">
+                                <div class="col-md-4 text-end">
                                     <h3 class="text-danger mb-0">CANCELLED</h3>
                                     <small class="text-muted">Original Amount: TSh {{ number_format($medicationCashSale->final_amount, 2) }}</small>
                                 </div>
@@ -160,8 +160,8 @@
                                         @endif
                                     </p>
                                 </div>
-                                <div class="col-md-4 text-right">
-                                    <span class="badge badge-success badge-pill px-3 py-2" style="font-size: 1.1rem;">
+                                <div class="col-md-4 text-end">
+                                    <span class="badge bg-success badge-pill px-3 py-2" style="font-size: 1.1rem;">
                                         <i class="fas fa-check-circle"></i> COMPLETED
                                     </span>
                                 </div>
@@ -192,8 +192,8 @@
                                         @endif
                                     </p>
                                 </div>
-                                <div class="col-md-4 text-right">
-                                    <span class="badge badge-info badge-pill px-3 py-2" style="font-size: 1.1rem;">
+                                <div class="col-md-4 text-end">
+                                    <span class="badge bg-info badge-pill px-3 py-2" style="font-size: 1.1rem;">
                                         <i class="fas fa-clock"></i> IN PROGRESS
                                     </span>
                                 </div>
@@ -207,7 +207,7 @@
             <!-- Sale Information -->
             <div class="card shadow mb-4">
                 <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                    <h6 class="m-0 font-weight-bold text-primary">Sale Information</h6>
+                    <h6 class="m-0 fw-bold text-primary">Sale Information</h6>
                     <span class="badge badge-{{ $medicationCashSale->status_color }} badge-pill">
                         {{ $medicationCashSale->status_label }}
                     </span>
@@ -223,7 +223,7 @@
                                 <tr>
                                     <td><strong>Type:</strong></td>
                                     <td>
-                                        <span class="badge badge-info">
+                                        <span class="badge bg-info">
                                             {{ $medicationCashSale->sale_type == 'otc' ? 'Over-the-Counter' : 'External Prescription' }}
                                         </span>
                                     </td>
@@ -267,7 +267,7 @@
                                 <tr>
                                     <td><strong>Payment Method:</strong></td>
                                     <td>
-                                        <span class="badge badge-success">
+                                        <span class="badge bg-success">
                                             {{ ucwords(str_replace('_', ' ', $medicationCashSale->payment_method)) }}
                                         </span>
                                     </td>
@@ -323,7 +323,7 @@
             <!-- Medications -->
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Medications</h6>
+                    <h6 class="m-0 fw-bold text-primary">Medications</h6>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -367,7 +367,7 @@
                                     <td>{{ $item->administrationRoute->route_name ?? '-' }}</td>
                                     <td>{{ $item->duration_days ? $item->duration_days . ' days' : '-' }}</td>
                                     <td>
-                                        <span class="badge {{ $item->dispensing_type === 'individual' ? 'badge-info' : 'badge-secondary' }}">
+                                        <span class="badge {{ $item->dispensing_type === 'individual' ? 'bg-info' : 'bg-secondary' }}">
                                             {{ ucfirst($item->dispensing_type) }}
                                         </span>
                                     </td>
@@ -455,19 +455,19 @@
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <th colspan="9" class="text-right">Subtotal:</th>
+                                    <th colspan="9" class="text-end">Subtotal:</th>
                                     <th>TSh {{ number_format($medicationCashSale->total_amount, 2) }}</th>
                                     <th colspan="2"></th>
                                 </tr>
                                 @if($medicationCashSale->discount_amount > 0)
                                 <tr>
-                                    <th colspan="9" class="text-right">Discount:</th>
+                                    <th colspan="9" class="text-end">Discount:</th>
                                     <th>TSh {{ number_format($medicationCashSale->discount_amount, 2) }}</th>
                                     <th colspan="2"></th>
                                 </tr>
                                 @endif
                                 <tr class="table-primary">
-                                    <th colspan="9" class="text-right">Final Total:</th>
+                                    <th colspan="9" class="text-end">Final Total:</th>
                                     <th>TSh {{ number_format($medicationCashSale->final_amount, 2) }}</th>
                                     <th colspan="2"></th>
                                 </tr>
@@ -590,24 +590,24 @@
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col-6">Subtotal:</div>
-                                        <div class="col-6 text-right">TSh {{ number_format($medicationCashSale->total_amount, 2) }}</div>
+                                        <div class="col-6 text-end">TSh {{ number_format($medicationCashSale->total_amount, 2) }}</div>
                                     </div>
                                     @if($medicationCashSale->discount_amount > 0)
                                     <div class="row">
                                         <div class="col-6">Discount:</div>
-                                        <div class="col-6 text-right">TSh {{ number_format($medicationCashSale->discount_amount, 2) }}</div>
+                                        <div class="col-6 text-end">TSh {{ number_format($medicationCashSale->discount_amount, 2) }}</div>
                                     </div>
                                     @endif
                                     <hr>
                                     <div class="row">
                                         <div class="col-6"><strong>Total Due:</strong></div>
-                                        <div class="col-6 text-right"><strong>TSh {{ number_format($medicationCashSale->final_amount, 2) }}</strong></div>
+                                        <div class="col-6 text-end"><strong>TSh {{ number_format($medicationCashSale->final_amount, 2) }}</strong></div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label>Payment Method *</label>
                                 <select name="payment_method" class="form-control" required>
                                     <option value="">Select Method</option>
@@ -616,14 +616,14 @@
                                     <option value="mobile_money">Mobile Money</option>
                                 </select>
                             </div>
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label>Amount Paid *</label>
                                 <input type="number" name="amount_paid" class="form-control" step="0.01" min="{{ $medicationCashSale->final_amount }}" value="{{ $medicationCashSale->final_amount }}" required>
                                 <small class="form-text text-muted">Minimum: TSh {{ number_format($medicationCashSale->final_amount, 2) }}</small>
                             </div>
                             
                             @if(Auth::user()->isReceptionist() || Auth::user()->isCashier() || Auth::user()->isAdmin())
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" name="print_receipt" id="print_receipt" value="1" checked>
                                     <label class="form-check-label" for="print_receipt">
@@ -671,7 +671,7 @@
                         <li>Status: <strong>{{ ucfirst($medicationCashSale->status) }}</strong></li>
                     </ul>
                     
-                    <div class="form-group mt-3">
+                    <div class="mb-3 mt-3">
                         <label for="delete_reason">Reason for Deletion *</label>
                         <textarea name="delete_reason" id="delete_reason" class="form-control" rows="3" required 
                                   placeholder="Please provide a reason for deleting this sale..."></textarea>
@@ -713,14 +713,14 @@
                         <li>Paid At: <strong>{{ $medicationCashSale->paid_at ? $medicationCashSale->paid_at->format('M d, Y H:i') : 'N/A' }}</strong></li>
                     </ul>
                     
-                    <div class="form-group mt-3">
+                    <div class="mb-3 mt-3">
                         <label for="cancel_reason">Reason for Cancellation *</label>
                         <textarea name="cancel_reason" id="cancel_reason" class="form-control" rows="4" required 
                                   placeholder="Please provide a detailed reason for cancelling this paid sale..."></textarea>
                         <small class="form-text text-muted">This reason will be recorded for audit purposes.</small>
                     </div>
                     
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label for="refund_required">Refund Required?</label>
                         <select name="refund_required" id="refund_required" class="form-control">
                             <option value="no">No Refund Required</option>
@@ -766,7 +766,7 @@
                         <li>Total: <strong>TSh {{ number_format($item->total_price, 2) }}</strong></li>
                     </ul>
                     
-                    <div class="form-group mt-3">
+                    <div class="mb-3 mt-3">
                         <label for="cancel_reason_{{ $item->id }}">Reason for Cancellation *</label>
                         <textarea name="cancel_reason" id="cancel_reason_{{ $item->id }}" class="form-control" rows="3" required 
                                   placeholder="Please provide a reason for cancelling this item..."></textarea>

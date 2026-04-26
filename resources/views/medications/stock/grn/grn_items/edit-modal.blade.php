@@ -4,11 +4,9 @@
         <div class="modal-content">
             <div class="modal-header bg-warning text-dark">
                 <h5 class="modal-title" id="editItemModalLabel">
-                    <i class="fas fa-edit mr-2"></i>Edit GRN Item
+                    <i class="fas fa-edit me-2"></i>Edit GRN Item
                 </h5>
-                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             
             <form id="editItemForm" method="POST">
@@ -20,8 +18,8 @@
                     <div class="row">
                         <!-- Item Selection (Read-only in edit mode) -->
                         <div class="col-md-12">
-                            <div class="form-group">
-                                <label for="edit_item_display" class="font-weight-bold">Selected Item</label>
+                            <div class="mb-3">
+                                <label for="edit_item_display" class="fw-bold">Selected Item</label>
                                 <input type="text" id="edit_item_display" class="form-control" readonly>
                                 <input type="hidden" name="item_id" id="edit_item_id_hidden">
                                 <small class="text-muted">Item cannot be changed after adding</small>
@@ -34,13 +32,13 @@
                         <div class="col-12">
                             <div class="card bg-light">
                                 <div class="card-header">
-                                    <h6 class="mb-0"><i class="fas fa-balance-scale mr-2"></i>Unit Configuration</h6>
+                                    <h6 class="mb-0"><i class="fas fa-balance-scale me-2"></i>Unit Configuration</h6>
                                 </div>
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label for="edit_store_unit_id" class="font-weight-bold">Store Unit <span class="text-danger">*</span></label>
+                                            <div class="mb-3">
+                                                <label for="edit_store_unit_id" class="fw-bold">Store Unit <span class="text-danger">*</span></label>
                                                 <select name="store_unit_id" id="edit_store_unit_id" class="form-control" required>
                                                     <option value="">Select Store Unit</option>
                                                 </select>
@@ -49,8 +47,8 @@
                                         </div>
                                         
                                         <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label for="edit_dispensing_unit_id" class="font-weight-bold">Dispensing Unit <span class="text-danger">*</span></label>
+                                            <div class="mb-3">
+                                                <label for="edit_dispensing_unit_id" class="fw-bold">Dispensing Unit <span class="text-danger">*</span></label>
                                                 <select name="dispensing_unit_id" id="edit_dispensing_unit_id" class="form-control" required>
                                                     <option value="">Select Dispensing Unit</option>
                                                 </select>
@@ -59,8 +57,8 @@
                                         </div>
                                         
                                         <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label for="edit_conversion_factor" class="font-weight-bold">Conversion Factor <span class="text-danger">*</span></label>
+                                            <div class="mb-3">
+                                                <label for="edit_conversion_factor" class="fw-bold">Conversion Factor <span class="text-danger">*</span></label>
                                                 <input type="number" name="conversion_factor" id="edit_conversion_factor" 
                                                        class="form-control" step="0.0001" min="0.0001" required>
                                                 <small class="form-text text-muted">Dispensing units per store unit</small>
@@ -71,7 +69,7 @@
                                     <div class="row">
                                         <div class="col-12">
                                             <div class="alert alert-info mb-0" id="editConversionDisplay" style="display: none;">
-                                                <i class="fas fa-info-circle mr-2"></i>
+                                                <i class="fas fa-info-circle me-2"></i>
                                                 <span id="editConversionText"></span>
                                             </div>
                                         </div>
@@ -84,22 +82,22 @@
                     <div class="row">
                         <!-- Batch Information -->
                         <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="edit_batch_number" class="font-weight-bold">Batch Number <span class="text-danger">*</span></label>
+                            <div class="mb-3">
+                                <label for="edit_batch_number" class="fw-bold">Batch Number <span class="text-danger">*</span></label>
                                 <input type="text" name="batch_number" id="edit_batch_number" class="form-control" required>
                             </div>
                         </div>
                         
                         <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="edit_manufacture_date" class="font-weight-bold">Manufacture Date</label>
+                            <div class="mb-3">
+                                <label for="edit_manufacture_date" class="fw-bold">Manufacture Date</label>
                                 <input type="date" name="manufacture_date" id="edit_manufacture_date" class="form-control">
                             </div>
                         </div>
                         
                         <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="edit_expiry_date" class="font-weight-bold">Expiry Date <span class="text-danger">*</span></label>
+                            <div class="mb-3">
+                                <label for="edit_expiry_date" class="fw-bold">Expiry Date <span class="text-danger">*</span></label>
                                 <input type="date" name="expiry_date" id="edit_expiry_date" class="form-control" required>
                             </div>
                         </div>
@@ -108,16 +106,16 @@
                     <div class="row">
                         <!-- Quantity and Cost -->
                         <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="edit_received_quantity" class="font-weight-bold">Received Quantity <span class="text-danger">*</span></label>
+                            <div class="mb-3">
+                                <label for="edit_received_quantity" class="fw-bold">Received Quantity <span class="text-danger">*</span></label>
                                 <input type="number" name="received_quantity" id="edit_received_quantity" 
                                        class="form-control" step="0.01" min="0" required>
                             </div>
                         </div>
                         
                         <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="edit_unit_cost" class="font-weight-bold">Unit Cost <span class="text-danger">*</span></label>
+                            <div class="mb-3">
+                                <label for="edit_unit_cost" class="fw-bold">Unit Cost <span class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text">$</span>
@@ -132,16 +130,16 @@
                     <div class="row">
                         <!-- Discount and Tax -->
                         <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="edit_discount_percentage" class="font-weight-bold">Discount %</label>
+                            <div class="mb-3">
+                                <label for="edit_discount_percentage" class="fw-bold">Discount %</label>
                                 <input type="number" name="discount_percentage" id="edit_discount_percentage" 
                                        class="form-control" step="0.01" min="0" max="100">
                             </div>
                         </div>
                         
                         <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="edit_tax_percentage" class="font-weight-bold">Tax %</label>
+                            <div class="mb-3">
+                                <label for="edit_tax_percentage" class="fw-bold">Tax %</label>
                                 <input type="number" name="tax_percentage" id="edit_tax_percentage" 
                                        class="form-control" step="0.01" min="0" max="100">
                             </div>
@@ -167,15 +165,15 @@
                                 </div>
                                 <div class="col-md-3">
                                     <strong>Net Amount:</strong><br>
-                                    <span id="edit_net_amount_display" class="text-success font-weight-bold">$0.00</span>
+                                    <span id="edit_net_amount_display" class="text-success fw-bold">$0.00</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                     
                     <!-- Notes -->
-                    <div class="form-group">
-                        <label for="edit_notes" class="font-weight-bold">Notes</label>
+                    <div class="mb-3">
+                        <label for="edit_notes" class="fw-bold">Notes</label>
                         <textarea name="notes" id="edit_notes" class="form-control" rows="3" 
                                   placeholder="Any additional notes about this item..."></textarea>
                     </div>
@@ -183,10 +181,10 @@
                 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        <i class="fas fa-times mr-1"></i>Cancel
+                        <i class="fas fa-times me-1"></i>Cancel
                     </button>
                     <button type="submit" class="btn btn-warning">
-                        <i class="fas fa-save mr-1"></i>Update Item
+                        <i class="fas fa-save me-1"></i>Update Item
                     </button>
                 </div>
             </form>

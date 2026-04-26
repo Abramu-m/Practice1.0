@@ -41,7 +41,7 @@
                                 <tr>
                                     <td><strong>Fee Amount:</strong></td>
                                     <td>
-                                        <span class="badge badge-success badge-lg">
+                                        <span class="badge bg-success badge-lg">
                                             ${{ number_format($consultationFee->fee_amount, 2) }}
                                         </span>
                                     </td>
@@ -54,9 +54,9 @@
                                     <td><strong>Status:</strong></td>
                                     <td>
                                         @if($consultationFee->status == 1)
-                                            <span class="badge badge-success text-black">Active</span>
+                                            <span class="badge bg-success text-black">Active</span>
                                         @else
-                                            <span class="badge badge-danger text-black">Inactive</span>
+                                            <span class="badge bg-danger text-black">Inactive</span>
                                         @endif
                                     </td>
                                 </tr>

@@ -154,7 +154,7 @@
                     <div class="row">
                         <div class="col-md-3">
                             <h6 class="text-muted mb-1">GRN Number</h6>
-                            <p class="mb-0 font-weight-bold">{{ $grn->grn_number }}</p>
+                            <p class="mb-0 fw-bold">{{ $grn->grn_number }}</p>
                         </div>
                         <div class="col-md-3">
                             <h6 class="text-muted mb-1">Supplier</h6>
@@ -168,7 +168,7 @@
                         </div>
                         <div class="col-md-3">
                             <h6 class="text-muted mb-1">Total Amount</h6>
-                            <p class="mb-0 font-weight-bold text-success">${{ number_format($grn->total_amount, 2) }}</p>
+                            <p class="mb-0 fw-bold text-success">${{ number_format($grn->total_amount, 2) }}</p>
                         </div>
                     </div>
                 </div>
@@ -179,15 +179,15 @@
     <!-- Items Section -->
     <div class="items-section">
         <div class="items-header d-flex justify-content-between align-items-center">
-            <h4><i class="fas fa-list-ul mr-2"></i> GRN Items</h4>
+            <h4><i class="fas fa-list-ul me-2"></i> GRN Items</h4>
             <div>
                 @if(in_array($grn->status, ['draft', 'received']))
-                    <button type="button" class="btn add-item-btn" data-toggle="modal" data-target="#addItemModal">
-                        <i class="fas fa-plus mr-2"></i>Add Item
+                    <button type="button" class="btn add-item-btn" data-bs-toggle="modal" data-bs-target="#addItemModal">
+                        <i class="fas fa-plus me-2"></i>Add Item
                     </button>
                 @endif
                 <a href="{{ route('medications.stock.grn.show', $grn) }}" class="btn btn-light btn-sm">
-                    <i class="fas fa-arrow-left mr-1"></i>Back to GRN
+                    <i class="fas fa-arrow-left me-1"></i>Back to GRN
                 </a>
             </div>
         </div>
@@ -230,7 +230,7 @@
                                             </div>
                                         @endif
                                         @if($item->notes)
-                                            <small class="text-muted"><i class="fas fa-sticky-note mr-1"></i>{{ $item->notes }}</small>
+                                            <small class="text-muted"><i class="fas fa-sticky-note me-1"></i>{{ $item->notes }}</small>
                                         @endif
                                     </td>
                                     <td>
@@ -307,8 +307,8 @@
                     <h5>No Items Added</h5>
                     <p class="text-muted">This GRN doesn't have any items yet.</p>
                     @if(in_array($grn->status, ['draft', 'received']))
-                        <button type="button" class="btn add-item-btn" data-toggle="modal" data-target="#addItemModal">
-                            <i class="fas fa-plus mr-2"></i>Add First Item
+                        <button type="button" class="btn add-item-btn" data-bs-toggle="modal" data-bs-target="#addItemModal">
+                            <i class="fas fa-plus me-2"></i>Add First Item
                         </button>
                     @endif
                 </div>

@@ -22,7 +22,7 @@
                 <div class="card-body">
                     @if (session('success'))
                         <div class="alert alert-success alert-dismissible">
-                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                             <i class="icon fas fa-check"></i> {{ session('success') }}
                         </div>
                     @endif
@@ -77,7 +77,7 @@
                                         <td>{{ $loop->iteration }}</td>
                                         <td>
                                             <div class="d-flex align-items-center">
-                                                <div class="mr-2">
+                                                <div class="me-2">
                                                     <i class="fas fa-user-md text-primary"></i>
                                                 </div>
                                                 <div>
@@ -90,13 +90,13 @@
                                         <td>{{ $doctor->specialization ?? 'N/A' }}</td>
                                         <td>{{ $doctor->mct_number ?? 'N/A' }}</td>
                                         <td>
-                                            <span class="badge badge-info text-black">{{ $doctor->visits->count() }} visit(s)</span>
+                                            <span class="badge bg-info text-black">{{ $doctor->visits->count() }} visit(s)</span>
                                         </td>
                                         <td>
                                             @if($doctor->status == 1)
-                                                <span class="badge badge-success text-black">Active</span>
+                                                <span class="badge bg-success text-black">Active</span>
                                             @else
-                                                <span class="badge badge-danger text-black">Inactive</span>
+                                                <span class="badge bg-danger text-black">Inactive</span>
                                             @endif
                                         </td>
                                         <td>{{ $doctor->created_at->format('d/m/Y') }}</td>

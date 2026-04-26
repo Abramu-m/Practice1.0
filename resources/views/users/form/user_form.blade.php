@@ -10,19 +10,19 @@
     @if(isset($user)) @method('PUT') @endif
     <div class="row mb-3">
         <div class="col-sm-4">
-            <div class="form-group">
+            <div class="mb-3">
                 <label>First Name</label>
                 <input type="text" name="first_name" class="form-control" value="{{ old('first_name', $user->first_name ?? '') }}">
             </div>
         </div>
         <div class="col-sm-4">
-            <div class="form-group">
+            <div class="mb-3">
                 <label>Middle Name</label>
                 <input type="text" name="middle_name" class="form-control" value="{{ old('middle_name', $user->middle_name ?? '') }}">
             </div>
         </div>
         <div class="col-sm-4">
-            <div class="form-group">
+            <div class="mb-3">
                 <label>Last Name</label>
                 <input type="text" name="last_name" class="form-control" value="{{ old('last_name', $user->last_name ?? '') }}">
             </div>
@@ -30,13 +30,13 @@
     </div>
     <div class="row mb-3">
         <div class="col-sm-4">
-            <div class="form-group">
+            <div class="mb-3">
                 <label for="date_of_birth">Date of Birth</label>
                 <input type="date" name="date_of_birth" class="form-control" value="{{ old('date_of_birth', isset($user) && $user->date_of_birth ? $user->date_of_birth->format('Y-m-d') : '') }}">
             </div>
         </div>
         <div class="col-sm-4">
-            <div class="form-group">
+            <div class="mb-3">
                 <label>Gender</label>
                 <select name="gender" class="form-control">
                     <option value="">Select Gender</option>
@@ -47,19 +47,19 @@
             </div>
         </div>
         <div class="col-sm-4">
-            <div class="form-group">
+            <div class="mb-3">
                 <label>Address</label>
                 <input type="text" name="address" class="form-control" value="{{ old('address', $user->address ?? '') }}">
             </div>
         </div>
         <div class="col-sm-4">
-            <div class="form-group">
+            <div class="mb-3">
                 <label>Phone Number</label>
                 <input type="text" name="phone" class="form-control" value="{{ old('phone', $user->phone ?? '') }}">
             </div>
         </div>
         <div class="col-sm-4">
-            <div class="form-group">
+            <div class="mb-3">
                 <label>Email</label>
                 <input type="email" name="email" class="form-control" value="{{ old('email', $user->email ?? '') }}">
             </div>
@@ -67,19 +67,19 @@
     </div>
     <div class="row mb-3">
         <div class="col-sm-4">
-            <div class="form-group">
+            <div class="mb-3">
                 <label>Username</label>
                 <input type="text" name="username" class="form-control" value="{{ old('username', $user->username ?? '') }}">
             </div>
         </div>
         <div class="col-sm-4">
-            <div class="form-group">
+            <div class="mb-3">
                 <label>Password</label>
                 <input type="password" name="password" class="form-control" placeholder="{{ isset($user) ? 'Leave blank to keep current password' : 'Enter Password' }}">
             </div>
         </div>
         <div class="col-sm-4">
-            <div class="form-group">
+            <div class="mb-3">
                 <label>Confirm Password</label>
                 <input type="password" name="password_confirmation" class="form-control" placeholder="{{ isset($user) ? 'Leave blank to keep current password' : 'Confirm Password' }}">
             </div>
@@ -87,7 +87,7 @@
     </div>
     <div class="row mb-3">
         <div class="col-sm-4">
-            <div class="form-group">
+            <div class="mb-3">
                 <label>Role</label>
                 <select name="role" class="form-control">
                     <option value="">Select Role</option>
@@ -105,7 +105,7 @@
             </div>
         </div>
         <div class="col-sm-4">
-            <div class="form-group">
+            <div class="mb-3">
                 <label>Status</label>
                 <select name="is_active" class="form-control">
                     <option value="1" {{ (old('is_active', $user->is_active ?? 1) == 1) ? 'selected' : '' }}>Active</option>
@@ -114,7 +114,7 @@
             </div>
         </div>
         <div class="col-sm-4">
-            <div class="form-group">
+            <div class="mb-3">
                 <label>Profile Picture</label>
                 <input type="file" name="profile_picture" class="form-control-file">
                 @if(isset($user) && $user->profile_picture)

@@ -30,18 +30,14 @@
             @if(session('success'))
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
                     {{ session('success') }}
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             @endif
 
             @if(session('error'))
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
                     {{ session('error') }}
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             @endif
 
@@ -100,7 +96,7 @@
                         <div class="col-md-8">
                             <h3 class="card-title">Unfit Medication Disposal Records</h3>
                         </div>
-                        <div class="col-md-4 text-right">
+                        <div class="col-md-4 text-end">
                             <a href="{{ route('medications.stock.ledger.index') }}" class="btn btn-primary">
                                 <i class="fas fa-plus"></i> Dispose More Items
                             </a>
@@ -113,14 +109,14 @@
                     <form method="GET" class="mb-4">
                         <div class="row">
                             <div class="col-md-3">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="search">Search</label>
                                     <input type="text" name="search" id="search" class="form-control" 
                                            value="{{ $search }}" placeholder="Reference, medication, reason...">
                                 </div>
                             </div>
                             <div class="col-md-2">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="status">Verification Status</label>
                                     <select name="status" id="status" class="form-control">
                                         <option value="all" {{ $status == 'all' ? 'selected' : '' }}>All Status</option>
@@ -131,7 +127,7 @@
                                 </div>
                             </div>
                             <div class="col-md-2">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="reason">Reason</label>
                                     <select name="reason" id="reason" class="form-control">
                                         <option value="all" {{ $reason == 'all' ? 'selected' : '' }}>All Reasons</option>
@@ -142,31 +138,31 @@
                                 </div>
                             </div>
                             <div class="col-md-2">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="date_from">Date From</label>
                                     <input type="date" name="date_from" id="date_from" class="form-control" value="{{ $dateFrom }}">
                                 </div>
                             </div>
                             <div class="col-md-2">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="date_to">Date To</label>
                                     <input type="date" name="date_to" id="date_to" class="form-control" value="{{ $dateTo }}">
                                 </div>
                             </div>
                             <div class="col-md-1">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label>&nbsp;</label>
                                     <div>
-                                        <button type="submit" class="btn btn-info btn-block">
+                                        <button type="submit" class="btn btn-info w-100">
                                             <i class="fas fa-search"></i>
                                         </button>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-md-1">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label>&nbsp;</label>
-                                    <a href="{{ route('medications.stock.disposal.index') }}" class="btn btn-secondary btn-block">
+                                    <a href="{{ route('medications.stock.disposal.index') }}" class="btn btn-secondary w-100">
                                         <i class="fas fa-times"></i> Clear
                                     </a>
                                 </div>
@@ -223,7 +219,7 @@
                                             @endif
                                         </td>
                                         <td>
-                                            <span class="badge badge-info">{{ ucfirst(str_replace('_', ' ', $disposal->reason ?? 'unknown')) }}</span>
+                                            <span class="badge bg-info">{{ ucfirst(str_replace('_', ' ', $disposal->reason ?? 'unknown')) }}</span>
                                         </td>
                                         <td>
                                             {{ $disposal->disposedBy->name ?? 'System' }}
@@ -232,13 +228,13 @@
                                         <td>
                                             @if($disposal->verification_required)
                                                 @if($disposal->verified_by)
-                                                    <span class="badge badge-success">Verified</span>
+                                                    <span class="badge bg-success">Verified</span>
                                                     <br><small class="text-muted">by {{ $disposal->verifiedBy->name ?? 'Unknown' }}</small>
                                                 @else
-                                                    <span class="badge badge-warning">Pending</span>
+                                                    <span class="badge bg-warning">Pending</span>
                                                 @endif
                                             @else
-                                                <span class="badge badge-secondary">Not Required</span>
+                                                <span class="badge bg-secondary">Not Required</span>
                                             @endif
                                         </td>
                                         <td>
@@ -276,7 +272,7 @@
                                 </div>
                             </div>
                             <div class="col-sm-7">
-                                <div class="float-right">
+                                <div class="float-end">
                                     {{ $disposals->appends(request()->query())->links() }}
                                 </div>
                             </div>
@@ -320,16 +316,14 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title">Quick Disposal</h4>
-                <button type="button" class="close" data-dismiss="modal">
-                    <span>&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <p class="text-muted">Quick disposal functionality will be available in the next update.</p>
                 <p>For now, please use the bulk disposal option or contact your administrator.</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -471,9 +465,7 @@ function showDisposalDetailsModal(disposal) {
                 <div class="modal-content">
                     <div class="modal-header">
                         <h4 class="modal-title">Disposal Details - ${disposal.reference_number || 'UNF-' + String(disposal.id).padStart(6, '0')}</h4>
-                        <button type="button" class="close" data-dismiss="modal">
-                            <span>&times;</span>
-                        </button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
                         <div class="row">
@@ -491,7 +483,7 @@ function showDisposalDetailsModal(disposal) {
                             <div class="col-md-6">
                                 <h5>Disposal Details</h5>
                                 <table class="table table-sm">
-                                    <tr><td><strong>Reason:</strong></td><td><span class="badge badge-info">${disposal.reason?.replace('_', ' ')}</span></td></tr>
+                                    <tr><td><strong>Reason:</strong></td><td><span class="badge bg-info">${disposal.reason?.replace('_', ' ')}</span></td></tr>
                                     <tr><td><strong>Method:</strong></td><td>${disposal.disposal_method || 'N/A'}</td></tr>
                                     <tr><td><strong>Disposed By:</strong></td><td>${disposal.disposed_by?.name || 'System'}</td></tr>
                                     <tr><td><strong>Disposed At:</strong></td><td>${disposal.disposed_at ? new Date(disposal.disposed_at).toLocaleString() : 'N/A'}</td></tr>
@@ -506,7 +498,7 @@ function showDisposalDetailsModal(disposal) {
                             `<button type="button" class="btn btn-success" onclick="verifyDisposal(${disposal.id}); $('#disposalDetailsModal').modal('hide');">
                                 <i class="fas fa-check"></i> Verify Disposal
                             </button>` : ''}
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
@@ -529,9 +521,7 @@ function showToast(type, message) {
     const toast = `
         <div id="${toastId}" class="alert ${alertClass} alert-dismissible fade show position-fixed" style="top: 20px; right: 20px; z-index: 9999; min-width: 300px;">
             <i class="${iconClass}"></i> ${message}
-            <button type="button" class="close" data-dismiss="alert">
-                <span>&times;</span>
-            </button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     `;
     

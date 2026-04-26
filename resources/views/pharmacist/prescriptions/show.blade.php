@@ -135,23 +135,23 @@
                                                     @endif
                                                 </div>
                                             </div>
-                                            <div class="col-md-4 text-right">
+                                            <div class="col-md-4 text-end">
                                                 <!-- Status Badge -->
                                                 <div class="mb-2">
                                                     @switch($prescription->status)
                                                         @case('prescribed')
                                                         @case('prepared')
-                                                            <span class="badge badge-warning badge-lg">
+                                                            <span class="badge bg-warning badge-lg">
                                                                 <i class="bi bi-clock"></i> Pending
                                                             </span>
                                                             @break
                                                         @case('dispensed')
-                                                            <span class="badge badge-success badge-lg">
+                                                            <span class="badge bg-success badge-lg">
                                                                 <i class="bi bi-check-circle"></i> Dispensed
                                                             </span>
                                                             @break
                                                         @case('cancelled')
-                                                            <span class="badge badge-danger badge-lg">
+                                                            <span class="badge bg-danger badge-lg">
                                                                 <i class="bi bi-x-circle"></i> Unavailable
                                                             </span>
                                                             @break
@@ -269,13 +269,13 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label for="quantity_dispensed">Quantity to Dispense</label>
                         <input type="number" class="form-control" id="quantity_dispensed" name="quantity_dispensed" 
                                min="0" step="0.01" required>
                         <small class="text-muted">Maximum: <span id="max_quantity"></span></small>
                     </div>
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label for="notes">Notes (Optional)</label>
                         <textarea class="form-control" id="notes" name="notes" rows="3" 
                                   placeholder="Any additional notes about dispensing..."></textarea>
@@ -329,7 +329,7 @@
                     <!-- Collapsible medication items panel -->
                     <div id="reqItemsPanel" class="card card-body bg-light mt-2" style="display:none">
                         <strong id="reqItemsPanelTitle" class="d-block mb-2"></strong>
-                        <ul id="reqItemsList" class="mb-0 pl-3"></ul>
+                        <ul id="reqItemsList" class="mb-0 ps-3"></ul>
                     </div>
                 </div>
             </div>
@@ -353,7 +353,7 @@
             </div>
             <div class="modal-body">
                 <p class="mb-2">Medication: <strong id="addItemMedName"></strong></p>
-                <div class="form-group mb-0">
+                <div class="mb-3 mb-0">
                     <label for="addItemQty">Quantity <span class="text-danger">*</span></label>
                     <input type="number" id="addItemQty" class="form-control" min="1" step="1" placeholder="Enter quantity">
                     <div id="addItemError" class="invalid-feedback"></div>
@@ -363,7 +363,7 @@
                 <button type="button" class="btn btn-secondary" id="addItemCancelBtn">Cancel</button>
                 <button type="button" class="btn btn-primary" id="addItemSubmitBtn" onclick="submitAddItem()">
                     <span id="addItemBtnText">Add Item</span>
-                    <span id="addItemSpinner" class="spinner-border spinner-border-sm ml-1" style="display:none" role="status"></span>
+                    <span id="addItemSpinner" class="spinner-border spinner-border-sm ms-1" style="display:none" role="status"></span>
                 </button>
             </div>
         </div>
@@ -420,28 +420,28 @@ function checkRequisitions(medicationId, medicationName) {
             document.getElementById('requisitionsTable').style.display = 'table';
 
             const statusBadge = (s) => ({
-                draft:            '<span class="badge badge-secondary">Draft</span>',
-                submitted:        '<span class="badge badge-info">Submitted</span>',
-                verified:         '<span class="badge badge-primary">Verified</span>',
-                approved:         '<span class="badge badge-warning">Approved</span>',
-                partially_issued: '<span class="badge badge-warning">Part. Issued</span>',
-            }[s] || '<span class="badge badge-light">' + s + '</span>');
+                draft:            '<span class="badge bg-secondary">Draft</span>',
+                submitted:        '<span class="badge bg-info">Submitted</span>',
+                verified:         '<span class="badge bg-primary">Verified</span>',
+                approved:         '<span class="badge bg-warning">Approved</span>',
+                partially_issued: '<span class="badge bg-warning">Part. Issued</span>',
+            }[s] || '<span class="badge bg-light">' + s + '</span>');
 
             const priorityBadge = (p) => p === 'high'
-                ? '<span class="badge badge-danger">High</span>'
-                : (p === 'medium' ? '<span class="badge badge-warning">Med</span>' : '<span class="badge badge-secondary">Low</span>');
+                ? '<span class="badge bg-danger">High</span>'
+                : (p === 'medium' ? '<span class="badge bg-warning">Med</span>' : '<span class="badge bg-secondary">Low</span>');
 
             const rows = reqs.map(r => {
                 const existingItem = r.medication_items.find(i => i.medication_id == _currentMedId);
                 const alreadyIn = !!existingItem;
                 const alreadyBadge = alreadyIn
-                    ? ' <span class="badge badge-warning" title="Already requested: ' + existingItem.requested_quantity + ' units">Already in req</span>'
+                    ? ' <span class="badge bg-warning" title="Already requested: ' + existingItem.requested_quantity + ' units">Already in req</span>'
                     : '';
                 const addBtn = alreadyIn
-                    ? '<button class="btn btn-xs btn-warning mr-1" onclick="openAddToReq(' + r.id + ', \'' + r.requisition_number.replace(/'/g, "\\'") + '\', ' + existingItem.requested_quantity + ')">' +
+                    ? '<button class="btn btn-xs btn-warning me-1" onclick="openAddToReq(' + r.id + ', \'' + r.requisition_number.replace(/'/g, "\\'") + '\', ' + existingItem.requested_quantity + ')">' +
                         '<i class="bi bi-plus"></i> Add more' +
                       '</button>'
-                    : '<button class="btn btn-xs btn-success mr-1" onclick="openAddToReq(' + r.id + ', \'' + r.requisition_number.replace(/'/g, "\\'") + '\', 0)">' +
+                    : '<button class="btn btn-xs btn-success me-1" onclick="openAddToReq(' + r.id + ', \'' + r.requisition_number.replace(/'/g, "\\'") + '\', 0)">' +
                         '<i class="bi bi-plus"></i> Add to Req' +
                       '</button>';
                 const itemsCell = r.medication_items.length
@@ -531,7 +531,7 @@ function showReqItems(reqId, reqNumber) {
         '<li>' + i.name +
         ' &mdash; Requested: <strong>' + i.requested_quantity + '</strong>' +
         (i.issued_quantity > 0 ? ', Issued: <strong>' + i.issued_quantity + '</strong>' : '') +
-        (i.medication_id == _currentMedId ? ' <span class="badge badge-warning">Current med</span>' : '') +
+        (i.medication_id == _currentMedId ? ' <span class="badge bg-warning">Current med</span>' : '') +
         '</li>'
     ).join('');
     panel.style.display = 'block';

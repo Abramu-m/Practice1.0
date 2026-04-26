@@ -31,9 +31,7 @@
             @if(session('error'))
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
                     {{ session('error') }}
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             @endif
 
@@ -45,9 +43,7 @@
                             <li>{{ $error }}</li>
                         @endforeach
                     </ul>
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             @endif
 
@@ -65,7 +61,7 @@
                         <div class="row">
                             <!-- Location Selection -->
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="location_id">Store Location <span class="text-danger">*</span></label>
                                     <select name="location_id" id="location_id" class="form-control select2" required>
                                         <option value="">Select Store Location</option>
@@ -86,7 +82,7 @@
 
                             <!-- Medication Selection -->
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="medication_id">Medication <span class="text-danger">*</span></label>
                                     <select name="medication_id" id="medication_id" class="form-control select2" required>
                                         <option value="">Select Medication</option>
@@ -126,7 +122,7 @@
                         <div class="row">
                             <!-- Adjustment Type -->
                             <div class="col-md-4">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="adjustment_type">Adjustment Type <span class="text-danger">*</span></label>
                                     <select name="adjustment_type" id="adjustment_type" class="form-control" required>
                                         <option value="">Select Type</option>
@@ -145,7 +141,7 @@
 
                             <!-- Quantity -->
                             <div class="col-md-4">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="quantity">Quantity <span class="text-danger">*</span></label>
                                     <input type="text" name="quantity" id="quantity" class="form-control" 
                                            value="{{ old('quantity') }}" step="0.01" min="0.01" required
@@ -158,7 +154,7 @@
 
                             <!-- Unit Cost -->
                             <div class="col-md-4">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="unit_cost">Unit Cost</label>
                                     <div class="input-group">
                                         <div class="input-group-prepend">
@@ -178,7 +174,7 @@
                         <div class="row">
                             <!-- Reason -->
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="reason">Reason <span class="text-danger">*</span></label>
                                     <select name="reason" id="reason" class="form-control" required>
                                         <option value="">Select Reason</option>
@@ -196,7 +192,7 @@
 
                             <!-- Batch Number -->
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="batch_number">Batch Number</label>
                                     <input type="text" name="batch_number" id="batch_number" class="form-control" 
                                            value="{{ old('batch_number') }}" maxlength="50"
@@ -211,7 +207,7 @@
                         <!-- Notes -->
                         <div class="row">
                             <div class="col-md-12">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="notes">Notes</label>
                                     <textarea name="notes" id="notes" class="form-control" rows="3" 
                                               maxlength="500" placeholder="Additional notes or comments...">{{ old('notes') }}</textarea>
@@ -243,7 +239,7 @@
                                     <i class="fas fa-times"></i> Cancel
                                 </a>
                             </div>
-                            <div class="col-md-6 text-right">
+                            <div class="col-md-6 text-end">
                                 <button type="submit" class="btn btn-primary" id="submit-btn">
                                     <i class="fas fa-save"></i> Process Adjustment
                                 </button>

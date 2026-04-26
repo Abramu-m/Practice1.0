@@ -73,7 +73,7 @@
                         <div class="row">
                             <!-- Basic Information -->
                             <div class="col-md-6">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="grn_number" class="form-label">GRN Number <span class="text-danger">*</span></label>
                                     <input type="text" 
                                            class="form-control @error('grn_number') is-invalid @enderror" 
@@ -89,7 +89,7 @@
                             </div>
 
                             <div class="col-md-6">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="grn_date" class="form-label">GRN Date <span class="text-danger">*</span></label>
                                     <input type="date" 
                                            class="form-control @error('grn_date') is-invalid @enderror" 
@@ -107,7 +107,7 @@
                         <div class="row">
                             <!-- Supplier Information -->
                             <div class="col-md-6">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="supplier_id" class="form-label">Supplier <span class="text-danger">*</span></label>
                                     <select class="form-control select2 @error('supplier_id') is-invalid @enderror" 
                                             id="supplier_id" 
@@ -127,7 +127,7 @@
                             </div>
 
                             <div class="col-md-6">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="invoice_number" class="form-label">Invoice Number</label>
                                     <input type="text" 
                                            class="form-control @error('invoice_number') is-invalid @enderror" 
@@ -144,7 +144,7 @@
 
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="invoice_date" class="form-label">Invoice Date</label>
                                     <input type="date" 
                                            class="form-control @error('invoice_date') is-invalid @enderror" 
@@ -158,7 +158,7 @@
                             </div>
 
                             <div class="col-md-6">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="delivery_note_number" class="form-label">Delivery Note Number</label>
                                     <input type="text" 
                                            class="form-control @error('delivery_note_number') is-invalid @enderror" 
@@ -175,7 +175,7 @@
 
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="delivery_date" class="form-label">Delivery Date</label>
                                     <input type="date" 
                                            class="form-control @error('delivery_date') is-invalid @enderror" 
@@ -189,7 +189,7 @@
                             </div>
 
                             <div class="col-md-6">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="status" class="form-label">Status <span class="text-danger">*</span></label>
                                     <select class="form-control @error('status') is-invalid @enderror" 
                                             id="status" 
@@ -213,7 +213,7 @@
                         <h5 class="mt-4 mb-3">Financial Information</h5>
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="total_amount" class="form-label">Total Amount</label>
                                     <div class="input-group">
                                         <span class="input-group-text">$</span>
@@ -233,7 +233,7 @@
                             </div>
                             
                             <div class="col-md-6">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="discount_amount" class="form-label">Discount Amount</label>
                                     <div class="input-group">
                                         <span class="input-group-text">$</span>
@@ -255,7 +255,7 @@
                         
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="tax_amount" class="form-label">Tax Amount</label>
                                     <div class="input-group">
                                         <span class="input-group-text">$</span>
@@ -275,7 +275,7 @@
                             </div>
                             
                             <div class="col-md-6">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="net_amount" class="form-label">Net Amount</label>
                                     <div class="input-group">
                                         <span class="input-group-text">$</span>
@@ -300,7 +300,7 @@
                         <h5 class="mt-4 mb-3">Personnel Information</h5>
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="received_by" class="form-label">Received By</label>
                                     <select class="form-control select2 @error('received_by') is-invalid @enderror" 
                                             id="received_by" 
@@ -319,7 +319,7 @@
                             </div>
 
                             <div class="col-md-6">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="received_at" class="form-label">Received At</label>
                                     <input type="datetime-local" 
                                            class="form-control @error('received_at') is-invalid @enderror" 
@@ -336,7 +336,7 @@
                         <!-- Notes -->
                         <div class="row">
                             <div class="col-md-12">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="notes" class="form-label">Notes</label>
                                     <textarea class="form-control @error('notes') is-invalid @enderror" 
                                               id="notes" 

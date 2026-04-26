@@ -45,7 +45,7 @@
                 <div class="card-body">
                     @if (session('success'))
                         <div class="alert alert-success alert-dismissible">
-                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                             <i class="icon fas fa-check"></i> {{ session('success') }}
                         </div>
                     @endif
@@ -153,12 +153,12 @@ $(document).ready(function() {
 
 <style>
 /* Enhanced Visit Type Badge Styling */
-.badge-primary { background-color: #007bff !important; color: white !important; }
-.badge-success { background-color: #28a745 !important; color: white !important; }
-.badge-warning { background-color: #ffc107 !important; color: black !important; }
-.badge-info { background-color: #17a2b8 !important; color: white !important; }
-.badge-danger { background-color: #dc3545 !important; color: white !important; }
-.badge-secondary { background-color: #6c757d !important; color: white !important; }
+.bg-primary { background-color: #007bff !important; color: white !important; }
+.bg-success { background-color: #28a745 !important; color: white !important; }
+.bg-warning { background-color: #ffc107 !important; color: black !important; }
+.bg-info { background-color: #17a2b8 !important; color: white !important; }
+.bg-danger { background-color: #dc3545 !important; color: white !important; }
+.bg-secondary { background-color: #6c757d !important; color: white !important; }
 
 .badge { font-size: 0.85em; padding: 0.4em 0.6em; }
 </style>

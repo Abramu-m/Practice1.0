@@ -62,15 +62,15 @@
                         </tr>
                         <tr>
                             <th>Role:</th>
-                            <td><span class="badge badge-primary text-black">{{ ucfirst($user->role) }}</span></td>
+                            <td><span class="badge bg-primary text-black">{{ ucfirst($user->role) }}</span></td>
                         </tr>
                         <tr>
                             <th>Status:</th>
                             <td>
                                 @if($user->is_active)
-                                    <span class="badge badge-success text-black">Active</span>
+                                    <span class="badge bg-success text-black">Active</span>
                                 @else
-                                    <span class="badge badge-danger text-black">Inactive</span>
+                                    <span class="badge bg-danger text-black">Inactive</span>
                                 @endif
                             </td>
                         </tr>
@@ -78,9 +78,9 @@
                             <th>Verified:</th>
                             <td>
                                 @if($user->is_verified)
-                                    <span class="badge badge-success text-black">Verified</span>
+                                    <span class="badge bg-success text-black">Verified</span>
                                 @else
-                                    <span class="badge badge-warning">Not Verified</span>
+                                    <span class="badge bg-warning">Not Verified</span>
                                 @endif
                             </td>
                         </tr>
@@ -153,7 +153,7 @@
                         @endif
                     @endif
                 </div>
-                <div class="col-md-4 text-right">
+                <div class="col-md-4 text-end">
                     @if($user->role !== 'super_admin')
                         <form action="{{ route('users.destroy', $user->id) }}" method="POST" style="display:inline;">
                             @csrf 

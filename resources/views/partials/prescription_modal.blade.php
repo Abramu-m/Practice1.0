@@ -20,7 +20,7 @@
                             <input type="hidden" id="modal_prescription_patient_category_id" name="patient_category_id">
                             
                             <!-- Medication Search -->
-                            <div class="form-group mb-3">
+                            <div class="mb-3">
                                 <label class="form-label fw-bold">Medication <span class="text-danger">*</span></label>
                                 <div class="position-relative">
                                     <input type="text" 

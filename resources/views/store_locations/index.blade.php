@@ -47,7 +47,7 @@
                                             <code>{{ $location->code }}</code>
                                         </td>
                                         <td>
-                                            <span class="badge badge-info">{{ ucfirst($location->type) }}</span>
+                                            <span class="badge bg-info">{{ ucfirst($location->type) }}</span>
                                         </td>
                                         <td>
                                             {{ $location->manager_name ?: '-' }}
@@ -58,18 +58,18 @@
                                         <td>
                                             <div class="d-flex flex-wrap gap-1">
                                                 @if($location->can_request)
-                                                    <span class="badge badge-success badge-sm">Request</span>
+                                                    <span class="badge bg-success badge-sm">Request</span>
                                                 @endif
                                                 @if($location->can_issue)
-                                                    <span class="badge badge-warning badge-sm">Issue</span>
+                                                    <span class="badge bg-warning badge-sm">Issue</span>
                                                 @endif
                                                 @if($location->can_receive)
-                                                    <span class="badge badge-info badge-sm">Receive</span>
+                                                    <span class="badge bg-info badge-sm">Receive</span>
                                                 @endif
                                             </div>
                                         </td>
                                         <td>
-                                            <span class="badge {{ $location->is_active ? 'badge-success' : 'badge-danger' }}">
+                                            <span class="badge {{ $location->is_active ? 'bg-success' : 'bg-danger' }}">
                                                 {{ $location->is_active ? 'Active' : 'Inactive' }}
                                             </span>
                                         </td>

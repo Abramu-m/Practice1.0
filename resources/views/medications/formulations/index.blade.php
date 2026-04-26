@@ -44,7 +44,7 @@
                                             </span>
                                         </td>
                                         <td>
-                                            <span class="badge badge-info text-black">
+                                            <span class="badge bg-info text-black">
                                                 {{ $formulation->medications_count ?? 0 }}
                                             </span>
                                         </td>

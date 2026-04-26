@@ -21,19 +21,19 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label>Generic Name:</label>
                                 <p class="form-control-plaintext"><strong>{{ $medication->generic_name ?: 'N/A' }}</strong></p>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label>stronBrand Name:</label>
                                 <p class="form-control-plaintext"><strong>{{ $medication->brand_name ?: 'N/A' }}</strong></p>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <p class="form-control-plaintext">Strength: <strong>{{ $medication->strength ?: 'N/A' }}</strong></p>
                             </div>
                         </div>
@@ -41,12 +41,12 @@
 
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <p class="form-control-plaintext">Formulation: <strong>{{ $medication->formulation->description ?? 'N/A' }}</strong></p>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <p class="form-control-plaintext">Dispensing Unit: 
                                     <strong>
                                         @if($medication->dispensingUnit)
@@ -65,16 +65,16 @@
 
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <p class="form-control-plaintext">Barcode: <strong>{{ $medication->barcode ?: 'N/A' }}</strong></p>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <p class="form-control-plaintext">
                                     Category: 
                                     @if($medication->storeCategory)
-                                        <span class="badge badge-info text-black">{{ $medication->storeCategory->description }}</span>
+                                        <span class="badge bg-info text-black">{{ $medication->storeCategory->description }}</span>
                                     @else
                                         <span class="text-muted">No Category</span>
                                     @endif
@@ -83,7 +83,7 @@
                         </div>
                     </div>
                         <div class="col-md-6">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <p class="form-control-plaintext">Description: <strong>{{ $medication->description ?: 'No description available' }}</strong></p>
                             </div>
                         </div>
@@ -91,31 +91,31 @@
 
                     <div class="row">
                         <div class="col-md-3">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label>Stock Quantity:</label>
                                 <p class="form-control-plaintext"><strong>{{ number_format($medication->stock_quantity) }}</strong></p>
                             </div>
                         </div>
                         <div class="col-md-3">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label>Reorder Level:</label>
                                 <p class="form-control-plaintext"><strong>{{ number_format($medication->reorder_level) }}</strong></p>
                             </div>
                         </div>
                         <div class="col-md-3">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label>Status:</label>
                                 <p class="form-control-plaintext">
                                     @if($medication->is_active)
-                                        <span class="badge badge-success text-black">Active</span>
+                                        <span class="badge bg-success text-black">Active</span>
                                     @else
-                                        <span class="badge badge-danger text-black">Inactive</span>
+                                        <span class="badge bg-danger text-black">Inactive</span>
                                     @endif
                                 </p>
                             </div>
                         </div>
                         <div class="col-md-3">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label>Stock Status:</label>
                                 <p class="form-control-plaintext">
                                     <span class="text-black badge badge-{{ $medication->stock_badge_class }} text-black">
@@ -128,13 +128,13 @@
 
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label>Created At:</label>
                                 <p class="form-control-plaintext">{{ $medication->created_at->format('M d, Y H:i') }}</p>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label>Last Updated:</label>
                                 <p class="form-control-plaintext">{{ $medication->updated_at->format('M d, Y H:i') }}</p>
                             </div>
@@ -222,9 +222,9 @@
                             <span class="info-box-text">Reorder Alert</span>
                             <span class="info-box-number">
                                 @if($medication->is_low_stock)
-                                    <span class="badge badge-warning">Low Stock</span>
+                                    <span class="badge bg-warning">Low Stock</span>
                                 @else
-                                    <span class="badge badge-success text-black">OK</span>
+                                    <span class="badge bg-success text-black">OK</span>
                                 @endif
                             </span>
                         </div>

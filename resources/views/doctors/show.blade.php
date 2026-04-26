@@ -55,9 +55,9 @@
                                     <td><strong>Status:</strong></td>
                                     <td>
                                         @if($doctor->status == 1)
-                                            <span class="badge badge-success text-black">Active</span>
+                                            <span class="badge bg-success text-black">Active</span>
                                         @else
-                                            <span class="badge badge-danger text-black">Inactive</span>
+                                            <span class="badge bg-danger text-black">Inactive</span>
                                         @endif
                                     </td>
                                 </tr>
@@ -130,11 +130,11 @@
                     
                     <div class="mt-3">
                         @if($doctor->visits->count() > 0)
-                            <a href="{{ route('patient_visits.index', ['doctor_id' => $doctor->id]) }}" class="btn btn-primary btn-block">
+                            <a href="{{ route('patient_visits.index', ['doctor_id' => $doctor->id]) }}" class="btn btn-primary w-100">
                                 <i class="fas fa-list"></i> View All Visits
                             </a>
                         @endif
-                        <a href="{{ route('patient_visits.create', ['doctor_id' => $doctor->id]) }}" class="btn btn-success btn-block">
+                        <a href="{{ route('patient_visits.create', ['doctor_id' => $doctor->id]) }}" class="btn btn-success w-100">
                             <i class="fas fa-plus"></i> Create New Visit
                         </a>
                     </div>
@@ -179,9 +179,9 @@
                                             <td>{{ $visit->visitCategory->description ?? 'N/A' }}</td>
                                             <td>
                                                 @if($visit->visit_status == 0)
-                                                    <span class="badge badge-warning">In Treatment</span>
+                                                    <span class="badge bg-warning">In Treatment</span>
                                                 @else
-                                                    <span class="badge badge-success text-black">Discharged</span>
+                                                    <span class="badge bg-success text-black">Discharged</span>
                                                 @endif
                                             </td>
                                             <td>${{ number_format($visit->amount_cash + ($visit->amount_covered ?? 0), 2) }}</td>

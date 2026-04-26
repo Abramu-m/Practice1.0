@@ -32,7 +32,7 @@
                     <div class="card">
                         <div class="card-header">
                             <h3 class="card-title">
-                                <i class="fas fa-edit mr-2"></i>
+                                <i class="fas fa-edit me-2"></i>
                                 Edit Category: {{ $storeCategory->description }}
                             </h3>
                             <div class="card-tools">
@@ -49,7 +49,7 @@
                             @csrf
                             @method('PUT')
                             <div class="card-body">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="description" class="form-label">
                                         Category Description <span class="text-danger">*</span>
                                     </label>
@@ -75,7 +75,7 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="alert alert-info">
-                                            <h6><i class="fas fa-info-circle mr-2"></i>Current Information</h6>
+                                            <h6><i class="fas fa-info-circle me-2"></i>Current Information</h6>
                                             <ul class="mb-0">
                                                 <li><strong>ID:</strong> {{ $storeCategory->id }}</li>
                                                 <li><strong>Items in category:</strong> {{ $storeCategory->medications()->count() }}</li>
@@ -86,7 +86,7 @@
                                     <div class="col-md-6">
                                         @if($storeCategory->medications()->count() > 0)
                                             <div class="alert alert-warning">
-                                                <h6><i class="fas fa-exclamation-triangle mr-2"></i>Important Note</h6>
+                                                <h6><i class="fas fa-exclamation-triangle me-2"></i>Important Note</h6>
                                                 <p class="mb-0">
                                                     This category contains {{ $storeCategory->medications()->count() }} items. 
                                                     Changing the description will update how this category appears throughout the system.
@@ -94,7 +94,7 @@
                                             </div>
                                         @else
                                             <div class="alert alert-success">
-                                                <h6><i class="fas fa-check-circle mr-2"></i>Safe to Edit</h6>
+                                                <h6><i class="fas fa-check-circle me-2"></i>Safe to Edit</h6>
                                                 <p class="mb-0">
                                                     This category has no items yet, so you can safely modify it without affecting any products.
                                                 </p>
@@ -110,11 +110,11 @@
                                         <a href="{{ route('store-categories.show', $storeCategory->id) }}" class="btn btn-secondary">
                                             <i class="fas fa-times"></i> Cancel
                                         </a>
-                                        <a href="{{ route('store-categories.index') }}" class="btn btn-outline-secondary ml-2">
+                                        <a href="{{ route('store-categories.index') }}" class="btn btn-outline-secondary ms-2">
                                             <i class="fas fa-list"></i> Back to List
                                         </a>
                                     </div>
-                                    <div class="col-md-6 text-right">
+                                    <div class="col-md-6 text-end">
                                         <button type="submit" class="btn btn-warning">
                                             <i class="fas fa-save"></i> Update Category
                                         </button>
@@ -129,7 +129,7 @@
                     <div class="card mt-4">
                         <div class="card-header">
                             <h3 class="card-title">
-                                <i class="fas fa-boxes mr-2"></i>
+                                <i class="fas fa-boxes me-2"></i>
                                 Items That Will Be Affected ({{ $storeCategory->medications()->count() }})
                             </h3>
                         </div>
@@ -155,12 +155,12 @@
                                             </td>
                                             <td>{{ $medication->generic_name ?? '-' }}</td>
                                             <td>
-                                                <span class="badge badge-sm {{ $medication->is_active ? 'badge-success' : 'badge-secondary' }}">
+                                                <span class="badge badge-sm {{ $medication->is_active ? 'bg-success' : 'bg-secondary' }}">
                                                     {{ $medication->is_active ? 'Active' : 'Inactive' }}
                                                 </span>
                                             </td>
                                             <td>
-                                                <span class="badge badge-sm {{ $medication->stock_quantity > 0 ? 'badge-info' : 'badge-danger' }}">
+                                                <span class="badge badge-sm {{ $medication->stock_quantity > 0 ? 'bg-info' : 'bg-danger' }}">
                                                     {{ number_format($medication->stock_quantity, 2) }}
                                                 </span>
                                             </td>
@@ -190,7 +190,7 @@
                     <div class="card mt-4 border-danger">
                         <div class="card-header bg-danger text-white">
                             <h3 class="card-title">
-                                <i class="fas fa-trash mr-2"></i>
+                                <i class="fas fa-trash me-2"></i>
                                 Danger Zone
                             </h3>
                         </div>

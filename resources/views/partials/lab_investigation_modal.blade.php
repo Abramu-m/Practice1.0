@@ -69,7 +69,7 @@
                     <!-- Service Selection -->
                     <div class="row">
                         <div class="col-9">
-                            <div class="form-group mb-3">
+                            <div class="mb-3">
                                 <label class="form-label">Search Medical Service *</label>
                                 <div class="position-relative">
                                     <input type="text" class="form-control" id="modal_service_search" 
@@ -82,7 +82,7 @@
                             </div>
                         </div>
                         <div class="col-md-3">
-                            <div class="form-group mb-3">
+                            <div class="mb-3">
                                 <label class="form-label">Priority</label>
                                 <select class="form-control" name="priority">
                                     <option value="routine">Routine</option>
@@ -96,7 +96,7 @@
                     <!-- Clinical Notes -->
                     <div class="row">
                         <div class="col-12">
-                            <div class="form-group mb-3">
+                            <div class="mb-3">
                                 <label class="form-label">Clinical Notes</label>
                                 <textarea class="form-control" name="notes" rows="3" 
                                         placeholder="Clinical indication for investigation..."></textarea>

@@ -18,18 +18,14 @@
                     @if(session('success'))
                         <div class="alert alert-success alert-dismissible fade show" role="alert">
                             {{ session('success') }}
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     @endif
 
                     @if(session('error'))
                         <div class="alert alert-danger alert-dismissible fade show" role="alert">
                             {{ session('error') }}
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     @endif
 
@@ -54,17 +50,17 @@
                                         <td>{{ $unit->display_order }}</td>
                                         <td>{{ $unit->unit_name }}</td>
                                         <td>
-                                            <span class="badge badge-secondary">{{ $unit->unit_code }}</span>
+                                            <span class="badge bg-secondary">{{ $unit->unit_code }}</span>
                                         </td>
                                         <td>
                                             @if($unit->unit_symbol)
-                                                <span class="badge badge-info text-black">{{ $unit->unit_symbol }}</span>
+                                                <span class="badge bg-info text-black">{{ $unit->unit_symbol }}</span>
                                             @else
                                                 <span class="text-muted">--</span>
                                             @endif
                                         </td>
                                         <td>
-                                            <span class="badge badge-primary text-black">{{ ucfirst($unit->unit_type) }}</span>
+                                            <span class="badge bg-primary text-black">{{ ucfirst($unit->unit_type) }}</span>
                                         </td>
                                         <td>
                                             @if($unit->baseUnit)

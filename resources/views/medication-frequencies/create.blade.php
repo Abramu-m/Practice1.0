@@ -19,7 +19,7 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="frequency_name">Frequency Name <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control @error('frequency_name') is-invalid @enderror" 
                                            id="frequency_name" name="frequency_name" value="{{ old('frequency_name') }}" 
@@ -30,7 +30,7 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="frequency_code">Frequency Code <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control @error('frequency_code') is-invalid @enderror" 
                                            id="frequency_code" name="frequency_code" value="{{ old('frequency_code') }}" 
@@ -44,7 +44,7 @@
 
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="display_order">Display Order</label>
                                     <input type="text" class="form-control @error('display_order') is-invalid @enderror" 
                                            id="display_order" name="display_order" value="{{ old('display_order', 1) }}" 
@@ -56,7 +56,7 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <div class="custom-control custom-switch">
                                         <input type="checkbox" class="custom-control-input" id="is_active" name="is_active" 
                                                {{ old('is_active', true) ? 'checked' : '' }}>
@@ -66,7 +66,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label>Administration Times <span class="text-danger">*</span></label>
                             <div id="administration-times-container">
                                 @if(old('administration_times'))

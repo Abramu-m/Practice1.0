@@ -46,24 +46,24 @@
                                 </tr>
                                 <tr>
                                     <th>Unit Code</th>
-                                    <td><span class="badge badge-secondary">{{ $storeUnit->code }}</span></td>
+                                    <td><span class="badge bg-secondary">{{ $storeUnit->code }}</span></td>
                                 </tr>
                                 <tr>
                                     <th>Type</th>
                                     <td>
                                         @if($storeUnit->type === 'store')
-                                            <span class="badge badge-info">Store Only</span>
+                                            <span class="badge bg-info">Store Only</span>
                                         @elseif($storeUnit->type === 'dispensing')
-                                            <span class="badge badge-warning">Dispensing Only</span>
+                                            <span class="badge bg-warning">Dispensing Only</span>
                                         @else
-                                            <span class="badge badge-success">Both Store & Dispensing</span>
+                                            <span class="badge bg-success">Both Store & Dispensing</span>
                                         @endif
                                     </td>
                                 </tr>
                                 <tr>
                                     <th>Status</th>
                                     <td>
-                                        <span class="badge {{ $storeUnit->is_active ? 'badge-success' : 'badge-secondary' }}">
+                                        <span class="badge {{ $storeUnit->is_active ? 'bg-success' : 'bg-secondary' }}">
                                             {{ $storeUnit->is_active ? 'Active' : 'Inactive' }}
                                         </span>
                                     </td>
@@ -84,10 +84,10 @@
                                     <th>Usage Capabilities</th>
                                     <td>
                                         @if($storeUnit->canBeUsedForStore())
-                                            <span class="badge badge-info mr-1">Store</span>
+                                            <span class="badge bg-info me-1">Store</span>
                                         @endif
                                         @if($storeUnit->canBeUsedForDispensing())
-                                            <span class="badge badge-warning">Dispensing</span>
+                                            <span class="badge bg-warning">Dispensing</span>
                                         @endif
                                     </td>
                                 </tr>

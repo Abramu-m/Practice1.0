@@ -108,7 +108,7 @@
                                 <input type="date" name="date_to" class="form-control" value="{{ request('date_to') }}" placeholder="To Date">
                             </div>
                             <div class="col-md-1">
-                                <button type="submit" class="btn btn-outline-primary btn-block">
+                                <button type="submit" class="btn btn-outline-primary w-100">
                                     <i class="fas fa-search"></i>
                                 </button>
                             </div>
@@ -165,7 +165,7 @@
                                         </span>
                                     </td>
                                     <td>
-                                        <span class="badge badge-light">{{ $requisition->items_count ?? 0 }} items</span>
+                                        <span class="badge bg-light">{{ $requisition->items_count ?? 0 }} items</span>
                                     </td>
                                     <td>${{ number_format($requisition->total_estimated_cost ?? 0, 2) }}</td>
                                     <td>{{ $requisition->requestedBy->first_name ?? '' }} {{ $requisition->requestedBy->last_name ?? '' }}</td>

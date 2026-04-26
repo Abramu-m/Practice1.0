@@ -20,7 +20,7 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label>Medication:</label>
                                 <p class="form-control-plaintext">
                                     <strong>{{ $medicationPricing->medication->name }}</strong>
@@ -31,10 +31,10 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label>Patient Category:</label>
                                 <p class="form-control-plaintext">
-                                    <span class="badge badge-info text-black">{{ $medicationPricing->patientCategory->description }}</span>
+                                    <span class="badge bg-info text-black">{{ $medicationPricing->patientCategory->description }}</span>
                                 </p>
                             </div>
                         </div>
@@ -42,7 +42,7 @@
 
                     <div class="row">
                         <div class="col-md-4">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label>Selling Price:</label>
                                 <p class="form-control-plaintext">
                                     <strong>${{ number_format($medicationPricing->selling_price, 2) }}</strong>
@@ -50,7 +50,7 @@
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label>Markup Percentage:</label>
                                 <p class="form-control-plaintext">
                                     @if($medicationPricing->markup_percentage)
@@ -62,7 +62,7 @@
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label>Discount Percentage:</label>
                                 <p class="form-control-plaintext">
                                     @if($medicationPricing->discount_percentage)
@@ -77,7 +77,7 @@
 
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label>Discounted Price:</label>
                                 <p class="form-control-plaintext">
                                     <strong>${{ number_format($medicationPricing->discounted_price, 2) }}</strong>
@@ -88,14 +88,14 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label>Status:</label>
                                 <p class="form-control-plaintext">
                                     <span class="text-black badge badge-{{ $medicationPricing->is_active ? 'success' : 'danger' }}">
                                         {{ $medicationPricing->is_active ? 'Active' : 'Inactive' }}
                                     </span>
                                     @if($medicationPricing->isCurrent())
-                                        <span class="badge badge-primary text-black">Current</span>
+                                        <span class="badge bg-primary text-black">Current</span>
                                     @endif
                                 </p>
                             </div>
@@ -104,13 +104,13 @@
 
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label>Effective From:</label>
                                 <p class="form-control-plaintext">{{ $medicationPricing->effective_from->format('M d, Y') }}</p>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label>Effective To:</label>
                                 <p class="form-control-plaintext">
                                     {{ $medicationPricing->effective_to ? $medicationPricing->effective_to->format('M d, Y') : 'Ongoing' }}
@@ -120,7 +120,7 @@
                     </div>
 
                     @if($medicationPricing->notes)
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label>Notes:</label>
                         <p class="form-control-plaintext">{{ $medicationPricing->notes }}</p>
                     </div>
@@ -128,13 +128,13 @@
 
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label>Created:</label>
                                 <p class="form-control-plaintext">{{ $medicationPricing->created_at->format('M d, Y \a\t h:i A') }}</p>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label>Last Updated:</label>
                                 <p class="form-control-plaintext">{{ $medicationPricing->updated_at->format('M d, Y \a\t h:i A') }}</p>
                             </div>

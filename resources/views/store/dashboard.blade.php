@@ -98,32 +98,32 @@
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-md-2">
-                                    <a href="{{ route('medications.create') }}" class="btn btn-primary btn-block">
+                                    <a href="{{ route('medications.create') }}" class="btn btn-primary w-100">
                                         <i class="fas fa-plus"></i> Add New Item
                                     </a>
                                 </div>
                                 <div class="col-md-2">
-                                    <a href="{{ route('store.grn.create') }}" class="btn btn-success btn-block">
+                                    <a href="{{ route('store.grn.create') }}" class="btn btn-success w-100">
                                         <i class="fas fa-truck"></i> New GRN
                                     </a>
                                 </div>
                                 <div class="col-md-2">
-                                    <a href="{{ route('store.requisitions.create') }}" class="btn btn-warning btn-block">
+                                    <a href="{{ route('store.requisitions.create') }}" class="btn btn-warning w-100">
                                         <i class="fas fa-clipboard-list"></i> New Requisition
                                     </a>
                                 </div>
                                 <div class="col-md-2">
-                                    <a href="{{ route('store.stock.transfers') }}" class="btn btn-info btn-block">
+                                    <a href="{{ route('store.stock.transfers') }}" class="btn btn-info w-100">
                                         <i class="fas fa-exchange-alt"></i> Stock Transfer
                                     </a>
                                 </div>
                                 <div class="col-md-2">
-                                    <a href="{{ route('store.stock.adjustments') }}" class="btn btn-secondary btn-block">
+                                    <a href="{{ route('store.stock.adjustments') }}" class="btn btn-secondary w-100">
                                         <i class="fas fa-adjust"></i> Stock Adjustment
                                     </a>
                                 </div>
                                 <div class="col-md-2">
-                                    <a href="{{ route('store.reports.index') }}" class="btn btn-dark btn-block">
+                                    <a href="{{ route('store.reports.index') }}" class="btn btn-dark w-100">
                                         <i class="fas fa-chart-bar"></i> Reports
                                     </a>
                                 </div>
@@ -313,7 +313,7 @@ $(document).ready(function() {
                     '<div class="nav-link">' +
                     '<i class="' + iconClass + '"></i> ' +
                     movement.item_name + ' (' + movement.quantity + ' ' + movement.unit + ')' +
-                    '<small class="float-right text-muted">' + movement.time_ago + '</small>' +
+                    '<small class="float-end text-muted">' + movement.time_ago + '</small>' +
                     '</div>' +
                     '</li>'
                 );

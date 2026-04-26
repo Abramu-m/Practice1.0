@@ -15,7 +15,7 @@
                         @csrf
                         @method('PUT')
                         
-                        <div class="form-group mb-3">
+                        <div class="mb-3">
                             <label for="description">Description</label>
                             <input type="text" class="form-control @error('description') is-invalid @enderror" 
                                    id="description" name="description" 
@@ -27,7 +27,7 @@
                             @enderror
                         </div>
 
-                        <div class="form-group">
+                        <div class="mb-3">
                             <button type="submit" class="btn btn-primary">Update Visit Type</button>
                             <a href="{{ route('visit_types.index') }}" class="btn btn-secondary">Cancel</a>
                         </div>

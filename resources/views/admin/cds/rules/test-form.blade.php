@@ -9,26 +9,26 @@
     <div class="row">
         <div class="col-md-6">
             <h6>Patient Information</h6>
-            <div class="form-group">
+            <div class="mb-3">
                 <label>Patient Age</label>
                 <input type="number" class="form-control" name="patient_age" value="35">
             </div>
-            <div class="form-group">
+            <div class="mb-3">
                 <label>Patient Weight (kg)</label>
                 <input type="number" class="form-control" name="patient_weight" value="70">
             </div>
         </div>
         <div class="col-md-6">
             <h6>Medication Information</h6>
-            <div class="form-group">
+            <div class="mb-3">
                 <label>Medication Name</label>
                 <input type="text" class="form-control" name="medication_name" value="Paracetamol">
             </div>
-            <div class="form-group">
+            <div class="mb-3">
                 <label>Dose Amount</label>
                 <input type="number" class="form-control" name="dose_amount" value="500">
             </div>
-            <div class="form-group">
+            <div class="mb-3">
                 <label>Dose Unit</label>
                 <select class="form-control" name="dose_unit">
                     <option value="mg">mg</option>
@@ -58,7 +58,7 @@
                         <td><code>{{ $condition->field }}</code></td>
                         <td>{{ ucwords(str_replace('_', ' ', $condition->operator)) }}</td>
                         <td><strong>{{ $condition->value }}</strong></td>
-                        <td><span class="badge badge-secondary">Ready</span></td>
+                        <td><span class="badge bg-secondary">Ready</span></td>
                     </tr>
                     @endforeach
                 </tbody>
@@ -107,8 +107,8 @@ function displayTestResults(results) {
     html += '<div class="col-md-6">';
     html += '<strong>Rule Triggered:</strong> ';
     html += results.rule_triggered ? 
-        '<span class="badge badge-warning">Yes</span>' : 
-        '<span class="badge badge-success">No</span>';
+        '<span class="badge bg-warning">Yes</span>' : 
+        '<span class="badge bg-success">No</span>';
     html += '<br><strong>Severity:</strong> ';
     html += `<span class="badge badge-${results.severity === 'critical' ? 'danger' : (results.severity === 'warning' ? 'warning' : 'info')}">${results.severity}</span>`;
     html += '</div>';

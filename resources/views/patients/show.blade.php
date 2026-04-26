@@ -147,9 +147,9 @@
                             <th>Status:</th>
                             <td>
                                 @if($patient->status == 'active')
-                                    <span class="badge badge-success" style="color:black; background-color:#28a745; border:1px solid #28a745;">Active</span>
+                                    <span class="badge bg-success" style="color:black; background-color:#28a745; border:1px solid #28a745;">Active</span>
                                 @else
-                                    <span class="badge badge-danger" style="color:black; background-color:#dc3545; border:1px solid #dc3545;">Inactive</span>
+                                    <span class="badge bg-danger" style="color:black; background-color:#dc3545; border:1px solid #dc3545;">Inactive</span>
                                 @endif
                             </td>
                         </tr>
@@ -240,7 +240,7 @@
                     @else
                         <div class="alert alert-info">
                             <i class="fas fa-info-circle"></i> No visits found for this patient.
-                            <a href="{{ route('patient_visits.create', ['patient_id' => $patient->id]) }}" class="btn btn-success btn-sm ml-2">
+                            <a href="{{ route('patient_visits.create', ['patient_id' => $patient->id]) }}" class="btn btn-success btn-sm ms-2">
                                 <i class="fas fa-plus"></i> Create First Visit
                             </a>
                         </div>
@@ -259,7 +259,7 @@
             @endif
             <a href="{{ route('patients.index') }}" class="btn btn-secondary">Back to List</a>
             @if(auth()->user()->isAdmin())
-            <form action="{{ route('patients.destroy', $patient->id) }}" method="POST" style="display:inline;" class="float-right">
+            <form action="{{ route('patients.destroy', $patient->id) }}" method="POST" style="display:inline;" class="float-end">
                 @csrf @method('DELETE')
                 <button type="submit" onclick="return confirm('Are you sure you want to delete this patient?')" class="btn btn-danger">Delete Patient</button>
             </form>

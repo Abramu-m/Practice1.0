@@ -110,7 +110,7 @@
             <div class="card filter-card mb-4">
                 <div class="card-header">
                     <h3 class="card-title">
-                        <i class="fas fa-filter mr-2"></i>
+                        <i class="fas fa-filter me-2"></i>
                         Filters
                     </h3>
                     <div class="card-tools">
@@ -166,7 +166,7 @@
                             <input type="hidden" name="date_to" value="{{ $dateTo }}">
                         </div>
                         <div class="col-md-1 mb-3 d-flex align-items-end">
-                            <button type="submit" class="btn btn-primary btn-block">
+                            <button type="submit" class="btn btn-primary w-100">
                                 <i class="fas fa-search"></i>
                             </button>
                         </div>
@@ -182,7 +182,7 @@
                         <div class="card-header">
                             <h3 class="card-title">Prescriptions</h3>
                             <div class="card-tools">
-                                <span class="badge badge-secondary">{{ $prescriptions->total() }} total</span>
+                                <span class="badge bg-secondary">{{ $prescriptions->total() }} total</span>
                             </div>
                         </div>
                         <div class="card-body p-0">
@@ -232,7 +232,7 @@
                                                                 </span>
                                                             @endforeach
                                                             @if($prescription->prescriptionItems->count() > 3)
-                                                                <span class="badge badge-light">
+                                                                <span class="badge bg-light">
                                                                     +{{ $prescription->prescriptionItems->count() - 3 }} more
                                                                 </span>
                                                             @endif
@@ -328,7 +328,7 @@
                                             <br>
                                             <small class="text-muted">{{ $topMed->prescription_count }} prescriptions</small>
                                         </div>
-                                        <span class="badge badge-primary badge-pill">{{ number_format($topMed->total_dispensed) }}</span>
+                                        <span class="badge bg-primary badge-pill">{{ number_format($topMed->total_dispensed) }}</span>
                                     </li>
                                 @endforeach
                             </ul>

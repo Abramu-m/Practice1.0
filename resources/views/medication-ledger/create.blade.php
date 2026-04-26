@@ -20,7 +20,7 @@
             @csrf
             <div class="row">
               <div class="col-md-6">
-                <div class="form-group">
+                <div class="mb-3">
                   <label for="medication_id">Medication <span class="text-danger">*</span></label>
                   <select name="medication_id" id="medication_id" class="form-control @error('medication_id') is-invalid @enderror" required>
                     <option value="">Select Medication</option>
@@ -37,7 +37,7 @@
               </div>
               
               <div class="col-md-6">
-                <div class="form-group">
+                <div class="mb-3">
                   <label for="batch_number">Batch Number <span class="text-danger">*</span></label>
                   <input type="text" name="batch_number" id="batch_number" 
                          class="form-control @error('batch_number') is-invalid @enderror" 
@@ -51,7 +51,7 @@
 
             <div class="row">
               <div class="col-md-6">
-                <div class="form-group">
+                <div class="mb-3">
                   <label for="goods_received_note_id">Goods Received Note</label>
                   <select name="goods_received_note_id" id="goods_received_note_id" class="form-control @error('goods_received_note_id') is-invalid @enderror">
                     <option value="">Select GRN (Optional)</option>
@@ -68,7 +68,7 @@
               </div>
               
               <div class="col-md-6">
-                <div class="form-group">
+                <div class="mb-3">
                   <label for="supplier_name">Supplier Name</label>
                   <input type="text" name="supplier_name" id="supplier_name" 
                          class="form-control @error('supplier_name') is-invalid @enderror" 
@@ -82,7 +82,7 @@
 
             <div class="row">
               <div class="col-md-4">
-                <div class="form-group">
+                <div class="mb-3">
                   <label for="initial_quantity">Initial Quantity <span class="text-danger">*</span></label>
                   <input type="text" name="initial_quantity" id="initial_quantity" 
                          class="form-control @error('initial_quantity') is-invalid @enderror" 
@@ -94,7 +94,7 @@
               </div>
               
               <div class="col-md-4">
-                <div class="form-group">
+                <div class="mb-3">
                   <label for="cost_per_unit">Cost per Unit</label>
                   <div class="input-group">
                     <div class="input-group-prepend">
@@ -111,7 +111,7 @@
               </div>
               
               <div class="col-md-4">
-                <div class="form-group">
+                <div class="mb-3">
                   <label for="total_cost">Total Cost</label>
                   <div class="input-group">
                     <div class="input-group-prepend">
@@ -130,7 +130,7 @@
 
             <div class="row">
               <div class="col-md-6">
-                <div class="form-group">
+                <div class="mb-3">
                   <label for="expiry_date">Expiry Date</label>
                   <input type="date" name="expiry_date" id="expiry_date" 
                          class="form-control @error('expiry_date') is-invalid @enderror" 
@@ -142,7 +142,7 @@
               </div>
               
               <div class="col-md-6">
-                <div class="form-group">
+                <div class="mb-3">
                   <label for="manufacture_date">Manufacture Date</label>
                   <input type="date" name="manufacture_date" id="manufacture_date" 
                          class="form-control @error('manufacture_date') is-invalid @enderror" 
@@ -156,7 +156,7 @@
 
             <div class="row">
               <div class="col-md-6">
-                <div class="form-group">
+                <div class="mb-3">
                   <label for="storage_location">Storage Location</label>
                   <input type="text" name="storage_location" id="storage_location" 
                          class="form-control @error('storage_location') is-invalid @enderror" 
@@ -168,7 +168,7 @@
               </div>
               
               <div class="col-md-6">
-                <div class="form-group">
+                <div class="mb-3">
                   <label for="status">Status <span class="text-danger">*</span></label>
                   <select name="status" id="status" class="form-control @error('status') is-invalid @enderror" required>
                     <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>Active</option>
@@ -186,7 +186,7 @@
 
             <div class="row">
               <div class="col-12">
-                <div class="form-group">
+                <div class="mb-3">
                   <label for="notes">Notes</label>
                   <textarea name="notes" id="notes" rows="3" 
                             class="form-control @error('notes') is-invalid @enderror">{{ old('notes') }}</textarea>
@@ -198,7 +198,7 @@
             </div>
 
             <div class="row">
-              <div class="col-12 text-right">
+              <div class="col-12 text-end">
                 <button type="submit" class="btn btn-primary">
                   <i class="fa fa-save"></i> Save Batch
                 </button>

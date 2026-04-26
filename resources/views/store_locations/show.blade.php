@@ -37,12 +37,12 @@
                                 </tr>
                                 <tr>
                                     <th>Type</th>
-                                    <td><span class="badge badge-info">{{ ucfirst($location->type) }}</span></td>
+                                    <td><span class="badge bg-info">{{ ucfirst($location->type) }}</span></td>
                                 </tr>
                                 <tr>
                                     <th>Status</th>
                                     <td>
-                                        <span class="badge {{ $location->is_active ? 'badge-success' : 'badge-danger' }}">
+                                        <span class="badge {{ $location->is_active ? 'bg-success' : 'bg-danger' }}">
                                             {{ $location->is_active ? 'Active' : 'Inactive' }}
                                         </span>
                                     </td>
@@ -62,7 +62,7 @@
                                 <tr>
                                     <th width="30%">Can Request</th>
                                     <td>
-                                        <span class="badge {{ $location->can_request ? 'badge-success' : 'badge-secondary' }}">
+                                        <span class="badge {{ $location->can_request ? 'bg-success' : 'bg-secondary' }}">
                                             {{ $location->can_request ? 'Yes' : 'No' }}
                                         </span>
                                     </td>
@@ -70,7 +70,7 @@
                                 <tr>
                                     <th>Can Issue</th>
                                     <td>
-                                        <span class="badge {{ $location->can_issue ? 'badge-success' : 'badge-secondary' }}">
+                                        <span class="badge {{ $location->can_issue ? 'bg-success' : 'bg-secondary' }}">
                                             {{ $location->can_issue ? 'Yes' : 'No' }}
                                         </span>
                                     </td>
@@ -78,7 +78,7 @@
                                 <tr>
                                     <th>Can Receive</th>
                                     <td>
-                                        <span class="badge {{ $location->can_receive ? 'badge-success' : 'badge-secondary' }}">
+                                        <span class="badge {{ $location->can_receive ? 'bg-success' : 'bg-secondary' }}">
                                             {{ $location->can_receive ? 'Yes' : 'No' }}
                                         </span>
                                     </td>
@@ -86,7 +86,7 @@
                                 <tr>
                                     <th>Requires Approval</th>
                                     <td>
-                                        <span class="badge {{ $location->requires_approval ? 'badge-warning' : 'badge-secondary' }}">
+                                        <span class="badge {{ $location->requires_approval ? 'bg-warning' : 'bg-secondary' }}">
                                             {{ $location->requires_approval ? 'Yes' : 'No' }}
                                         </span>
                                     </td>
@@ -132,7 +132,7 @@
                                             <tr class="{{ $stock->is_expired ? 'table-danger' : ($stock->is_expiring_soon ? 'table-warning' : '') }}">
                                                 <td>{{ $stock->medication->generic_name ?? 'Unknown' }}</td>
                                                 <td>
-                                                    <span class="badge badge-secondary">
+                                                    <span class="badge bg-secondary">
                                                         {{ $stock->medication->isMedication() ? 'Medication' : 'Consumable' }}
                                                     </span>
                                                 </td>
@@ -141,13 +141,13 @@
                                                 <td>{{ $stock->expiry_date ? $stock->expiry_date->format('M d, Y') : 'N/A' }}</td>
                                                 <td>
                                                     @if($stock->is_expired)
-                                                        <span class="badge badge-danger">Expired</span>
+                                                        <span class="badge bg-danger">Expired</span>
                                                     @elseif($stock->is_expiring_soon)
-                                                        <span class="badge badge-warning">Expiring Soon</span>
+                                                        <span class="badge bg-warning">Expiring Soon</span>
                                                     @elseif($stock->current_quantity <= 0)
-                                                        <span class="badge badge-secondary">Out of Stock</span>
+                                                        <span class="badge bg-secondary">Out of Stock</span>
                                                     @else
-                                                        <span class="badge badge-success">In Stock</span>
+                                                        <span class="badge bg-success">In Stock</span>
                                                     @endif
                                                 </td>
                                             </tr>

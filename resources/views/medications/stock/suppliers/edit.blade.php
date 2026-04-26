@@ -109,7 +109,7 @@
                         <h5 class="section-header">Basic Information</h5>
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="name" class="form-label">Supplier Name <span class="text-danger">*</span></label>
                                     <input type="text" 
                                            class="form-control @error('name') is-invalid @enderror" 
@@ -126,7 +126,7 @@
                             </div>
 
                             <div class="col-md-6">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="email" class="form-label">Email Address</label>
                                     <input type="email" 
                                            class="form-control @error('email') is-invalid @enderror" 
@@ -143,7 +143,7 @@
 
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="phone" class="form-label">Phone Number</label>
                                     <input type="text" 
                                            class="form-control @error('phone') is-invalid @enderror" 
@@ -158,7 +158,7 @@
                             </div>
 
                             <div class="col-md-6">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="is_active" class="form-label">Status</label>
                                     <select class="form-control @error('is_active') is-invalid @enderror" 
                                             id="is_active" 
@@ -183,7 +183,7 @@
                         <h5 class="section-header">Address Information</h5>
                         <div class="row">
                             <div class="col-md-12">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="address" class="form-label">Street Address</label>
                                     <textarea class="form-control @error('address') is-invalid @enderror" 
                                               id="address" 
@@ -199,7 +199,7 @@
 
                         <div class="row">
                             <div class="col-md-4">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="city" class="form-label">City</label>
                                     <input type="text" 
                                            class="form-control @error('city') is-invalid @enderror" 
@@ -214,7 +214,7 @@
                             </div>
 
                             <div class="col-md-4">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="country" class="form-label">Country</label>
                                     <select class="form-control @error('country') is-invalid @enderror" 
                                             id="country" 
@@ -238,7 +238,7 @@
                             </div>
 
                             <div class="col-md-4">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="postal_code" class="form-label">Postal Code</label>
                                     <input type="text" 
                                            class="form-control @error('postal_code') is-invalid @enderror" 
@@ -257,7 +257,7 @@
                         <h5 class="section-header">Business Information</h5>
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="tax_number" class="form-label">Tax Number</label>
                                     <input type="text" 
                                            class="form-control @error('tax_number') is-invalid @enderror" 
@@ -273,7 +273,7 @@
                             </div>
 
                             <div class="col-md-6">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="license_number" class="form-label">License Number</label>
                                     <input type="text" 
                                            class="form-control @error('license_number') is-invalid @enderror" 
@@ -302,7 +302,7 @@
                         
                         <div class="row">
                             <div class="col-md-4">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="credit_limit" class="form-label">Credit Limit</label>
                                     <div class="input-group">
                                         <span class="input-group-text">$</span>
@@ -323,7 +323,7 @@
                             </div>
 
                             <div class="col-md-4">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="credit_days" class="form-label">Credit Days</label>
                                     <div class="input-group">
                                         <input type="number" 
@@ -343,7 +343,7 @@
                             </div>
 
                             <div class="col-md-4">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="payment_terms" class="form-label">Payment Terms</label>
                                     <select class="form-control @error('payment_terms') is-invalid @enderror" 
                                             id="payment_terms" 

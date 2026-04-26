@@ -32,7 +32,7 @@
                     <div class="card">
                         <div class="card-header">
                             <h3 class="card-title">
-                                <i class="fas fa-info-circle mr-2"></i>
+                                <i class="fas fa-info-circle me-2"></i>
                                 Category Information
                             </h3>
                             <div class="card-tools">
@@ -54,7 +54,7 @@
                                 <tr>
                                     <td><strong>Total Items:</strong></td>
                                     <td>
-                                        <span class="badge badge-info badge-lg">
+                                        <span class="badge bg-info badge-lg">
                                             {{ $medications->count() }}
                                         </span>
                                     </td>
@@ -96,7 +96,7 @@
                     <div class="card mt-3">
                         <div class="card-header">
                             <h3 class="card-title">
-                                <i class="fas fa-chart-bar mr-2"></i>
+                                <i class="fas fa-chart-bar me-2"></i>
                                 Quick Statistics
                             </h3>
                         </div>
@@ -135,7 +135,7 @@
                     <div class="card">
                         <div class="card-header">
                             <h3 class="card-title">
-                                <i class="fas fa-boxes mr-2"></i>
+                                <i class="fas fa-boxes me-2"></i>
                                 Items in this Category ({{ $medications->count() }})
                             </h3>
                             <div class="card-tools">
@@ -168,7 +168,7 @@
                                                 </td>
                                                 <td>{{ $medication->generic_name ?? '-' }}</td>
                                                 <td>
-                                                    <span class="badge {{ $medication->stock_quantity > 0 ? 'badge-success' : 'badge-danger' }} text-black">
+                                                    <span class="badge {{ $medication->stock_quantity > 0 ? 'bg-success' : 'bg-danger' }} text-black">
                                                         {{ number_format($medication->stock_quantity, 2) }}
                                                     </span>
                                                     @if($medication->stock_quantity <= $medication->reorder_level && $medication->stock_quantity > 0)
@@ -176,7 +176,7 @@
                                                     @endif
                                                 </td>
                                                 <td>
-                                                    <span class="badge {{ $medication->is_active ? 'badge-success' : 'badge-secondary' }}  text-black">
+                                                    <span class="badge {{ $medication->is_active ? 'bg-success' : 'bg-secondary' }}  text-black">
                                                         {{ $medication->is_active ? 'Active' : 'Inactive' }}
                                                     </span>
                                                 </td>

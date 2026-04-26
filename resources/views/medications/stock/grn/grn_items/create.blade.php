@@ -244,7 +244,7 @@
                 <h5>Add New Item</h5>
                 <p>Add medications or consumables to this GRN</p>
                 <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addItemModal">
-                    <i class="fas fa-plus mr-2"></i>Add Item
+                    <i class="fas fa-plus me-2"></i>Add Item
                 </button>
             </div>
         @endif
@@ -257,7 +257,7 @@
                 <h5>Manage Items</h5>
                 <p>View, edit, or remove items from this GRN</p>
                 <a href="{{ route('medications.stock.grn.items.index', $grn) }}" class="btn btn-primary">
-                    <i class="fas fa-cog mr-2"></i>Manage Items
+                    <i class="fas fa-cog me-2"></i>Manage Items
                 </a>
             </div>
         @endif
@@ -269,7 +269,7 @@
             <h5>Review GRN</h5>
             <p>View complete GRN details and status</p>
             <a href="{{ route('medications.stock.grn.show', $grn) }}" class="btn btn-warning">
-                <i class="fas fa-file-alt mr-2"></i>View GRN
+                <i class="fas fa-file-alt me-2"></i>View GRN
             </a>
         </div>
     </div>
@@ -305,7 +305,7 @@
             </div>
             
             <div class="stat-item">
-                <span class="font-weight-bold">Net Amount:</span>
+                <span class="fw-bold">Net Amount:</span>
                 <span class="stat-value text-success">${{ number_format($grn->items->sum('net_amount'), 2) }}</span>
             </div>
         </div>
@@ -324,8 +324,8 @@
                             <tr>
                                 <th>Item</th>
                                 <th>Batch</th>
-                                <th class="text-right">Quantity</th>
-                                <th class="text-right">Net Amount</th>
+                                <th class="text-end">Quantity</th>
+                                <th class="text-end">Net Amount</th>
                                 <th>Added</th>
                             </tr>
                         </thead>
@@ -341,12 +341,12 @@
                                         @endif
                                     </td>
                                     <td>
-                                        <span class="badge badge-secondary">{{ $item->batch_number }}</span>
+                                        <span class="badge bg-secondary">{{ $item->batch_number }}</span>
                                     </td>
-                                    <td class="text-right">
+                                    <td class="text-end">
                                         {{ number_format($item->received_quantity, 2) }}
                                     </td>
-                                    <td class="text-right">
+                                    <td class="text-end">
                                         <strong>${{ number_format($item->net_amount, 2) }}</strong>
                                     </td>
                                     <td>

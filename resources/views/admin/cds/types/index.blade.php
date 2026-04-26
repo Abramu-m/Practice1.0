@@ -55,16 +55,16 @@
                                     </td>
                                     <td>{{ $ruleType->description }}</td>
                                     <td>
-                                        <span class="badge badge-primary">{{ $ruleType->rules_count }}</span>
+                                        <span class="badge bg-primary">{{ $ruleType->rules_count }}</span>
                                     </td>
                                     <td>
-                                        <span class="badge badge-success">{{ $ruleType->active_rules_count }}</span>
+                                        <span class="badge bg-success">{{ $ruleType->active_rules_count }}</span>
                                     </td>
                                     <td>
                                         @if($ruleType->is_active)
-                                            <span class="badge badge-success">Active</span>
+                                            <span class="badge bg-success">Active</span>
                                         @else
-                                            <span class="badge badge-secondary">Inactive</span>
+                                            <span class="badge bg-secondary">Inactive</span>
                                         @endif
                                     </td>
                                     <td>

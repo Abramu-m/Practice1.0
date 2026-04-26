@@ -33,7 +33,7 @@
                             <div class="d-flex justify-content-between">
                                 <div>
                                     <div class="text-white-75 small">Today's Receipts</div>
-                                    <div class="text-lg font-weight-bold">{{ $todayReceipts ?? 0 }}</div>
+                                    <div class="text-lg fw-bold">{{ $todayReceipts ?? 0 }}</div>
                                 </div>
                                 <div class="align-self-center">
                                     <i class="fas fa-receipt fa-2x text-white-25"></i>
@@ -48,7 +48,7 @@
                             <div class="d-flex justify-content-between">
                                 <div>
                                     <div class="text-white-75 small">Today's Revenue</div>
-                                    <div class="text-lg font-weight-bold">${{ number_format($todayRevenue ?? 0, 2) }}</div>
+                                    <div class="text-lg fw-bold">${{ number_format($todayRevenue ?? 0, 2) }}</div>
                                 </div>
                                 <div class="align-self-center">
                                     <i class="fas fa-dollar-sign fa-2x text-white-25"></i>
@@ -63,7 +63,7 @@
                             <div class="d-flex justify-content-between">
                                 <div>
                                     <div class="text-white-75 small">Pending Statements</div>
-                                    <div class="text-lg font-weight-bold">{{ $pendingStatements ?? 0 }}</div>
+                                    <div class="text-lg fw-bold">{{ $pendingStatements ?? 0 }}</div>
                                 </div>
                                 <div class="align-self-center">
                                     <i class="fas fa-file-invoice-dollar fa-2x text-white-25"></i>
@@ -78,7 +78,7 @@
                             <div class="d-flex justify-content-between">
                                 <div>
                                     <div class="text-white-75 small">This Month</div>
-                                    <div class="text-lg font-weight-bold">${{ number_format($monthRevenue ?? 0, 2) }}</div>
+                                    <div class="text-lg fw-bold">${{ number_format($monthRevenue ?? 0, 2) }}</div>
                                 </div>
                                 <div class="align-self-center">
                                     <i class="fas fa-chart-bar fa-2x text-white-25"></i>

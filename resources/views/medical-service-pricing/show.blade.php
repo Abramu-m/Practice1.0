@@ -33,7 +33,7 @@
                                 <tr>
                                     <th>Service Category:</th>
                                     <td>
-                                        <span class="badge badge-secondary">
+                                        <span class="badge bg-secondary">
                                             {{ $medicalServicePricing->medicalService->serviceCategory->name ?? 'N/A' }}
                                         </span>
                                     </td>
@@ -41,7 +41,7 @@
                                 <tr>
                                     <th>Patient Category:</th>
                                     <td>
-                                        <span class="badge badge-info">
+                                        <span class="badge bg-info">
                                             {{ $medicalServicePricing->patientCategory->description }}
                                         </span>
                                     </td>
@@ -90,9 +90,9 @@
                                     <th>Active Status:</th>
                                     <td>
                                         @if($medicalServicePricing->is_active)
-                                            <span class="badge badge-success">Active</span>
+                                            <span class="badge bg-success">Active</span>
                                         @else
-                                            <span class="badge badge-danger">Inactive</span>
+                                            <span class="badge bg-danger">Inactive</span>
                                         @endif
                                     </td>
                                 </tr>
@@ -156,9 +156,9 @@
                                                     <th>Requires Sample:</th>
                                                     <td>
                                                         @if($medicalServicePricing->medicalService->requires_sample)
-                                                            <span class="badge badge-warning">Yes</span>
+                                                            <span class="badge bg-warning">Yes</span>
                                                         @else
-                                                            <span class="badge badge-secondary">No</span>
+                                                            <span class="badge bg-secondary">No</span>
                                                         @endif
                                                     </td>
                                                 </tr>

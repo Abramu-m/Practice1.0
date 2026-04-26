@@ -14,7 +14,7 @@
                     <form action="{{ route('designations.store') }}" method="POST">
                         @csrf
                         
-                        <div class="form-group mb-3">
+                        <div class="mb-3">
                             <label for="designation_code">Designation Code</label>
                             <input type="text" class="form-control @error('designation_code') is-invalid @enderror" 
                                    id="designation_code" name="designation_code" value="{{ old('designation_code') }}" required>
@@ -23,7 +23,7 @@
                             @enderror
                         </div>
 
-                        <div class="form-group mb-3">
+                        <div class="mb-3">
                             <label for="description">Description</label>
                             <textarea class="form-control @error('description') is-invalid @enderror" 
                                       id="description" name="description" rows="3">{{ old('description') }}</textarea>
@@ -32,7 +32,7 @@
                             @enderror
                         </div>
 
-                        <div class="form-group">
+                        <div class="mb-3">
                             <button type="submit" class="btn btn-primary">Create Designation</button>
                             <a href="{{ route('designations.index') }}" class="btn btn-secondary">Cancel</a>
                         </div>

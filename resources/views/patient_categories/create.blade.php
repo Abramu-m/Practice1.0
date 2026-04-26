@@ -12,12 +12,12 @@
         <form action="{{ route('patient_categories.store') }}" method="POST">
             @csrf
             <div class="card-body">
-                <div class="form-group">
+                <div class="mb-3">
                     <label for="description">Description *</label>
                     <input type="text" name="description" class="form-control" value="{{ old('description') }}" required maxlength="50">
                 </div>
 
-                <div class="form-group">
+                <div class="mb-3">
                     <label for="type">Type *</label>
                     <select name="type" class="form-control" required>
                         <option value="">Select Type</option>
@@ -26,13 +26,13 @@
                     </select>
                 </div>
 
-                <div class="form-group mt-2">
+                <div class="mb-3 mt-2">
                     <label for="code">Code (optional)</label>
                     <input type="text" name="code" class="form-control" value="{{ old('code') }}" maxlength="30">
                     <small class="form-text text-muted">Short code for programmatic checks (e.g., NHIF)</small>
                 </div>
 
-                <div class="form-group mt-2">
+                <div class="mb-3 mt-2">
                     <div class="form-check">
                         <input type="checkbox" name="is_active" class="form-check-input" value="1" {{ old('is_active') ? 'checked' : '' }}>
                         <label class="form-check-label">Active</label>
@@ -75,13 +75,13 @@
                     </div>
                 @endif
 
-                <div class="form-group">
+                <div class="mb-3">
                     <label for="description">Description *</label>
                     <input type="text" name="description" class="form-control" value="{{ old('description') }}" required maxlength="50">
                     <small class="form-text text-muted">Maximum 50 characters</small>
                 </div>
 
-                <div class="form-group">
+                <div class="mb-3">
                     <label for="type">Type *</label>
                     <select name="type" class="form-control" required>
                         <option value="">Select Type</option>
@@ -91,7 +91,7 @@
                     <small class="form-text text-muted">Choose whether this category is for cash or insurance patients</small>
                 </div>
 
-                <div class="form-group">
+                <div class="mb-3">
                     <div class="form-check">
                         <input type="checkbox" name="is_active" class="form-check-input" value="1" {{ old('is_active', true) ? 'checked' : '' }}>
                         <label class="form-check-label">Active</label>

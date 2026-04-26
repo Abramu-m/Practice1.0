@@ -29,12 +29,12 @@
                 <div class="col-12 col-sm-6 col-md-3">
                     <div class="card border-left-warning shadow h-100 py-2">
                         <div class="card-body">
-                            <div class="row no-gutters align-items-center">
-                                <div class="col mr-2">
-                                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                            <div class="row g-0 align-items-center">
+                                <div class="col me-2">
+                                    <div class="text-xs fw-bold text-warning text-uppercase mb-1">
                                         Pending Prescriptions
                                     </div>
-                                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                    <div class="h5 mb-0 fw-bold text-gray-800">
                                         {{ $todayStats['pending_prescriptions'] }}
                                     </div>
                                 </div>
@@ -53,12 +53,12 @@
                 <div class="col-12 col-sm-6 col-md-3">
                     <div class="card border-left-success shadow h-100 py-2">
                         <div class="card-body">
-                            <div class="row no-gutters align-items-center">
-                                <div class="col mr-2">
-                                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                            <div class="row g-0 align-items-center">
+                                <div class="col me-2">
+                                    <div class="text-xs fw-bold text-success text-uppercase mb-1">
                                         Dispensed Today
                                     </div>
-                                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                    <div class="h5 mb-0 fw-bold text-gray-800">
                                         {{ $todayStats['dispensed_today'] }}
                                     </div>
                                 </div>
@@ -77,12 +77,12 @@
                 <div class="col-12 col-sm-6 col-md-3">
                     <div class="card border-left-primary shadow h-100 py-2">
                         <div class="card-body">
-                            <div class="row no-gutters align-items-center">
-                                <div class="col mr-2">
-                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            <div class="row g-0 align-items-center">
+                                <div class="col me-2">
+                                    <div class="text-xs fw-bold text-primary text-uppercase mb-1">
                                         Patients Today
                                     </div>
-                                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                    <div class="h5 mb-0 fw-bold text-gray-800">
                                         {{ $todayStats['total_patients'] }}
                                     </div>
                                 </div>
@@ -101,12 +101,12 @@
                 <div class="col-12 col-sm-6 col-md-3">
                     <div class="card border-left-danger shadow h-100 py-2">
                         <div class="card-body">
-                            <div class="row no-gutters align-items-center">
-                                <div class="col mr-2">
-                                    <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                            <div class="row g-0 align-items-center">
+                                <div class="col me-2">
+                                    <div class="text-xs fw-bold text-danger text-uppercase mb-1">
                                         Stock Alerts
                                     </div>
-                                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                    <div class="h5 mb-0 fw-bold text-gray-800">
                                         {{ $todayStats['unavailable_items'] }}
                                     </div>
                                 </div>
@@ -130,36 +130,36 @@
                     <div class="card shadow">
                         <div class="card-header bg-primary text-white">
                             <h5 class="mb-0">
-                                <i class="bi bi-lightning-charge mr-2"></i>
+                                <i class="bi bi-lightning-charge me-2"></i>
                                 Quick Actions
                             </h5>
                         </div>
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-6 mb-3">
-                                    <a href="{{ route('pharmacist.prescriptions.index') }}" class="btn btn-primary btn-block">
-                                        <i class="bi bi-list-check mr-1"></i>
+                                    <a href="{{ route('pharmacist.prescriptions.index') }}" class="btn btn-primary w-100">
+                                        <i class="bi bi-list-check me-1"></i>
                                         All Prescriptions
                                     </a>
                                 </div>
                                 <div class="col-6 mb-3">
-                                    <a href="{{ route('pharmacist.prescriptions.index', ['status' => 'pending']) }}" class="btn btn-warning btn-block">
-                                        <i class="bi bi-clock mr-1"></i>
+                                    <a href="{{ route('pharmacist.prescriptions.index', ['status' => 'pending']) }}" class="btn btn-warning w-100">
+                                        <i class="bi bi-clock me-1"></i>
                                         Pending Queue
                                         @if($todayStats['pending_prescriptions'] > 0)
-                                            <span class="badge badge-light ml-1">{{ $todayStats['pending_prescriptions'] }}</span>
+                                            <span class="badge bg-light ms-1">{{ $todayStats['pending_prescriptions'] }}</span>
                                         @endif
                                     </a>
                                 </div>
                                 <div class="col-6 mb-3">
-                                    <a href="{{ route('medication-cash-sales.index') }}" class="btn btn-success btn-block">
-                                        <i class="bi bi-cash-stack mr-1"></i>
+                                    <a href="{{ route('medication-cash-sales.index') }}" class="btn btn-success w-100">
+                                        <i class="bi bi-cash-stack me-1"></i>
                                         Cash Sales
                                     </a>
                                 </div>
                                 <div class="col-6 mb-3">
-                                    <a href="{{ route('store-locations-stock.index') }}" class="btn btn-info btn-block">
-                                        <i class="bi bi-boxes mr-1"></i>
+                                    <a href="{{ route('store-locations-stock.index') }}" class="btn btn-info w-100">
+                                        <i class="bi bi-boxes me-1"></i>
                                         Stock Levels
                                     </a>
                                 </div>
@@ -172,7 +172,7 @@
                     <div class="card shadow">
                         <div class="card-header bg-success text-white">
                             <h5 class="mb-0">
-                                <i class="bi bi-capsule mr-2"></i>
+                                <i class="bi bi-capsule me-2"></i>
                                 Pharmacy Operations
                             </h5>
                         </div>
@@ -234,7 +234,7 @@
                     <div class="card shadow">
                         <div class="card-header bg-warning text-white">
                             <h5 class="mb-0">
-                                <i class="bi bi-boxes mr-2"></i>
+                                <i class="bi bi-boxes me-2"></i>
                                 Pharmacy Stock Management
                             </h5>
                         </div>
@@ -265,14 +265,14 @@
                                 @if(isset($recentStockActivities) && count($recentStockActivities) > 0)
                                     @foreach($recentStockActivities as $activity)
                                     <div class="d-flex align-items-center mb-2 p-2 border rounded">
-                                        <div class="mr-3">
+                                        <div class="me-3">
                                             <i class="bi bi-{{ $activity['icon'] ?? 'arrow-up-right' }} text-{{ $activity['color'] ?? 'primary' }}"></i>
                                         </div>
                                         <div class="flex-grow-1">
-                                            <div class="font-weight-bold">{{ $activity['medication'] ?? 'Medication Update' }}</div>
+                                            <div class="fw-bold">{{ $activity['medication'] ?? 'Medication Update' }}</div>
                                             <small class="text-muted">{{ $activity['description'] ?? 'Stock level changed' }}</small>
                                         </div>
-                                        <div class="text-right">
+                                        <div class="text-end">
                                             <small class="text-muted">{{ $activity['time'] ?? 'Now' }}</small>
                                         </div>
                                     </div>
@@ -286,11 +286,11 @@
                             </div>
                         </div>
                         <div class="card-footer">
-                            <a href="{{ route('store-locations-stock.index') }}" class="btn btn-warning btn-sm mr-2">
-                                <i class="bi bi-eye mr-1"></i>View Stock
+                            <a href="{{ route('store-locations-stock.index') }}" class="btn btn-warning btn-sm me-2">
+                                <i class="bi bi-eye me-1"></i>View Stock
                             </a>
                             <a href="{{ route('store.requisitions.index') }}" class="btn btn-primary btn-sm">
-                                <i class="bi bi-clipboard-data mr-1"></i>Requisitions
+                                <i class="bi bi-clipboard-data me-1"></i>Requisitions
                             </a>
                         </div>
                     </div>
@@ -300,7 +300,7 @@
                     <div class="card shadow">
                         <div class="card-header bg-info text-white">
                             <h5 class="mb-0">
-                                <i class="bi bi-graph-up mr-2"></i>
+                                <i class="bi bi-graph-up me-2"></i>
                                 Performance Metrics
                             </h5>
                         </div>
@@ -348,14 +348,14 @@
                         <div class="card-body">
                             <div class="progress-group">
                                 Pending Prescriptions
-                                <span class="float-right"><b>{{ $todayStats['pending_prescriptions'] }}</b>/{{ $todayStats['pending_prescriptions'] + $todayStats['dispensed_today'] }}</span>
+                                <span class="float-end"><b>{{ $todayStats['pending_prescriptions'] }}</b>/{{ $todayStats['pending_prescriptions'] + $todayStats['dispensed_today'] }}</span>
                                 <div class="progress progress-sm">
                                     <div class="progress-bar bg-warning" style="width: {{ $todayStats['pending_prescriptions'] + $todayStats['dispensed_today'] > 0 ? ($todayStats['pending_prescriptions'] / ($todayStats['pending_prescriptions'] + $todayStats['dispensed_today'])) * 100 : 0 }}%"></div>
                                 </div>
                             </div>
                             <div class="progress-group">
                                 Dispensed Today
-                                <span class="float-right"><b>{{ $todayStats['dispensed_today'] }}</b>/{{ $todayStats['pending_prescriptions'] + $todayStats['dispensed_today'] }}</span>
+                                <span class="float-end"><b>{{ $todayStats['dispensed_today'] }}</b>/{{ $todayStats['pending_prescriptions'] + $todayStats['dispensed_today'] }}</span>
                                 <div class="progress progress-sm">
                                     <div class="progress-bar bg-success" style="width: {{ $todayStats['pending_prescriptions'] + $todayStats['dispensed_today'] > 0 ? ($todayStats['dispensed_today'] / ($todayStats['pending_prescriptions'] + $todayStats['dispensed_today'])) * 100 : 0 }}%"></div>
                                 </div>
@@ -403,12 +403,12 @@
                                                 <small class="text-muted">{{ $visit->created_at->format('h:i A') }}</small>
                                             </td>
                                             <td>
-                                                <span class="badge badge-info">
+                                                <span class="badge bg-info">
                                                     {{ $visit->consultation->prescriptions->where('status', 'pending')->count() }} items
                                                 </span>
                                             </td>
                                             <td>
-                                                <span class="badge badge-info">Available to Process</span>
+                                                <span class="badge bg-info">Available to Process</span>
                                             </td>
                                             <td>
                                                 <a href="{{ route('pharmacist.prescriptions.show', $visit->id) }}" class="btn btn-sm btn-primary">

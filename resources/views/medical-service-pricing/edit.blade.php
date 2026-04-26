@@ -20,7 +20,7 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="medical_service_id">Medical Service <span class="text-danger">*</span></label>
                                     <select class="form-control @error('medical_service_id') is-invalid @enderror" 
                                             id="medical_service_id" name="medical_service_id" required>
@@ -41,7 +41,7 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="patient_category_id">Patient Category <span class="text-danger">*</span></label>
                                     <select class="form-control @error('patient_category_id') is-invalid @enderror" 
                                             id="patient_category_id" name="patient_category_id" required>
@@ -62,7 +62,7 @@
 
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="selling_price">Selling Price <span class="text-danger">*</span></label>
                                     <div class="input-group">
                                         <div class="input-group-prepend">
@@ -79,7 +79,7 @@
                                 </div>
                             </div>
                             <div class="col-md-3">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="markup_percentage">Markup %</label>
                                     <div class="input-group">
                                         <input type="number" class="form-control @error('markup_percentage') is-invalid @enderror" 
@@ -96,7 +96,7 @@
                                 </div>
                             </div>
                             <div class="col-md-3">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="discount_percentage">Discount %</label>
                                     <div class="input-group">
                                         <input type="number" class="form-control @error('discount_percentage') is-invalid @enderror" 
@@ -116,7 +116,7 @@
 
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="effective_from">Effective From <span class="text-danger">*</span></label>
                                     <input type="date" class="form-control @error('effective_from') is-invalid @enderror" 
                                            id="effective_from" name="effective_from" 
@@ -127,7 +127,7 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="effective_to">Effective To</label>
                                     <input type="date" class="form-control @error('effective_to') is-invalid @enderror" 
                                            id="effective_to" name="effective_to" 
@@ -142,7 +142,7 @@
 
                         <div class="row">
                             <div class="col-md-12">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="notes">Notes</label>
                                     <textarea class="form-control @error('notes') is-invalid @enderror" 
                                               id="notes" name="notes" rows="3" maxlength="1000">{{ old('notes', $medicalServicePricing->notes) }}</textarea>
@@ -156,7 +156,7 @@
 
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <div class="form-check">
                                         <input type="checkbox" class="form-check-input" 
                                                id="is_active" name="is_active" value="1" 

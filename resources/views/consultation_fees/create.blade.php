@@ -36,7 +36,7 @@
                         <div class="row">
                             <!-- Doctor Selection -->
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="doctor_id">Doctor <span class="text-danger">*</span></label>
                                     <select class="form-control @error('doctor_id') is-invalid @enderror" id="doctor_id" name="doctor_id" required>
                                         <option value="">Select Doctor</option>
@@ -54,7 +54,7 @@
 
                             <!-- Patient Category Selection -->
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="patient_category_id">Patient Category <span class="text-danger">*</span></label>
                                     <select class="form-control @error('patient_category_id') is-invalid @enderror" id="patient_category_id" name="patient_category_id" required>
                                         <option value="">Select Patient Category</option>
@@ -74,7 +74,7 @@
                         <div class="row">
                             <!-- Visit Type Selection -->
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="visit_type_id">Visit Type <span class="text-danger">*</span></label>
                                     <select class="form-control @error('visit_type_id') is-invalid @enderror" id="visit_type_id" name="visit_type_id" required>
                                         <option value="">Select Visit Type</option>
@@ -92,7 +92,7 @@
 
                             <!-- Fee Amount -->
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="fee_amount">Fee Amount (Tsh) <span class="text-danger">*</span></label>
                                     <input type="text" step="0.01" min="0" max="999999.99" 
                                            class="form-control @error('fee_amount') is-invalid @enderror" 
@@ -107,7 +107,7 @@
                         </div>
 
                         <!-- Description -->
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="description">Description</label>
                             <textarea class="form-control @error('description') is-invalid @enderror" 
                                       id="description" name="description" rows="3" 
@@ -118,7 +118,7 @@
                         </div>
 
                         <!-- Status -->
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="status">Status <span class="text-danger">*</span></label>
                             <select class="form-control @error('status') is-invalid @enderror" id="status" name="status" required>
                                 <option value="1" {{ old('status', 1) == 1 ? 'selected' : '' }}>Active</option>
@@ -130,7 +130,7 @@
                         </div>
 
                         <!-- Submit Buttons -->
-                        <div class="form-group mt-4">
+                        <div class="mb-3 mt-4">
                             <button type="submit" class="btn btn-primary">
                                 <i class="fas fa-save"></i> Create Consultation Fee
                             </button>

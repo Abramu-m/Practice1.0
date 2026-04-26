@@ -22,21 +22,21 @@
             <form method="GET" action="{{ route('financial.transactions.index') }}">
                 <div class="row">
                     <div class="col-md-3">
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label>Date From</label>
                             <input type="date" name="date_from" class="form-control" 
                                    value="{{ request('date_from') }}">
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label>Date To</label>
                             <input type="date" name="date_to" class="form-control" 
                                    value="{{ request('date_to') }}">
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label>Transaction Type</label>
                             <select name="transaction_type" class="form-control">
                                 <option value="">All Types</option>
@@ -46,7 +46,7 @@
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label>Category</label>
                             <select name="category" class="form-control">
                                 <option value="">All Categories</option>
@@ -62,7 +62,7 @@
                 </div>
                 <div class="row">
                     <div class="col-md-3">
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label>Status</label>
                             <select name="status" class="form-control">
                                 <option value="">All Statuses</option>
@@ -73,14 +73,14 @@
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label>Patient</label>
                             <input type="text" name="patient_search" class="form-control" 
                                    placeholder="Patient name..." value="{{ request('patient_search') }}">
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label>Amount Range</label>
                             <div class="row">
                                 <div class="col-6">
@@ -95,13 +95,13 @@
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label>&nbsp;</label>
                             <div class="d-block">
                                 <button type="submit" class="btn btn-primary">
                                     <i class="fas fa-search"></i> Apply Filters
                                 </button>
-                                <a href="{{ route('financial.transactions.index') }}" class="btn btn-secondary ml-2">
+                                <a href="{{ route('financial.transactions.index') }}" class="btn btn-secondary ms-2">
                                     <i class="fas fa-times"></i> Clear
                                 </a>
                             </div>
@@ -300,15 +300,13 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="confirmationModalTitle">Confirm Action</h5>
-                <button type="button" class="close" data-dismiss="modal">
-                    <span>&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body" id="confirmationModalBody">
                 Are you sure you want to perform this action?
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-primary" id="confirmationModalConfirm">Confirm</button>
             </div>
         </div>

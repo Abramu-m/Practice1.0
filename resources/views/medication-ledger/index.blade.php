@@ -96,10 +96,10 @@
                                             <small>{{ $entry->goodsReceivedNote->grn_number ?? 'N/A' }}</small>
                                         </td>
                                         <td>
-                                            <span class="badge badge-info text-black">{{ number_format($entry->quantity_received) }}</span>
+                                            <span class="badge bg-info text-black">{{ number_format($entry->quantity_received) }}</span>
                                         </td>
                                         <td>
-                                            <span class="badge badge-warning">{{ number_format($entry->quantity_dispensed) }}</span>
+                                            <span class="badge bg-warning">{{ number_format($entry->quantity_dispensed) }}</span>
                                         </td>
                                         <td>
                                             <span class="text-black badge badge-{{ $entry->quantity_remaining > 0 ? 'success' : 'danger' }}">
@@ -174,35 +174,33 @@
                 @csrf
                 <div class="modal-header">
                     <h5 class="modal-title" id="dispenseModalLabel">Dispense Medication</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <input type="hidden" name="medication_id" id="dispense_medication_id">
                     
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label>Medication:</label>
                         <p id="dispense_medication_name" class="form-control-plaintext"></p>
                     </div>
                     
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label>Available Quantity:</label>
                         <p id="dispense_available_quantity" class="form-control-plaintext"></p>
                     </div>
                     
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label for="dispense_quantity">Quantity to Dispense:</label>
                         <input type="text" class="form-control" id="dispense_quantity" name="quantity" min="1" required>
                     </div>
                     
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label for="dispense_reason">Reason:</label>
                         <input type="text" class="form-control" id="dispense_reason" name="reason" required>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-success">Dispense</button>
                 </div>
             </form>

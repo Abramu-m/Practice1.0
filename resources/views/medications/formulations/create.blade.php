@@ -18,7 +18,7 @@
                 <form action="{{ route('medications.formulations.store') }}" method="POST">
                     @csrf
                     <div class="card-body">
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="description">Description <span class="text-danger">*</span></label>
                             <input type="text" class="form-control @error('description') is-invalid @enderror" 
                                    id="description" name="description" value="{{ old('description') }}" required
@@ -29,7 +29,7 @@
                             <small class="form-text text-muted">Enter a clear description of the formulation type.</small>
                         </div>
 
-                        <div class="form-group">
+                        <div class="mb-3">
                             <div class="custom-control custom-switch">
                                 <input type="hidden" name="is_active" value="0">
                                 <input type="checkbox" class="custom-control-input" id="is_active" name="is_active" value="1"
@@ -80,14 +80,14 @@
 
                     <h6 class="mt-3"><i class="fas fa-pills text-info"></i> Common Formulations</h6>
                     <div class="text-muted small">
-                        <span class="badge badge-light mr-1">Tablet</span>
-                        <span class="badge badge-light mr-1">Capsule</span>
-                        <span class="badge badge-light mr-1">Syrup</span>
-                        <span class="badge badge-light mr-1">Injection</span>
-                        <span class="badge badge-light mr-1">Cream</span>
-                        <span class="badge badge-light mr-1">Ointment</span>
-                        <span class="badge badge-light mr-1">Drops</span>
-                        <span class="badge badge-light mr-1">Spray</span>
+                        <span class="badge bg-light me-1">Tablet</span>
+                        <span class="badge bg-light me-1">Capsule</span>
+                        <span class="badge bg-light me-1">Syrup</span>
+                        <span class="badge bg-light me-1">Injection</span>
+                        <span class="badge bg-light me-1">Cream</span>
+                        <span class="badge bg-light me-1">Ointment</span>
+                        <span class="badge bg-light me-1">Drops</span>
+                        <span class="badge bg-light me-1">Spray</span>
                     </div>
                 </div>
             </div>

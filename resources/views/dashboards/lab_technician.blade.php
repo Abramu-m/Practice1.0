@@ -12,14 +12,14 @@
                     <div class="row align-items-center">
                         <div class="col-md-8">
                             <h2 class="mb-1">
-                                <i class="fas fa-microscope mr-2"></i>
+                                <i class="fas fa-microscope me-2"></i>
                                 Welcome, {{ auth()->user()->name }}
                             </h2>
                             <p class="mb-0 opacity-75">Laboratory Dashboard - {{ date('l, F j, Y') }}</p>
                         </div>
-                        <div class="col-md-4 text-right">
+                        <div class="col-md-4 text-end">
                             <div class="small">
-                                <i class="fas fa-flask mr-1"></i>
+                                <i class="fas fa-flask me-1"></i>
                                 Lab Status: {{ $labStatus ?? 'Active' }}
                             </div>
                         </div>
@@ -34,12 +34,12 @@
         <div class="col-lg-3 col-md-6">
             <div class="card border-left-primary shadow h-100 py-2">
                 <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                    <div class="row g-0 align-items-center">
+                        <div class="col me-2">
+                            <div class="text-xs fw-bold text-primary text-uppercase mb-1">
                                 Pending Tests
                             </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            <div class="h5 mb-0 fw-bold text-gray-800">
                                 {{ $pendingTests ?? 0 }}
                             </div>
                         </div>
@@ -59,12 +59,12 @@
         <div class="col-lg-3 col-md-6">
             <div class="card border-left-success shadow h-100 py-2">
                 <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                    <div class="row g-0 align-items-center">
+                        <div class="col me-2">
+                            <div class="text-xs fw-bold text-success text-uppercase mb-1">
                                 Completed Today
                             </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            <div class="h5 mb-0 fw-bold text-gray-800">
                                 {{ $completedToday ?? 0 }}
                             </div>
                         </div>
@@ -84,12 +84,12 @@
         <div class="col-lg-3 col-md-6">
             <div class="card border-left-warning shadow h-100 py-2">
                 <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                    <div class="row g-0 align-items-center">
+                        <div class="col me-2">
+                            <div class="text-xs fw-bold text-warning text-uppercase mb-1">
                                 QC Due
                             </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            <div class="h5 mb-0 fw-bold text-gray-800">
                                 {{ $qcDue ?? 0 }}
                             </div>
                         </div>
@@ -109,12 +109,12 @@
         <div class="col-lg-3 col-md-6">
             <div class="card border-left-danger shadow h-100 py-2">
                 <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                    <div class="row g-0 align-items-center">
+                        <div class="col me-2">
+                            <div class="text-xs fw-bold text-danger text-uppercase mb-1">
                                 Urgent Tests
                             </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            <div class="h5 mb-0 fw-bold text-gray-800">
                                 {{ $urgentTests ?? 0 }}
                             </div>
                         </div>
@@ -138,7 +138,7 @@
             <div class="card shadow">
                 <div class="card-header bg-primary text-white">
                     <h5 class="mb-0">
-                        <i class="fas fa-desktop mr-2"></i>
+                        <i class="fas fa-desktop me-2"></i>
                         Lab Workstation
                     </h5>
                 </div>
@@ -150,10 +150,10 @@
                             <!-- Priority Test Queue -->
                             <div class="mb-3">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <span class="text-danger font-weight-bold">
+                                    <span class="text-danger fw-bold">
                                         <i class="fas fa-circle text-danger"></i> Critical/Urgent
                                     </span>
-                                    <span class="badge badge-danger">{{ $testQueue['critical'] ?? 0 }}</span>
+                                    <span class="badge bg-danger">{{ $testQueue['critical'] ?? 0 }}</span>
                                 </div>
                                 <div class="progress mb-2" style="height: 8px;">
                                     <div class="progress-bar bg-danger" role="progressbar" 
@@ -166,10 +166,10 @@
 
                             <div class="mb-3">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <span class="text-warning font-weight-bold">
+                                    <span class="text-warning fw-bold">
                                         <i class="fas fa-circle text-warning"></i> Routine
                                     </span>
-                                    <span class="badge badge-warning">{{ $testQueue['routine'] ?? 0 }}</span>
+                                    <span class="badge bg-warning">{{ $testQueue['routine'] ?? 0 }}</span>
                                 </div>
                                 <div class="progress mb-2" style="height: 8px;">
                                     <div class="progress-bar bg-warning" role="progressbar" 
@@ -182,10 +182,10 @@
 
                             <div class="mb-3">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <span class="text-success font-weight-bold">
+                                    <span class="text-success fw-bold">
                                         <i class="fas fa-circle text-success"></i> Non-Urgent
                                     </span>
-                                    <span class="badge badge-success">{{ $testQueue['non_urgent'] ?? 0 }}</span>
+                                    <span class="badge bg-success">{{ $testQueue['non_urgent'] ?? 0 }}</span>
                                 </div>
                                 <div class="progress" style="height: 8px;">
                                     <div class="progress-bar bg-success" role="progressbar" 
@@ -200,20 +200,20 @@
                         <div class="col-md-6">
                             <h6 class="text-muted mb-3">Quick Actions</h6>
                             <div class="d-grid gap-2">
-                                <a href="{{ route('lab.visits.index') }}" class="btn btn-primary btn-block mb-2">
-                                    <i class="fas fa-list-alt mr-1"></i>
+                                <a href="{{ route('lab.visits.index') }}" class="btn btn-primary w-100 mb-2">
+                                    <i class="fas fa-list-alt me-1"></i>
                                     View Lab Queue
                                 </a>
-                                <a href="{{ route('investigations.index') }}" class="btn btn-success btn-block mb-2">
-                                    <i class="fas fa-flask mr-1"></i>
+                                <a href="{{ route('investigations.index') }}" class="btn btn-success w-100 mb-2">
+                                    <i class="fas fa-flask me-1"></i>
                                     Process Investigations
                                 </a>
-                                <a href="{{ route('procedures.index') }}" class="btn btn-info btn-block mb-2">
-                                    <i class="fas fa-clipboard-list mr-1"></i>
+                                <a href="{{ route('procedures.index') }}" class="btn btn-info w-100 mb-2">
+                                    <i class="fas fa-clipboard-list me-1"></i>
                                     Lab Procedures
                                 </a>
-                                <a href="{{ url('lab_diary') }}" class="btn btn-warning btn-block">
-                                    <i class="fas fa-book mr-1"></i>
+                                <a href="{{ url('lab_diary') }}" class="btn btn-warning w-100">
+                                    <i class="fas fa-book me-1"></i>
                                     Lab Diary
                                 </a>
                             </div>
@@ -265,7 +265,7 @@
             <div class="card shadow">
                 <div class="card-header bg-success text-white">
                     <h5 class="mb-0">
-                        <i class="fas fa-chart-line mr-2"></i>
+                        <i class="fas fa-chart-line me-2"></i>
                         Today's Performance
                     </h5>
                 </div>
@@ -353,7 +353,7 @@
             <div class="card shadow">
                 <div class="card-header bg-warning text-white">
                     <h5 class="mb-0">
-                        <i class="fas fa-shield-check mr-2"></i>
+                        <i class="fas fa-shield-check me-2"></i>
                         Quality Control Status
                     </h5>
                 </div>
@@ -376,14 +376,14 @@
                         @if(isset($qcSchedule) && count($qcSchedule) > 0)
                             @foreach($qcSchedule as $qc)
                             <div class="d-flex align-items-center mb-2 p-2 border rounded">
-                                <div class="mr-3">
+                                <div class="me-3">
                                     <i class="fas fa-{{ $qc['status'] == 'completed' ? 'check-circle text-success' : ($qc['status'] == 'due' ? 'exclamation-triangle text-warning' : 'clock text-primary') }}"></i>
                                 </div>
                                 <div class="flex-grow-1">
-                                    <div class="font-weight-bold">{{ $qc['test'] ?? 'Quality Control' }}</div>
+                                    <div class="fw-bold">{{ $qc['test'] ?? 'Quality Control' }}</div>
                                     <small class="text-muted">{{ $qc['description'] ?? 'Routine QC check' }}</small>
                                 </div>
-                                <div class="text-right">
+                                <div class="text-end">
                                     <small class="text-muted">{{ $qc['due_time'] ?? 'Now' }}</small>
                                 </div>
                             </div>
@@ -397,11 +397,11 @@
                     </div>
                 </div>
                 <div class="card-footer">
-                    <a href="{{ url('clinical_chemistry_control') }}" class="btn btn-warning btn-sm mr-2">
-                        <i class="fas fa-cog mr-1"></i>Run QC
+                    <a href="{{ url('clinical_chemistry_control') }}" class="btn btn-warning btn-sm me-2">
+                        <i class="fas fa-cog me-1"></i>Run QC
                     </a>
                     <a href="{{ url('lab_diary') }}" class="btn btn-info btn-sm">
-                        <i class="fas fa-book mr-1"></i>Lab Diary
+                        <i class="fas fa-book me-1"></i>Lab Diary
                     </a>
                 </div>
             </div>
@@ -411,7 +411,7 @@
             <div class="card shadow">
                 <div class="card-header bg-danger text-white">
                     <h5 class="mb-0">
-                        <i class="fas fa-file-medical mr-2"></i>
+                        <i class="fas fa-file-medical me-2"></i>
                         Specialized Tests & Forms
                     </h5>
                 </div>
@@ -435,14 +435,14 @@
                     @if(isset($recentSpecializedTests) && count($recentSpecializedTests) > 0)
                         @foreach($recentSpecializedTests as $test)
                         <div class="d-flex align-items-center mb-2 p-2 bg-light rounded">
-                            <div class="mr-3">
+                            <div class="me-3">
                                 <i class="fas fa-{{ $test['icon'] ?? 'vial' }} text-{{ $test['color'] ?? 'primary' }}"></i>
                             </div>
                             <div class="flex-grow-1">
-                                <div class="font-weight-bold">{{ $test['patient'] ?? 'Patient Test' }}</div>
+                                <div class="fw-bold">{{ $test['patient'] ?? 'Patient Test' }}</div>
                                 <small class="text-muted">{{ $test['test_type'] ?? 'Specialized test' }}</small>
                             </div>
-                            <div class="text-right">
+                            <div class="text-end">
                                 <span class="badge badge-{{ $test['status'] == 'completed' ? 'success' : 'warning' }}">
                                     {{ ucfirst($test['status'] ?? 'pending') }}
                                 </span>
@@ -459,13 +459,13 @@
                 <div class="card-footer">
                     <div class="row">
                         <div class="col-6">
-                            <a href="{{ url('tb_leprosy_form') }}" class="btn btn-danger btn-sm btn-block">
-                                <i class="fas fa-file-plus mr-1"></i>TB Form
+                            <a href="{{ url('tb_leprosy_form') }}" class="btn btn-danger btn-sm w-100">
+                                <i class="fas fa-file-plus me-1"></i>TB Form
                             </a>
                         </div>
                         <div class="col-6">
-                            <a href="{{ url('tb_leprosy_register') }}" class="btn btn-warning btn-sm btn-block">
-                                <i class="fas fa-book mr-1"></i>Register
+                            <a href="{{ url('tb_leprosy_register') }}" class="btn btn-warning btn-sm w-100">
+                                <i class="fas fa-book me-1"></i>Register
                             </a>
                         </div>
                     </div>

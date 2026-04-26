@@ -18,18 +18,14 @@
                     @if(session('success'))
                         <div class="alert alert-success alert-dismissible fade show" role="alert">
                             {{ session('success') }}
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     @endif
 
                     @if(session('error'))
                         <div class="alert alert-danger alert-dismissible fade show" role="alert">
                             {{ session('error') }}
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     @endif
 
@@ -53,11 +49,11 @@
                                         <td>{{ $route->display_order }}</td>
                                         <td>{{ $route->route_name }}</td>
                                         <td>
-                                            <span class="badge badge-secondary">{{ $route->route_code }}</span>
+                                            <span class="badge bg-secondary">{{ $route->route_code }}</span>
                                         </td>
                                         <td>
                                             @if($route->route_abbreviation)
-                                                <span class="badge badge-info text-black">{{ $route->route_abbreviation }}</span>
+                                                <span class="badge bg-info text-black">{{ $route->route_abbreviation }}</span>
                                             @else
                                                 <span class="text-muted">--</span>
                                             @endif
@@ -71,9 +67,9 @@
                                         </td>
                                         <td>
                                             @if($route->requires_prescription)
-                                                <span class="badge badge-warning">Yes</span>
+                                                <span class="badge bg-warning">Yes</span>
                                             @else
-                                                <span class="badge badge-success text-black">No</span>
+                                                <span class="badge bg-success text-black">No</span>
                                             @endif
                                         </td>
                                         <td>
