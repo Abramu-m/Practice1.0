@@ -171,17 +171,41 @@
                                                                 {{ $availableStock }}
                                                             </strong>
                                                         </small>
+                                                        @php $reqQty = $pendingReqQtys[$prescription->medication_id] ?? 0; @endphp
+                                                        @if(!$hasEnoughStock && $reqQty > 0)
+                                                            <br>
+                                                            <small class="text-warning">
+                                                                <i class="bi bi-arrow-up-circle"></i> {{ $reqQty }} requested in open req(s)
+                                                            </small>
+                                                        @endif
+                                                        <br>
+                                                        @if($prescription->is_paid)
+                                                            <small class="text-success"><i class="bi bi-check-circle-fill"></i> Paid</small>
+                                                        @else
+                                                            <small class="text-danger"><i class="bi bi-x-circle-fill"></i> Not paid</small>
+                                                        @endif
                                                     </div>
                                                     <div class="btn-group-vertical d-block">
                                                         @if($hasEnoughStock)
-                                                            <button type="button" class="btn btn-success btn-sm mb-1" 
-                                                                    onclick="dispensePrescription({{ $prescription->id }})">
-                                                                <i class="bi bi-check"></i> Dispense
-                                                            </button>
+                                                            @if($prescription->is_paid)
+                                                                <button type="button" class="btn btn-success btn-sm mb-1" 
+                                                                        onclick="dispensePrescription({{ $prescription->id }})">
+                                                                    <i class="bi bi-check"></i> Dispense
+                                                                </button>
+                                                            @else
+                                                                <button type="button" class="btn btn-secondary btn-sm mb-1" disabled
+                                                                        title="Payment required before dispensing">
+                                                                    <i class="bi bi-lock"></i> Unpaid
+                                                                </button>
+                                                            @endif
                                                         @else
-                                                            <button type="button" class="btn btn-success btn-sm mb-1" disabled
+                                                            <button type="button" class="btn btn-danger btn-sm mb-1" disabled
                                                                     title="Insufficient stock at {{ $dispensingLocation }}">
                                                                 <i class="bi bi-x-circle"></i> Low Stock
+                                                            </button>
+                                                            <button type="button" class="btn btn-info btn-sm"
+                                                                    onclick="checkRequisitions({{ $prescription->medication_id }}, '{{ addslashes($prescription->medication->generic_name) }}')">
+                                                                <i class="bi bi-box-arrow-in-down"></i> Check Requisitions
                                                             </button>
                                                         @endif
                                                     </div>
@@ -242,9 +266,7 @@
                 @csrf
                 <div class="modal-header">
                     <h5 class="modal-title" id="dispenseModalLabel">Dispense Prescription</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
@@ -260,7 +282,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-success">
                         <i class="bi bi-check"></i> Dispense
                     </button>
@@ -270,24 +292,294 @@
     </div>
 </div>
 
+<!-- Requisitions Modal -->
+<div class="modal fade" id="requisitionsModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-box-arrow-in-down"></i> Open Requisitions &mdash; Main Pharmacy
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="requisitionsLoading" class="text-center py-3">
+                    <div class="spinner-border text-primary" role="status"></div>
+                    <p class="mt-2 text-muted">Loading...</p>
+                </div>
+                <div id="requisitionsContent" style="display:none">
+                    <p id="requisitionsEmpty" class="text-center text-muted py-3" style="display:none">
+                        <i class="bi bi-inbox"></i> No open requisitions from Main Pharmacy.
+                    </p>
+                    <table class="table table-sm table-bordered" id="requisitionsTable" style="display:none">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>Req #</th>
+                                <th>From</th>
+                                <th>Requested By</th>
+                                <th>Date</th>
+                                <th>Required By</th>
+                                <th>Items</th>
+                                <th>Status</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="requisitionsTableBody"></tbody>
+                    </table>
+                    <!-- Collapsible medication items panel -->
+                    <div id="reqItemsPanel" class="card card-body bg-light mt-2" style="display:none">
+                        <strong id="reqItemsPanelTitle" class="d-block mb-2"></strong>
+                        <ul id="reqItemsList" class="mb-0 pl-3"></ul>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="openNewRequisitionModal()">
+                    <i class="bi bi-plus"></i> New Requisition
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add to Requisition Modal -->
+<div class="modal fade" id="addItemModal" tabindex="-1" role="dialog" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addItemModalTitle"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-2">Medication: <strong id="addItemMedName"></strong></p>
+                <div class="form-group mb-0">
+                    <label for="addItemQty">Quantity <span class="text-danger">*</span></label>
+                    <input type="number" id="addItemQty" class="form-control" min="1" step="1" placeholder="Enter quantity">
+                    <div id="addItemError" class="invalid-feedback"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="addItemCancelBtn">Cancel</button>
+                <button type="button" class="btn btn-primary" id="addItemSubmitBtn" onclick="submitAddItem()">
+                    <span id="addItemBtnText">Add Item</span>
+                    <span id="addItemSpinner" class="spinner-border spinner-border-sm ml-1" style="display:none" role="status"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @endsection
 
 @section('scripts')
 <script>
+// Bootstrap 5 modal helpers
+const bsModal = (id) => bootstrap.Modal.getOrCreateInstance(document.getElementById(id));
+
 function dispensePrescription(prescriptionId) {
-    // Find the prescription data
     const prescriptionCard = document.querySelector(`[data-prescription-id="${prescriptionId}"]`);
     const quantityText = prescriptionCard.querySelector('.prescription-details p').textContent;
     const quantity = quantityText.match(/\d+(\.\d+)?/)[0];
-    
-    // Set up the form
     document.getElementById('quantity_dispensed').value = quantity;
     document.getElementById('quantity_dispensed').max = quantity;
     document.getElementById('max_quantity').textContent = quantity;
     document.getElementById('dispenseForm').action = `{{ url('/pharmacist/prescriptions') }}/${prescriptionId}/dispense`;
-    
-    // Show modal
-    $('#dispenseModal').modal('show');
+    bsModal('dispenseModal').show();
+}
+
+const openRequisitionsUrl = '{{ route("pharmacist.requisitions.open") }}';
+const addItemBaseUrl     = '{{ url("/pharmacist/requisitions") }}';
+const newWithItemUrl     = '{{ route("pharmacist.requisitions.new-with-item") }}';
+const csrfToken          = '{{ csrf_token() }}';
+
+let _currentMedId   = null;
+let _currentMedName = '';
+let _targetReqId    = null; // null = new requisition
+
+function checkRequisitions(medicationId, medicationName) {
+    _currentMedId   = medicationId;
+    _currentMedName = medicationName;
+    document.getElementById('requisitionsLoading').style.display = 'block';
+    document.getElementById('requisitionsContent').style.display = 'none';
+    bsModal('requisitionsModal').show();
+
+    $.get(openRequisitionsUrl)
+        .done(function(data) {
+            document.getElementById('requisitionsLoading').style.display = 'none';
+            document.getElementById('requisitionsContent').style.display = 'block';
+
+            const reqs = data.requisitions;
+            if (!reqs.length) {
+                document.getElementById('requisitionsEmpty').style.display = 'block';
+                document.getElementById('requisitionsTable').style.display = 'none';
+                return;
+            }
+
+            document.getElementById('requisitionsEmpty').style.display = 'none';
+            document.getElementById('requisitionsTable').style.display = 'table';
+
+            const statusBadge = (s) => ({
+                draft:            '<span class="badge badge-secondary">Draft</span>',
+                submitted:        '<span class="badge badge-info">Submitted</span>',
+                verified:         '<span class="badge badge-primary">Verified</span>',
+                approved:         '<span class="badge badge-warning">Approved</span>',
+                partially_issued: '<span class="badge badge-warning">Part. Issued</span>',
+            }[s] || '<span class="badge badge-light">' + s + '</span>');
+
+            const priorityBadge = (p) => p === 'high'
+                ? '<span class="badge badge-danger">High</span>'
+                : (p === 'medium' ? '<span class="badge badge-warning">Med</span>' : '<span class="badge badge-secondary">Low</span>');
+
+            const rows = reqs.map(r => {
+                const existingItem = r.medication_items.find(i => i.medication_id == _currentMedId);
+                const alreadyIn = !!existingItem;
+                const alreadyBadge = alreadyIn
+                    ? ' <span class="badge badge-warning" title="Already requested: ' + existingItem.requested_quantity + ' units">Already in req</span>'
+                    : '';
+                const addBtn = alreadyIn
+                    ? '<button class="btn btn-xs btn-warning mr-1" onclick="openAddToReq(' + r.id + ', \'' + r.requisition_number.replace(/'/g, "\\'") + '\', ' + existingItem.requested_quantity + ')">' +
+                        '<i class="bi bi-plus"></i> Add more' +
+                      '</button>'
+                    : '<button class="btn btn-xs btn-success mr-1" onclick="openAddToReq(' + r.id + ', \'' + r.requisition_number.replace(/'/g, "\\'") + '\', 0)">' +
+                        '<i class="bi bi-plus"></i> Add to Req' +
+                      '</button>';
+                const itemsCell = r.medication_items.length
+                    ? '<button class="btn btn-xs btn-link p-0" onclick="showReqItems(' + r.id + ', \'' + r.requisition_number.replace(/'/g, "\\'") + '\')">' +
+                        r.items_count + ' item(s)' +
+                      '</button>'
+                    : '0';
+                return '<tr data-req-id="' + r.id + '">' +
+                    '<td>' + r.requisition_number + alreadyBadge + ' ' + priorityBadge(r.priority) + '</td>' +
+                    '<td>' + r.requesting_location + '</td>' +
+                    '<td>' + r.requested_by + '</td>' +
+                    '<td>' + (r.requisition_date || '-') + '</td>' +
+                    '<td>' + (r.required_date || '-') + '</td>' +
+                    '<td>' + itemsCell + '</td>' +
+                    '<td>' + statusBadge(r.status) + '</td>' +
+                    '<td class="text-nowrap">' +
+                        addBtn +
+                        '<a href="' + r.show_url + '" class="btn btn-xs btn-outline-primary" target="_blank">View</a>' +
+                    '</td>' +
+                    '</tr>';
+            }).join('');
+            document.getElementById('requisitionsTableBody').innerHTML = rows;
+            // Store full data for the items panel
+            window._reqData = reqs;
+        })
+        .fail(function() {
+            document.getElementById('requisitionsLoading').style.display = 'none';
+            document.getElementById('requisitionsContent').style.display = 'block';
+            document.getElementById('requisitionsEmpty').style.display = 'block';
+            document.getElementById('requisitionsEmpty').textContent = 'Error loading requisitions.';
+        });
+}
+
+function openAddToReq(reqId, reqNumber, existingQty) {
+    _targetReqId = reqId;
+    document.getElementById('addItemModalTitle').textContent = 'Add to Requisition: ' + reqNumber;
+    document.getElementById('addItemMedName').textContent = _currentMedName;
+    document.getElementById('addItemQty').value = '';
+    document.getElementById('addItemQty').classList.remove('is-invalid');
+    document.getElementById('addItemBtnText').textContent = 'Add Item';
+
+    // Show warning if medication already present in this requisition
+    let warningEl = document.getElementById('addItemWarning');
+    if (!warningEl) {
+        warningEl = document.createElement('div');
+        warningEl.id = 'addItemWarning';
+        warningEl.className = 'alert alert-warning py-1 px-2 mt-2 mb-0';
+        document.getElementById('addItemQty').parentNode.insertAdjacentElement('afterend', warningEl);
+    }
+    if (existingQty > 0) {
+        warningEl.style.display = 'block';
+        warningEl.innerHTML = '<i class="bi bi-exclamation-triangle"></i> <strong>' + _currentMedName + '</strong> is already in this requisition with <strong>' + existingQty + '</strong> unit(s) requested. Submitting will add to the existing quantity.';
+    } else {
+        warningEl.style.display = 'none';
+    }
+
+    document.getElementById('addItemCancelBtn').onclick = function() { bsModal('addItemModal').hide(); bsModal('requisitionsModal').show(); };
+    bsModal('requisitionsModal').hide();
+    bsModal('addItemModal').show();
+}
+
+function openNewRequisitionModal() {
+    _targetReqId = null;
+    document.getElementById('addItemModalTitle').textContent = 'New Requisition';
+    document.getElementById('addItemMedName').textContent = _currentMedName;
+    document.getElementById('addItemQty').value = '';
+    document.getElementById('addItemQty').classList.remove('is-invalid');
+    document.getElementById('addItemBtnText').textContent = 'Create Requisition';
+    const warningEl = document.getElementById('addItemWarning');
+    if (warningEl) warningEl.style.display = 'none';
+    document.getElementById('addItemCancelBtn').onclick = function() { bsModal('addItemModal').hide(); bsModal('requisitionsModal').show(); };
+    bsModal('requisitionsModal').hide();
+    bsModal('addItemModal').show();
+}
+
+function showReqItems(reqId, reqNumber) {
+    const req = (window._reqData || []).find(r => r.id == reqId);
+    const panel = document.getElementById('reqItemsPanel');
+    const title = document.getElementById('reqItemsPanelTitle');
+    const list  = document.getElementById('reqItemsList');
+    if (!req || !req.medication_items.length) {
+        panel.style.display = 'none';
+        return;
+    }
+    title.textContent = 'Items in ' + reqNumber + ':';
+    list.innerHTML = req.medication_items.map(i =>
+        '<li>' + i.name +
+        ' &mdash; Requested: <strong>' + i.requested_quantity + '</strong>' +
+        (i.issued_quantity > 0 ? ', Issued: <strong>' + i.issued_quantity + '</strong>' : '') +
+        (i.medication_id == _currentMedId ? ' <span class="badge badge-warning">Current med</span>' : '') +
+        '</li>'
+    ).join('');
+    panel.style.display = 'block';
+    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function submitAddItem() {
+    const qty = parseInt(document.getElementById('addItemQty').value);
+    const qtyInput = document.getElementById('addItemQty');
+    const errDiv   = document.getElementById('addItemError');
+    if (!qty || qty < 1) {
+        qtyInput.classList.add('is-invalid');
+        errDiv.textContent = 'Please enter a valid quantity (minimum 1).';
+        return;
+    }
+    qtyInput.classList.remove('is-invalid');
+
+    const url  = _targetReqId ? (addItemBaseUrl + '/' + _targetReqId + '/add-item') : newWithItemUrl;
+    const btn  = document.getElementById('addItemSubmitBtn');
+    const spin = document.getElementById('addItemSpinner');
+    btn.disabled = true;
+    spin.style.display = 'inline-block';
+
+    $.ajax({
+        url: url,
+        method: 'POST',
+        data: { medication_id: _currentMedId, quantity: qty, _token: csrfToken },
+        success: function(res) {
+            btn.disabled = false;
+            spin.style.display = 'none';
+            bsModal('addItemModal').hide();
+            const toastEl = document.createElement('div');
+            toastEl.className = 'alert alert-success alert-dismissible fade show position-fixed';
+            toastEl.style.cssText = 'bottom:20px;right:20px;z-index:9999;min-width:280px';
+            toastEl.innerHTML = '<i class="bi bi-check-circle"></i> ' + res.message +
+                (res.show_url ? ' <a href="' + res.show_url + '" target="_blank" class="alert-link ms-1">View</a>' : '') +
+                '<button type="button" class="btn-close ms-2" data-bs-dismiss="alert" aria-label="Close"></button>';
+            document.body.appendChild(toastEl);
+            setTimeout(function() { toastEl.remove(); }, 5000);
+        },
+        error: function(xhr) {
+            btn.disabled = false;
+            spin.style.display = 'none';
+            const msg = xhr.responseJSON ? xhr.responseJSON.message : 'Request failed.';
+            qtyInput.classList.add('is-invalid');
+            errDiv.textContent = msg;
+        }
+    });
 }
 
 $(document).ready(function() {

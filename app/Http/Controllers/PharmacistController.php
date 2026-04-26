@@ -8,9 +8,11 @@ use App\Models\Patient;
 use App\Models\Consultation;
 use App\Models\StoreLocation;
 use App\Models\StoreLocationStock;
+use App\Models\StoreRequisition;
+use App\Models\StoreRequisitionItem;
 use App\Models\Medication;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Yajra\DataTables\Facades\DataTables;
@@ -141,7 +143,16 @@ class PharmacistController extends Controller
         // Could also be driven by Auth::user()->storeLocation->name or role
         $dispensingLocation = 'Main Pharmacy';
 
-        return view('pharmacist.prescriptions.show', compact('visit', 'dispensingLocation'));
+        // Total quantity already requested in open requisitions, keyed by medication_id
+        $medicationIds = $visit->consultation?->prescriptions->pluck('medication_id')->filter()->unique() ?? collect();
+        $pendingReqQtys = StoreRequisitionItem::where('item_type', 'medication')
+            ->whereIn('item_id', $medicationIds)
+            ->whereHas('requisition', fn($q) => $q->whereNotIn('status', ['fully_issued', 'cancelled', 'rejected']))
+            ->groupBy('item_id')
+            ->selectRaw('item_id, SUM(requested_quantity) as total_requested')
+            ->pluck('total_requested', 'item_id');
+
+        return view('pharmacist.prescriptions.show', compact('visit', 'dispensingLocation', 'pendingReqQtys'));
     }
 
     /**
@@ -341,6 +352,141 @@ class PharmacistController extends Controller
             default:
                 return response()->json(['error' => 'Invalid data type'], 400);
         }
+    }
+
+    /**
+     * Add a medication item to an existing open requisition
+     */
+    public function addItemToRequisition(Request $request, StoreRequisition $requisition)
+    {
+        $request->validate([
+            'medication_id' => 'required|exists:medications,id',
+            'quantity'      => 'required|numeric|min:1',
+        ]);
+
+        if (in_array($requisition->status, ['fully_issued', 'cancelled', 'rejected'])) {
+            return response()->json(['message' => 'Cannot add items to a ' . $requisition->status . ' requisition.'], 422);
+        }
+
+        $existing = $requisition->items()
+            ->where('item_type', 'medication')
+            ->where('item_id', $request->medication_id)
+            ->first();
+
+        if ($existing) {
+            $existing->increment('requested_quantity', $request->quantity);
+        } else {
+            $requisition->items()->create([
+                'item_type'          => 'medication',
+                'item_id'            => $request->medication_id,
+                'requested_quantity' => $request->quantity,
+                'unit_cost'          => 0,
+            ]);
+        }
+
+        return response()->json(['message' => 'Item added to requisition successfully.']);
+    }
+
+    /**
+     * Create a new draft requisition with a single medication item
+     */
+    public function createRequisitionWithItem(Request $request)
+    {
+        $request->validate([
+            'medication_id' => 'required|exists:medications,id',
+            'quantity'      => 'required|numeric|min:1',
+        ]);
+
+        $pharmacyLocation = StoreLocation::where('is_active', true)
+            ->where(function ($q) {
+                $q->where('type', 'dispensing')
+                  ->orWhere('name', 'like', '%Main Pharmacy%');
+            })
+            ->first();
+
+        if (!$pharmacyLocation) {
+            return response()->json(['message' => 'Main Pharmacy location not found.'], 422);
+        }
+
+        DB::beginTransaction();
+        try {
+            $todayCount = StoreRequisition::whereDate('created_at', today())->count() + 1;
+            $reqNumber  = 'REQ-' . date('Ymd') . '-' . str_pad($todayCount, 3, '0', STR_PAD_LEFT);
+
+            $requisition = StoreRequisition::create([
+                'requisition_number'   => $reqNumber,
+                'requisition_date'     => today(),
+                'requesting_location_id' => $pharmacyLocation->id,
+                'issuing_location_id'  => $pharmacyLocation->id,
+                'priority'             => 'normal',
+                'status'               => 'draft',
+                'requested_by'         => Auth::id(),
+            ]);
+
+            $requisition->items()->create([
+                'item_type'          => 'medication',
+                'item_id'            => $request->medication_id,
+                'requested_quantity' => $request->quantity,
+                'unit_cost'          => 0,
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'message'            => 'Requisition ' . $reqNumber . ' created as draft.',
+                'show_url'           => route('store.requisitions.show', $requisition->id),
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['message' => 'Failed: ' . $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Get all open requisitions issued from Main Pharmacy
+     */
+    public function getOpenRequisitions()
+    {
+        $pharmacyLocation = StoreLocation::where('is_active', true)
+            ->where(function($q) {
+                $q->where('type', 'dispensing')
+                  ->orWhere('name', 'like', '%Main Pharmacy%');
+            })
+            ->first();
+
+        $requisitions = StoreRequisition::with([
+            'requestingLocation',
+            'requestedBy',
+            'items.medication:id,generic_name',
+        ])
+            ->withCount('items')
+            ->whereNotIn('status', ['fully_issued', 'cancelled', 'rejected'])
+            ->when($pharmacyLocation, fn($q) => $q->where('issuing_location_id', $pharmacyLocation->id))
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json([
+            'requisitions' => $requisitions->map(fn($req) => [
+                'id'                  => $req->id,
+                'requisition_number'  => $req->requisition_number,
+                'status'              => $req->status,
+                'priority'            => $req->priority,
+                'requesting_location' => $req->requestingLocation->name ?? 'N/A',
+                'requested_by'        => $req->requestedBy->name ?? 'N/A',
+                'requisition_date'    => $req->requisition_date?->format('M d, Y'),
+                'required_date'       => $req->required_date?->format('M d, Y'),
+                'items_count'         => $req->items_count,
+                'show_url'            => route('store.requisitions.show', $req->id),
+                'medication_items'    => $req->items
+                    ->where('item_type', 'medication')
+                    ->map(fn($item) => [
+                        'medication_id'      => $item->item_id,
+                        'name'               => $item->medication->generic_name ?? 'Unknown',
+                        'requested_quantity' => $item->requested_quantity,
+                        'issued_quantity'    => $item->issued_quantity ?? 0,
+                    ])->values(),
+            ]),
+        ]);
     }
 
     /**

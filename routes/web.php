@@ -507,6 +507,12 @@ Route::get('medications/search', [\App\Http\Controllers\MedicationController::cl
         ->name('pharmacist.prescriptions.unavailable');
     Route::get('/pharmacist/data', [App\Http\Controllers\PharmacistController::class, 'getData'])
         ->name('pharmacist.data');
+    Route::get('/pharmacist/requisitions/open', [App\Http\Controllers\PharmacistController::class, 'getOpenRequisitions'])
+        ->name('pharmacist.requisitions.open');
+    Route::post('/pharmacist/requisitions/{requisition}/add-item', [App\Http\Controllers\PharmacistController::class, 'addItemToRequisition'])
+        ->name('pharmacist.requisitions.add-item');
+    Route::post('/pharmacist/requisitions/new-with-item', [App\Http\Controllers\PharmacistController::class, 'createRequisitionWithItem'])
+        ->name('pharmacist.requisitions.new-with-item');
 
     // ================================
     // STORE MANAGEMENT SYSTEM
