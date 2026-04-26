@@ -20,7 +20,6 @@ class LegacyServicesSeeder extends Seeder
             // Laboratory Services (stype = 1)
             [
                 'name' => 'Sputum Microscopy/ZN Stain (for AFB)',
-                'code' => 'LAB_ZN_001',
                 'description' => 'Sputum examination for acid-fast bacilli using Ziehl-Neelsen staining',
                 'service_category_id' => 1,
                 'price' => 25000.00,
@@ -54,7 +53,6 @@ class LegacyServicesSeeder extends Seeder
             ],
             [
                 'name' => 'Ascitic Fluid Multistix',
-                'code' => 'LAB_ASC_001',
                 'description' => 'Ascitic fluid analysis using multistix testing',
                 'service_category_id' => 1,
                 'price' => 15000.00,
@@ -69,7 +67,6 @@ class LegacyServicesSeeder extends Seeder
             ],
             [
                 'name' => 'Bilirubin, Conjugated',
-                'code' => 'LAB_BIL_001',
                 'description' => 'Serum conjugated bilirubin measurement',
                 'service_category_id' => 1,
                 'price' => 12000.00,
@@ -84,7 +81,6 @@ class LegacyServicesSeeder extends Seeder
             ],
             [
                 'name' => 'Bilirubin, Total',
-                'code' => 'LAB_BIL_002',
                 'description' => 'Total serum bilirubin measurement',
                 'service_category_id' => 1,
                 'price' => 12000.00,
@@ -99,7 +95,6 @@ class LegacyServicesSeeder extends Seeder
             ],
             [
                 'name' => 'Bilirubin, Unconjugated',
-                'code' => 'LAB_BIL_003',
                 'description' => 'Serum unconjugated bilirubin measurement',
                 'service_category_id' => 1,
                 'price' => 12000.00,
@@ -114,7 +109,6 @@ class LegacyServicesSeeder extends Seeder
             ],
             [
                 'name' => 'Bleeding Time',
-                'code' => 'LAB_BT_001',
                 'description' => 'Bleeding time assessment',
                 'service_category_id' => 1,
                 'price' => 8000.00,
@@ -129,7 +123,6 @@ class LegacyServicesSeeder extends Seeder
             ],
             [
                 'name' => 'Blood Grouping, RH Typing & Crossmatching',
-                'code' => 'LAB_BG_001',
                 'description' => 'Complete blood grouping and compatibility testing',
                 'service_category_id' => 1,
                 'price' => 20000.00,
@@ -144,7 +137,6 @@ class LegacyServicesSeeder extends Seeder
             ],
             [
                 'name' => 'Blood Smear for Microfilaria',
-                'code' => 'LAB_MF_001',
                 'description' => 'Blood examination for microfilaria parasites',
                 'service_category_id' => 1,
                 'price' => 15000.00,
@@ -159,7 +151,6 @@ class LegacyServicesSeeder extends Seeder
             ],
             [
                 'name' => 'Clotting Time',
-                'code' => 'LAB_CT_001',
                 'description' => 'Blood clotting time measurement',
                 'service_category_id' => 1,
                 'price' => 8000.00,
@@ -174,7 +165,6 @@ class LegacyServicesSeeder extends Seeder
             ],
             [
                 'name' => 'Erythrocyte Sedimentation Rate (ESR)',
-                'code' => 'LAB_ESR_001',
                 'description' => 'ESR measurement for inflammation assessment',
                 'service_category_id' => 1,
                 'price' => 10000.00,
@@ -189,7 +179,6 @@ class LegacyServicesSeeder extends Seeder
             ],
             [
                 'name' => 'Full Blood Picture (FBP/CBC)',
-                'code' => 'LAB_FBP_001',
                 'description' => 'Complete blood count with differential',
                 'service_category_id' => 1,
                 'price' => 25000.00,
@@ -204,7 +193,6 @@ class LegacyServicesSeeder extends Seeder
             ],
             [
                 'name' => 'Gamma GT (GGT)',
-                'code' => 'LAB_GGT_001',
                 'description' => 'Gamma-glutamyl transferase enzyme measurement',
                 'service_category_id' => 1,
                 'price' => 18000.00,
@@ -219,7 +207,6 @@ class LegacyServicesSeeder extends Seeder
             ],
             [
                 'name' => 'Sputum GeneXpert',
-                'code' => 'LAB_GX_001',
                 'description' => 'GeneXpert MTB/RIF testing for tuberculosis',
                 'service_category_id' => 1,
                 'price' => 35000.00,
@@ -252,7 +239,6 @@ class LegacyServicesSeeder extends Seeder
             ],
             [
                 'name' => 'Blood Sugar/Glucose, Fasting',
-                'code' => 'LAB_FBS_001',
                 'description' => 'Fasting blood glucose measurement',
                 'service_category_id' => 1,
                 'price' => 10000.00,
@@ -267,7 +253,6 @@ class LegacyServicesSeeder extends Seeder
             ],
             [
                 'name' => 'Blood Sugar/Glucose, Postprandial',
-                'code' => 'LAB_PPBS_001',
                 'description' => 'Post-meal blood glucose measurement',
                 'service_category_id' => 1,
                 'price' => 10000.00,
@@ -282,7 +267,6 @@ class LegacyServicesSeeder extends Seeder
             ],
             [
                 'name' => 'Blood Sugar/Glucose, Random',
-                'code' => 'LAB_RBS_001',
                 'description' => 'Random blood glucose measurement',
                 'service_category_id' => 1,
                 'price' => 8000.00,
@@ -297,7 +281,6 @@ class LegacyServicesSeeder extends Seeder
             ],
             [
                 'name' => 'Glycosylated Hemoglobin (HbA1c)',
-                'code' => 'LAB_HBA1C_001',
                 'description' => 'Long-term diabetes monitoring test',
                 'service_category_id' => 1,
                 'price' => 35000.00,
@@ -312,7 +295,6 @@ class LegacyServicesSeeder extends Seeder
             ],
             [
                 'name' => 'GPT (ALT)',
-                'code' => 'LAB_ALT_001',
                 'description' => 'Alanine aminotransferase enzyme measurement',
                 'service_category_id' => 1,
                 'price' => 15000.00,
@@ -327,7 +309,6 @@ class LegacyServicesSeeder extends Seeder
             ],
             [
                 'name' => 'GOT (AST)',
-                'code' => 'LAB_AST_001',
                 'description' => 'Aspartate aminotransferase enzyme measurement',
                 'service_category_id' => 1,
                 'price' => 15000.00,
@@ -343,7 +324,6 @@ class LegacyServicesSeeder extends Seeder
             // Continue with more services...
             [
                 'name' => 'Malaria Blood Smear (BS)',
-                'code' => 'LAB_MAL_001',
                 'description' => 'Malaria parasite detection by microscopy',
                 'service_category_id' => 1,
                 'price' => 15000.00,
@@ -358,7 +338,6 @@ class LegacyServicesSeeder extends Seeder
             ],
             [
                 'name' => 'Malaria Rapid Diagnostic Test (MRDT)',
-                'code' => 'LAB_MAL_002',
                 'description' => 'Rapid malaria antigen detection test',
                 'service_category_id' => 1,
                 'price' => 12000.00,
@@ -373,7 +352,6 @@ class LegacyServicesSeeder extends Seeder
             ],
             [
                 'name' => 'Urinalysis Wet Preparation',
-                'code' => 'LAB_URINE_001',
                 'description' => 'Complete urine analysis with microscopy',
                 'service_category_id' => 1,
                 'price' => 15000.00,
@@ -388,7 +366,6 @@ class LegacyServicesSeeder extends Seeder
             ],
             [
                 'name' => 'Serum Creatinine',
-                'code' => 'LAB_CREA_001',
                 'description' => 'Serum creatinine level measurement',
                 'service_category_id' => 1,
                 'price' => 12000.00,
@@ -405,7 +382,6 @@ class LegacyServicesSeeder extends Seeder
             // Procedure Services (stype = 2)
             [
                 'name' => 'Visual Acuity Testing (Snellen & E Chart)',
-                'code' => 'PROC_VA_001',
                 'description' => 'Comprehensive visual acuity assessment',
                 'service_category_id' => 4,
                 'price' => 15000.00,
@@ -420,7 +396,6 @@ class LegacyServicesSeeder extends Seeder
             ],
             [
                 'name' => 'Ascitic Fluid Tapping',
-                'code' => 'PROC_PARA_001',
                 'description' => 'Paracentesis for ascitic fluid drainage',
                 'service_category_id' => 4,
                 'price' => 75000.00,
@@ -453,7 +428,6 @@ class LegacyServicesSeeder extends Seeder
             ],
             [
                 'name' => 'Minor Wound Dressing',
-                'code' => 'PROC_DRESS_001',
                 'description' => 'Simple wound cleaning and dressing',
                 'service_category_id' => 4,
                 'price' => 20000.00,
@@ -470,7 +444,6 @@ class LegacyServicesSeeder extends Seeder
             // Radiology/Cardiology Services (stype = 3)
             [
                 'name' => 'Echocardiography (ECHO)',
-                'code' => 'RAD_ECHO_001',
                 'description' => 'Cardiac ultrasound examination',
                 'service_category_id' => 2,
                 'price' => 85000.00,
@@ -509,7 +482,6 @@ class LegacyServicesSeeder extends Seeder
             ],
             [
                 'name' => 'Ultrasound Scan',
-                'code' => 'RAD_US_001',
                 'description' => 'General ultrasound examination',
                 'service_category_id' => 2,
                 'price' => 50000.00,
@@ -542,7 +514,6 @@ class LegacyServicesSeeder extends Seeder
             ],
             [
                 'name' => 'Electrocardiography (ECG)',
-                'code' => 'RAD_ECG_001',
                 'description' => '12-lead electrocardiogram',
                 'service_category_id' => 3,
                 'price' => 20000.00,
@@ -557,7 +528,6 @@ class LegacyServicesSeeder extends Seeder
             ],
             [
                 'name' => 'X-Ray Examination',
-                'code' => 'RAD_XRAY_001',
                 'description' => 'General X-ray imaging',
                 'service_category_id' => 2,
                 'price' => 35000.00,

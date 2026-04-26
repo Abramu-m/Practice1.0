@@ -36,10 +36,6 @@
                                             <td><strong>{{ $medicalService->name }}</strong></td>
                                         </tr>
                                         <tr>
-                                            <th>Service Code:</th>
-                                            <td><code>{{ $medicalService->code }}</code></td>
-                                        </tr>
-                                        <tr>
                                             <th>Category:</th>
                                             <td>
                                                 @if($medicalService->serviceCategory)

@@ -39,7 +39,6 @@ class MedicalServiceController extends Controller
         if ($request->filled('search')) {
             $query->where(function($q) use ($request) {
                 $q->where('name', 'like', '%' . $request->search . '%')
-                  ->orWhere('code', 'like', '%' . $request->search . '%')
                   ->orWhere('description', 'like', '%' . $request->search . '%');
             });
         }
@@ -81,7 +80,6 @@ class MedicalServiceController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'code' => 'required|string|max:50|unique:medical_services,code',
             'description' => 'nullable|string|max:1000',
             'service_category_id' => 'required|exists:service_categories,id',
             'min_value' => 'nullable|numeric',
@@ -150,7 +148,6 @@ class MedicalServiceController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'code' => 'required|string|max:50|unique:medical_services,code,' . $medicalService->id,
             'description' => 'nullable|string|max:1000',
             'service_category_id' => 'required|exists:service_categories,id',
             'min_value' => 'nullable|numeric',

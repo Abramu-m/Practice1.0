@@ -26,7 +26,6 @@ class MedicalService extends Model
 
     protected $fillable = [
         'name',
-        'code',
         'description',
         'service_category_id',
         'requires_sample',

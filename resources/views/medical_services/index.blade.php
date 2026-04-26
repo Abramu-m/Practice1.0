@@ -42,7 +42,7 @@
                                                name="search" 
                                                id="search"
                                                class="form-control" 
-                                               placeholder="Search by name, code, or description"
+                                               placeholder="Search by name or description"
                                                value="{{ request('search') }}">
                                     </div>
                                     
@@ -111,7 +111,6 @@
                         <table class="table table-bordered table-hover">
                             <thead class="table-dark">
                                 <tr>
-                                    <th>Code</th>
                                     <th>Name</th>
                                     <th>Category</th>
                                     <th>Sample</th>
@@ -124,9 +123,6 @@
                             <tbody>
                                 @forelse($services as $service)
                                     <tr>
-                                        <td>
-                                            <code>{{ $service->code }}</code>
-                                        </td>
                                         <td>
                                             <strong>{{ $service->name }}</strong>
                                             @if($service->description)
