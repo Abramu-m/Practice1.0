@@ -22,7 +22,7 @@
                 <div class="card-body">
                     @if (session('success'))
                         <div class="alert alert-success alert-dismissible">
-                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                             <i class="icon fas fa-check"></i> {{ session('success') }}
                         </div>
                     @endif
@@ -86,23 +86,23 @@
                                         <td>{{ $loop->iteration }}</td>
                                         <td>
                                             <div class="d-flex align-items-center">
-                                                <i class="fas fa-user-md text-primary mr-2"></i>
+                                                <i class="fas fa-user-md text-primary me-2"></i>
                                                 <strong>{{ $fee->doctor->user->name ?? 'Unknown' }}</strong>
                                             </div>
                                         </td>
                                         <td>{{ $fee->patientCategory->description ?? 'N/A' }}</td>
                                         <td>{{ $fee->visitType->description ?? 'N/A' }}</td>
                                         <td>
-                                            <span class="badge badge-success badge-lg">
+                                            <span class="badge bg-success badge-lg">
                                                 ${{ number_format($fee->fee_amount, 2) }}
                                             </span>
                                         </td>
                                         <td>{{ Str::limit($fee->description, 50) ?? 'N/A' }}</td>
                                         <td>
                                             @if($fee->status == 1)
-                                                <span class="badge badge-success text-black">Active</span>
+                                                <span class="badge bg-success text-black">Active</span>
                                             @else
-                                                <span class="badge badge-danger text-black">Inactive</span>
+                                                <span class="badge bg-danger text-black">Inactive</span>
                                             @endif
                                         </td>
                                         <td>{{ $fee->creator->name ?? 'System' }}</td>

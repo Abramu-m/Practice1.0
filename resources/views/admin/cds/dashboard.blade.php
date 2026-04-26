@@ -131,20 +131,20 @@
                                         @endif
                                     </td>
                                     <td>
-                                        <span class="badge badge-info">{{ $rule->ruleType->display_name }}</span>
+                                        <span class="badge bg-info">{{ $rule->ruleType->display_name }}</span>
                                     </td>
                                     <td>
-                                        <span class="badge badge-{{ $rule->priority >= 8 ? 'danger' : ($rule->priority >= 5 ? 'warning' : 'secondary') }}">
+                                        <span class="badge bg-{{ $rule->priority >= 8 ? 'danger' : ($rule->priority >= 5 ? 'warning' : 'secondary') }}">
                                             {{ $rule->priority }}
                                         </span>
                                     </td>
                                     <td>
-                                        <span class="badge badge-{{ $rule->severity === 'critical' ? 'danger' : ($rule->severity === 'warning' ? 'warning' : 'info') }}">
+                                        <span class="badge bg-{{ $rule->severity === 'critical' ? 'danger' : ($rule->severity === 'warning' ? 'warning' : 'info') }}">
                                             {{ ucfirst($rule->severity) }}
                                         </span>
                                     </td>
                                     <td>
-                                        <span class="badge badge-{{ $rule->is_active ? 'success' : 'secondary' }}">
+                                        <span class="badge bg-{{ $rule->is_active ? 'success' : 'secondary' }}">
                                             {{ $rule->is_active ? 'Active' : 'Inactive' }}
                                         </span>
                                     </td>
@@ -179,7 +179,7 @@
                     @foreach($rulesByCategory as $category)
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <span>{{ $category['name'] }}</span>
-                            <span class="badge badge-primary">{{ $category['count'] }}</span>
+                            <span class="badge bg-primary">{{ $category['count'] }}</span>
                         </div>
                         <div class="progress mb-3" style="height: 5px;">
                             <div class="progress-bar" style="width: {{ $stats['total_rules'] > 0 ? ($category['count'] / $stats['total_rules']) * 100 : 0 }}%"></div>

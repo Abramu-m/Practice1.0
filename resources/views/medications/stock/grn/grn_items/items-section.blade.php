@@ -2,17 +2,17 @@
 <div class="card mt-4">
     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
         <h5 class="mb-0">
-            <i class="fas fa-list-ul mr-2"></i>GRN Items
-            <span class="badge badge-light text-dark ml-2">{{ $grn->items->count() }} items</span>
+            <i class="fas fa-list-ul me-2"></i>GRN Items
+            <span class="badge bg-light text-dark ms-2">{{ $grn->items->count() }} items</span>
         </h5>
         <div>
             @if(in_array($grn->status, ['draft', 'received']))
                 <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#addItemModal" onclick="console.log('Add Item button clicked');">
-                    <i class="fas fa-plus mr-1"></i>Add Item
+                    <i class="fas fa-plus me-1"></i>Add Item
                 </button>
             @endif
             <a href="{{ route('medications.stock.grn.items.index', $grn) }}" class="btn btn-light btn-sm">
-                <i class="fas fa-external-link-alt mr-1"></i>Manage Items
+                <i class="fas fa-external-link-alt me-1"></i>Manage Items
             </a>
         </div>
     </div>
@@ -25,9 +25,9 @@
                         <tr>
                             <th>Item</th>
                             <th>Batch</th>
-                            <th class="text-right">Quantity</th>
-                            <th class="text-right">Unit Cost</th>
-                            <th class="text-right">Net Amount</th>
+                            <th class="text-end">Quantity</th>
+                            <th class="text-end">Unit Cost</th>
+                            <th class="text-end">Net Amount</th>
                             <th>Expiry</th>
                             @if(in_array($grn->status, ['draft', 'received']))
                                 <th width="100">Actions</th>
@@ -40,7 +40,7 @@
                             @php $totalAmount += $item->net_amount; @endphp
                             <tr>
                                 <td>
-                                    <div class="font-weight-bold">
+                                    <div class="fw-bold">
                                         @if($item->medication)
                                             {{ $item->medication->generic_name }}
                                         @else
@@ -54,15 +54,15 @@
                                     @endif
                                 </td>
                                 <td>
-                                    <span class="badge badge-secondary">{{ $item->batch_number }}</span>
+                                    <span class="badge bg-secondary">{{ $item->batch_number }}</span>
                                 </td>
-                                <td class="text-right">
+                                <td class="text-end">
                                     {{ number_format($item->received_quantity, 2) }}
                                 </td>
-                                <td class="text-right">
+                                <td class="text-end">
                                     ${{ number_format($item->unit_cost, 2) }}
                                 </td>
-                                <td class="text-right font-weight-bold">
+                                <td class="text-end fw-bold">
                                     ${{ number_format($item->net_amount, 2) }}
                                 </td>
                                 <td>
@@ -94,7 +94,7 @@
                             <th colspan="{{ in_array($grn->status, ['draft', 'received']) ? '4' : '3' }}">
                                 Total ({{ $grn->items->count() }} items)
                             </th>
-                            <th class="text-right">
+                            <th class="text-end">
                                 ${{ number_format($totalAmount, 2) }}
                             </th>
                             <th colspan="{{ in_array($grn->status, ['draft', 'received']) ? '2' : '1' }}"></th>
@@ -109,10 +109,10 @@
                 <p class="text-muted">This GRN doesn't have any items yet.</p>
                 @if(in_array($grn->status, ['draft', 'received']))
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addItemModal">
-                        <i class="fas fa-plus mr-2"></i>Add First Item
+                        <i class="fas fa-plus me-2"></i>Add First Item
                     </button>
                     <a href="{{ route('medications.stock.grn.items.create', $grn) }}" class="btn btn-outline-primary">
-                        <i class="fas fa-magic mr-2"></i>Add Items Wizard
+                        <i class="fas fa-magic me-2"></i>Add Items Wizard
                     </a>
                 @endif
             </div>

@@ -11,7 +11,7 @@
                 <div class="card-header">
                     <h3 class="card-title">
                         AJAX Example
-                        <button class="btn btn-sm btn-info float-right" onclick="fetchData()">Fetch Data</button>
+                        <button class="btn btn-sm btn-info float-end" onclick="fetchData()">Fetch Data</button>
                     </h3>
                 </div>
                 <div class="card-body">

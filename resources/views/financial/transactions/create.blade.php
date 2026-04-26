@@ -25,7 +25,7 @@
                         <div class="row">
                             <!-- Transaction Type -->
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="transaction_type">Transaction Type <span class="text-danger">*</span></label>
                                     <select name="transaction_type" id="transaction_type" class="form-control @error('transaction_type') is-invalid @enderror" required>
                                         <option value="">Select Transaction Type</option>
@@ -40,7 +40,7 @@
 
                             <!-- Transaction Date -->
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="transaction_date">Transaction Date <span class="text-danger">*</span></label>
                                     <input type="datetime-local" name="transaction_date" id="transaction_date" 
                                            class="form-control @error('transaction_date') is-invalid @enderror" 
@@ -55,7 +55,7 @@
                         <div class="row">
                             <!-- Category -->
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="category">Category <span class="text-danger">*</span></label>
                                     <select name="category" id="category" class="form-control @error('category') is-invalid @enderror" required>
                                         <option value="">Select Category</option>
@@ -77,7 +77,7 @@
 
                             <!-- Subcategory -->
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="subcategory">Subcategory</label>
                                     <input type="text" name="subcategory" id="subcategory" 
                                            class="form-control @error('subcategory') is-invalid @enderror" 
@@ -92,7 +92,7 @@
                         <div class="row">
                             <!-- Amount -->
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="amount">Amount <span class="text-danger">*</span></label>
                                     <div class="input-group">
                                         <div class="input-group-prepend">
@@ -111,7 +111,7 @@
 
                             <!-- Payment Method -->
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="payment_method">Payment Method</label>
                                     <select name="payment_method" id="payment_method" class="form-control @error('payment_method') is-invalid @enderror">
                                         <option value="cash" {{ old('payment_method') == 'cash' ? 'selected' : '' }}>Cash</option>
@@ -129,7 +129,7 @@
                         <div class="row">
                             <!-- Payment Reference -->
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="payment_reference">Payment Reference</label>
                                     <input type="text" name="payment_reference" id="payment_reference" 
                                            class="form-control @error('payment_reference') is-invalid @enderror" 
@@ -143,7 +143,7 @@
 
                             <!-- Source Type -->
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="source_type">Source Type</label>
                                     <select name="source_type" id="source_type" class="form-control @error('source_type') is-invalid @enderror">
                                         <option value="general_expense" {{ old('source_type') == 'general_expense' ? 'selected' : '' }}>General Expense</option>
@@ -160,7 +160,7 @@
                         </div>
 
                         <!-- Description -->
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="description">Description <span class="text-danger">*</span></label>
                             <textarea name="description" id="description" rows="3"
                                       class="form-control @error('description') is-invalid @enderror" 
@@ -171,7 +171,7 @@
                         </div>
 
                         <!-- Notes -->
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="notes">Additional Notes</label>
                             <textarea name="notes" id="notes" rows="2"
                                       class="form-control @error('notes') is-invalid @enderror" 
@@ -182,7 +182,7 @@
                         </div>
 
                         <!-- Status -->
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="status">Status</label>
                             <select name="status" id="status" class="form-control @error('status') is-invalid @enderror">
                                 <option value="completed" {{ old('status') == 'completed' ? 'selected' : '' }}>Completed</option>
@@ -203,11 +203,11 @@
                                 <button type="submit" class="btn btn-primary">
                                     <i class="fas fa-save"></i> Create Transaction
                                 </button>
-                                <button type="reset" class="btn btn-secondary ml-2">
+                                <button type="reset" class="btn btn-secondary ms-2">
                                     <i class="fas fa-undo"></i> Reset Form
                                 </button>
                             </div>
-                            <div class="col-md-6 text-right">
+                            <div class="col-md-6 text-end">
                                 <a href="{{ route('financial.transactions.index') }}" class="btn btn-outline-secondary">
                                     <i class="fas fa-times"></i> Cancel
                                 </a>

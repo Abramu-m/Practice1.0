@@ -44,7 +44,7 @@
                                 <tr>
                                     <th>Status:</th>
                                     <td>
-                                        <span class="text-black badge badge-{{ $formulation->is_active ? 'success' : 'secondary' }} p-2">
+                                        <span class="text-black badge bg-{{ $formulation->is_active ? 'success' : 'secondary' }} p-2">
                                             {{ $formulation->is_active ? 'Active' : 'Inactive' }}
                                         </span>
                                     </td>
@@ -52,7 +52,7 @@
                                 <tr>
                                     <th>Medications Using:</th>
                                     <td>
-                                        <span class="badge badge-info p-2">
+                                        <span class="badge bg-info p-2">
                                             {{ $formulation->medications()->count() }} medication(s)
                                         </span>
                                     </td>
@@ -73,11 +73,11 @@
                                     <th>In Use:</th>
                                     <td>
                                         @if($formulation->isInUse())
-                                            <span class="badge badge-warning p-2">
+                                            <span class="badge bg-warning p-2">
                                                 <i class="fas fa-exclamation-triangle"></i> Yes
                                             </span>
                                         @else
-                                            <span class="badge badge-success p-2">
+                                            <span class="badge bg-success p-2">
                                                 <i class="fas fa-check"></i> No
                                             </span>
                                         @endif
@@ -108,7 +108,7 @@
                                     <td>{{ $medication->brand_name ?? '-' }}</td>
                                     <td>{{ $medication->strength ?? '-' }}</td>
                                     <td>
-                                        <span class="text-black badge badge-{{ $medication->is_active ? 'success' : 'secondary' }}">
+                                        <span class="text-black badge bg-{{ $medication->is_active ? 'success' : 'secondary' }}">
                                             {{ $medication->is_active ? 'Active' : 'Inactive' }}
                                         </span>
                                     </td>

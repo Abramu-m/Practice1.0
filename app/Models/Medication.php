@@ -218,12 +218,12 @@ class Medication extends Model
     public function getStockBadgeClassAttribute(): string
     {
         switch ($this->stock_status) {
-            case 'Expired': return 'badge-danger';
-            case 'Expiring Soon': return 'badge-warning';
-            case 'Out of Stock': return 'badge-danger';
-            case 'Low Stock': return 'badge-warning';
-            case 'In Stock': return 'badge-success';
-            default: return 'badge-secondary';
+            case 'Expired': return 'bg-danger';
+            case 'Expiring Soon': return 'bg-warning';
+            case 'Out of Stock': return 'bg-danger';
+            case 'Low Stock': return 'bg-warning';
+            case 'In Stock': return 'bg-success';
+            default: return 'bg-secondary';
         }
     }
 

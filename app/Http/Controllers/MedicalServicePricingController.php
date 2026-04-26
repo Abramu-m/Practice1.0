@@ -56,10 +56,10 @@ class MedicalServicePricingController extends Controller
                 })
                 ->addColumn('category_display', function ($price) {
                     $categoryName = $price->medicalService->serviceCategory->name ?? 'N/A';
-                    return '<span class="badge badge-secondary text-black">' . e($categoryName) . '</span>';
+                    return '<span class="badge bg-secondary text-black">' . e($categoryName) . '</span>';
                 })
                 ->addColumn('patient_category_display', function ($price) {
-                    return '<span class="badge badge-info text-black">' . e($price->patientCategory->description) . '</span>';
+                    return '<span class="badge bg-info text-black">' . e($price->patientCategory->description) . '</span>';
                 })
                 ->addColumn('price_display', function ($price) {
                     return 'TSh ' . number_format($price->selling_price, 2);
@@ -86,7 +86,7 @@ class MedicalServicePricingController extends Controller
                     $badgeClass = $status === 'Active' ? 'success' : 
                                 ($status === 'Future' ? 'warning' : 
                                 ($status === 'Expired' ? 'secondary' : 'danger'));
-                    return '<span class="badge badge-' . $badgeClass . '">' . e($status) . '</span>';
+                    return '<span class="badge bg-' . $badgeClass . '">' . e($status) . '</span>';
                 })
                 ->addColumn('actions', function ($price) {
                     $viewBtn = '<a href="' . route('medical-service-pricing.show', $price) . '" class="btn btn-outline-info" title="View">' .

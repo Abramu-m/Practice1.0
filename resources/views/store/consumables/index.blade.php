@@ -43,7 +43,7 @@
                                     </td>
                                     <td>
                                         @if($consumable->category)
-                                            <span class="badge badge-info text-black">{{ $consumable->category->name }}</span>
+                                            <span class="badge bg-info text-black">{{ $consumable->category->name }}</span>
                                         @else
                                             <span class="text-muted">No Category</span>
                                         @endif
@@ -56,20 +56,20 @@
                                         @endif
                                     </td>
                                     <td>
-                                        <span class="text-black badge badge-{{ $consumable->current_stock > 0 ? 'success' : 'danger' }}">
+                                        <span class="text-black badge bg-{{ $consumable->current_stock > 0 ? 'success' : 'danger' }}">
                                             {{ number_format($consumable->current_stock) }}
                                         </span>
                                     </td>
                                     <td>{{ number_format($consumable->reorder_level) }}</td>
                                     <td>
                                         @if($consumable->is_active)
-                                            <span class="badge badge-success text-black">Active</span>
+                                            <span class="badge bg-success text-black">Active</span>
                                         @else
-                                            <span class="badge badge-danger text-black">Inactive</span>
+                                            <span class="badge bg-danger text-black">Inactive</span>
                                         @endif
                                     </td>
                                     <td>
-                                        <span class="text-black badge badge-{{ $consumable->stock_status_color }}">
+                                        <span class="text-black badge bg-{{ $consumable->stock_status_color }}">
                                             {{ ucfirst(str_replace('_', ' ', $consumable->stock_status)) }}
                                         </span>
                                     </td>

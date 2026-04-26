@@ -24,9 +24,9 @@
                     <th>Type:</th>
                     <td>
                         @if($patientCategory->type == 'cash')
-                            <span class="badge badge-primary text-black">Cash</span>
+                            <span class="badge bg-primary text-black">Cash</span>
                         @else
-                            <span class="badge badge-info text-black">Insurance</span>
+                            <span class="badge bg-info text-black">Insurance</span>
                         @endif
                     </td>
                 </tr>
@@ -34,9 +34,9 @@
                     <th>Status:</th>
                     <td>
                         @if($patientCategory->is_active)
-                            <span class="badge badge-success text-black">Active</span>
+                            <span class="badge bg-success text-black">Active</span>
                         @else
-                            <span class="badge badge-danger text-black">Inactive</span>
+                            <span class="badge bg-danger text-black">Inactive</span>
                         @endif
                     </td>
                 </tr>
@@ -57,7 +57,7 @@
         <div class="card-footer">
             <a href="{{ route('patient_categories.edit', $patientCategory->id) }}" class="btn btn-primary">Edit Category</a>
             <a href="{{ route('patient_categories.index') }}" class="btn btn-secondary">Back to List</a>
-            <form action="{{ route('patient_categories.destroy', $patientCategory->id) }}" method="POST" style="display:inline;" class="float-right">
+            <form action="{{ route('patient_categories.destroy', $patientCategory->id) }}" method="POST" style="display:inline;" class="float-end">
                 @csrf @method('DELETE')
                 <button type="submit" onclick="return confirm('Are you sure you want to delete this category?')" class="btn btn-danger">Delete Category</button>
             </form>

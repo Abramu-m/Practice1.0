@@ -92,14 +92,14 @@ class PatientVisitController extends Controller
                 })
                 ->addColumn('visit_type', function ($visit) {
                     $visitTypeDesc = $visit->visitType->description ?? 'N/A';
-                    $badgeClass = 'badge-secondary';
+                    $badgeClass = 'bg-secondary';
                     
                     switch(strtolower($visitTypeDesc)) {
-                        case 'first visit': $badgeClass = 'badge-primary'; break;
-                        case 'follow up': $badgeClass = 'badge-success'; break;
-                        case 'internal referral': $badgeClass = 'badge-warning'; break;
-                        case 'external referral': $badgeClass = 'badge-info'; break;
-                        case 'lab only': $badgeClass = 'badge-danger'; break;
+                        case 'first visit': $badgeClass = 'bg-primary'; break;
+                        case 'follow up': $badgeClass = 'bg-success'; break;
+                        case 'internal referral': $badgeClass = 'bg-warning'; break;
+                        case 'external referral': $badgeClass = 'bg-info'; break;
+                        case 'lab only': $badgeClass = 'bg-danger'; break;
                     }
                     
                     return '<span class="badge ' . $badgeClass . '">' . e($visitTypeDesc) . '</span>';

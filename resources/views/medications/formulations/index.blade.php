@@ -39,12 +39,12 @@
                                         <td>{{ $formulation->id }}</td>
                                         <td>{{ $formulation->description }}</td>
                                         <td>
-                                            <span class="text-black badge badge-{{ $formulation->is_active ? 'success' : 'secondary' }} text-black">
+                                            <span class="text-black badge bg-{{ $formulation->is_active ? 'success' : 'secondary' }} text-black">
                                                 {{ $formulation->is_active ? 'Active' : 'Inactive' }}
                                             </span>
                                         </td>
                                         <td>
-                                            <span class="badge badge-info text-black">
+                                            <span class="badge bg-info text-black">
                                                 {{ $formulation->medications_count ?? 0 }}
                                             </span>
                                         </td>

@@ -30,22 +30,22 @@
                   <tr>
                     <th>Batch Number</th>
                     <td>
-                      <span class="badge badge-info text-black">{{ $batch->batch_number }}</span>
+                      <span class="badge bg-info text-black">{{ $batch->batch_number }}</span>
                     </td>
                   </tr>
                   <tr>
                     <th>Status</th>
                     <td>
                       @if($batch->status == 'active')
-                        <span class="badge badge-success text-black">Active</span>
+                        <span class="badge bg-success text-black">Active</span>
                       @elseif($batch->status == 'expired')
-                        <span class="badge badge-danger text-black">Expired</span>
+                        <span class="badge bg-danger text-black">Expired</span>
                       @elseif($batch->status == 'recalled')
-                        <span class="badge badge-warning">Recalled</span>
+                        <span class="badge bg-warning">Recalled</span>
                       @elseif($batch->status == 'damaged')
-                        <span class="badge badge-dark">Damaged</span>
+                        <span class="badge bg-dark">Damaged</span>
                       @elseif($batch->status == 'depleted')
-                        <span class="badge badge-secondary">Depleted</span>
+                        <span class="badge bg-secondary">Depleted</span>
                       @endif
                     </td>
                   </tr>
@@ -81,7 +81,7 @@
                   <tr>
                     <th>Current Quantity</th>
                     <td>
-                      <span class="badge {{ $batch->current_quantity > 0 ? 'badge-success' : 'badge-danger' }}">
+                      <span class="badge {{ $batch->current_quantity > 0 ? 'bg-success' : 'bg-danger' }}">
                         {{ number_format($batch->current_quantity) }}
                       </span>
                     </td>
@@ -143,7 +143,7 @@
                     <th>Expiry Date</th>
                     <td>
                       @if($batch->expiry_date)
-                        <span class="badge {{ $batch->expiry_date < now() ? 'badge-danger' : ($batch->expiry_date < now()->addDays(30) ? 'badge-warning' : 'badge-success') }}">
+                        <span class="badge {{ $batch->expiry_date < now() ? 'bg-danger' : ($batch->expiry_date < now()->addDays(30) ? 'bg-warning' : 'bg-success') }}">
                           {{ $batch->expiry_date->format('M d, Y') }}
                         </span>
                       @else
@@ -165,7 +165,7 @@
             
             <div class="col-md-6">
               @if($batch->notes)
-                <div class="form-group">
+                <div class="mb-3">
                   <label><strong>Notes:</strong></label>
                   <div class="border rounded p-3 bg-light">
                     {{ $batch->notes }}
@@ -259,7 +259,7 @@
           <div class="row">
             <div class="col-md-6">
               @if($batch->status == 'active' && $batch->current_quantity > 0)
-                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#dispenseModal">
+                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#dispenseModal">
                   <i class="fa fa-pills"></i> Dispense Medication
                 </button>
               @endif
@@ -269,7 +269,7 @@
               </a>
             </div>
             
-            <div class="col-md-6 text-right">
+            <div class="col-md-6 text-end">
               <button type="button" class="btn btn-warning" onclick="updateStatus('{{ $batch->id }}', 'expired')">
                 <i class="fa fa-exclamation-triangle"></i> Mark as Expired
               </button>
@@ -291,21 +291,19 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Dispense Medication</h5>
-        <button type="button" class="close" data-dismiss="modal">
-          <span>&times;</span>
-        </button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <form id="dispenseForm" action="{{ route('medication-ledger.dispense', $batch->id) }}" method="POST">
         @csrf
         <div class="modal-body">
-          <div class="form-group">
+          <div class="mb-3">
             <label for="quantity">Quantity to Dispense</label>
             <input type="text" name="quantity" id="quantity" class="form-control" 
                    max="{{ $batch->current_quantity }}" min="1" required>
             <small class="text-muted">Available: {{ $batch->current_quantity }}</small>
           </div>
           
-          <div class="form-group">
+          <div class="mb-3">
             <label for="patient_id">Patient (Optional)</label>
             <select name="patient_id" id="patient_id" class="form-control">
               <option value="">Select Patient</option>
@@ -313,18 +311,18 @@
             </select>
           </div>
           
-          <div class="form-group">
+          <div class="mb-3">
             <label for="prescription_id">Prescription (Optional)</label>
             <input type="text" name="prescription_id" id="prescription_id" class="form-control">
           </div>
           
-          <div class="form-group">
+          <div class="mb-3">
             <label for="dispense_notes">Notes</label>
             <textarea name="notes" id="dispense_notes" class="form-control" rows="3"></textarea>
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
           <button type="submit" class="btn btn-success">Dispense</button>
         </div>
       </form>

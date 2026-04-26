@@ -56,9 +56,9 @@
                         <dt class="col-sm-3">Status:</dt>
                         <dd class="col-sm-9">
                             @if($ruleType->is_active)
-                                <span class="badge badge-success">Active</span>
+                                <span class="badge bg-success">Active</span>
                             @else
-                                <span class="badge badge-secondary">Inactive</span>
+                                <span class="badge bg-secondary">Inactive</span>
                             @endif
                         </dd>
 
@@ -128,22 +128,22 @@
                                     </td>
                                     <td>{{ Str::limit($rule->description, 80) }}</td>
                                     <td>
-                                        <span class="badge badge-info">{{ $rule->priority }}</span>
+                                        <span class="badge bg-info">{{ $rule->priority }}</span>
                                     </td>
                                     <td>
                                         @if($rule->severity == 'critical')
-                                            <span class="badge badge-danger">Critical</span>
+                                            <span class="badge bg-danger">Critical</span>
                                         @elseif($rule->severity == 'warning')
-                                            <span class="badge badge-warning">Warning</span>
+                                            <span class="badge bg-warning">Warning</span>
                                         @else
-                                            <span class="badge badge-info">Info</span>
+                                            <span class="badge bg-info">Info</span>
                                         @endif
                                     </td>
                                     <td>
                                         @if($rule->is_active)
-                                            <span class="badge badge-success">Active</span>
+                                            <span class="badge bg-success">Active</span>
                                         @else
-                                            <span class="badge badge-secondary">Inactive</span>
+                                            <span class="badge bg-secondary">Inactive</span>
                                         @endif
                                     </td>
                                     <td>

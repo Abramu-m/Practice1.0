@@ -15,7 +15,7 @@
                     <a href="{{ route('users.pending-verification') }}" class="btn btn-warning">
                         <i class="fas fa-user-clock"></i> Pending Verification
                         @if(\App\Models\User::where('is_verified', false)->where('role', '!=', 'super_admin')->count() > 0)
-                            <span class="badge badge-light">{{ \App\Models\User::where('is_verified', false)->where('role', '!=', 'super_admin')->count() }}</span>
+                            <span class="badge bg-light">{{ \App\Models\User::where('is_verified', false)->where('role', '!=', 'super_admin')->count() }}</span>
                         @endif
                     </a>
                 @endif
@@ -40,27 +40,21 @@
         @if(session('success'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 {{ session('success') }}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
 
         @if(session('warning'))
             <div class="alert alert-warning alert-dismissible fade show" role="alert">
                 {{ session('warning') }}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
 
         @if(session('error'))
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                 {{ session('error') }}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif  
         <div class="card-body table-responsive">
@@ -86,9 +80,9 @@
                             <div class="d-flex align-items-center">
                                 @if($user->profile_picture)
                                     <img src="{{ asset('storage/' . $user->profile_picture) }}" 
-                                         alt="Profile" class="rounded-circle mr-2" width="30" height="30">
+                                         alt="Profile" class="rounded-circle me-2" width="30" height="30">
                                 @else
-                                    <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center mr-2" 
+                                    <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center me-2" 
                                          style="width: 30px; height: 30px; font-size: 12px; color: white;">
                                         {{ strtoupper(substr($user->first_name, 0, 1)) }}{{ strtoupper(substr($user->last_name, 0, 1)) }}
                                     </div>

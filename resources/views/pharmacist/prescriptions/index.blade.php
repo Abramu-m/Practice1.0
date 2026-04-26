@@ -40,7 +40,7 @@
                             <form method="GET" action="{{ route('pharmacist.prescriptions.index') }}" class="mb-4">
                                 <div class="row">
                                     <div class="col-md-3">
-                                        <div class="form-group">
+                                        <div class="mb-3">
                                             <label for="status">Status</label>
                                             <select name="status" id="status" class="form-control">
                                                 <option value="">All Statuses</option>
@@ -51,20 +51,20 @@
                                         </div>
                                     </div>
                                     <div class="col-md-3">
-                                        <div class="form-group">
+                                        <div class="mb-3">
                                             <label for="search">Patient Search</label>
                                             <input type="text" name="search" id="search" class="form-control" 
                                                    placeholder="Name or MR Number" value="{{ request('search') }}">
                                         </div>
                                     </div>
                                     <div class="col-md-3">
-                                        <div class="form-group">
+                                        <div class="mb-3">
                                             <label for="date">Date</label>
                                             <input type="date" name="date" id="date" class="form-control" value="{{ request('date') }}">
                                         </div>
                                     </div>
                                     <div class="col-md-3">
-                                        <div class="form-group">
+                                        <div class="mb-3">
                                             <label>&nbsp;</label>
                                             <div>
                                                 <button type="submit" class="btn btn-primary">

@@ -32,7 +32,7 @@
                         @endif
                     </td>
                     <td>
-                        <span class="badge {{ $investigation->status_badge_class ?? 'badge-secondary' }}">
+                        <span class="badge {{ $investigation->status_badge_class ?? 'bg-secondary' }}">
                             {{ ucfirst($investigation->status) }}
                         </span>
                     </td>

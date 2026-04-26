@@ -35,7 +35,7 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="name">Unit Name <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control @error('name') is-invalid @enderror" 
                                            id="name" name="name" value="{{ old('name', $storeUnit->name) }}" 
@@ -46,7 +46,7 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="code">Unit Code <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control @error('code') is-invalid @enderror" 
                                            id="code" name="code" value="{{ old('code', $storeUnit->code) }}" 
@@ -61,7 +61,7 @@
 
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="type">Unit Type <span class="text-danger">*</span></label>
                                     <select class="form-control @error('type') is-invalid @enderror" 
                                             id="type" name="type" required>
@@ -83,7 +83,7 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <div class="custom-control custom-switch mt-4">
                                         <input type="hidden" name="is_active" value="0">
                                         <input type="checkbox" class="custom-control-input" id="is_active" name="is_active" value="1"
@@ -97,7 +97,7 @@
 
                         <div class="row">
                             <div class="col-12">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="description">Description</label>
                                     <textarea class="form-control @error('description') is-invalid @enderror" 
                                               id="description" name="description" rows="3" 

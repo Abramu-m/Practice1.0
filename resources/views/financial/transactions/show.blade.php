@@ -18,7 +18,7 @@
                         <!-- Receipt Actions -->
                         @if($transaction->transaction_type == 'income')
                         <div class="btn-group" role="group">
-                            <button type="button" class="btn btn-success btn-sm dropdown-toggle" data-toggle="dropdown">
+                            <button type="button" class="btn btn-success btn-sm dropdown-toggle" data-bs-toggle="dropdown">
                                 <i class="fas fa-print"></i> Receipt
                             </button>
                             <div class="dropdown-menu">
@@ -205,7 +205,7 @@
                                     onclick="approveTransaction({{ $transaction->id }})">
                                 <i class="fas fa-check"></i> Approve Transaction
                             </button>
-                            <button type="button" class="btn btn-danger ml-2" 
+                            <button type="button" class="btn btn-danger ms-2" 
                                     onclick="cancelTransaction({{ $transaction->id }})">
                                 <i class="fas fa-times"></i> Cancel Transaction
                             </button>
@@ -293,13 +293,13 @@
                     </h3>
                 </div>
                 <div class="card-body">
-                    <a href="{{ route('financial.transactions.create') }}" class="btn btn-primary btn-block mb-2">
+                    <a href="{{ route('financial.transactions.create') }}" class="btn btn-primary w-100 mb-2">
                         <i class="fas fa-plus"></i> Create New Transaction
                     </a>
-                    <a href="{{ route('financial.transactions.export', ['transaction_id' => $transaction->id]) }}" class="btn btn-success btn-block mb-2">
+                    <a href="{{ route('financial.transactions.export', ['transaction_id' => $transaction->id]) }}" class="btn btn-success w-100 mb-2">
                         <i class="fas fa-download"></i> Export This Transaction
                     </a>
-                    <a href="{{ route('financial.dashboard') }}" class="btn btn-info btn-block">
+                    <a href="{{ route('financial.dashboard') }}" class="btn btn-info w-100">
                         <i class="fas fa-chart-line"></i> View Dashboard
                     </a>
                 </div>
@@ -314,15 +314,13 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="confirmationModalTitle">Confirm Action</h5>
-                <button type="button" class="close" data-dismiss="modal">
-                    <span>&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body" id="confirmationModalBody">
                 Are you sure you want to perform this action?
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-primary" id="confirmationModalConfirm">Confirm</button>
             </div>
         </div>
@@ -414,12 +412,10 @@ function sendReceiptEmail() {
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Email Receipt</h5>
-                <button type="button" class="close" data-dismiss="modal">
-                    <span>&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <div class="form-group">
+                <div class="mb-3">
                     <label for="receiptEmail">Email Address:</label>
                     <input type="email" 
                            class="form-control" 
@@ -432,7 +428,7 @@ function sendReceiptEmail() {
                 </p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-primary" onclick="sendReceiptEmail()">
                     <i class="fas fa-envelope"></i> Send Receipt
                 </button>

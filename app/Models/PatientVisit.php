@@ -128,13 +128,13 @@ class PatientVisit extends Model
     {
         switch ($this->visit_status) {
             case 0:
-                return 'badge-warning'; // Waiting - yellow/orange
+                return 'bg-warning'; // Waiting - yellow/orange
             case 1:
-                return 'badge-info'; // In treatment - blue
+                return 'bg-info'; // In treatment - blue
             case 2:
-                return 'badge-success'; // Discharged - green
+                return 'bg-success'; // Discharged - green
             default:
-                return 'badge-secondary';
+                return 'bg-secondary';
         }
     }
 
@@ -145,11 +145,11 @@ class PatientVisit extends Model
     {
         switch ($this->vital_status) {
             case 0:
-                return 'badge-danger'; // Not taken - red
+                return 'bg-danger'; // Not taken - red
             case 1:
-                return 'badge-success'; // Taken - green
+                return 'bg-success'; // Taken - green
             default:
-                return 'badge-secondary';
+                return 'bg-secondary';
         }
     }
 

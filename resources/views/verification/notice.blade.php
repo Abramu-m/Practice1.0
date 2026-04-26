@@ -46,7 +46,7 @@
                                         <h6><i class="fas fa-clock"></i> Registration Info</h6>
                                         <p class="mb-1"><strong>Registered:</strong> {{ auth()->user()->created_at->format('d/m/Y H:i') }}</p>
                                         <p class="mb-0"><strong>Status:</strong> 
-                                            <span class="badge badge-warning">Pending Verification</span>
+                                            <span class="badge bg-warning">Pending Verification</span>
                                         </p>
                                     </div>
                                 </div>

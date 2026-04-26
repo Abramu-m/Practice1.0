@@ -19,7 +19,7 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="unit_name">Unit Name <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control @error('unit_name') is-invalid @enderror" 
                                            id="unit_name" name="unit_name" value="{{ old('unit_name') }}" 
@@ -30,7 +30,7 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="unit_code">Unit Code <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control @error('unit_code') is-invalid @enderror" 
                                            id="unit_code" name="unit_code" value="{{ old('unit_code') }}" 
@@ -44,7 +44,7 @@
 
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="unit_symbol">Unit Symbol</label>
                                     <input type="text" class="form-control @error('unit_symbol') is-invalid @enderror" 
                                            id="unit_symbol" name="unit_symbol" value="{{ old('unit_symbol') }}" 
@@ -55,7 +55,7 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="unit_type">Unit Type <span class="text-danger">*</span></label>
                                     <select class="form-control @error('unit_type') is-invalid @enderror" 
                                             id="unit_type" name="unit_type" required>
@@ -75,7 +75,7 @@
 
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="base_unit_id">Base Unit</label>
                                     <select class="form-control @error('base_unit_id') is-invalid @enderror" 
                                             id="base_unit_id" name="base_unit_id">
@@ -89,7 +89,7 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="conversion_factor">Conversion Factor</label>
                                     <input type="text" class="form-control @error('conversion_factor') is-invalid @enderror" 
                                            id="conversion_factor" name="conversion_factor" value="{{ old('conversion_factor') }}" 
@@ -104,7 +104,7 @@
 
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="display_order">Display Order</label>
                                     <input type="text" class="form-control @error('display_order') is-invalid @enderror" 
                                            id="display_order" name="display_order" value="{{ old('display_order', 1) }}" 
@@ -116,7 +116,7 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <div class="custom-control custom-switch">
                                         <input type="checkbox" class="custom-control-input" id="is_active" name="is_active" 
                                                {{ old('is_active', true) ? 'checked' : '' }}>

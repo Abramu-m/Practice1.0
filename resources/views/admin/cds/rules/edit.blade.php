@@ -40,7 +40,7 @@
                         <h5 class="card-title mb-0">📝 Rule Information</h5>
                     </div>
                     <div class="card-body">
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="name">Rule Name <span class="text-danger">*</span></label>
                             <input type="text" class="form-control @error('name') is-invalid @enderror" 
                                    id="name" name="name" value="{{ old('name', $rule->name) }}" required>
@@ -49,7 +49,7 @@
                             @enderror
                         </div>
 
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="description">Description</label>
                             <textarea class="form-control @error('description') is-invalid @enderror" 
                                       id="description" name="description" rows="3">{{ old('description', $rule->description) }}</textarea>
@@ -60,7 +60,7 @@
 
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="category_display">Current Category</label>
                                     <input type="text" class="form-control" 
                                            value="{{ $rule->ruleType->category->name ?? 'No Category' }}" 
@@ -69,7 +69,7 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="rule_type_id">Rule Type <span class="text-danger">*</span></label>
                                     <select class="form-control @error('rule_type_id') is-invalid @enderror" 
                                             id="rule_type_id" name="rule_type_id" required>
@@ -252,7 +252,7 @@
                         <h5 class="card-title mb-0">⚡ Rule Settings</h5>
                     </div>
                     <div class="card-body">
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="priority">Priority (1-10)</label>
                             <input type="number" class="form-control @error('priority') is-invalid @enderror" 
                                    id="priority" name="priority" min="1" max="10" value="{{ old('priority', $rule->priority) }}">
@@ -262,7 +262,7 @@
                             @enderror
                         </div>
 
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="severity">Severity</label>
                             <select class="form-control @error('severity') is-invalid @enderror" 
                                     id="severity" name="severity">
@@ -275,7 +275,7 @@
                             @enderror
                         </div>
 
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="message">Alert Message</label>
                             <textarea class="form-control @error('message') is-invalid @enderror" 
                                       id="message" name="message" rows="3">{{ old('message', $rule->message) }}</textarea>
@@ -285,7 +285,7 @@
                             @enderror
                         </div>
 
-                        <div class="form-group">
+                        <div class="mb-3">
                             <div class="custom-control custom-switch">
                                 <input type="checkbox" class="custom-control-input" id="is_active" name="is_active" 
                                        {{ old('is_active', $rule->is_active) ? 'checked' : '' }}>
@@ -295,13 +295,13 @@
 
                         <hr>
 
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="effective_from">Effective From</label>
                             <input type="datetime-local" class="form-control" id="effective_from" name="effective_from" 
                                    value="{{ old('effective_from', $rule->effective_from ? $rule->effective_from->format('Y-m-d\TH:i') : '') }}">
                         </div>
 
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="effective_until">Effective Until</label>
                             <input type="datetime-local" class="form-control" id="effective_until" name="effective_until" 
                                    value="{{ old('effective_until', $rule->effective_until ? $rule->effective_until->format('Y-m-d\TH:i') : '') }}">
@@ -315,13 +315,13 @@
                         <h5 class="card-title mb-0">💾 Actions</h5>
                     </div>
                     <div class="card-body">
-                        <button type="submit" class="btn btn-primary btn-block">
+                        <button type="submit" class="btn btn-primary w-100">
                             <i class="fas fa-save"></i> Update Rule
                         </button>
-                        <button type="button" class="btn btn-outline-secondary btn-block" onclick="previewRule()">
+                        <button type="button" class="btn btn-outline-secondary w-100" onclick="previewRule()">
                             <i class="fas fa-eye"></i> Preview Changes
                         </button>
-                        <a href="{{ route('admin.cds.rules.show', $rule) }}" class="btn btn-outline-danger btn-block">
+                        <a href="{{ route('admin.cds.rules.show', $rule) }}" class="btn btn-outline-danger w-100">
                             <i class="fas fa-times"></i> Cancel Changes
                         </a>
                     </div>

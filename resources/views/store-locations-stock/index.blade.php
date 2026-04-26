@@ -8,7 +8,7 @@
                 <div class="card-header">
                     <h3 class="card-title">Store Locations Stock</h3>
                     <div class="card-tools">
-                        <a href="{{ route('store.requisitions.create') }}" class="btn btn-warning btn-block">
+                        <a href="{{ route('store.requisitions.create') }}" class="btn btn-warning w-100">
                             <i class="fas fa-clipboard-list"></i> New Requisition
                         </a>
                     </div>
@@ -165,12 +165,12 @@
                                                 $isExpiringSoon = $entry->expiry_date->diffInDays() <= 30;
                                                 $badgeClass = $isExpired ? 'danger' : ($isExpiringSoon ? 'warning' : 'success');
                                             @endphp
-                                            <span class="badge badge-{{ $badgeClass }}">
+                                            <span class="badge bg-{{ $badgeClass }}">
                                                 {{ $entry->expiry_date->format('M d, Y') }}
                                             </span>
                                         </td>
                                         <td>
-                                            <span class="badge badge-{{ $entry->quantity > 0 ? 'success' : 'danger' }}">
+                                            <span class="badge bg-{{ $entry->quantity > 0 ? 'success' : 'danger' }}">
                                                 {{ number_format($entry->quantity) }}
                                             </span>
                                         </td>
@@ -192,7 +192,7 @@
                                                     'depleted' => 'secondary'
                                                 ];
                                             @endphp
-                                            <span class="badge badge-{{ $statusColors[$entry->status] ?? 'secondary' }}">
+                                            <span class="badge bg-{{ $statusColors[$entry->status] ?? 'secondary' }}">
                                                 {{ ucfirst($entry->status) }}
                                             </span>
                                         </td>
@@ -233,7 +233,7 @@
                                             <div class="py-4">
                                                 <i class="fas fa-warehouse fa-3x text-muted mb-3"></i>
                                                 <p class="text-muted">No stock entries found.</p>
-                                                <a href="{{ route('store.requisitions.create') }}" class="btn btn-warning btn-block">
+                                                <a href="{{ route('store.requisitions.create') }}" class="btn btn-warning w-100">
                                                     <i class="fas fa-clipboard-list"></i> New Requisition
                                                 </a>
                                             </div>
@@ -262,24 +262,22 @@
                 @csrf
                 <div class="modal-header">
                     <h5 class="modal-title" id="movementModalLabel">Create Stock Movement</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <input type="hidden" name="stock_id" id="movement_stock_id">
                     
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label>Medication:</label>
                         <p id="movement_medication_name" class="form-control-plaintext"></p>
                     </div>
                     
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label>Available Quantity:</label>
                         <p id="movement_available_quantity" class="form-control-plaintext"></p>
                     </div>
                     
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label for="movement_type">Movement Type:</label>
                         <select class="form-control" id="movement_type" name="movement_type" required>
                             <option value="">Select Movement Type</option>
@@ -290,18 +288,18 @@
                         </select>
                     </div>
                     
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label for="movement_quantity">Quantity:</label>
                         <input type="number" class="form-control" id="movement_quantity" name="quantity" min="1" step="0.01" required>
                     </div>
                     
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label for="movement_notes">Notes/Reason:</label>
                         <textarea class="form-control" id="movement_notes" name="notes" rows="3"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-primary">Create Movement</button>
                 </div>
             </form>
@@ -315,9 +313,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="historyModalLabel">Stock Movement History</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div id="historyContent">

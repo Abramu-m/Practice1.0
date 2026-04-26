@@ -253,13 +253,13 @@ class Investigation extends Model
     public function getStatusBadgeClassAttribute()
     {
         switch ($this->status) {
-            case self::STATUS_DRAFT: return 'badge-secondary';
-            case self::STATUS_ORDERED: return 'badge-warning';
-            case self::STATUS_COLLECTED: return 'badge-primary';
-            case self::STATUS_PROCESSING: return 'badge-info';
-            case self::STATUS_RESULTED: return 'badge-success';
-            case self::STATUS_CANCELLED: return 'badge-danger';
-            default: return 'badge-secondary';
+            case self::STATUS_DRAFT: return 'bg-secondary';
+            case self::STATUS_ORDERED: return 'bg-warning';
+            case self::STATUS_COLLECTED: return 'bg-primary';
+            case self::STATUS_PROCESSING: return 'bg-info';
+            case self::STATUS_RESULTED: return 'bg-success';
+            case self::STATUS_CANCELLED: return 'bg-danger';
+            default: return 'bg-secondary';
         }
     }
 
@@ -269,10 +269,10 @@ class Investigation extends Model
     public function getPriorityBadgeClassAttribute()
     {
         switch ($this->priority) {
-            case self::PRIORITY_STAT: return 'badge-danger';
-            case self::PRIORITY_URGENT: return 'badge-warning';
-            case self::PRIORITY_ROUTINE: return 'badge-info';
-            default: return 'badge-secondary';
+            case self::PRIORITY_STAT: return 'bg-danger';
+            case self::PRIORITY_URGENT: return 'bg-warning';
+            case self::PRIORITY_ROUTINE: return 'bg-info';
+            default: return 'bg-secondary';
         }
     }
 

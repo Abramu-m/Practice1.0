@@ -265,22 +265,22 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-3">
-                            <a href="{{ route('financial.transactions.create') }}" class="btn btn-primary btn-block">
+                            <a href="{{ route('financial.transactions.create') }}" class="btn btn-primary w-100">
                                 <i class="fas fa-plus"></i> New Transaction
                             </a>
                         </div>
                         <div class="col-md-3">
-                            <a href="{{ route('financial.transactions.index') }}" class="btn btn-info btn-block">
+                            <a href="{{ route('financial.transactions.index') }}" class="btn btn-info w-100">
                                 <i class="fas fa-list"></i> View All Transactions
                             </a>
                         </div>
                         <div class="col-md-3">
-                            <a href="{{ route('financial.transactions.export') }}" class="btn btn-success btn-block">
+                            <a href="{{ route('financial.transactions.export') }}" class="btn btn-success w-100">
                                 <i class="fas fa-download"></i> Export Report
                             </a>
                         </div>
                         <div class="col-md-3">
-                            <button type="button" class="btn btn-warning btn-block" onclick="refreshDashboard()">
+                            <button type="button" class="btn btn-warning w-100" onclick="refreshDashboard()">
                                 <i class="fas fa-sync"></i> Refresh Data
                             </button>
                         </div>

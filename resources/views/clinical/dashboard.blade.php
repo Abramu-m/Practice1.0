@@ -88,22 +88,22 @@
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col-md-3">
-                                            <button class="btn btn-outline-primary btn-block" onclick="startNewConsultation()">
+                                            <button class="btn btn-outline-primary w-100" onclick="startNewConsultation()">
                                                 <i class="fas fa-plus"></i> New Consultation
                                             </button>
                                         </div>
                                         <div class="col-md-3">
-                                            <button class="btn btn-outline-success btn-block" onclick="recordVitalSigns()">
+                                            <button class="btn btn-outline-success w-100" onclick="recordVitalSigns()">
                                                 <i class="fas fa-heartbeat"></i> Record Vitals
                                             </button>
                                         </div>
                                         <div class="col-md-3">
-                                            <button class="btn btn-outline-warning btn-block" onclick="createPrescription()">
+                                            <button class="btn btn-outline-warning w-100" onclick="createPrescription()">
                                                 <i class="fas fa-prescription-bottle"></i> Prescribe
                                             </button>
                                         </div>
                                         <div class="col-md-3">
-                                            <button class="btn btn-outline-info btn-block" onclick="orderInvestigation()">
+                                            <button class="btn btn-outline-info w-100" onclick="orderInvestigation()">
                                                 <i class="fas fa-microscope"></i> Order Test
                                             </button>
                                         </div>

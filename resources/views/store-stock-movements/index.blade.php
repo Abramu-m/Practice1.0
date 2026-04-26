@@ -180,7 +180,7 @@
                                                     'waste' => 'trash'
                                                 ];
                                             @endphp
-                                            <span class="badge badge-{{ $typeColors[$movement->movement_type] ?? 'secondary' }}">
+                                            <span class="badge bg-{{ $typeColors[$movement->movement_type] ?? 'secondary' }}">
                                                 <i class="fas fa-{{ $typeIcons[$movement->movement_type] ?? 'question' }}"></i>
                                                 {{ ucfirst($movement->movement_type) }}
                                             </span>
@@ -219,7 +219,7 @@
                                             @endif
                                         </td>
                                         <td>
-                                            <span class="badge badge-{{ $movement->movement_type === 'in' ? 'success' : 'danger' }}">
+                                            <span class="badge bg-{{ $movement->movement_type === 'in' ? 'success' : 'danger' }}">
                                                 {{ $movement->movement_type === 'in' ? '+' : '-' }}{{ number_format($movement->quantity) }}
                                             </span>
                                         </td>
@@ -296,15 +296,13 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="notesModalLabel">Movement Notes</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <p id="notesContent"></p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -318,9 +316,7 @@
                 @csrf
                 <div class="modal-header">
                     <h5 class="modal-title" id="reverseModalLabel">Reverse Movement</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="alert alert-warning">
@@ -328,13 +324,13 @@
                         This will create a reverse movement to undo this transaction. This action cannot be undone.
                     </div>
                     
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label for="reverse_reason">Reason for Reversal:</label>
                         <textarea class="form-control" id="reverse_reason" name="reason" rows="3" required placeholder="Please provide a reason for reversing this movement..."></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-warning">Reverse Movement</button>
                 </div>
             </form>

@@ -19,7 +19,7 @@
                 <!-- Sale Information Card -->
                 <div class="card shadow mb-4">
                     <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary">Sale Information</h6>
+                        <h6 class="m-0 fw-bold text-primary">Sale Information</h6>
                     </div>
                     <div class="card-body">
                         <div class="row">
@@ -35,7 +35,7 @@
                                 </div>
                             @endif
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="sale_type">Sale Type *</label>
                                     <select name="sale_type" id="sale_type" class="form-control" required>
                                         <option value="">Select Sale Type</option>
@@ -45,7 +45,7 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="patient_category_id">Patient Category *</label>
                                     <select name="patient_category_id" id="patient_category_id" class="form-control" required>
                                         <option value="">Select Patient Category</option>
@@ -61,7 +61,7 @@
 
                         <div class="row" id="external_prescription_row" style="display: none;">
                             <div class="col-12">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="external_prescription_details">External Prescription Details *</label>
                                     <textarea name="external_prescription_details" id="external_prescription_details" 
                                             class="form-control" rows="3" 
@@ -72,7 +72,7 @@
 
                         <div class="row">
                             <div class="col-12">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="notes">General Notes</label>
                                     <textarea name="notes" id="notes" class="form-control" rows="2" 
                                             placeholder="Any additional notes about this sale">{{ old('notes') }}</textarea>
@@ -85,14 +85,14 @@
                 <!-- Medication Selection Card -->
                 <div class="card shadow mb-4">
                     <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                        <h6 class="m-0 font-weight-bold text-primary">Add Medications</h6>
-                        <span class="badge badge-info" id="medication-count">0 items</span>
+                        <h6 class="m-0 fw-bold text-primary">Add Medications</h6>
+                        <span class="badge bg-info" id="medication-count">0 items</span>
                     </div>
                     <div class="card-body">
                         <!-- Search and Add Form -->
                         <div class="row mb-4">
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="medication_search">Search Medication *</label>
                                     <div class="input-group">
                                         <input type="text" id="medication_search" class="form-control" 
@@ -111,7 +111,7 @@
                         <div id="medication-details-form" style="display: none;">
                             <div class="row">
                                 <div class="col-md-3">
-                                    <div class="form-group">
+                                    <div class="mb-3">
                                         <label for="quantity">Quantity *</label>
                                         <input type="number" id="quantity" class="form-control" 
                                                placeholder="0" min="0.1" step="0.1" max="999999.99">
@@ -119,14 +119,14 @@
                                     </div>
                                 </div>
                                 <div class="col-md-3">
-                                    <div class="form-group">
+                                    <div class="mb-3">
                                         <label for="dosage">Dosage</label>
                                         <input type="text" id="dosage" class="form-control" 
                                                placeholder="e.g., 500mg">
                                     </div>
                                 </div>
                                 <div class="col-md-3">
-                                    <div class="form-group">
+                                    <div class="mb-3">
                                         <label for="medication_frequency_id">Frequency</label>
                                         <select id="medication_frequency_id" class="form-control">
                                             <option value="">Select Frequency</option>
@@ -137,7 +137,7 @@
                                     </div>
                                 </div>
                                 <div class="col-md-3">
-                                    <div class="form-group">
+                                    <div class="mb-3">
                                         <label for="administration_route_id">Route</label>
                                         <select id="administration_route_id" class="form-control">
                                             <option value="">Select Route</option>
@@ -151,21 +151,21 @@
                             
                             <div class="row">
                                 <div class="col-md-3">
-                                    <div class="form-group">
+                                    <div class="mb-3">
                                         <label for="duration_days">Duration (Days)</label>
                                         <input type="number" id="duration_days" class="form-control" 
                                                placeholder="e.g., 7" min="1">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <div class="form-group">
+                                    <div class="mb-3">
                                         <label for="instructions">Instructions</label>
                                         <input type="text" id="instructions" class="form-control" 
                                                placeholder="Special instructions">
                                     </div>
                                 </div>
                                 <div class="col-md-3">
-                                    <div class="form-group">
+                                    <div class="mb-3">
                                         <label for="unit_price_display">Unit Price</label>
                                         <input type="text" id="unit_price_display" class="form-control" readonly>
                                     </div>
@@ -175,7 +175,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <label class="form-label">&nbsp;</label>
-                                <button type="button" id="add-medication-btn" class="btn btn-success btn-block" disabled>
+                                <button type="button" id="add-medication-btn" class="btn btn-success w-100" disabled>
                                     <i class="fas fa-plus"></i> Add Medication
                                 </button>
                             </div>
@@ -186,7 +186,7 @@
                 <!-- Medications Table -->
                 <div class="card shadow mb-4">
                     <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary">Selected Medications</h6>
+                        <h6 class="m-0 fw-bold text-primary">Selected Medications</h6>
                     </div>
                     <div class="card-body">
                         <div id="no-medications-message" class="text-center text-muted py-4">
@@ -214,8 +214,8 @@
                                         <!-- Dynamic content -->
                                     </tbody>
                                     <tfoot>
-                                        <tr class="font-weight-bold">
-                                            <td colspan="7" class="text-right">Total Amount:</td>
+                                        <tr class="fw-bold">
+                                            <td colspan="7" class="text-end">Total Amount:</td>
                                             <td id="total-amount">TSh 0.00</td>
                                             <td></td>
                                         </tr>
@@ -231,7 +231,7 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="discount_amount">Discount Amount</label>
                                     <input type="number" name="discount_amount" id="discount_amount" 
                                            class="form-control" placeholder="0.00" min="0" step="0.01" value="{{ old('discount_amount', 0) }}">
@@ -249,7 +249,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group text-right mt-4">
+                        <div class="mb-3 text-end mt-4">
                             <a href="{{ route('medication-cash-sales.index') }}" class="btn btn-secondary">Cancel</a>
                             <button type="submit" class="btn btn-primary" id="submit-btn" disabled>
                                 <i class="fas fa-save"></i> Create Cash Sale
@@ -381,8 +381,8 @@ $(document).ready(function() {
                                 <br>
                                 <small class="text-muted">${medication.strength || ''} ${medication.formulation?.name || ''}</small>
                             </div>
-                            <div class="text-right">
-                                <div class="font-weight-bold">TSh ${parseFloat(medication.unit_price || 0).toFixed(2)}</div>
+                            <div class="text-end">
+                                <div class="fw-bold">TSh ${parseFloat(medication.unit_price || 0).toFixed(2)}</div>
                                 <small class="${stockClass}">Stock: ${medication.available_stock || 0}</small>
                             </div>
                         </div>

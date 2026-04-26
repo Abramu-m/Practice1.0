@@ -46,9 +46,9 @@
                         <dt class="col-sm-3">Status:</dt>
                         <dd class="col-sm-9">
                             @if($category->is_active)
-                                <span class="badge badge-success">Active</span>
+                                <span class="badge bg-success">Active</span>
                             @else
-                                <span class="badge badge-secondary">Inactive</span>
+                                <span class="badge bg-secondary">Inactive</span>
                             @endif
                         </dd>
 
@@ -112,13 +112,13 @@
                                     </td>
                                     <td>{{ $ruleType->description }}</td>
                                     <td>
-                                        <span class="badge badge-primary">{{ $ruleType->rules_count }} rules</span>
+                                        <span class="badge bg-primary">{{ $ruleType->rules_count }} rules</span>
                                     </td>
                                     <td>
                                         @if($ruleType->is_active)
-                                            <span class="badge badge-success">Active</span>
+                                            <span class="badge bg-success">Active</span>
                                         @else
-                                            <span class="badge badge-secondary">Inactive</span>
+                                            <span class="badge bg-secondary">Inactive</span>
                                         @endif
                                     </td>
                                     <td>

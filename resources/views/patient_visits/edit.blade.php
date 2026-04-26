@@ -44,7 +44,7 @@
                         
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="patient">Patient <span class="text-danger">*</span></label>
                                     <select class="form-control @error('patient') is-invalid @enderror" id="patient" name="patient" required disabled>
                                         <option value="">Select Patient</option>
@@ -64,7 +64,7 @@
                             </div>
                             
                             <div class="col-md-6">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="visit_date">Visit Date <span class="text-danger">*</span></label>
                                     <input type="date" class="form-control @error('visit_date') is-invalid @enderror" 
                                            id="visit_date" name="visit_date" value="{{ old('visit_date', $patientVisit->visit_date ? $patientVisit->visit_date->format('Y-m-d') : '') }}" 
@@ -81,7 +81,7 @@
 
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="visit_category">Patient Category <span class="text-danger">*</span></label>
                                     <select class="form-control @error('visit_category') is-invalid @enderror" id="visit_category" name="visit_category" required {{ !$isWaiting ? 'disabled' : '' }}>
                                         <option value="">Select Category</option>
@@ -105,7 +105,7 @@
                             </div>
                             
                             <div class="col-md-6">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="visit_type">Visit Type <span class="text-danger">*</span></label>
                                     <select class="form-control @error('visit_type') is-invalid @enderror" id="visit_type" name="visit_type" required>
                                         @if($isWaiting)
@@ -152,7 +152,7 @@
 
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="doctor">Doctor</label>
                                     <select class="form-control @error('doctor') is-invalid @enderror" id="doctor" name="doctor" {{ $isDischarged ? 'disabled' : '' }}>
                                         <option value="">Select Doctor</option>
@@ -176,7 +176,7 @@
                             </div>
                             
                             <div class="col-md-6">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label>Consultation Fee</label>
                                     <div class="input-group">
                                         <div class="input-group-prepend">
@@ -205,7 +205,7 @@
 
                         <div class="row">
                             <div class="col-md-4">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="amount_cash">Cash Amount <span class="text-danger">*</span></label>
                                     <input type="text" step="0.01" min="0" class="form-control @error('amount_cash') is-invalid @enderror" 
                                            id="amount_cash" name="amount_cash" value="{{ old('amount_cash', $patientVisit->amount_cash) }}" 
@@ -220,7 +220,7 @@
                             </div>
                             
                             <div class="col-md-4">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="amount_covered">Covered Amount</label>
                                     <input type="text" step="0.01" min="0" class="form-control @error('amount_covered') is-invalid @enderror" 
                                            id="amount_covered" name="amount_covered" value="{{ old('amount_covered', $patientVisit->amount_covered) }}" 
@@ -235,7 +235,7 @@
                             </div>
                             
                             <div class="col-md-4">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="balance">Total Balance</label>
                                     <input type="text" step="0.01" class="form-control bg-light" id="balance" readonly
                                            value="{{ ($patientVisit->amount_cash ?? 0) + ($patientVisit->amount_covered ?? 0) }}">
@@ -246,7 +246,7 @@
 
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="sic_no">SIC Number</label>
                                     <input type="text" maxlength="30" class="form-control @error('sic_no') is-invalid @enderror" 
                                            id="sic_no" name="sic_no" value="{{ old('sic_no', $patientVisit->sic_no) }}" 
@@ -258,7 +258,7 @@
                             </div>
                             
                             <div class="col-md-6">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="authorization_no">Authorization Number</label>
                                     <input type="text" maxlength="30" class="form-control @error('authorization_no') is-invalid @enderror" 
                                            id="authorization_no" name="authorization_no" value="{{ old('authorization_no', $patientVisit->authorization_no) }}" 
@@ -272,7 +272,7 @@
 
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="nhif_reference_no">NHIF Reference Number</label>
                                     <input type="text" maxlength="30" class="form-control @error('nhif_reference_no') is-invalid @enderror" 
                                            id="nhif_reference_no" name="nhif_reference_no" value="{{ old('nhif_reference_no', $patientVisit->nhif_reference_no) }}" 
@@ -284,7 +284,7 @@
                             </div>
                             
                             <div class="col-md-6">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="folio_item_id">Folio Item ID</label>
                                     <input type="text" maxlength="32" class="form-control @error('folio_item_id') is-invalid @enderror" 
                                            id="folio_item_id" name="folio_item_id" value="{{ old('folio_item_id', $patientVisit->folio_item_id) }}" 
@@ -297,7 +297,7 @@
 
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="post_status">Post Status</label>
                                     <select class="form-control @error('post_status') is-invalid @enderror" id="post_status" name="post_status">
                                         <option value="0" {{ old('post_status', $patientVisit->post_status) == 0 ? 'selected' : '' }}>Not Posted</option>
@@ -310,7 +310,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group">
+                        <div class="mb-3">
                             <button type="submit" class="btn btn-primary">
                                 <i class="fas fa-save"></i> Update Patient Visit
                             </button>
@@ -383,7 +383,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     currentFee = parseFloat(data.fee);
                     currentFeeDescription = data.description;
                     consultationFeeDisplay.value = currentFee.toFixed(2);
-                    consultationFeeDisplay.className = 'form-control text-success font-weight-bold';
+                    consultationFeeDisplay.className = 'form-control text-success fw-bold';
                     applyFeeBtn.disabled = false;
                     applyFeeBtn.className = 'btn btn-success';
                     applyFeeBtn.innerHTML = '<i class="fas fa-check"></i> Apply $' + currentFee.toFixed(2);
@@ -443,7 +443,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const successMsg = document.createElement('div');
             successMsg.className = 'alert alert-success alert-dismissible mt-2';
             successMsg.innerHTML = `
-                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 <i class="fas fa-check"></i> Applied consultation fee: $${currentFee.toFixed(2)}
                 ${currentFeeDescription ? '<br><small>' + currentFeeDescription + '</small>' : ''}
             `;

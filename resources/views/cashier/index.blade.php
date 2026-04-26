@@ -44,7 +44,7 @@
                         Patient Visits ({{ $visits->total() }} total)
                     </h3>
                     <div class="card-tools">
-                        <span class="badge badge-info">{{ $visits->count() }} shown</span>
+                        <span class="badge bg-info">{{ $visits->count() }} shown</span>
                     </div>
                 </div>
                 <div class="card-body table-responsive p-0">
@@ -109,11 +109,11 @@
                                                 $paidInvestigations = $visit->investigations->where('is_paid', true)->count();
                                                 $unpaidInvestigations = $visit->investigations_count - $paidInvestigations;
                                             @endphp
-                                            <span class="badge badge-success">
+                                            <span class="badge bg-success">
                                                 <i class="bi bi-check-circle"></i> {{ $paidInvestigations }} Paid
                                             </span>
                                             @if($unpaidInvestigations > 0)
-                                                <span class="badge badge-warning">
+                                                <span class="badge bg-warning">
                                                     <i class="bi bi-clock"></i> {{ $unpaidInvestigations }} Pending
                                                 </span>
                                             @endif
@@ -135,11 +135,11 @@
                                                 $paidPrescriptions = $visit->prescriptions->where('is_paid', true)->count();
                                                 $unpaidPrescriptions = $visit->prescriptions_count - $paidPrescriptions;
                                             @endphp
-                                            <span class="badge badge-success">
+                                            <span class="badge bg-success">
                                                 <i class="bi bi-check-circle"></i> {{ $paidPrescriptions }} Paid
                                             </span>
                                             @if($unpaidPrescriptions > 0)
-                                                <span class="badge badge-warning">
+                                                <span class="badge bg-warning">
                                                     <i class="bi bi-clock"></i> {{ $unpaidPrescriptions }} Pending
                                                 </span>
                                             @endif
@@ -267,15 +267,15 @@ function viewPrescriptions(visitId) {
 
 @section('styles')
 <style>
-.badge-warning {
+.bg-warning {
     background-color: #ffc107 !important;
     color: #212529 !important;
 }
-.badge-info {
+.bg-info {
     background-color: #17a2b8 !important;
     color: white !important;
 }
-.badge-success {
+.bg-success {
     background-color: #28a745 !important;
     color: white !important;
 }

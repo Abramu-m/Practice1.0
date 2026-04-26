@@ -85,7 +85,7 @@ class MedicationCashSaleController extends Controller
                     return $html;
                 })
                 ->addColumn('type_badge', function ($sale) {
-                    return '<span class="badge badge-info">' . ($sale->sale_type == 'otc' ? 'OTC' : 'External Rx') . '</span>';
+                    return '<span class="badge bg-info">' . ($sale->sale_type == 'otc' ? 'OTC' : 'External Rx') . '</span>';
                 })
                 ->addColumn('category', function ($sale) {
                     return e($sale->patientCategory->description);
@@ -97,7 +97,7 @@ class MedicationCashSaleController extends Controller
                     return 'TSh ' . number_format($sale->final_amount, 2);
                 })
                 ->addColumn('status_badge', function ($sale) {
-                    return '<span class="badge badge-' . $sale->status_color . '">' . e($sale->status_label) . '</span>';
+                    return '<span class="badge bg-' . $sale->status_color . '">' . e($sale->status_label) . '</span>';
                 })
                 ->addColumn('creator_name', function ($sale) {
                     return e($sale->creator->name);

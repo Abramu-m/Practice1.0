@@ -12,14 +12,14 @@
                     <div class="row align-items-center">
                         <div class="col-md-8">
                             <h2 class="mb-1">
-                                <i class="fas fa-user-nurse mr-2"></i>
+                                <i class="fas fa-user-nurse me-2"></i>
                                 Welcome, Nurse {{ auth()->user()->name }}
                             </h2>
                             <p class="mb-0 opacity-75">Nursing Care Dashboard - {{ date('l, F j, Y') }}</p>
                         </div>
-                        <div class="col-md-4 text-right">
+                        <div class="col-md-4 text-end">
                             <div class="small">
-                                <i class="fas fa-heartbeat mr-1"></i>
+                                <i class="fas fa-heartbeat me-1"></i>
                                 Ward Status: Active
                             </div>
                         </div>
@@ -34,12 +34,12 @@
         <div class="col-lg-3 col-md-6">
             <div class="card border-left-danger shadow h-100 py-2">
                 <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                    <div class="row g-0 align-items-center">
+                        <div class="col me-2">
+                            <div class="text-xs fw-bold text-danger text-uppercase mb-1">
                                 Triage Patients
                             </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            <div class="h5 mb-0 fw-bold text-gray-800">
                                 {{ $triagePatients ?? 0 }}
                             </div>
                         </div>
@@ -59,12 +59,12 @@
         <div class="col-lg-3 col-md-6">
             <div class="card border-left-primary shadow h-100 py-2">
                 <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                    <div class="row g-0 align-items-center">
+                        <div class="col me-2">
+                            <div class="text-xs fw-bold text-primary text-uppercase mb-1">
                                 Vitals Recorded
                             </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            <div class="h5 mb-0 fw-bold text-gray-800">
                                 {{ $vitalsRecorded ?? 0 }}
                             </div>
                         </div>
@@ -84,12 +84,12 @@
         <div class="col-lg-3 col-md-6">
             <div class="card border-left-warning shadow h-100 py-2">
                 <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                    <div class="row g-0 align-items-center">
+                        <div class="col me-2">
+                            <div class="text-xs fw-bold text-warning text-uppercase mb-1">
                                 Ward Supplies Low
                             </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            <div class="h5 mb-0 fw-bold text-gray-800">
                                 {{ $lowSupplies ?? 0 }}
                             </div>
                         </div>
@@ -109,12 +109,12 @@
         <div class="col-lg-3 col-md-6">
             <div class="card border-left-info shadow h-100 py-2">
                 <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                    <div class="row g-0 align-items-center">
+                        <div class="col me-2">
+                            <div class="text-xs fw-bold text-info text-uppercase mb-1">
                                 CTC Patients
                             </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            <div class="h5 mb-0 fw-bold text-gray-800">
                                 {{ $ctcPatients ?? 0 }}
                             </div>
                         </div>
@@ -138,7 +138,7 @@
             <div class="card shadow">
                 <div class="card-header bg-danger text-white">
                     <h5 class="mb-0">
-                        <i class="fas fa-tachometer-alt mr-2"></i>
+                        <i class="fas fa-tachometer-alt me-2"></i>
                         Triage Center
                     </h5>
                 </div>
@@ -167,12 +167,12 @@
                         </div>
                     </div>
                     <div class="text-center">
-                        <a href="{{ url('vitals') }}" class="btn btn-danger mr-2">
-                            <i class="fas fa-plus-circle mr-1"></i>
+                        <a href="{{ url('vitals') }}" class="btn btn-danger me-2">
+                            <i class="fas fa-plus-circle me-1"></i>
                             Record Vitals
                         </a>
                         <a href="{{ route('procedures.index') }}" class="btn btn-success">
-                            <i class="fas fa-clipboard-check mr-1"></i>
+                            <i class="fas fa-clipboard-check me-1"></i>
                             Nursing Procedures
                         </a>
                     </div>
@@ -184,26 +184,26 @@
             <div class="card shadow">
                 <div class="card-header bg-primary text-white">
                     <h5 class="mb-0">
-                        <i class="fas fa-tasks mr-2"></i>
+                        <i class="fas fa-tasks me-2"></i>
                         Quick Actions
                     </h5>
                 </div>
                 <div class="card-body">
                     <div class="d-grid gap-2">
-                        <a href="{{ url('vitals') }}" class="btn btn-outline-danger btn-block mb-2">
-                            <i class="fas fa-heartbeat mr-1"></i>
+                        <a href="{{ url('vitals') }}" class="btn btn-outline-danger w-100 mb-2">
+                            <i class="fas fa-heartbeat me-1"></i>
                             Vital Signs
                         </a>
-                        <a href="{{ url('pitc') }}" class="btn btn-outline-info btn-block mb-2">
-                            <i class="fas fa-shield-check mr-1"></i>
+                        <a href="{{ url('pitc') }}" class="btn btn-outline-info w-100 mb-2">
+                            <i class="fas fa-shield-check me-1"></i>
                             PITC Screening
                         </a>
-                        <a href="{{ url('ctc_drug_issue') }}" class="btn btn-outline-success btn-block mb-2">
-                            <i class="fas fa-pills mr-1"></i>
+                        <a href="{{ url('ctc_drug_issue') }}" class="btn btn-outline-success w-100 mb-2">
+                            <i class="fas fa-pills me-1"></i>
                             CTC Dispensing
                         </a>
-                        <a href="{{ route('store.requisitions.index') }}" class="btn btn-outline-warning btn-block">
-                            <i class="fas fa-clipboard-list mr-1"></i>
+                        <a href="{{ route('store.requisitions.index') }}" class="btn btn-outline-warning w-100">
+                            <i class="fas fa-clipboard-list me-1"></i>
                             Ward Supplies
                         </a>
                     </div>
@@ -218,7 +218,7 @@
             <div class="card shadow">
                 <div class="card-header bg-success text-white">
                     <h5 class="mb-0">
-                        <i class="fas fa-hospital mr-2"></i>
+                        <i class="fas fa-hospital me-2"></i>
                         Ward Management
                     </h5>
                 </div>
@@ -249,22 +249,22 @@
                     <div class="row mt-3">
                         <div class="col-6">
                             <small class="text-muted">Supplies Status:</small>
-                            <div class="text-{{ ($suppliesStatus ?? 'success') == 'low' ? 'warning' : 'success' }} font-weight-bold">
+                            <div class="text-{{ ($suppliesStatus ?? 'success') == 'low' ? 'warning' : 'success' }} fw-bold">
                                 {{ ucfirst($suppliesStatus ?? 'Good') }}
                             </div>
                         </div>
                         <div class="col-6">
                             <small class="text-muted">Next Rounds:</small>
-                            <div class="font-weight-bold">{{ $nextRounds ?? '14:00' }}</div>
+                            <div class="fw-bold">{{ $nextRounds ?? '14:00' }}</div>
                         </div>
                     </div>
                 </div>
                 <div class="card-footer">
                     <a href="{{ route('store-locations-stock.index') }}" class="btn btn-sm btn-outline-success">
-                        <i class="fas fa-box mr-1"></i>Ward Stock
+                        <i class="fas fa-box me-1"></i>Ward Stock
                     </a>
-                    <a href="{{ route('store.requisitions.index') }}" class="btn btn-sm btn-outline-primary ml-2">
-                        <i class="fas fa-clipboard-list mr-1"></i>Requisitions
+                    <a href="{{ route('store.requisitions.index') }}" class="btn btn-sm btn-outline-primary ms-2">
+                        <i class="fas fa-clipboard-list me-1"></i>Requisitions
                     </a>
                 </div>
             </div>
@@ -274,7 +274,7 @@
             <div class="card shadow">
                 <div class="card-header bg-info text-white">
                     <h5 class="mb-0">
-                        <i class="fas fa-shield-virus mr-2"></i>
+                        <i class="fas fa-shield-virus me-2"></i>
                         CTC Services Overview
                     </h5>
                 </div>
@@ -300,11 +300,11 @@
                     @if(isset($recentCTCActivities) && count($recentCTCActivities) > 0)
                         @foreach($recentCTCActivities as $activity)
                         <div class="d-flex align-items-center mb-2 p-2 border rounded">
-                            <div class="mr-3">
+                            <div class="me-3">
                                 <i class="fas fa-{{ $activity['icon'] ?? 'circle' }} text-{{ $activity['color'] ?? 'primary' }}"></i>
                             </div>
                             <div class="flex-grow-1">
-                                <div class="font-weight-bold">{{ $activity['patient'] ?? 'Patient Activity' }}</div>
+                                <div class="fw-bold">{{ $activity['patient'] ?? 'Patient Activity' }}</div>
                                 <small class="text-muted">{{ $activity['description'] ?? 'CTC service provided' }}</small>
                             </div>
                             <small class="text-muted">{{ $activity['time'] ?? 'Now' }}</small>
@@ -319,13 +319,13 @@
                 </div>
                 <div class="card-footer">
                     <a href="{{ url('pitc') }}" class="btn btn-sm btn-outline-info">
-                        <i class="fas fa-shield-check mr-1"></i>PITC
+                        <i class="fas fa-shield-check me-1"></i>PITC
                     </a>
-                    <a href="{{ url('ctc_drug_issue') }}" class="btn btn-sm btn-outline-success ml-2">
-                        <i class="fas fa-pills mr-1"></i>Dispensing
+                    <a href="{{ url('ctc_drug_issue') }}" class="btn btn-sm btn-outline-success ms-2">
+                        <i class="fas fa-pills me-1"></i>Dispensing
                     </a>
-                    <a href="{{ url('cd4_form_result') }}" class="btn btn-sm btn-outline-warning ml-2">
-                        <i class="fas fa-file-medical mr-1"></i>CD4
+                    <a href="{{ url('cd4_form_result') }}" class="btn btn-sm btn-outline-warning ms-2">
+                        <i class="fas fa-file-medical me-1"></i>CD4
                     </a>
                 </div>
             </div>

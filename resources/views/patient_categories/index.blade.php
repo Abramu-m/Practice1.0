@@ -55,16 +55,16 @@
                         <td>{{ $category->description }}</td>
                         <td>
                             @if($category->type == 'cash')
-                                <span class="badge badge-primary text-black">Cash</span>
+                                <span class="badge bg-primary text-black">Cash</span>
                             @else
-                                <span class="badge badge-info text-black">Insurance</span>
+                                <span class="badge bg-info text-black">Insurance</span>
                             @endif
                         </td>
                         <td>
                             @if($category->is_active)
-                                <span class="badge badge-success text-black">Active</span>
+                                <span class="badge bg-success text-black">Active</span>
                             @else
-                                <span class="badge badge-danger text-black">Inactive</span>
+                                <span class="badge bg-danger text-black">Inactive</span>
                             @endif
                         </td>
                         <td>{{ $category->creator->first_name ?? 'N/A' }} {{ $category->creator->last_name ?? '' }}</td>

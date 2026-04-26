@@ -30,18 +30,14 @@
             @if(session('success'))
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
                     {{ session('success') }}
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             @endif
 
             @if(session('error'))
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
                     {{ session('error') }}
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             @endif
 
@@ -100,7 +96,7 @@
                         <div class="col-md-6">
                             <h3 class="card-title">Stock Adjustments</h3>
                         </div>
-                        <div class="col-md-6 text-right">
+                        <div class="col-md-6 text-end">
                             <a href="{{ route('medications.stock.adjustments.create') }}" class="btn btn-primary">
                                 <i class="fas fa-plus"></i> New Adjustment
                             </a>
@@ -113,14 +109,14 @@
                     <form method="GET" class="mb-4">
                         <div class="row">
                             <div class="col-md-3">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="search">Search</label>
                                     <input type="text" name="search" id="search" class="form-control" 
                                            value="{{ $search }}" placeholder="Reference, medication, reason...">
                                 </div>
                             </div>
                             <div class="col-md-2">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="type">Type</label>
                                     <select name="type" id="type" class="form-control">
                                         <option value="all" {{ $type == 'all' ? 'selected' : '' }}>All Types</option>
@@ -130,7 +126,7 @@
                                 </div>
                             </div>
                             <div class="col-md-2">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="reason">Reason</label>
                                     <select name="reason" id="reason" class="form-control">
                                         <option value="all" {{ $reason == 'all' ? 'selected' : '' }}>All Reasons</option>
@@ -141,7 +137,7 @@
                                 </div>
                             </div>
                             <div class="col-md-2">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="location">Location</label>
                                     <select name="location" id="location" class="form-control">
                                         <option value="all" {{ $location == 'all' ? 'selected' : '' }}>All Locations</option>
@@ -154,16 +150,16 @@
                                 </div>
                             </div>
                             <div class="col-md-2">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="date_from">Date From</label>
                                     <input type="date" name="date_from" id="date_from" class="form-control" value="{{ $dateFrom }}">
                                 </div>
                             </div>
                             <div class="col-md-1">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label>&nbsp;</label>
                                     <div>
-                                        <button type="submit" class="btn btn-info btn-block">
+                                        <button type="submit" class="btn btn-info w-100">
                                             <i class="fas fa-search"></i>
                                         </button>
                                     </div>
@@ -172,16 +168,16 @@
                         </div>
                         <div class="row">
                             <div class="col-md-2">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="date_to">Date To</label>
                                     <input type="date" name="date_to" id="date_to" class="form-control" value="{{ $dateTo }}">
                                 </div>
                             </div>
                             <div class="col-md-8"></div>
                             <div class="col-md-2">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label>&nbsp;</label>
-                                    <a href="{{ route('medications.stock.adjustments.index') }}" class="btn btn-secondary btn-block">
+                                    <a href="{{ route('medications.stock.adjustments.index') }}" class="btn btn-secondary w-100">
                                         <i class="fas fa-times"></i> Clear
                                     </a>
                                 </div>
@@ -227,11 +223,11 @@
                                         <td>{{ $adjustment->fromLocation->name ?? $adjustment->toLocation->name ?? 'Unknown' }}</td>
                                         <td>
                                             @if($adjustment->quantity > 0)
-                                                <span class="badge badge-success text-black">
+                                                <span class="badge bg-success text-black">
                                                     <i class="fas fa-arrow-up"></i> Increase
                                                 </span>
                                             @else
-                                                <span class="badge badge-warning">
+                                                <span class="badge bg-warning">
                                                     <i class="fas fa-arrow-down"></i> Decrease
                                                 </span>
                                             @endif
@@ -243,7 +239,7 @@
                                             @endif
                                         </td>
                                         <td>
-                                            <span class="badge badge-info text-black">{{ ucfirst(str_replace('_', ' ', $adjustment->reason)) }}</span>
+                                            <span class="badge bg-info text-black">{{ ucfirst(str_replace('_', ' ', $adjustment->reason)) }}</span>
                                         </td>
                                         <td>{{ $adjustment->user->name ?? 'System' }}</td>
                                         <td>
@@ -277,7 +273,7 @@
                                 </div>
                             </div>
                             <div class="col-sm-7">
-                                <div class="float-right">
+                                <div class="float-end">
                                     {{ $adjustments->appends(request()->query())->links() }}
                                 </div>
                             </div>

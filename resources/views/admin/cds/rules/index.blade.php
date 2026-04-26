@@ -109,15 +109,15 @@
                                         <span class="badge badge-outline-secondary">{{ $rule->ruleType->category->name ?? 'No Category' }}</span>
                                     </td>
                                     <td>
-                                        <span class="badge badge-info">{{ $rule->ruleType->display_name ?? 'No Type' }}</span>
+                                        <span class="badge bg-info">{{ $rule->ruleType->display_name ?? 'No Type' }}</span>
                                     </td>
                                     <td>
-                                        <span class="badge badge-{{ $rule->priority >= 8 ? 'danger' : ($rule->priority >= 5 ? 'warning' : 'secondary') }}">
+                                        <span class="badge bg-{{ $rule->priority >= 8 ? 'danger' : ($rule->priority >= 5 ? 'warning' : 'secondary') }}">
                                             {{ $rule->priority }}
                                         </span>
                                     </td>
                                     <td>
-                                        <span class="badge badge-{{ $rule->severity === 'critical' ? 'danger' : ($rule->severity === 'warning' ? 'warning' : 'info') }}">
+                                        <span class="badge bg-{{ $rule->severity === 'critical' ? 'danger' : ($rule->severity === 'warning' ? 'warning' : 'info') }}">
                                             {{ ucfirst($rule->severity) }}
                                         </span>
                                     </td>
@@ -181,7 +181,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">🧪 Test Rule</h5>
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <div id="testRuleContent">
@@ -242,7 +242,7 @@ window.showAlert = function(type, message) {
     const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
     const alert = `<div class="alert ${alertClass} alert-dismissible fade show" role="alert">
         ${message}
-        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>`;
     
     $('.container-fluid').prepend(alert);

@@ -21,13 +21,13 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label>Name:</label>
                                 <p class="form-control-plaintext">{{ $consumable->name }}</p>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label>Code:</label>
                                 <p class="form-control-plaintext">{{ $consumable->code }}</p>
                             </div>
@@ -36,11 +36,11 @@
 
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label>Category:</label>
                                 <p class="form-control-plaintext">
                                     @if($consumable->category)
-                                        <span class="badge badge-info text-black">{{ $consumable->category->name }}</span>
+                                        <span class="badge bg-info text-black">{{ $consumable->category->name }}</span>
                                     @else
                                         <span class="text-muted">No Category</span>
                                     @endif
@@ -48,7 +48,7 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label>Unit:</label>
                                 <p class="form-control-plaintext">
                                     @if($consumable->unit)
@@ -61,20 +61,20 @@
                         </div>
                     </div>
 
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label>Description:</label>
                         <p class="form-control-plaintext">{{ $consumable->description ?: 'No description available' }}</p>
                     </div>
 
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label>Reorder Level:</label>
                                 <p class="form-control-plaintext">{{ number_format($consumable->reorder_level) }}</p>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label>Maximum Level:</label>
                                 <p class="form-control-plaintext">{{ number_format($consumable->maximum_level) }}</p>
                             </div>
@@ -83,19 +83,19 @@
 
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label>Barcode:</label>
                                 <p class="form-control-plaintext">{{ $consumable->barcode ?: 'No barcode' }}</p>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label>Status:</label>
                                 <p class="form-control-plaintext">
                                     @if($consumable->is_active)
-                                        <span class="badge badge-success text-black">Active</span>
+                                        <span class="badge bg-success text-black">Active</span>
                                     @else
-                                        <span class="badge badge-danger text-black">Inactive</span>
+                                        <span class="badge bg-danger text-black">Inactive</span>
                                     @endif
                                 </p>
                             </div>
@@ -104,13 +104,13 @@
 
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label>Created At:</label>
                                 <p class="form-control-plaintext">{{ $consumable->created_at->format('M d, Y H:i') }}</p>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label>Last Updated:</label>
                                 <p class="form-control-plaintext">{{ $consumable->updated_at->format('M d, Y H:i') }}</p>
                             </div>
@@ -155,9 +155,9 @@
                             <span class="info-box-text">Reorder Alert</span>
                             <span class="info-box-number">
                                 @if($consumable->needsReorder())
-                                    <span class="badge badge-warning">Needs Reorder</span>
+                                    <span class="badge bg-warning">Needs Reorder</span>
                                 @else
-                                    <span class="badge badge-success text-black">OK</span>
+                                    <span class="badge bg-success text-black">OK</span>
                                 @endif
                             </span>
                         </div>

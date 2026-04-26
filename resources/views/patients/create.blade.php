@@ -25,19 +25,19 @@
 
                 <div class="row">
                     <div class="col-md-4">
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="first_name">First Name *</label>
                             <input type="text" name="first_name" class="form-control" value="{{ old('first_name', request('prefill.first_name')) }}" required maxlength="30">
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="middle_name">Middle Name</label>
                             <input type="text" name="middle_name" class="form-control" value="{{ old('middle_name', request('prefill.middle_name')) }}" maxlength="30">
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="last_name">Last Name *</label>
                             <input type="text" name="last_name" class="form-control" value="{{ old('last_name', request('prefill.last_name')) }}" required maxlength="30">
                         </div>
@@ -46,13 +46,13 @@
 
                 <div class="row">
                     <div class="col-md-6">
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="date_of_birth">Date of Birth *</label>
                             <input type="date" name="date_of_birth" class="form-control" value="{{ old('date_of_birth', request('prefill.date_of_birth')) }}" required>
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="gender">Gender *</label>
                             <select name="gender" class="form-control" required>
                                 <option value="">Select Gender</option>
@@ -66,13 +66,13 @@
 
                 <div class="row">
                     <div class="col-md-6">
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="contact">Contact</label>
                             <input type="text" name="contact" class="form-control" value="{{ old('contact', request('prefill.contact')) }}" maxlength="100">
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="residence">Residence</label>
                             <input type="text" name="residence" class="form-control" value="{{ old('residence') }}" maxlength="30">
                         </div>
@@ -81,13 +81,13 @@
 
                 <div class="row">
                     <div class="col-md-6">
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="occupation">Occupation</label>
                             <input type="text" name="occupation" class="form-control" value="{{ old('occupation', request('prefill.occupation')) }}" maxlength="90">
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="nida">NIDA</label>
                             <input type="text" name="nida" class="form-control" value="{{ old('nida', request('prefill.nida')) }}" maxlength="32">
                         </div>
@@ -96,7 +96,7 @@
 
                 <div class="row">
                     <div class="col-md-6">
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="patient_category">Patient Category *</label>
                             <select name="patient_category" id="patient_category" class="form-control" required>
                                 <option value="">Select Category</option>
@@ -109,7 +109,7 @@
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="card_number">Card Number</label>
                             <input type="text" name="card_number" class="form-control" value="{{ old('card_number', request('prefill.card_number')) }}" maxlength="30">
                         </div>
@@ -120,13 +120,13 @@
                 <div id="insurance-fields" style="display: none;">
                 <div class="row">
                     <div class="col-md-6">
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="membership_number">Membership Number</label>
                             <input type="text" name="membership_number" class="form-control" value="{{ old('membership_number', request('prefill.membership_number')) }}" maxlength="30">
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="vote">Vote</label>
                             <input type="text" name="vote" class="form-control" value="{{ old('vote', request('prefill.vote')) }}" maxlength="30">
                         </div>
@@ -135,13 +135,13 @@
 
                 <div class="row">
                     <div class="col-md-6">
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="SchemeID">Scheme ID</label>
                             <input type="text" name="SchemeID" class="form-control" value="{{ old('SchemeID', request('prefill.SchemeID')) }}">
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="ProductCode">Product Code</label>
                             <input type="text" name="ProductCode" class="form-control" value="{{ old('ProductCode', request('prefill.ProductCode')) }}" maxlength="30">
                         </div>
@@ -150,13 +150,13 @@
 
                 <div class="row">
                     <div class="col-md-6">
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="PackageID">Package ID</label>
                             <input type="text" name="PackageID" class="form-control" value="{{ old('PackageID', request('prefill.PackageID')) }}">
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="SchemeName">Scheme Name</label>
                             <input type="text" name="SchemeName" class="form-control" value="{{ old('SchemeName', request('prefill.SchemeName')) }}" maxlength="90">
                         </div>
@@ -165,7 +165,7 @@
 
                 <div class="row">
                     <div class="col-md-4">
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="HasSupplementary">Has Supplementary *</label>
                             <select name="HasSupplementary" class="form-control" required>
                                 <option value="Yes" {{ old('HasSupplementary') == 'Yes' ? 'selected' : '' }}>Yes</option>
@@ -174,7 +174,7 @@
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="mtuha_new">Mtuha New *</label>
                             <select name="mtuha_new" class="form-control" required>
                                 <option value="Yes" {{ old('mtuha_new', 'Yes') == 'Yes' ? 'selected' : '' }}>Yes</option>
@@ -188,7 +188,7 @@
 
                 <div class="row">
                     <div class="col-md-4">
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="status">Status *</label>
                             <select name="status" class="form-control" required readonly>
                                 <option value="active" selected>Active</option>

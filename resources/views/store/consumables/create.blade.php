@@ -20,7 +20,7 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="name">Name <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control @error('name') is-invalid @enderror" 
                                            id="name" name="name" value="{{ old('name') }}" required>
@@ -30,7 +30,7 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="code">Code <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control @error('code') is-invalid @enderror" 
                                            id="code" name="code" value="{{ old('code') }}" required>
@@ -43,7 +43,7 @@
 
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="category_id">Category <span class="text-danger">*</span></label>
                                     <select class="form-control @error('category_id') is-invalid @enderror" 
                                             id="category_id" name="category_id" required>
@@ -60,7 +60,7 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="unit_id">Unit <span class="text-danger">*</span></label>
                                     <select class="form-control @error('unit_id') is-invalid @enderror" 
                                             id="unit_id" name="unit_id" required>
@@ -78,7 +78,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="description">Description</label>
                             <textarea class="form-control @error('description') is-invalid @enderror" 
                                       id="description" name="description" rows="3">{{ old('description') }}</textarea>
@@ -89,7 +89,7 @@
 
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="reorder_level">Reorder Level <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control @error('reorder_level') is-invalid @enderror" 
                                            id="reorder_level" name="reorder_level" value="{{ old('reorder_level', 10) }}" 
@@ -100,7 +100,7 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="maximum_level">Maximum Level</label>
                                     <input type="text" class="form-control @error('maximum_level') is-invalid @enderror" 
                                            id="maximum_level" name="maximum_level" value="{{ old('maximum_level', 100) }}" 
@@ -112,7 +112,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="barcode">Barcode</label>
                             <input type="text" class="form-control @error('barcode') is-invalid @enderror" 
                                    id="barcode" name="barcode" value="{{ old('barcode') }}">
@@ -121,7 +121,7 @@
                             @enderror
                         </div>
 
-                        <div class="form-group">
+                        <div class="mb-3">
                             <div class="custom-control custom-switch">
                                 <input type="checkbox" class="custom-control-input" id="is_active" name="is_active" 
                                        {{ old('is_active', true) ? 'checked' : '' }}>

@@ -25,7 +25,7 @@
                         
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="patient">Patient <span class="text-danger">*</span></label>
                                     <select class="form-control select2-patient @error('patient') is-invalid @enderror" id="patient" name="patient" required>
                                         <option value="">Search and select patient...</option>
@@ -42,7 +42,7 @@
                             </div>
                             
                             <div class="col-md-6">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="visit_date">Visit Date <span class="text-danger">*</span></label>
                                     <input type="date" class="form-control @error('visit_date') is-invalid @enderror" 
                                            id="visit_date" name="visit_date" value="{{ old('visit_date', date('Y-m-d')) }}" required>
@@ -55,7 +55,7 @@
 
                         <div class="row">
                             <div class="col-md-4">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="visit_category">Visit Category <span class="text-danger">*</span></label>
                                     <select class="form-control @error('visit_category') is-invalid @enderror" id="visit_category" name="visit_category" required>
                                         <option value="">Select Category</option>
@@ -72,7 +72,7 @@
                             </div>
 
                             <div class="col-md-4">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="visit_type">Visit Type <span class="text-danger">*</span></label>
                                     <select class="form-control @error('visit_type') is-invalid @enderror" id="visit_type" name="visit_type" required>
                                         <option value="">Select Visit Type</option>
@@ -89,7 +89,7 @@
                             </div>
                             
                             <div class="col-md-4">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="doctor">Attending Doctor</label>
                                     <select class="form-control @error('doctor') is-invalid @enderror" id="doctor" name="doctor">
                                         <option value="">Select Doctor</option>
@@ -109,7 +109,7 @@
 
                         <div class="row">
                             <div class="col-md-4">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label>Consultation Fee</label>
                                     <div class="input-group">
                                         <div class="input-group-prepend">
@@ -127,7 +127,7 @@
                             </div>
 
                             <div class="col-md-4">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="amount_cash">Cash Amount <span class="text-danger">*</span></label>
                                     <input type="text" step="0.01" min="0" class="form-control @error('amount_cash') is-invalid @enderror" 
                                            id="amount_cash" name="amount_cash" value="{{ old('amount_cash', 0.00) }}" required>
@@ -138,7 +138,7 @@
                             </div>
                             
                             <div class="col-md-4">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="amount_covered">Covered Amount</label>
                                     <input type="text" step="0.01" min="0" class="form-control @error('amount_covered') is-invalid @enderror" 
                                            id="amount_covered" name="amount_covered" value="{{ old('amount_covered', 0.00) }}">
@@ -151,7 +151,7 @@
 
                         <div class="row">
                             <div class="col-md-4">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="sic_no">SIC Number</label>
                                     <input type="text" maxlength="30" class="form-control @error('sic_no') is-invalid @enderror" 
                                            id="sic_no" name="sic_no" value="{{ old('sic_no') }}">
@@ -162,7 +162,7 @@
                             </div>
                             
                             <div class="col-md-4">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="authorization_no">Authorization Number</label>
                                     <input type="text" maxlength="30" class="form-control @error('authorization_no') is-invalid @enderror" 
                                            id="authorization_no" name="authorization_no" value="{{ old('authorization_no') }}">
@@ -173,7 +173,7 @@
                             </div>
                             
                             <div class="col-md-4">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="nhif_reference_no">NHIF Reference Number</label>
                                     <input type="text" maxlength="30" class="form-control @error('nhif_reference_no') is-invalid @enderror" 
                                            id="nhif_reference_no" name="nhif_reference_no" value="{{ old('nhif_reference_no') }}">
@@ -188,7 +188,7 @@
 
                         <div class="row">
                             <div class="col-12">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <button type="submit" class="btn btn-primary">
                                         <i class="fas fa-save"></i> Create Patient Visit
                                     </button>
@@ -276,8 +276,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const visitTypeSelect = document.getElementById('visit_type');
     const consultationFeeDisplay = document.getElementById('consultation_fee_display');
     const applyFeeBtn = document.getElementById('apply_fee_btn');
-    const doctorFormGroup = doctorSelect.closest('.form-group');
-    const consultationFeeFormGroup = consultationFeeDisplay.closest('.form-group');
+    const doctorFormGroup = doctorSelect.closest('.mb-3');
+    const consultationFeeFormGroup = consultationFeeDisplay.closest('.mb-3');
     
     let currentFee = null;
     let currentFeeDescription = null;
@@ -314,10 +314,10 @@ document.addEventListener('DOMContentLoaded', function() {
             // Restrict to cash payments only for Lab Only visits
             coveredAmount.value = '0.00';
             coveredAmount.disabled = true;
-            coveredAmount.closest('.form-group').querySelector('label').innerHTML = 'Covered Amount <small class="text-muted">(Not applicable for Lab Only)</small>';
+            coveredAmount.closest('.mb-3').querySelector('label').innerHTML = 'Covered Amount <small class="text-muted">(Not applicable for Lab Only)</small>';
             
             // Update cash amount label to indicate cash only
-            cashAmount.closest('.form-group').querySelector('label').innerHTML = 'Cash Amount <span class="text-danger">*</span> <small class="text-success">(Cash Only for Lab Visits)</small>';
+            cashAmount.closest('.mb-3').querySelector('label').innerHTML = 'Cash Amount <span class="text-danger">*</span> <small class="text-success">(Cash Only for Lab Visits)</small>';
             
             currentFee = null;
             currentFeeDescription = null;
@@ -328,8 +328,8 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Re-enable covered amount for non-lab visits
             coveredAmount.disabled = false;
-            coveredAmount.closest('.form-group').querySelector('label').innerHTML = 'Covered Amount';
-            cashAmount.closest('.form-group').querySelector('label').innerHTML = 'Cash Amount <span class="text-danger">*</span>';
+            coveredAmount.closest('.mb-3').querySelector('label').innerHTML = 'Covered Amount';
+            cashAmount.closest('.mb-3').querySelector('label').innerHTML = 'Cash Amount <span class="text-danger">*</span>';
             
             // Reset consultation fee display
             consultationFeeDisplay.value = '';
@@ -357,10 +357,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 const warningMsg = document.createElement('div');
                 warningMsg.className = 'alert alert-warning alert-dismissible mt-2';
                 warningMsg.innerHTML = `
-                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     <i class="fas fa-exclamation-triangle"></i> Lab Only visits are cash payments only. Covered amount has been reset.
                 `;
-                coveredAmount.closest('.form-group').appendChild(warningMsg);
+                coveredAmount.closest('.mb-3').appendChild(warningMsg);
                 
                 // Auto-dismiss after 5 seconds
                 setTimeout(() => {
@@ -404,7 +404,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     currentFee = parseFloat(data.fee);
                     currentFeeDescription = data.description;
                     consultationFeeDisplay.value = currentFee.toFixed(2);
-                    consultationFeeDisplay.className = 'form-control text-success font-weight-bold';
+                    consultationFeeDisplay.className = 'form-control text-success fw-bold';
                     applyFeeBtn.disabled = false;
                     applyFeeBtn.className = 'btn btn-success';
                     applyFeeBtn.innerHTML = '<i class="fas fa-check"></i> Apply $' + currentFee.toFixed(2);
@@ -464,7 +464,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const successMsg = document.createElement('div');
             successMsg.className = 'alert alert-success alert-dismissible mt-2';
             successMsg.innerHTML = `
-                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 <i class="fas fa-check"></i> Applied consultation fee: $${currentFee.toFixed(2)}
                 ${currentFeeDescription ? '<br><small>' + currentFeeDescription + '</small>' : ''}
             `;

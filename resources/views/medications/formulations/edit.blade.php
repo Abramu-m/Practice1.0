@@ -22,7 +22,7 @@
                     @csrf
                     @method('PUT')
                     <div class="card-body">
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="description">Description <span class="text-danger">*</span></label>
                             <input type="text" class="form-control @error('description') is-invalid @enderror" 
                                    id="description" name="description" value="{{ old('description', $formulation->description) }}" required
@@ -33,7 +33,7 @@
                             <small class="form-text text-muted">Enter a clear description of the formulation type.</small>
                         </div>
 
-                        <div class="form-group">
+                        <div class="mb-3">
                             <div class="custom-control custom-switch">
                                 <input type="hidden" name="is_active" value="0">
                                 <input type="checkbox" class="custom-control-input" id="is_active" name="is_active" value="1"
@@ -91,7 +91,7 @@
                         <tr>
                             <th>Status:</th>
                             <td>
-                                <span class="text-black badge badge-{{ $formulation->is_active ? 'success' : 'secondary' }}">
+                                <span class="text-black badge bg-{{ $formulation->is_active ? 'success' : 'secondary' }}">
                                     {{ $formulation->is_active ? 'Active' : 'Inactive' }}
                                 </span>
                             </td>

@@ -396,7 +396,7 @@
                       <i class="nav-icon bi bi-clock-history text-warning"></i>
                       <p>
                         Pending Approvals
-                        <span class="badge badge-warning right" id="pending-transactions-count">0</span>
+                        <span class="badge bg-warning right" id="pending-transactions-count">0</span>
                       </p>
                     </a>
                   </li>

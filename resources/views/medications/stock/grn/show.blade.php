@@ -91,7 +91,7 @@
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h3 class="card-title">
                         GRN Details - {{ $grn->grn_number }}
-                        <span class="badge status-badge status-{{ $grn->status }} ml-2">
+                        <span class="badge status-badge status-{{ $grn->status }} ms-2">
                             {{ ucfirst($grn->status) }}
                         </span>
                     </h3>

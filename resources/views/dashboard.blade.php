@@ -181,10 +181,10 @@
                     </div>
                     <div class="row mt-2">
                         <div class="col-12">
-                            <a href="{{ route('users.pending-verification') }}" class="btn btn-primary btn-sm mr-2">
+                            <a href="{{ route('users.pending-verification') }}" class="btn btn-primary btn-sm me-2">
                                 <i class="fas fa-user-check"></i> Review Pending
                             </a>
-                            <a href="{{ route('users.create') }}" class="btn btn-success btn-sm mr-2">
+                            <a href="{{ route('users.create') }}" class="btn btn-success btn-sm me-2">
                                 <i class="fas fa-user-plus"></i> Add User
                             </a>
                             <a href="{{ route('users.index') }}" class="btn btn-info btn-sm">
@@ -220,10 +220,10 @@
                     </div>
                     <div class="row mt-2">
                         <div class="col-12">
-                            <a href="{{ route('financial.dashboard') }}" class="btn btn-success btn-sm mr-2">
+                            <a href="{{ route('financial.dashboard') }}" class="btn btn-success btn-sm me-2">
                                 <i class="fas fa-chart-bar"></i> Financial Dashboard
                             </a>
-                            <a href="{{ route('financial.transactions.index') }}" class="btn btn-primary btn-sm mr-2">
+                            <a href="{{ route('financial.transactions.index') }}" class="btn btn-primary btn-sm me-2">
                                 <i class="fas fa-list"></i> Transactions
                             </a>
                             <a href="{{ route('financial.receipts.index') }}" class="btn btn-info btn-sm">
@@ -272,10 +272,10 @@
                     </div>
                     <div class="row mt-2">
                         <div class="col-12">
-                            <a href="{{ route('medications.index') }}" class="btn btn-primary btn-sm mr-2">
+                            <a href="{{ route('medications.index') }}" class="btn btn-primary btn-sm me-2">
                                 <i class="fas fa-pills"></i> Medications
                             </a>
-                            <a href="{{ route('medications.dashboard') }}" class="btn btn-success btn-sm mr-2">
+                            <a href="{{ route('medications.dashboard') }}" class="btn btn-success btn-sm me-2">
                                 <i class="fas fa-warehouse"></i> Store Dashboard
                             </a>
                             <a href="{{ route('store.requisitions.index') }}" class="btn btn-warning btn-sm">
@@ -322,10 +322,10 @@
                     </div>
                     <div class="row mt-2">
                         <div class="col-12">
-                            <a href="{{ route('investigations.index') }}" class="btn btn-primary btn-sm mr-2">
+                            <a href="{{ route('investigations.index') }}" class="btn btn-primary btn-sm me-2">
                                 <i class="fas fa-list"></i> All Investigations
                             </a>
-                            <a href="{{ route('medical_services.index') }}" class="btn btn-success btn-sm mr-2">
+                            <a href="{{ route('medical_services.index') }}" class="btn btn-success btn-sm me-2">
                                 <i class="fas fa-cogs"></i> Medical Services
                             </a>
                             <a href="{{ route('sample_types.index') }}" class="btn btn-info btn-sm">

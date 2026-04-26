@@ -54,17 +54,17 @@
                         </div>
                         <div class="col-md-3">
                             <strong>Type:</strong><br>
-                            <span class="badge badge-info">{{ $rule->ruleType->display_name ?? 'No Type' }}</span>
+                            <span class="badge bg-info">{{ $rule->ruleType->display_name ?? 'No Type' }}</span>
                         </div>
                         <div class="col-md-3">
                             <strong>Priority:</strong><br>
-                            <span class="badge badge-{{ $rule->priority >= 8 ? 'danger' : ($rule->priority >= 5 ? 'warning' : 'secondary') }}">
+                            <span class="badge bg-{{ $rule->priority >= 8 ? 'danger' : ($rule->priority >= 5 ? 'warning' : 'secondary') }}">
                                 {{ $rule->priority }}
                             </span>
                         </div>
                         <div class="col-md-3">
                             <strong>Severity:</strong><br>
-                            <span class="badge badge-{{ $rule->severity === 'critical' ? 'danger' : ($rule->severity === 'warning' ? 'warning' : 'info') }}">
+                            <span class="badge bg-{{ $rule->severity === 'critical' ? 'danger' : ($rule->severity === 'warning' ? 'warning' : 'info') }}">
                                 {{ ucfirst($rule->severity) }}
                             </span>
                         </div>
@@ -184,36 +184,36 @@
                     <h5 class="card-title mb-0">📊 Rule Status</h5>
                 </div>
                 <div class="card-body">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label>Status:</label>
                         <div>
-                            <span class="badge badge-{{ $rule->is_active ? 'success' : 'secondary' }} badge-lg">
+                            <span class="badge bg-{{ $rule->is_active ? 'success' : 'secondary' }} badge-lg">
                                 {{ $rule->is_active ? 'Active' : 'Inactive' }}
                             </span>
                         </div>
                     </div>
 
                     @if($rule->effective_from)
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label>Effective From:</label>
                             <div>{{ $rule->effective_from->format('M j, Y g:i A') }}</div>
                         </div>
                     @endif
 
                     @if($rule->effective_until)
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label>Effective Until:</label>
                             <div>{{ $rule->effective_until->format('M j, Y g:i A') }}</div>
                         </div>
                     @endif
 
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label>Created:</label>
                         <div>{{ $rule->created_at->format('M j, Y g:i A') }}</div>
                         <small class="text-muted">{{ $rule->created_at->diffForHumans() }}</small>
                     </div>
 
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label>Last Updated:</label>
                         <div>{{ $rule->updated_at->format('M j, Y g:i A') }}</div>
                         <small class="text-muted">{{ $rule->updated_at->diffForHumans() }}</small>
@@ -270,7 +270,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">🧪 Test Rule: {{ $rule->name }}</h5>
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <div id="testRuleContent">
@@ -386,7 +386,7 @@ function showAlert(type, message) {
     const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
     const alert = `<div class="alert ${alertClass} alert-dismissible fade show" role="alert">
         ${message}
-        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>`;
     
     $('.container-fluid').prepend(alert);

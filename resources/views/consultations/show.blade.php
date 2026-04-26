@@ -544,7 +544,7 @@
                                 @csrf
                                 <input type="hidden" name="consultation_id" value="{{ $consultation->id }}">
                                 
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="history_of_present_illness" class="form-label fw-bold">
                                         <i class="fas fa-comment-dots"></i> Chief Complaints / History of Present Illness:
                                     </label>
@@ -933,7 +933,7 @@
                 @csrf
                 <div class="row mb-4">
                     <div class="col-md-6">
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="provisional_diagnosis" class="form-label fw-bold">
                                 <i class="fas fa-clipboard-check"></i> Provisional Diagnosis:
                             </label>
@@ -943,7 +943,7 @@
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="final_diagnosis" class="form-label fw-bold">
                                 <i class="fas fa-diagnoses"></i> Final Diagnosis:
                             </label>
@@ -962,7 +962,7 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-2">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="icd_type" class="form-label">ICD Type</label>
                                     <select id="icd_type" class="form-control">
                                         <option value="provisional">Provisional</option>
@@ -971,7 +971,7 @@
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="icd10_code" class="form-label">ICD 10 Code</label>
                                     <input type="text" class="form-control" id="icd10_code" name="icd10_code" 
                                            placeholder="Type ICD-10 code (e.g., J45.9)" autocomplete="off">
@@ -979,7 +979,7 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="icd10_description" class="form-label">ICD 10 Description</label>
                                     <input type="text" class="form-control" id="icd10_description" name="icd10_description" 
                                            placeholder="Type ICD-10 description (e.g., Asthma)" autocomplete="off">
@@ -1331,7 +1331,7 @@
                         <input type="hidden" name="consultation_id" value="{{ $consultation->id }}">
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="csremarks" class="form-label fw-bold">
                                         <i class="fas fa-comment-medical"></i> Clinical Remarks:
                                     </label>
@@ -1341,7 +1341,7 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="followup_date" class="form-label fw-bold">
                                         <i class="fas fa-calendar-check"></i> Follow-up Date:
                                     </label>
@@ -1349,7 +1349,7 @@
                                            value="{{ $consultation->followup_date ? \Carbon\Carbon::parse($consultation->followup_date)->format('Y-m-d') : '' }}">
                                 </div>
                                 
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="followup_instructions" class="form-label fw-bold">
                                         <i class="fas fa-clipboard-list"></i> Follow-up Instructions:
                                     </label>

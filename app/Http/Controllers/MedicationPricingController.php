@@ -55,7 +55,7 @@ class MedicationPricingController extends Controller
                     return $html;
                 })
                 ->addColumn('category_display', function ($price) {
-                    return '<span class="badge badge-info text-black">' . e($price->patientCategory->description) . '</span>';
+                    return '<span class="badge bg-info text-black">' . e($price->patientCategory->description) . '</span>';
                 })
                 ->addColumn('selling_price_display', function ($price) {
                     return '$' . number_format($price->selling_price, 2);
@@ -77,11 +77,11 @@ class MedicationPricingController extends Controller
                            '<strong>To:</strong> ' . ($price->effective_to ? $price->effective_to->format('M d, Y') : 'Ongoing') . '</small>';
                 })
                 ->addColumn('status_display', function ($price) {
-                    $html = '<span class="text-black badge badge-' . ($price->is_active ? 'success' : 'danger') . '">';
+                    $html = '<span class="text-black badge bg-' . ($price->is_active ? 'success' : 'danger') . '">';
                     $html .= $price->is_active ? 'Active' : 'Inactive';
                     $html .= '</span>';
                     if ($price->isCurrent()) {
-                        $html .= ' <span class="badge badge-primary text-black">Current</span>';
+                        $html .= ' <span class="badge bg-primary text-black">Current</span>';
                     }
                     return $html;
                 })

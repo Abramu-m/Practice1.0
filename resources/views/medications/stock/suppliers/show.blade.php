@@ -415,7 +415,7 @@
                                             <td>{{ $grn->invoice_number ?? '-' }}</td>
                                             <td>${{ number_format($grn->total_amount ?? 0, 2) }}</td>
                                             <td>
-                                                <span class="badge badge-{{ $grn->status == 'approved' ? 'success' : ($grn->status == 'pending' ? 'warning' : 'secondary') }}">
+                                                <span class="badge bg-{{ $grn->status == 'approved' ? 'success' : ($grn->status == 'pending' ? 'warning' : 'secondary') }}">
                                                     {{ ucfirst($grn->status) }}
                                                 </span>
                                             </td>

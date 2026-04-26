@@ -19,7 +19,7 @@
                         <!-- Basic Information -->
                         <div class="row mb-4">
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="requesting_location_id">Requesting Location *</label>
                                     <select name="requesting_location_id" id="requesting_location_id" class="form-control @error('requesting_location_id') is-invalid @enderror" required>
                                         <option value="">Select Location</option>
@@ -35,7 +35,7 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="priority">Priority</label>
                                     <select name="priority" id="priority" class="form-control @error('priority') is-invalid @enderror">
                                         <option value="normal" {{ old('priority') == 'normal' ? 'selected' : '' }}>Normal</option>
@@ -51,7 +51,7 @@
 
                         <div class="row mb-4">
                             <div class="col-md-12">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="purpose">Purpose/Notes</label>
                                     <textarea name="purpose" id="purpose" class="form-control @error('purpose') is-invalid @enderror" rows="3" placeholder="Describe the purpose of this requisition...">{{ old('purpose') }}</textarea>
                                     @error('purpose')
@@ -69,13 +69,13 @@
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-md-4">
-                                        <div class="form-group">
+                                        <div class="mb-3">
                                             <label for="material_name">Material Name *</label>
                                             <input type="text" id="material_name" class="form-control" placeholder="Type at least 3 characters" minlength="3">
                                         </div>
                                     </div>
                                     <div class="col-md-2">
-                                        <div class="form-group">
+                                        <div class="mb-3">
                                             <label for="item_unit">Item Unit</label>
                                             <select id="item_unit" class="form-control" disabled>
                                                 <option value="">Select Unit</option>
@@ -83,21 +83,21 @@
                                         </div>
                                     </div>
                                     <div class="col-md-2">
-                                        <div class="form-group">
+                                        <div class="mb-3">
                                             <label for="indent_qty">Indent Qty *</label>
                                             <input type="number" id="indent_qty" class="form-control" placeholder="qty" min="1" step="1">
                                         </div>
                                     </div>
                                     <div class="col-md-2">
-                                        <div class="form-group">
+                                        <div class="mb-3">
                                             <label for="justification">Justification</label>
                                             <textarea id="justification" class="form-control" rows="1" placeholder="Optional notes..."></textarea>
                                         </div>
                                     </div>
                                     <div class="col-md-2">
-                                        <div class="form-group">
+                                        <div class="mb-3">
                                             <label>&nbsp;</label>
-                                            <button type="button" class="btn btn-primary btn-block" id="addItemBtn">
+                                            <button type="button" class="btn btn-primary w-100" id="addItemBtn">
                                                 Add Item
                                             </button>
                                         </div>

@@ -49,16 +49,16 @@
                                     </td>
                                     <td>{{ $category->description }}</td>
                                     <td>
-                                        <span class="badge badge-info">{{ $category->rule_types_count }} types</span>
+                                        <span class="badge bg-info">{{ $category->rule_types_count }} types</span>
                                     </td>
                                     <td>
-                                        <span class="badge badge-primary">{{ $category->rules_count }} rules</span>
+                                        <span class="badge bg-primary">{{ $category->rules_count }} rules</span>
                                     </td>
                                     <td>
                                         @if($category->is_active)
-                                            <span class="badge badge-success">Active</span>
+                                            <span class="badge bg-success">Active</span>
                                         @else
-                                            <span class="badge badge-secondary">Inactive</span>
+                                            <span class="badge bg-secondary">Inactive</span>
                                         @endif
                                     </td>
                                     <td>

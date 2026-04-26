@@ -25,7 +25,7 @@
                         
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="doctor_id">Select User <span class="text-danger">*</span></label>
                                     <select class="form-control @error('doctor_id') is-invalid @enderror" id="doctor_id" name="doctor_id" required>
                                         <option value="">Select User</option>
@@ -44,7 +44,7 @@
                             </div>
                             
                             <div class="col-md-6">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="designation">Designation <span class="text-danger">*</span></label>
                                     <select class="form-control @error('designation') is-invalid @enderror" id="designation" name="designation" required>
                                         <option value="">Select Designation</option>
@@ -63,7 +63,7 @@
 
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="specialization">Specialization <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control @error('specialization') is-invalid @enderror" 
                                            id="specialization" name="specialization" value="{{ old('specialization') }}" 
@@ -75,7 +75,7 @@
                             </div>
                             
                             <div class="col-md-6">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="mct_number">MCT Number</label>
                                     <input type="text" class="form-control @error('mct_number') is-invalid @enderror" 
                                            id="mct_number" name="mct_number" value="{{ old('mct_number') }}" 
@@ -90,7 +90,7 @@
 
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="status">Status <span class="text-danger">*</span></label>
                                     <select class="form-control @error('status') is-invalid @enderror" id="status" name="status" required>
                                         <option value="1" {{ old('status', '1') == '1' ? 'selected' : '' }}>Active</option>
@@ -103,7 +103,7 @@
                             </div>
                             
                             <div class="col-md-6">
-                                <div class="form-group mb-3">
+                                <div class="mb-3">
                                     <label for="drsignature">Digital Signature</label>
                                     <textarea class="form-control @error('drsignature') is-invalid @enderror" 
                                               id="drsignature" name="drsignature" rows="3" 
@@ -117,7 +117,7 @@
 
                         <div class="row">
                             <div class="col-12">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <button type="submit" class="btn btn-primary">
                                         <i class="fas fa-save"></i> Create Doctor
                                     </button>

@@ -51,11 +51,11 @@
             padding: 2rem;
         }
         
-        .form-group {
+        .login-body .mb-3 {
             margin-bottom: 1.5rem;
         }
         
-        .form-group label {
+        .login-body .mb-3 label {
             font-weight: 500;
             color: #333;
             margin-bottom: 0.5rem;
@@ -154,7 +154,7 @@
                 @csrf
 
                 <!-- Email Address -->
-                <div class="form-group">
+                <div class="mb-3">
                     <label for="email">{{ __('Email Address') }}</label>
                     <input id="email" 
                            type="email" 
@@ -173,7 +173,7 @@
                 </div>
 
                 <!-- Password -->
-                <div class="form-group">
+                <div class="mb-3">
                     <label for="password">{{ __('Password') }}</label>
                     <input id="password" 
                            type="password" 

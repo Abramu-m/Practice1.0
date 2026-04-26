@@ -207,7 +207,7 @@ class FinancialTransaction extends Model
      */
     public function getTransactionTypeBadgeAttribute(): string
     {
-        return $this->transaction_type === 'income' ? 'badge-success' : 'badge-danger';
+        return $this->transaction_type === 'income' ? 'bg-success' : 'bg-danger';
     }
 
     /**
@@ -216,11 +216,11 @@ class FinancialTransaction extends Model
     public function getStatusBadgeAttribute(): string
     {
         return match($this->status) {
-            'pending' => 'badge-warning',
-            'completed' => 'badge-success',
-            'cancelled' => 'badge-danger',
-            'refunded' => 'badge-info',
-            default => 'badge-secondary'
+            'pending' => 'bg-warning',
+            'completed' => 'bg-success',
+            'cancelled' => 'bg-danger',
+            'refunded' => 'bg-info',
+            default => 'bg-secondary'
         };
     }
 }

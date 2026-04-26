@@ -21,13 +21,13 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label>Name:</label>
                                 <p class="form-control-plaintext">{{ $serviceCategory->name }}</p>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label>Code:</label>
                                 <p class="form-control-plaintext">{{ $serviceCategory->code ?? 'N/A' }}</p>
                             </div>
@@ -36,7 +36,7 @@
 
                     <div class="row">
                         <div class="col-md-12">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label>Description:</label>
                                 <p class="form-control-plaintext">{{ $serviceCategory->description ?? 'No description available' }}</p>
                             </div>
@@ -45,19 +45,19 @@
 
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label>Sort Order:</label>
                                 <p class="form-control-plaintext">{{ $serviceCategory->sort_order ?? 'N/A' }}</p>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label>Status:</label>
                                 <p class="form-control-plaintext">
                                     @if($serviceCategory->status == 'active')
-                                        <span class="badge badge-success text-black">Active</span>
+                                        <span class="badge bg-success text-black">Active</span>
                                     @else
-                                        <span class="badge badge-danger text-black">Inactive</span>
+                                        <span class="badge bg-danger text-black">Inactive</span>
                                     @endif
                                 </p>
                             </div>
@@ -66,22 +66,22 @@
 
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label>Default Category:</label>
                                 <p class="form-control-plaintext">
                                     @if($serviceCategory->is_default)
-                                        <span class="badge badge-primary text-black">Yes</span>
+                                        <span class="badge bg-primary text-black">Yes</span>
                                     @else
-                                        <span class="badge badge-secondary">No</span>
+                                        <span class="badge bg-secondary">No</span>
                                     @endif
                                 </p>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label>Medical Services Count:</label>
                                 <p class="form-control-plaintext">
-                                    <span class="badge badge-info text-black">{{ $serviceCategory->medical_services_count }}</span>
+                                    <span class="badge bg-info text-black">{{ $serviceCategory->medical_services_count }}</span>
                                 </p>
                             </div>
                         </div>
@@ -89,13 +89,13 @@
 
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label>Created At:</label>
                                 <p class="form-control-plaintext">{{ $serviceCategory->created_at->format('M d, Y H:i') }}</p>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label>Last Updated:</label>
                                 <p class="form-control-plaintext">{{ $serviceCategory->updated_at->format('M d, Y H:i') }}</p>
                             </div>
@@ -119,9 +119,9 @@
                                         <h6 class="mb-1">{{ $service->name }}</h6>
                                         <small>
                                             @if($service->status == 'active')
-                                                <span class="badge badge-success text-black">Active</span>
+                                                <span class="badge bg-success text-black">Active</span>
                                             @else
-                                                <span class="badge badge-danger text-black">Inactive</span>
+                                                <span class="badge bg-danger text-black">Inactive</span>
                                             @endif
                                         </small>
                                     </div>

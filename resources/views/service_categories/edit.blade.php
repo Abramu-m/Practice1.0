@@ -21,7 +21,7 @@
                         @method('PUT')
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="name">Name <span class="text-danger">*</span></label>
                                     <input type="text" 
                                            class="form-control @error('name') is-invalid @enderror" 
@@ -37,7 +37,7 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="code">Code</label>
                                     <input type="text" 
                                            class="form-control @error('code') is-invalid @enderror" 
@@ -56,7 +56,7 @@
 
                         <div class="row">
                             <div class="col-md-12">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="description">Description</label>
                                     <textarea class="form-control @error('description') is-invalid @enderror" 
                                               id="description" 
@@ -74,7 +74,7 @@
 
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="sort_order">Sort Order</label>
                                     <input type="text" 
                                            class="form-control @error('sort_order') is-invalid @enderror" 
@@ -91,7 +91,7 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="status">Status <span class="text-danger">*</span></label>
                                     <select class="form-control @error('status') is-invalid @enderror" 
                                             id="status" 
@@ -111,7 +111,7 @@
 
                         <div class="row">
                             <div class="col-md-12">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <div class="custom-control custom-checkbox">
                                         <input type="checkbox" 
                                                class="custom-control-input" 
@@ -137,7 +137,7 @@
                                         <i class="fas fa-times"></i> Cancel
                                     </a>
                                 </div>
-                                <div class="col-md-6 text-right">
+                                <div class="col-md-6 text-end">
                                     <small class="text-muted">
                                         Created: {{ $serviceCategory->created_at->format('M d, Y H:i') }}
                                         @if($serviceCategory->updated_at != $serviceCategory->created_at)

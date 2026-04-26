@@ -79,7 +79,7 @@
             <div class="card filter-card mb-4">
                 <div class="card-header">
                     <h3 class="card-title">
-                        <i class="fas fa-filter mr-2"></i>
+                        <i class="fas fa-filter me-2"></i>
                         Filters & Date Range
                     </h3>
                     <div class="card-tools">
@@ -119,8 +119,8 @@
                             </select>
                         </div>
                         <div class="col-md-3 mb-3 d-flex align-items-end">
-                            <button type="submit" class="btn btn-primary btn-block">
-                                <i class="fas fa-chart-bar mr-2"></i>Update Analytics
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-chart-bar me-2"></i>Update Analytics
                             </button>
                         </div>
                     </form>
@@ -166,7 +166,7 @@
                     <div class="card analytics-card">
                         <div class="card-header">
                             <h3 class="card-title">
-                                <i class="fas fa-chart-line mr-2"></i>
+                                <i class="fas fa-chart-line me-2"></i>
                                 Consumption Trends
                             </h3>
                         </div>
@@ -183,7 +183,7 @@
                     <div class="card analytics-card">
                         <div class="card-header">
                             <h3 class="card-title">
-                                <i class="fas fa-chart-pie mr-2"></i>
+                                <i class="fas fa-chart-pie me-2"></i>
                                 By Category
                             </h3>
                         </div>
@@ -203,7 +203,7 @@
                     <div class="card analytics-card">
                         <div class="card-header">
                             <h3 class="card-title">
-                                <i class="fas fa-pills mr-2"></i>
+                                <i class="fas fa-pills me-2"></i>
                                 Top Consumed Medications
                             </h3>
                         </div>
@@ -258,7 +258,7 @@
                     <div class="card analytics-card">
                         <div class="card-header">
                             <h3 class="card-title">
-                                <i class="fas fa-map-marker-alt mr-2"></i>
+                                <i class="fas fa-map-marker-alt me-2"></i>
                                 Consumption by Location
                             </h3>
                         </div>
@@ -317,7 +317,7 @@
                     <div class="card analytics-card">
                         <div class="card-header">
                             <h3 class="card-title">
-                                <i class="fas fa-dollar-sign mr-2"></i>
+                                <i class="fas fa-dollar-sign me-2"></i>
                                 Cost Analysis
                             </h3>
                         </div>
@@ -357,7 +357,7 @@
                     <div class="card analytics-card">
                         <div class="card-header">
                             <h3 class="card-title">
-                                <i class="fas fa-sync-alt mr-2"></i>
+                                <i class="fas fa-sync-alt me-2"></i>
                                 Stock Turnover Analysis
                             </h3>
                         </div>
@@ -387,11 +387,11 @@
                                                     <td>{{ $turnover['turnover_ratio'] }}</td>
                                                     <td>
                                                         @if($turnover['turnover_ratio'] > 2)
-                                                            <span class="badge badge-success text-black">High Turnover</span>
+                                                            <span class="badge bg-success text-black">High Turnover</span>
                                                         @elseif($turnover['turnover_ratio'] > 1)
-                                                            <span class="badge badge-warning">Medium Turnover</span>
+                                                            <span class="badge bg-warning">Medium Turnover</span>
                                                         @else
-                                                            <span class="badge badge-danger text-black">Low Turnover</span>
+                                                            <span class="badge bg-danger text-black">Low Turnover</span>
                                                         @endif
                                                     </td>
                                                 </tr>

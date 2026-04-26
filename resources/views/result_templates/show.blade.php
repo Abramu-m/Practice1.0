@@ -23,13 +23,13 @@
                     <!-- Basic Information -->
                     <div class="row mb-4">
                         <div class="col-md-6">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label><strong>Template Name:</strong></label>
                                 <p class="form-control-plaintext">{{ $resultTemplate->name }}</p>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label><strong>Template Code:</strong></label>
                                 <p class="form-control-plaintext"><code>{{ $resultTemplate->code }}</code></p>
                             </div>
@@ -38,7 +38,7 @@
 
                     <div class="row mb-4">
                         <div class="col-md-6">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label><strong>Service Category:</strong></label>
                                 <p class="form-control-plaintext">
                                     @if($resultTemplate->serviceCategory)
@@ -50,7 +50,7 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label><strong>Investigation Type:</strong></label>
                                 <p class="form-control-plaintext">
                                     @if($resultTemplate->investigation_type)
@@ -65,7 +65,7 @@
 
                     <div class="row mb-4">
                         <div class="col-md-6">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label><strong>Sort Order:</strong></label>
                                 <p class="form-control-plaintext">
                                     <span class="badge bg-light text-dark">{{ $resultTemplate->sort_order }}</span>
@@ -73,7 +73,7 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label><strong>Status:</strong></label>
                                 <p class="form-control-plaintext">
                                     @if($resultTemplate->is_active)
@@ -90,7 +90,7 @@
                     @if($resultTemplate->description)
                     <div class="row mb-4">
                         <div class="col-md-12">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label><strong>Description:</strong></label>
                                 <p class="form-control-plaintext">{{ $resultTemplate->description }}</p>
                             </div>
@@ -102,7 +102,7 @@
                     @if($resultTemplate->template_fields)
                     <div class="row mb-4">
                         <div class="col-md-12">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label><strong>Template Fields (JSON):</strong></label>
                                 <pre class="bg-light p-3 rounded" style="max-height: 300px; overflow-y: auto;">{{ json_encode($resultTemplate->template_fields, JSON_PRETTY_PRINT) }}</pre>
                             </div>
@@ -113,13 +113,13 @@
                     <!-- Timestamps -->
                     <div class="row mb-4">
                         <div class="col-md-6">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label><strong>Created:</strong></label>
                                 <p class="form-control-plaintext">{{ $resultTemplate->created_at->format('M d, Y H:i') }}</p>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label><strong>Last Updated:</strong></label>
                                 <p class="form-control-plaintext">{{ $resultTemplate->updated_at->format('M d, Y H:i') }}</p>
                             </div>

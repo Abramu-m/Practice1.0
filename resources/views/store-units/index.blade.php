@@ -38,7 +38,7 @@
                     </div>
                     
                     <!-- Filter Buttons -->
-                    <div class="btn-group ml-3" role="group" aria-label="Filter Options">
+                    <div class="btn-group ms-3" role="group" aria-label="Filter Options">
                         <button type="button" class="btn btn-outline-secondary" onclick="filterByStatus('all')">
                             <i class="fas fa-list"></i> All
                         </button>
@@ -50,7 +50,7 @@
                         </button>
                     </div>
 
-                    <div class="btn-group ml-3" role="group" aria-label="Type Filter">
+                    <div class="btn-group ms-3" role="group" aria-label="Type Filter">
                         <button type="button" class="btn btn-outline-warning" onclick="filterByType('store')">
                             <i class="fas fa-warehouse"></i> Store
                         </button>
@@ -74,7 +74,7 @@
                     <h3 class="card-title">Store Units</h3>
                     <div class="card-tools">
                         <!-- Search Input -->
-                        <div class="input-group input-group-sm mr-2" style="width: 200px; display: inline-flex;">
+                        <div class="input-group input-group-sm me-2" style="width: 200px; display: inline-flex;">
                             <input type="text" id="quick-search" class="form-control" placeholder="Quick search..." onkeyup="quickSearch(this.value)">
                             <div class="input-group-append">
                                 <span class="input-group-text">
@@ -84,7 +84,7 @@
                         </div>
                         
                         <!-- Navigation Links -->
-                        <div class="btn-group btn-group-sm mr-2">
+                        <div class="btn-group btn-group-sm me-2">
                             <a href="{{ route('medications.index') }}" class="btn btn-outline-secondary" title="Medications">
                                 <i class="fas fa-pills"></i>
                             </a>
@@ -106,18 +106,14 @@
                     @if(session('success'))
                         <div class="alert alert-success alert-dismissible fade show" role="alert">
                             {{ session('success') }}
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     @endif
 
                     @if(session('error'))
                         <div class="alert alert-danger alert-dismissible fade show" role="alert">
                             {{ session('error') }}
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     @endif
 

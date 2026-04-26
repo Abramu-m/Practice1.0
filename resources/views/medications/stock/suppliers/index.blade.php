@@ -177,7 +177,7 @@
         <form method="GET" action="{{ route('medications.stock.suppliers.index') }}">
             <div class="row">
                 <div class="col-md-4">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label for="search">Search Suppliers</label>
                         <div class="search-box">
                             <i class="fas fa-search"></i>
@@ -192,7 +192,7 @@
                 </div>
                 
                 <div class="col-md-2">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label for="status">Status</label>
                         <select class="form-control" id="status" name="status">
                             <option value="">All Status</option>
@@ -203,7 +203,7 @@
                 </div>
                 
                 <div class="col-md-2">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label for="country">Country</label>
                         <select class="form-control" id="country" name="country">
                             <option value="">All Countries</option>
@@ -217,7 +217,7 @@
                 </div>
                 
                 <div class="col-md-2">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label for="credit_status">Credit Status</label>
                         <select class="form-control" id="credit_status" name="credit_status">
                             <option value="">All</option>
@@ -228,7 +228,7 @@
                 </div>
                 
                 <div class="col-md-2">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label>&nbsp;</label>
                         <div class="d-flex">
                             <button type="submit" class="btn btn-primary me-2">
@@ -249,7 +249,7 @@
         <div class="card-header">
             <h3 class="card-title">Suppliers List</h3>
             <div class="card-tools">
-                <button type="button" class="btn btn-sm btn-secondary" data-toggle="collapse" data-target="#tableFilters">
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-toggle="collapse" data-bs-target="#tableFilters">
                     <i class="fas fa-cog"></i> Table Options
                 </button>
             </div>
@@ -314,7 +314,7 @@
                                             <strong>Pending:</strong> ${{ number_format($supplier->pending_amount, 2) }}
                                         </div>
                                         @if($supplier->credit_exceeded)
-                                            <span class="badge badge-danger">Credit Exceeded</span>
+                                            <span class="badge bg-danger">Credit Exceeded</span>
                                         @endif
                                     @endif
                                     @if($supplier->credit_days)
@@ -331,7 +331,7 @@
                                 </td>
                                 
                                 <td>
-                                    <span class="badge badge-info">{{ $supplier->goods_received_notes_count }}</span>
+                                    <span class="badge bg-info">{{ $supplier->goods_received_notes_count }}</span>
                                 </td>
                                 
                                 <td>
@@ -400,15 +400,13 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Confirm Status Change</h5>
-                <button type="button" class="close" data-dismiss="modal">
-                    <span>&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <p id="statusMessage"></p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-primary" id="confirmStatusChange">Confirm</button>
             </div>
         </div>
@@ -421,15 +419,13 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Confirm Delete</h5>
-                <button type="button" class="close" data-dismiss="modal">
-                    <span>&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <p>Are you sure you want to delete this supplier? This action cannot be undone.</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-danger" id="confirmDelete">Delete</button>
             </div>
         </div>

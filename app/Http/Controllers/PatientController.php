@@ -74,13 +74,13 @@ class PatientController extends Controller
                     return $html;
                 })
                 ->addColumn('visits', function ($patient) {
-                    return '<span class="badge badge-info" style="color: black">' . $patient->visits->count() . ' visit(s)</span>';
+                    return '<span class="badge bg-info" style="color: black">' . $patient->visits->count() . ' visit(s)</span>';
                 })
                 ->addColumn('status', function ($patient) {
                     if ($patient->status == 'active') {
-                        return '<span class="badge badge-success" style="color: black">Active</span>';
+                        return '<span class="badge bg-success" style="color: black">Active</span>';
                     } else {
-                        return '<span class="badge badge-danger" style="color: black">Inactive</span>';
+                        return '<span class="badge bg-danger" style="color: black">Inactive</span>';
                     }
                 })
                 ->addColumn('actions', function ($patient) {
