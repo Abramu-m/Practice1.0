@@ -202,24 +202,22 @@
                         </div>
 
                         <div class="mb-3">
-                            <div class="mb-3">
-                                <label>Active Status</label>
-                                <div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="is_active" id="is_active_yes" value="1"
-                                            {{ old('is_active', $medication->is_active) ? 'checked' : '' }}>
-                                        <label class="form-check-label" for="is_active_yes">Active</label>
-                                    </div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="is_active" id="is_active_no" value="0"
-                                            {{ old('is_active', $medication->is_active) == 0 ? 'checked' : '' }}>
-                                        <label class="form-check-label" for="is_active_no">Inactive</label>
-                                    </div>
+                            <label>Active Status</label>
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="is_active" id="is_active_yes" value="1"
+                                        {{ old('is_active', $medication->is_active) ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="is_active_yes">Active</label>
                                 </div>
-                                @error('is_active')
-                                    <span class="invalid-feedback d-block">{{ $message }}</span>
-                                @enderror
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="is_active" id="is_active_no" value="0"
+                                        {{ old('is_active', $medication->is_active) == 0 ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="is_active_no">Inactive</label>
+                                </div>
                             </div>
+                            @error('is_active')
+                                <span class="invalid-feedback d-block">{{ $message }}</span>
+                            @enderror
                         </div>
                     </div>
 

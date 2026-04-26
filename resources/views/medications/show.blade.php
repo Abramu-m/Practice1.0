@@ -28,7 +28,7 @@
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label>stronBrand Name:</label>
+                                <label>Brand Name:</label>
                                 <p class="form-control-plaintext"><strong>{{ $medication->brand_name ?: 'N/A' }}</strong></p>
                             </div>
                         </div>
