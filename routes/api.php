@@ -219,9 +219,15 @@ Route::get('/result-template/{templateName}', function($templateName) {
             'tb' => 'lab.result_templates.tb',
             'general_lab' => 'lab.result_templates.general',
             'cd4' => 'lab.result_templates.cd4',
-            'simple_lab' => 'lab.result_templates.simple',
+            'simple_lab' => 'lab.result_templates.single_numeric_lab',
+            'simple' => 'lab.result_templates.single_numeric_lab',
+            'single_numeric_lab' => 'lab.result_templates.single_numeric_lab',
             'blood_count' => 'lab.result_templates.general',
             'chemistry' => 'lab.result_templates.general',
+            'imaging' => 'lab.result_templates.general',
+            'vital_observations' => 'lab.result_templates.general',
+            'complex_form' => 'lab.result_templates.general',
+            'default' => 'lab.result_templates.general',
         ];
         
         // Check if template exists
@@ -243,6 +249,7 @@ Route::get('/result-template/{templateName}', function($templateName) {
             'patient' => $investigation->patient,
             'medicalService' => $investigation->medicalService,
             'consultation' => $investigation->consultation,
+            'currentUser' => auth('web')->user(),
         ])->render();
         
         return response($html)->header('Content-Type', 'text/html');

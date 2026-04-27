@@ -4,254 +4,182 @@
 
 @section('main_content')
 <div class="container-fluid">
-    <!-- Investigation Information Header -->
-    <div class="alert alert-primary mb-4">
-        <div class="row">
-            <div class="col-md-8">
-                <h6><i class="fas fa-vial"></i> Investigation Details</h6>
-                <strong>{{ $result->investigation->medicalService->name }}</strong>
-                @if($result->investigation->medicalService->code)
-                    <span class="badge bg-light text-dark ms-2">{{ $result->investigation->medicalService->code }}</span>
-                @endif
-                <br>
-                <small>
-                    Patient: <strong>{{ $result->investigation->patient->first_name }} {{ $result->investigation->patient->last_name }}</strong> |
-                    Investigation ID: {{ $result->investigation->id }} |
-                    Priority: 
-                    <span class="badge bg-{{ $result->investigation->priority === 'stat' ? 'danger' : ($result->investigation->priority === 'urgent' ? 'warning' : 'secondary') }}">
-                        {{ strtoupper($result->investigation->priority) }}
-                    </span>
-                </small>
-            </div>
-            <div class="col-md-4 text-end">
-                <div>
-                    <strong>Ordered:</strong> {{ $result->investigation->ordered_at ? $result->investigation->ordered_at->format('M d, Y H:i') : 'N/A' }}<br>
-                    <strong>Doctor:</strong> 
-                    @if($result->investigation->doctor && $result->investigation->doctor->user)
-                        Dr. {{ $result->investigation->doctor->user->first_name }} {{ $result->investigation->doctor->user->last_name }}
-                    @else
-                        <span class="text-muted">Not specified</span>
-                    @endif
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Navigation -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <a href="{{ route('lab.results.form', $result->investigation->id) }}" class="btn btn-outline-secondary">
-                <i class="fas fa-arrow-left"></i> Back to Results Form
-            </a>
-        </div>
-        <div>
-            <span class="badge bg-{{ $result->form_status === 'final' ? 'success' : ($result->form_status === 'preliminary' ? 'info' : 'warning') }}">
-                {{ ucfirst($result->form_status) }} Report
-            </span>
-        </div>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <a href="{{ route('lab.results.form', $result->investigation->id) }}" class="btn btn-sm btn-outline-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Results Form
+        </a>
+        <span class="badge fs-6 bg-{{ $result->form_status === 'final' ? 'success' : ($result->form_status === 'preliminary' ? 'info' : 'warning') }}">
+            {{ ucfirst($result->form_status) }} Report
+        </span>
     </div>
 
-    <!-- Result Information -->
-    <div class="card mb-4">
-        <div class="card-header">
-            <h5 class="mb-0">
-                <i class="fas fa-file-medical text-primary"></i> 
-                Template Result Details
-            </h5>
-        </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-6">
-                    <table class="table table-sm">
-                        <tr>
-                            <th>Template:</th>
-                            <td>{{ ucfirst($result->template_name) }}</td>
-                        </tr>
-                        <tr>
-                            <th>Version:</th>
-                            <td>{{ $result->template_version }}</td>
-                        </tr>
-                        <tr>
-                            <th>Status:</th>
-                            <td>
-                                <span class="badge bg-{{ $result->form_status === 'final' ? 'success' : ($result->form_status === 'preliminary' ? 'info' : 'warning') }}">
-                                    {{ ucfirst($result->form_status) }}
-                                </span>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
-                <div class="col-md-6">
-                    <table class="table table-sm">
-                        <tr>
-                            <th>Reported By:</th>
-                            <td>{{ $result->reportedBy->name ?? 'System' }}</td>
-                        </tr>
-                        <tr>
-                            <th>Reported At:</th>
-                            <td>{{ $result->reported_at ? $result->reported_at->format('M d, Y H:i A') : 'N/A' }}</td>
-                        </tr>
-                        @if($result->verified_by && $result->verified_at)
-                        <tr>
-                            <th>Verified By:</th>
-                            <td>{{ $result->verifiedBy->name ?? 'N/A' }}</td>
-                        </tr>
-                        <tr>
-                            <th>Verified At:</th>
-                            <td>{{ $result->verified_at ? $result->verified_at->format('M d, Y H:i A') : 'N/A' }}</td>
-                        </tr>
+    <!-- Investigation Header -->
+    <div class="card mb-3 border-0 shadow-sm">
+        <div class="card-body py-3" style="background: linear-gradient(135deg, #e8f4fd, #f0f8ff); border-left: 4px solid #0d6efd; border-radius: 4px;">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h5 class="mb-1">
+                        <i class="fas fa-vial text-primary me-2"></i>
+                        {{ $result->investigation->medicalService->name }}
+                        @if($result->investigation->medicalService->code)
+                            <span class="badge bg-secondary ms-2 fw-normal" style="font-size:0.7rem;">{{ $result->investigation->medicalService->code }}</span>
                         @endif
-                    </table>
+                    </h5>
+                    <div class="text-muted small">
+                        Patient: <strong class="text-dark">{{ $result->investigation->patient->first_name }} {{ $result->investigation->patient->last_name }}</strong>
+                        &nbsp;&bull;&nbsp; Investigation #{{ $result->investigation->id }}
+                        &nbsp;&bull;&nbsp;
+                        <span class="badge bg-{{ $result->investigation->priority === 'stat' ? 'danger' : ($result->investigation->priority === 'urgent' ? 'warning text-dark' : 'secondary') }}">
+                            {{ strtoupper($result->investigation->priority) }}
+                        </span>
+                    </div>
+                </div>
+                <div class="col-md-4 text-md-end text-muted small mt-2 mt-md-0">
+                    <div><i class="fas fa-calendar-alt me-1"></i> Ordered: {{ $result->investigation->ordered_at ? $result->investigation->ordered_at->format('M d, Y H:i') : 'N/A' }}</div>
+                    <div><i class="fas fa-user-md me-1"></i>
+                        @if($result->investigation->doctor && $result->investigation->doctor->user)
+                            Dr. {{ $result->investigation->doctor->user->first_name }} {{ $result->investigation->doctor->user->last_name }}
+                        @else
+                            <span class="text-muted">Not specified</span>
+                        @endif
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Result Data -->
-    <div class="card">
-        <div class="card-header">
-            <h5 class="mb-0">
-                <i class="fas fa-chart-line text-success"></i> 
+    <div class="card shadow-sm">
+        <div class="card-header bg-white border-bottom">
+            <h6 class="mb-0 text-dark">
+                <i class="fas fa-chart-line text-success me-2"></i>
                 {{ $result->investigation->medicalService->name }} Results
-            </h5>
+            </h6>
         </div>
-        <div class="card-body">
-            @if(($result->template_name === 'simple' || $result->template_name === 'simple_lab') && isset($result->form_data['parameters']))
-                {{-- Simple lab results display --}}
+        <div class="card-body p-0">
+            @php
+                $templateCode = $result->metadata['template_code'] ?? $result->template_name ?? '';
+                $isSimpleTemplate = in_array($templateCode, ['simple', 'simple_lab', 'single_numeric_lab']) && isset($result->form_data['parameters']);
+            @endphp
+            @if($isSimpleTemplate)
+                {{-- Simple / numeric lab results --}}
+                @php
+                    $parameters = $result->form_data['parameters'];
+                    if (is_string($parameters)) $parameters = json_decode($parameters, true);
+                    if (!is_array($parameters)) $parameters = [$parameters];
+
+                    $toFloat = function ($val) {
+                        if ($val === null || $val === '') return null;
+                        if (is_numeric($val)) return (float)$val;
+                        if (preg_match('/-?\d+(?:[\.,]\d+)?/', (string)$val, $m)) return (float) str_replace(',', '.', $m[0]);
+                        return null;
+                    };
+                    $computeStatus = function ($valueRaw, $rangeRaw) use ($toFloat) {
+                        if (is_array($valueRaw) || is_array($rangeRaw)) return null;
+                        $val = $toFloat($valueRaw);
+                        if ($val === null || !$rangeRaw) return null;
+                        $r = trim(str_replace(["–","—","−"], "-", (string)$rangeRaw));
+                        if (preg_match('/^\s*(-?\d+(?:\.\d+)?)\s*(?:-|to)\s*(-?\d+(?:\.\d+)?)\s*$/i', $r, $mm)) {
+                            if ($val < (float)$mm[1]) return 'low';
+                            if ($val > (float)$mm[2]) return 'high';
+                            return 'normal';
+                        }
+                        if (preg_match('/^\s*([<>]=?)\s*(-?\d+(?:\.\d+)?)\s*$/', $r, $mm)) {
+                            $op = $mm[1]; $cut = (float)$mm[2];
+                            if ($op === '<')  return $val <  $cut ? 'normal' : 'high';
+                            if ($op === '<=') return $val <= $cut ? 'normal' : 'high';
+                            if ($op === '>')  return $val >  $cut ? 'normal' : 'low';
+                            if ($op === '>=') return $val >= $cut ? 'normal' : 'low';
+                        }
+                        return null;
+                    };
+                @endphp
                 <div class="table-responsive">
-                    <table class="table table-striped">
-                        <thead>
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
                             <tr>
-                                <th>Parameter</th>
+                                <th class="ps-4">Parameter</th>
                                 <th>Value</th>
                                 <th>Unit</th>
                                 <th>Normal Range</th>
                                 <th>Status</th>
-                                <th>Remarks</th>
+                                <th class="pe-4">Remarks</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @php
-                                // Handle both array and object formats
-                                $parameters = $result->form_data['parameters'];
-                                if (is_string($parameters)) {
-                                    $parameters = json_decode($parameters, true);
-                                }
-                                // If it's still not an array, try to make it one
-                                if (!is_array($parameters)) {
-                                    $parameters = [$parameters];
-                                }
-
-                                // Helpers to compute status from a value and reference range (if status is missing)
-                                $toFloat = function ($val) {
-                                    if ($val === null || $val === '') return null;
-                                    if (is_numeric($val)) return (float)$val;
-                                    // Extract first numeric (handles strings like "<5", ">= 3.2", "5 mg/dL")
-                                    if (preg_match('/-?\d+(?:[\.,]\d+)?/', (string)$val, $m)) {
-                                        return (float) str_replace(',', '.', $m[0]);
-                                    }
-                                    return null;
-                                };
-
-                                $computeStatusFromRange = function ($valueRaw, $rangeRaw) use ($toFloat) {
-                                    // Arrays are not supported for computation
-                                    if (is_array($valueRaw) || is_array($rangeRaw)) return null;
-                                    $val = $toFloat($valueRaw);
-                                    if ($val === null || !$rangeRaw) return null;
-                                    $r = trim((string)$rangeRaw);
-                                    // Normalize unicode dashes to hyphen
-                                    $r = str_replace(["–", "—", "−"], "-", $r);
-                                    // Common patterns: "a-b" or "a to b"
-                                    if (preg_match('/^\s*(-?\d+(?:\.\d+)?)\s*(?:-|to)\s*(-?\d+(?:\.\d+)?)\s*$/i', $r, $mm)) {
-                                        $lo = (float)$mm[1];
-                                        $hi = (float)$mm[2];
-                                        if ($val < $lo) return 'low';
-                                        if ($val > $hi) return 'high';
-                                        return 'normal';
-                                    }
-                                    // Comparator patterns: "< x", "<= x", "> x", ">= x"
-                                    if (preg_match('/^\s*([<>]=?)\s*(-?\d+(?:\.\d+)?)\s*$/', $r, $mm)) {
-                                        $op = $mm[1];
-                                        $cut = (float)$mm[2];
-                                        if ($op === '<')  return $val <  $cut ? 'normal' : 'high';
-                                        if ($op === '<=') return $val <= $cut ? 'normal' : 'high';
-                                        if ($op === '>')  return $val >  $cut ? 'normal' : 'low';
-                                        if ($op === '>=') return $val >= $cut ? 'normal' : 'low';
-                                    }
-                                    // Fallback: cannot determine
-                                    return null;
-                                };
-                            @endphp
-                            
                             @foreach($parameters as $param)
                                 @php
-                                    // Handle both array and object parameter formats
-                                    if (is_string($param)) {
-                                        $param = json_decode($param, true);
-                                    }
-                                    
-                                    // Ensure we have an array
-                                    if (!is_array($param)) {
-                                        continue;
-                                    }
-                                    // Support both schema variants and compute status from range if missing
-                                    $pname = $param['parameter_name'] ?? ($param['parameter'] ?? 'N/A');
+                                    if (is_string($param)) $param = json_decode($param, true);
+                                    if (!is_array($param)) continue;
+                                    $pname  = $param['parameter_name'] ?? ($param['parameter'] ?? 'N/A');
                                     $pvalue = is_array($param['value'] ?? null) ? null : ($param['value'] ?? null);
                                     $punit  = is_array($param['unit'] ?? null) ? '' : ($param['unit'] ?? '');
                                     $prange = is_array($param['normal_range'] ?? null) ? '' : ($param['normal_range'] ?? '');
-                                    $status = $param['status'] ?? null;
-                                    if (!$status) {
-                                        $status = $computeStatusFromRange($pvalue, $prange) ?? 'unknown';
-                                    }
+                                    $status = $param['status'] ?? ($computeStatus($pvalue, $prange) ?? 'unknown');
                                     $badgeClass = match($status) {
-                                        'high' => 'bg-danger',
-                                        'low' => 'bg-warning',
-                                        'normal' => 'bg-success',
+                                        'high'     => 'bg-danger',
+                                        'low'      => 'bg-warning text-dark',
+                                        'normal'   => 'bg-success',
                                         'critical' => 'bg-danger',
-                                        default => 'bg-secondary'
+                                        default    => 'bg-secondary'
+                                    };
+                                    $rowClass = match($status) {
+                                        'high', 'critical' => 'table-danger',
+                                        'low'              => 'table-warning',
+                                        default            => '',
                                     };
                                 @endphp
-                                <tr>
-                                    <td class="fw-medium">{{ $pname }}</td>
-                                    <td>{{ $pvalue ?? 'N/A' }}</td>
-                                    <td class="text-muted">{{ $punit }}</td>
-                                    <td class="text-muted">{{ $prange }}</td>
+                                <tr class="{{ $rowClass }}">
+                                    <td class="ps-4 fw-semibold">{{ $pname }}</td>
+                                    <td class="fw-bold">{{ $pvalue ?? '—' }}</td>
+                                    <td class="text-muted small">{{ $punit }}</td>
+                                    <td class="text-muted small">{{ $prange }}</td>
                                     <td><span class="badge {{ $badgeClass }}">{{ ucfirst($status) }}</span></td>
-                                    <td class="text-muted">{{ is_array($param['remarks'] ?? '') ? json_encode($param['remarks']) : ($param['remarks'] ?? '') }}</td>
+                                    <td class="pe-4 text-muted small">{{ is_array($param['remarks'] ?? '') ? '' : ($param['remarks'] ?? '') }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
                 </div>
 
+                <!-- Analysis footer -->
+                <div class="px-4 py-3 border-top bg-light d-flex flex-wrap gap-4">
+                    @if(isset($result->form_data['analyzed_by']) && $result->form_data['analyzed_by'])
+                        <div>
+                            <span class="text-muted small">Analyzed By</span><br>
+                            <span class="fw-semibold">{{ $result->form_data['analyzed_by'] }}</span>
+                        </div>
+                    @endif
+                    @if(isset($result->form_data['analysis_date']) && $result->form_data['analysis_date'])
+                        <div>
+                            <span class="text-muted small">Analysis Date</span><br>
+                            <span class="fw-semibold">{{ \Carbon\Carbon::parse($result->form_data['analysis_date'])->format('M d, Y H:i') }}</span>
+                        </div>
+                    @endif
+                    @if($result->reportedBy)
+                        <div>
+                            <span class="text-muted small">Reported By</span><br>
+                            <span class="fw-semibold">{{ $result->reportedBy->name }}</span>
+                        </div>
+                    @endif
+                    @if($result->reported_at)
+                        <div>
+                            <span class="text-muted small">Reported At</span><br>
+                            <span class="fw-semibold">{{ $result->reported_at->format('M d, Y H:i') }}</span>
+                        </div>
+                    @endif
+                </div>
+
                 @if(isset($result->form_data['additional_comments']) && $result->form_data['additional_comments'])
-                    <div class="mt-3">
-                        <h6>Additional Comments:</h6>
-                        <div class="alert alert-light">
-                            {{ $result->form_data['additional_comments'] }}
-                        </div>
+                    <div class="px-4 py-3 border-top">
+                        <p class="text-muted small mb-1">Additional Comments</p>
+                        <p class="mb-0">{{ $result->form_data['additional_comments'] }}</p>
                     </div>
                 @endif
 
-                @if(isset($result->form_data['analyzed_by']) || isset($result->form_data['analysis_date']))
-                    <div class="mt-3">
-                        <h6>Analysis Information:</h6>
-                        <div class="row">
-                            @if(isset($result->form_data['analyzed_by']))
-                            <div class="col-md-6">
-                                <strong>Analyzed By:</strong> {{ $result->form_data['analyzed_by'] }}
-                            </div>
-                            @endif
-                            @if(isset($result->form_data['analysis_date']))
-                            <div class="col-md-6">
-                                <strong>Analysis Date:</strong> {{ \Carbon\Carbon::parse($result->form_data['analysis_date'])->format('M d, Y H:i') }}
-                            </div>
-                            @endif
-                        </div>
-                    </div>
-                @endif
-
-            @elseif($result->template_name === 'tb')
+            @elseif($templateCode === 'tb')
                 {{-- TB results display --}}
                 <div class="row">
                     @if(isset($result->form_data['microscopy_result']))
@@ -307,202 +235,67 @@
                 @endif
 
             @else
-                {{-- Generic complex result display --}}
-                <div class="row">
-                    @foreach($result->form_data as $key => $value)
-                        @if(!in_array($key, ['_token', 'template_', 'action']) && !empty($value))
-                        <div class="col-md-6 mb-3">
-                            <strong>{{ ucwords(str_replace('_', ' ', $key)) }}:</strong>
-                            <div class="mt-1">
+                {{-- Generic result display --}}
+                <div class="p-4">
+                    <div class="row">
+                        @foreach($result->form_data as $key => $value)
+                            @if(!in_array($key, ['_token', 'template_', 'action']) && !empty($value))
+                            <div class="col-md-6 mb-3">
+                                <p class="text-muted small mb-1">{{ ucwords(str_replace('_', ' ', $key)) }}</p>
                                 @if(is_array($value))
-                                    @if(count($value) > 0)
-                                        @foreach($value as $subKey => $subValue)
-                                            @if(is_array($subValue))
-                                                <div><em>{{ ucwords(str_replace('_', ' ', $subKey)) }}:</em> 
-                                                    <pre class="text-muted">{{ json_encode($subValue, JSON_PRETTY_PRINT) }}</pre>
-                                                </div>
-                                            @else
-                                                <div><em>{{ ucwords(str_replace('_', ' ', $subKey)) }}:</em> {{ $subValue }}</div>
-                                            @endif
-                                        @endforeach
-                                    @else
-                                        <span class="text-muted">No data</span>
-                                    @endif
+                                    @foreach($value as $subKey => $subValue)
+                                        <div class="small">
+                                            <em>{{ ucwords(str_replace('_', ' ', $subKey)) }}:</em>
+                                            {{ is_array($subValue) ? json_encode($subValue) : $subValue }}
+                                        </div>
+                                    @endforeach
                                 @else
-                                    {{ $value }}
+                                    <span class="fw-semibold">{{ $value }}</span>
                                 @endif
                             </div>
-                        </div>
-                        @endif
-                    @endforeach
+                            @endif
+                        @endforeach
+                    </div>
                 </div>
             @endif
         </div>
     </div>
 
-    @if($result->form_data && count($result->form_data) > 0)
-        {{-- Keep original raw data section as backup --}}
-        <div class="card mt-3">
-            <div class="card-header">
-                <h6 class="mb-0">
-                    <i class="fas fa-code"></i> Raw Data (Debug)
-                    <button class="btn btn-sm btn-outline-secondary ms-2" type="button" data-bs-toggle="collapse" data-bs-target="#rawDataCollapse">
-                        Toggle
-                    </button>
-                </h6>
-            </div>
-            <div class="collapse" id="rawDataCollapse">
-                <div class="card-body">
-                    <div class="result-data-container">
-                        @foreach($result->form_data as $key => $value)
-                            @if(!is_null($value) && $value !== '')
-                                <div class="row mb-3">
-                                    <div class="col-md-4">
-                                        <strong>{{ ucwords(str_replace(['_', '-'], ' ', $key)) }}:</strong>
-                                    </div>
-                                    <div class="col-md-8">
-                                        @if(is_array($value))
-                                            @if(count($value) > 0)
-                                                <pre class="bg-light p-2 small">{{ json_encode($value, JSON_PRETTY_PRINT) }}</pre>
-                                            @else
-                                                <span class="text-muted">Empty array</span>
-                                            @endif
-                                        @else
-                                            <span class="result-value">{{ $value }}</span>
-                                        @endif
-                                    </div>
-                                </div>
-                                <hr class="my-2">
-                            @endif
-                        @endforeach
-                    </div>
-                </div>
-            </div>
-        @else
-            <div class="alert alert-info">
-                <i class="fas fa-info-circle"></i>
-                No result data available for this template result.
-            </div>
-        @endif
-        </div>
-    </div>
-
-    <!-- Metadata (if available) -->
-    @if($result->metadata && count($result->metadata) > 0)
-    <div class="card mt-4">
-        <div class="card-header">
-            <h6 class="mb-0">
-                <i class="fas fa-info-circle text-muted"></i> 
-                Additional Information
-            </h6>
-        </div>
-        <div class="card-body">
-            <div class="row">
-                @foreach($result->metadata as $key => $value)
-                    @if(!is_null($value) && $value !== '')
-                        <div class="col-md-6 mb-2">
-                            <small class="text-muted">
-                                <strong>{{ ucwords(str_replace(['_', '-'], ' ', $key)) }}:</strong> 
-                                {{ is_array($value) ? json_encode($value) : $value }}
-                            </small>
-                        </div>
-                    @endif
-                @endforeach
-            </div>
-        </div>
-    </div>
-    @endif
-
     <!-- Action Buttons -->
-    <div class="card mt-4">
-        <div class="card-body">
-            <div class="d-flex justify-content-between">
-                <div>
-                    <a href="{{ route('lab.results.form', $result->investigation->id) }}" class="btn btn-outline-secondary">
-                        <i class="fas fa-edit"></i> Edit Results
-                    </a>
-                    @if($result->investigation->consultation && $result->investigation->consultation->visit)
-                        <a href="{{ route('lab.visits.investigations', $result->investigation->consultation->visit->id) }}" class="btn btn-outline-primary">
-                            <i class="fas fa-list"></i> All Investigations
-                        </a>
-                    @else
-                        <a href="{{ route('lab.visits.index') }}" class="btn btn-outline-primary">
-                            <i class="fas fa-list"></i> Lab Dashboard
-                        </a>
-                    @endif
-                </div>
-                <div>
-                    <button class="btn btn-outline-success" onclick="printResult()">
-                        <i class="fas fa-print"></i> Print
-                    </button>
-                    @if($result->form_status !== 'final')
-                        <button class="btn btn-warning" onclick="promoteToFinal()">
-                            <i class="fas fa-check"></i> Mark as Final
-                        </button>
-                    @endif
-                </div>
-            </div>
+    <div class="d-flex justify-content-between align-items-center mt-3">
+        <div class="d-flex gap-2">
+            <a href="{{ route('lab.results.form', $result->investigation->id) }}" class="btn btn-sm btn-outline-secondary">
+                <i class="fas fa-edit"></i> Edit Results
+            </a>
+            @if($result->investigation->consultation && $result->investigation->consultation->visit)
+                <a href="{{ route('lab.visits.investigations', $result->investigation->consultation->visit->id) }}" class="btn btn-sm btn-outline-primary">
+                    <i class="fas fa-list"></i> All Investigations
+                </a>
+            @else
+                <a href="{{ route('lab.visits.index') }}" class="btn btn-sm btn-outline-primary">
+                    <i class="fas fa-list"></i> Lab Dashboard
+                </a>
+            @endif
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-sm btn-outline-dark" onclick="window.print()">
+                <i class="fas fa-print"></i> Print
+            </button>
+            @if($result->form_status !== 'final')
+                <button class="btn btn-sm btn-warning" onclick="promoteToFinal()">
+                    <i class="fas fa-check"></i> Mark as Final
+                </button>
+            @endif
         </div>
     </div>
-</div>
 
+</div>
 @endsection
 
-<style>
-.result-value {
-    font-weight: 500;
-    color: #2c3e50;
-}
-
-.result-data-container hr {
-    border-color: #e9ecef;
-    opacity: 0.5;
-}
-
-.result-data-container pre {
-    background-color: #f8f9fa;
-    border: 1px solid #e9ecef;
-    border-radius: 0.25rem;
-    padding: 0.5rem;
-    font-size: 0.875rem;
-    max-height: 200px;
-    overflow-y: auto;
-}
-
-.result-data-container .list-unstyled li {
-    padding: 0.25rem 0;
-    border-bottom: 1px solid #f8f9fa;
-}
-
-.result-data-container .list-unstyled li:last-child {
-    border-bottom: none;
-}
-
-@media print {
-    .btn, .card-header {
-        display: none !important;
-    }
-    
-    .card {
-        border: none !important;
-        box-shadow: none !important;
-    }
-    
-    .alert {
-        border: 1px solid #ddd !important;
-    }
-}
-</style>
-
 <script>
-function printResult() {
-    window.print();
-}
-
 function promoteToFinal() {
-    if (confirm('Are you sure you want to mark this result as final? This action cannot be undone.')) {
-        // TODO: Implement promote to final functionality
-        alert('Promote to final functionality - Result ID: {{ $result->id }}');
+    if (confirm('Mark this result as final? This cannot be undone.')) {
+        alert('Promote to final — Result ID: {{ $result->id }}');
     }
 }
 </script>

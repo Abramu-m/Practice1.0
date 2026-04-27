@@ -87,34 +87,8 @@
                 
                 {{-- Result Template Section --}}
 
-                {{-- Custom Result Template Section --}}
-                <div class="alert alert-info mb-4">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <i class="fas fa-file-medical"></i>
-                            <strong>Result Template:</strong> 
-                            @if($investigation->medicalService->resultTemplate && $investigation->medicalService->resultTemplate->code !== 'none')
-                                {{ $templateDisplayName }}
-                            @else
-                                Simple Lab Values
-                            @endif
-                        </div>
-                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="loadResultTemplate()">
-                            <i class="fas fa-download"></i> Load Template
-                        </button>
-                    </div>
-                </div>
-
                 {{-- Custom Template Form Container --}}
                 <div id="custom_template_form" class="result-form border rounded p-3 mb-4" style="display: none; background-color: #f8f9fa;">
-                    <h6><i class="fas fa-file-medical text-primary"></i> 
-                        Result Template: 
-                        @if($investigation->medicalService->resultTemplate && $investigation->medicalService->resultTemplate->code !== 'none')
-                            {{ $templateDisplayName }}
-                        @else
-                            Simple Lab Values
-                        @endif
-                    </h6>
                     <div id="template_content_container">
                         <div class="text-center p-3">
                             <div class="spinner-border spinner-border-sm" role="status">
@@ -309,6 +283,12 @@ function loadResultTemplate() {
             // Execute any scripts in the loaded template
             executeTemplateScripts(contentContainer);
             
+            // Populate analyzed_by with current user (template is loaded via AJAX, no session access)
+            const analyzedByInput = contentContainer.querySelector('input[name="analyzed_by"]');
+            if (analyzedByInput) {
+                analyzedByInput.value = '{{ auth()->user()->name ?? "" }}';
+            }
+            
             // Make the template form fields interactive
             makeTemplateFieldsInteractive();
         })
@@ -394,11 +374,7 @@ function makeTemplateFieldsInteractive() {
         field.readOnly = false;
     });
     
-    // Add a visual indicator
-    const indicator = document.createElement('div');
-    indicator.className = 'alert alert-success alert-sm mb-3';
-    indicator.innerHTML = '<i class="fas fa-check"></i> <strong>Template Loaded:</strong> Complete the template fields below and submit the form to save results.';
-    templateContainer.insertBefore(indicator, templateContainer.firstChild);
+
 }
 
 // Function to view existing template result

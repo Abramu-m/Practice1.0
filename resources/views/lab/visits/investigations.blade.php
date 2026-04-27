@@ -185,17 +185,35 @@
                                     <div class="btn-group-vertical btn-group-sm" role="group">
                                         @if(in_array($investigation->status, ['ordered', 'collected', 'processing']))
                                             @if($investigation->status === 'ordered')
-                                                <button class="btn btn-outline-info" 
-                                                        onclick="updateInvestigationStatus({{ $investigation->id }}, 'collected')"
-                                                        title="Mark as Collected">
-                                                    <i class="fas fa-flask"></i> Collect
+                                                @if($investigation->medicalService->requires_sample)
+                                                    <button class="btn btn-outline-info" 
+                                                            onclick="updateInvestigationStatus({{ $investigation->id }}, 'collected')"
+                                                            title="Mark as Collected">
+                                                        <i class="fas fa-flask"></i> Collect
+                                                    </button>
+                                                @else
+                                                    <button class="btn btn-outline-success" 
+                                                            onclick="updateInvestigationStatus({{ $investigation->id }}, 'processing')"
+                                                            title="Accept Investigation">
+                                                        <i class="fas fa-check"></i> Accept
+                                                    </button>
+                                                @endif
+                                            @endif
+
+                                            @if($investigation->status === 'collected')
+                                                <button class="btn btn-outline-success" 
+                                                        onclick="updateInvestigationStatus({{ $investigation->id }}, 'processing')"
+                                                        title="Accept Investigation">
+                                                    <i class="fas fa-check"></i> Accept
                                                 </button>
                                             @endif
                                             
-                                            <a href="{{ route('lab.results.form', $investigation->id) }}" 
-                                               class="btn btn-primary" title="Add Results">
-                                                <i class="fas fa-edit"></i> Add Results
-                                            </a>
+                                            @if($investigation->status === 'processing')
+                                                <a href="{{ route('lab.results.form', $investigation->id) }}" 
+                                                   class="btn btn-primary" title="Add Results">
+                                                    <i class="fas fa-edit"></i> Add Results
+                                                </a>
+                                            @endif
                                         @endif
 
                                         @if($investigation->status === 'resulted')
@@ -213,12 +231,6 @@
                                                 <i class="fas fa-cog"></i>
                                             </button>
                                             <ul class="dropdown-menu">
-                                                @if(in_array($investigation->status, ['ordered', 'collected']))
-                                                    <li><button class="dropdown-item" 
-                                                               onclick="updateInvestigationStatus({{ $investigation->id }}, 'processing')">
-                                                        <i class="fas fa-spinner text-primary"></i> Mark Processing
-                                                    </button></li>
-                                                @endif
                                                 @if(in_array($investigation->status, ['ordered', 'collected', 'processing']))
                                                     <li><hr class="dropdown-divider"></li>
                                                     <li><button class="dropdown-item text-danger" 

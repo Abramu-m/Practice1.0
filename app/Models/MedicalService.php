@@ -46,8 +46,8 @@ class MedicalService extends Model
         'requires_sample' => 'boolean',
         'requires_form' => 'boolean',
         'is_active' => 'boolean',
-        'min_value' => 'decimal:4',
-        'max_value' => 'decimal:4'
+        'min_value' => 'decimal:1',
+        'max_value' => 'decimal:1'
     ];
 
     /**

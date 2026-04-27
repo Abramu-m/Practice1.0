@@ -21,11 +21,11 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="medical_service_id">Medical Service <span class="text-danger">*</span></label>
-                                    <select class="form-control @error('medical_service_id') is-invalid @enderror" 
+                                    <select class="form-control select2 @error('medical_service_id') is-invalid @enderror" 
                                             id="medical_service_id" name="medical_service_id" required>
                                         <option value="">Select Medical Service</option>
                                         @foreach($medicalServices as $service)
-                                            <option value="{{ $service->id }}" {{ old('medical_service_id') == $service->id ? 'selected' : '' }}>
+                                            <option value="{{ $service->id }}" {{ (old('medical_service_id', request('medical_service_id'))) == $service->id ? 'selected' : '' }}>
                                                 {{ $service->name }}
                                                 @if($service->serviceCategory)
                                                     ({{ $service->serviceCategory->name }})
@@ -180,6 +180,8 @@
 @section('scripts')
 <script>
 $(document).ready(function() {
+    $('#medical_service_id').select2({ placeholder: 'Select Medical Service', width: '100%' });
+
     // Validate effective dates
     $('#effective_from, #effective_to').change(function() {
         const fromDate = $('#effective_from').val();

@@ -57,6 +57,48 @@
 
   <!-- Select2 CSS (global) - provides searchable dropdowns across the app -->
   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+  <style>
+    /* Make Select2 match Bootstrap's native select appearance */
+    .select2-container--default .select2-selection--single {
+      height: calc(1.5em + 0.75rem + 2px);
+      padding: 0.375rem 0.75rem;
+      font-size: 1rem;
+      font-weight: 400;
+      line-height: 1.5;
+      color: #212529;
+      background-color: #fff;
+      border: 1px solid #ced4da;
+      border-radius: 0.375rem;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+      line-height: 1.5;
+      padding: 0;
+      color: #212529;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__placeholder {
+      color: #6c757d;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+      height: 100%;
+      top: 0;
+      right: 8px;
+    }
+    .select2-container--default.select2-container--focus .select2-selection--single,
+    .select2-container--default.select2-container--open .select2-selection--single {
+      border-color: #86b7fe;
+      outline: 0;
+      box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+    .select2-dropdown {
+      border: 1px solid #ced4da;
+      border-radius: 0.375rem;
+    }
+    .select2-container--default .select2-search--dropdown .select2-search__field {
+      border: 1px solid #ced4da;
+      border-radius: 0.25rem;
+      padding: 0.25rem 0.5rem;
+    }
+  </style>
   </head>
   <body class="layout-fixed sidebar-expand-lg sidebar-mini sidebar-collapse bg-body-tertiary">
     <!--begin::App Wrapper-->
@@ -491,7 +533,12 @@
     <!-- Select2 JS (must come after jQuery). Note: some individual views already include Select2 themselves
       so this global include may result in duplicate loads; consider removing per-view includes if you want a single centralized include. -->
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    
+    <script>
+    $(document).on('select2:open', function() {
+        document.querySelector('.select2-container--open .select2-search__field')?.focus();
+    });
+    </script>
+
     <!-- Toastr for notifications -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>

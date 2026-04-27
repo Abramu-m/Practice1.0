@@ -66,7 +66,7 @@
                     <!-- Templates Table -->
                     <div class="table-responsive">
                         <table id="templatesTable" class="table table-bordered table-hover">
-                            <thead class="table-dark">
+                            <thead class="table-light">
                                 <tr>
                                     <th>Template Name</th>
                                     <th>Code</th>

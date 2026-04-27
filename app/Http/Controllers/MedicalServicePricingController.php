@@ -17,21 +17,23 @@ class MedicalServicePricingController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $query = MedicalServicePricing::with(['medicalService.serviceCategory', 'patientCategory']);
+            $query = MedicalServicePricing::with(['medicalService.serviceCategory', 'patientCategory'])
+                ->join('medical_services', 'medical_services_pricing.medical_service_id', '=', 'medical_services.id')
+                ->select('medical_services_pricing.*');
 
             // Filter by medical service
             if ($request->filled('medical_service_id')) {
-                $query->where('medical_service_id', $request->medical_service_id);
+                $query->where('medical_services_pricing.medical_service_id', $request->medical_service_id);
             }
 
             // Filter by patient category
             if ($request->filled('patient_category_id')) {
-                $query->where('patient_category_id', $request->patient_category_id);
+                $query->where('medical_services_pricing.patient_category_id', $request->patient_category_id);
             }
 
             // Filter by status
             if ($request->filled('status')) {
-                $query->where('is_active', $request->status === 'active');
+                $query->where('medical_services_pricing.is_active', $request->status === 'active');
             }
 
             // Filter by effective status
@@ -40,13 +42,14 @@ class MedicalServicePricingController extends Controller
                 if ($request->effective_status === 'current') {
                     $query->current();
                 } elseif ($request->effective_status === 'future') {
-                    $query->where('effective_from', '>', $now);
+                    $query->where('medical_services_pricing.effective_from', '>', $now);
                 } elseif ($request->effective_status === 'expired') {
-                    $query->where('effective_to', '<', $now);
+                    $query->where('medical_services_pricing.effective_to', '<', $now);
                 }
             }
 
             return DataTables::of($query)
+                ->orderColumn('service_display', 'medical_services.name $1')
                 ->addColumn('service_display', function ($price) {
                     $html = '<strong>' . e($price->medicalService->name) . '</strong>';
                     if ($price->medicalService->code) {
@@ -169,11 +172,11 @@ class MedicalServicePricingController extends Controller
         try {
             DB::beginTransaction();
 
-            MedicalServicePricing::create($request->all());
+            $pricing = MedicalServicePricing::create($request->all());
 
             DB::commit();
 
-            return redirect()->route('medical-service-pricing.index')
+            return redirect()->route('medical-service-pricing.show', $pricing)
                 ->with('success', 'Medical service pricing created successfully.');
 
         } catch (\Exception $e) {
@@ -256,7 +259,7 @@ class MedicalServicePricingController extends Controller
 
             DB::commit();
 
-            return redirect()->route('medical-service-pricing.index')
+            return redirect()->route('medical-service-pricing.show', $medicalServicePricing)
                 ->with('success', 'Medical service pricing updated successfully.');
 
         } catch (\Exception $e) {

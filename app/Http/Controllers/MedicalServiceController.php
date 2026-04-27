@@ -172,7 +172,7 @@ class MedicalServiceController extends Controller
 
             DB::commit();
 
-            return redirect()->route('medical_services.index')
+            return redirect()->route('medical_services.show', $medicalService)
                 ->with('success', 'Medical service updated successfully');
 
         } catch (\Exception $e) {

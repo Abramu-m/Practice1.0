@@ -1382,9 +1382,6 @@
                 <!-- Test Results Section -->
                 <div class="col-md-12">
                     <div class="card">
-                        <div class="card-header bg-info text-white">
-                            <h5 class="mb-0"><i class="fas fa-file-medical"></i> Test Results</h5>
-                        </div>
                         <div class="card-body">
                             @if(isset($testResults) && $testResults->count() > 0)
                                 <div class="results-list">
@@ -1392,24 +1389,18 @@
                                     <div class="border p-3 mb-3 rounded bg-light">
                                         <div class="d-flex justify-content-between align-items-start">
                                             <div class="flex-grow-1">
-                                                <h6 class="fw-bold">
-                                                    {{ $result->test_name }}
-                                                    <span class="badge bg-{{ $result->form_status === 'final' ? 'success' : ($result->form_status === 'preliminary' ? 'warning' : 'secondary') }} ms-2">
-                                                        {{ ucfirst($result->form_status) }}
-                                                    </span>
-                                                </h6>
-                                                
                                                 @if($result->is_simple && isset($result->form_data['parameters']))
                                                     {{-- Display simple results directly --}}
                                                     <div class="table-responsive mt-2">
                                                         <table class="table table-sm table-borderless">
                                                             <thead>
                                                                 <tr class="text-muted" style="font-size: 0.85em;">
-                                                                    <th>Parameter</th>
+                                                                    <th></th>
                                                                     <th>Value</th>
                                                                     <th>Unit</th>
                                                                     <th>Normal Range</th>
                                                                     <th>Status</th>
+                                                                    <th class="text-muted">Reported</th>
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
@@ -1495,11 +1486,18 @@
                                                                         };
                                                                     @endphp
                                                                     <tr>
-                                                                        <td class="fw-medium">{{ $pname }}</td>
+                                                                        <td class="fw-medium">
+                                                                            {{ $pname }}
+                                                                            <span class="badge bg-{{ $result->form_status === 'final' ? 'success' : ($result->form_status === 'preliminary' ? 'warning' : 'secondary') }} ms-1" style="font-size:0.7em;">{{ ucfirst($result->form_status) }}</span>
+                                                                        </td>
                                                                         <td>{{ $pvalue ?? 'N/A' }}</td>
                                                                         <td class="text-muted">{{ $punit }}</td>
                                                                         <td class="text-muted">{{ $prange }}</td>
                                                                         <td><span class="badge {{ $badgeClass }}">{{ ucfirst($status) }}</span></td>
+                                                                        <td class="text-muted" style="font-size:0.85em;white-space:nowrap;">
+                                                                            {{ $result->reported_at->format('d/m/Y H:i') }}
+                                                                            @if($result->reported_by)<br>{{ $result->reported_by }}@endif
+                                                                        </td>
                                                                     </tr>
                                                                 @endforeach
                                                             </tbody>
@@ -1540,29 +1538,15 @@
                                                         </div>
                                                     </div>
                                                 @else
-                                                    {{-- For complex results, show a summary and button to view details --}}
-                                                    <p class="mb-2 text-muted">
-                                                        Complex {{ ucfirst($result->template_name) }} result available
-                                                        @if(isset($result->form_data['summary']))
-                                                            - {{ Str::limit($result->form_data['summary'], 100) }}
+                                                    {{-- Generic fallback: show key fields --}}
+                                                    @foreach($result->form_data as $key => $value)
+                                                        @if(!in_array($key, ['_token', 'action']) && !empty($value) && !is_array($value))
+                                                            <div class="small"><strong>{{ ucwords(str_replace('_', ' ', $key)) }}:</strong> {{ $value }}</div>
                                                         @endif
-                                                    </p>
-                                                    @if(!$result->is_manual)
-                                                    <button type="button" class="btn btn-sm btn-outline-primary" 
-                                                            onclick="viewComplexResult({{ $result->investigation_id }}, {{ $result->template_result->id }})">
-                                                        <i class="fas fa-eye"></i> View Full Results
-                                                    </button>
-                                                    @endif
+                                                    @endforeach
                                                 @endif
                                                 
-                                                <div class="mt-2">
-                                                    <small class="text-muted">
-                                                        <i class="fas fa-calendar"></i> Reported: {{ $result->reported_at->format('d/m/Y H:i') }}
-                                                        @if($result->reported_by)
-                                                            | <i class="fas fa-user"></i> {{ $result->reported_by }}
-                                                        @endif
-                                                    </small>
-                                                </div>
+
                                             </div>
                                         </div>
                                     </div>

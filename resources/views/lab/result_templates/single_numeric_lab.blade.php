@@ -20,13 +20,6 @@
     </script>
     @endif
 
-    {{-- Visual confirmation that template loaded --}}
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        <i class="fas fa-check-circle"></i>
-        <strong>Template Loaded!</strong> The simple lab result template has been loaded successfully.
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-
     {{-- Lab Parameters Table --}}
     <div class="table-responsive">
         <table class="table table-bordered" id="simpleParametersTable">
@@ -47,9 +40,9 @@
                     <tr>
                         <td>
                             <input type="text" class="form-control form-control-sm" 
+                                   style="background:#f0f0f0;pointer-events:none;cursor:not-allowed;" tabindex="-1"
                                    name="parameters[{{ $loop->index }}][parameter_name]" 
-                                   value="{{ $result->parameter_name }}" 
-                                   placeholder="e.g., Hemoglobin" required>
+                                   value="{{ $result->parameter_name }}" required readonly>
                         </td>
                         <td>
                             <input type="text" class="form-control form-control-sm value-input" 
@@ -59,19 +52,21 @@
                                    data-row-index="{{ $loop->index }}">
                         </td>
                         <td>
-                            <input type="text" class="form-control form-control-sm" 
+                            <input type="text" class="form-control form-control-sm"
+                                   style="background:#f0f0f0;pointer-events:none;cursor:not-allowed;" tabindex="-1"
                                    name="parameters[{{ $loop->index }}][unit]" 
-                                   value="{{ $result->unit ?: ($investigation->medicalService->unit ?? '') }}" 
-                                   placeholder="g/dL">
+                                   value="{{ $result->unit ?: ($investigation->medicalService->unit ?? '') }}" readonly>
                         </td>
                         <td>
-                            <input type="text" class="form-control form-control-sm" 
+                            <input type="text" class="form-control form-control-sm"
+                                   style="background:#f0f0f0;pointer-events:none;cursor:not-allowed;" tabindex="-1"
                                    name="parameters[{{ $loop->index }}][normal_range]" 
-                                   value="{{ $result->normal_range ?: ($investigation->medicalService->min_value && $investigation->medicalService->max_value ? $investigation->medicalService->min_value . ' - ' . $investigation->medicalService->max_value : '') }}" 
-                                   placeholder="12-16">
+                                   value="{{ $result->normal_range ?: ($investigation->medicalService->min_value && $investigation->medicalService->max_value ? $investigation->medicalService->min_value . ' - ' . $investigation->medicalService->max_value : '') }}" readonly>
                         </td>
                         <td>
-                            <select class="form-select form-select-sm status-select" name="parameters[{{ $loop->index }}][status]">
+                            <select class="form-select form-select-sm status-select"
+                                    style="background:#f0f0f0;pointer-events:none;cursor:not-allowed;appearance:none;" tabindex="-1"
+                                    name="parameters[{{ $loop->index }}][status]">
                                 <option value="normal" {{ $result->status === 'normal' ? 'selected' : '' }}>Normal</option>
                                 <option value="high" {{ $result->status === 'high' ? 'selected' : '' }}>High</option>
                                 <option value="low" {{ $result->status === 'low' ? 'selected' : '' }}>Low</option>
@@ -94,10 +89,11 @@
                 @else
                     <tr>
                         <td>
-                            <input type="text" class="form-control form-control-sm" 
+                            <input type="text" class="form-control form-control-sm"
+                                   style="background:#f0f0f0;pointer-events:none;cursor:not-allowed;" tabindex="-1"
                                    name="parameters[0][parameter_name]" 
                                    value="{{ isset($investigation) && $investigation->medicalService ? $investigation->medicalService->name : '' }}"
-                                   placeholder="e.g., Hemoglobin" required>
+                                   required readonly>
                         </td>
                         <td>
                             <input type="text" class="form-control form-control-sm value-input" 
@@ -106,19 +102,23 @@
                                    data-row-index="0">
                         </td>
                         <td>
-                            <input type="text" class="form-control form-control-sm" 
+                            <input type="text" class="form-control form-control-sm"
+                                   style="background:#f0f0f0;pointer-events:none;cursor:not-allowed;" tabindex="-1"
                                    name="parameters[0][unit]" 
                                    value="{{ isset($investigation) && $investigation->medicalService ? $investigation->medicalService->unit : '' }}"
-                                   placeholder="g/dL">
+                                   readonly>
                         </td>
                         <td>
-                            <input type="text" class="form-control form-control-sm" 
+                            <input type="text" class="form-control form-control-sm"
+                                   style="background:#f0f0f0;pointer-events:none;cursor:not-allowed;" tabindex="-1"
                                    name="parameters[0][normal_range]" 
                                    value="{{ isset($investigation) && $investigation->medicalService && $investigation->medicalService->min_value && $investigation->medicalService->max_value ? $investigation->medicalService->min_value . ' - ' . $investigation->medicalService->max_value : '' }}"
-                                   placeholder="12-16">
+                                   readonly>
                         </td>
                         <td>
-                            <select class="form-select form-select-sm status-select" name="parameters[0][status]">
+                            <select class="form-select form-select-sm status-select"
+                                    style="background:#f0f0f0;pointer-events:none;cursor:not-allowed;appearance:none;" tabindex="-1"
+                                    name="parameters[0][status]">
                                 <option value="normal">Normal</option>
                                 <option value="high">High</option>
                                 <option value="low">Low</option>
@@ -157,13 +157,13 @@
             <div class="row">
                 <div class="col-md-6">
                     <label class="form-label"><strong>Analyzed By:</strong></label>
-                    <input type="text" class="form-control form-control-sm" name="analyzed_by" 
-                           value="{{ auth()->user()->name ?? '' }}" readonly>
+                    <input type="text" class="form-control form-control-sm lab-readonly" name="analyzed_by" 
+                           value="{{ isset($currentUser) ? $currentUser->name : (auth()->user()->name ?? '') }}" readonly>
                 </div>
                 <div class="col-md-6">
                     <label class="form-label"><strong>Analysis Date:</strong></label>
-                    <input type="datetime-local" class="form-control form-control-sm" name="analysis_date" 
-                           value="{{ now()->format('Y-m-d\TH:i') }}">
+                    <input type="datetime-local" class="form-control form-control-sm bg-light" name="analysis_date" 
+                           value="{{ now()->format('Y-m-d\TH:i') }}" readonly>
                 </div>
             </div>
             <div class="row mt-3">
@@ -195,10 +195,11 @@ function addSimpleParameter() {
     
     row.innerHTML = `
         <td>
-            <input type="text" class="form-control form-control-sm" 
+            <input type="text" class="form-control form-control-sm"
+                   style="background:#f0f0f0;pointer-events:none;cursor:not-allowed;" tabindex="-1"
                    name="parameters[${simpleParameterCount}][parameter_name]" 
                    value="${defaultParameter}"
-                   placeholder="Parameter name" required>
+                   required readonly>
         </td>
         <td>
             <input type="text" class="form-control form-control-sm value-input" 
@@ -207,19 +208,23 @@ function addSimpleParameter() {
                    data-row-index="${simpleParameterCount}">
         </td>
         <td>
-            <input type="text" class="form-control form-control-sm" 
+            <input type="text" class="form-control form-control-sm"
+                   style="background:#f0f0f0;pointer-events:none;cursor:not-allowed;" tabindex="-1"
                    name="parameters[${simpleParameterCount}][unit]" 
                    value="${defaultUnit}"
-                   placeholder="Unit">
+                   readonly>
         </td>
         <td>
-            <input type="text" class="form-control form-control-sm" 
+            <input type="text" class="form-control form-control-sm"
+                   style="background:#f0f0f0;pointer-events:none;cursor:not-allowed;" tabindex="-1"
                    name="parameters[${simpleParameterCount}][normal_range]" 
                    value="${defaultRange}"
-                   placeholder="Normal range">
+                   readonly>
         </td>
         <td>
-            <select class="form-select form-select-sm status-select" name="parameters[${simpleParameterCount}][status]">
+            <select class="form-select form-select-sm status-select"
+                    style="background:#f0f0f0;pointer-events:none;cursor:not-allowed;appearance:none;" tabindex="-1"
+                    name="parameters[${simpleParameterCount}][status]">
                 <option value="normal">Normal</option>
                 <option value="high">High</option>
                 <option value="low">Low</option>
@@ -439,7 +444,7 @@ function performStatusCheck(valueInput) {
 
 
     
-    // Update the status select
+    // Update the status select directly (CSS prevents user interaction)
     statusSelect.value = status;
 
     
@@ -454,19 +459,19 @@ function performStatusCheck(valueInput) {
 
     }
     
-    // Add visual feedback with color-coded status
+    // Add visual feedback with color-coded status — always restore inline readonly style
     statusSelect.className = `form-select form-select-sm status-select`;
+    statusSelect.style.cssText = 'background:#f0f0f0;pointer-events:none;cursor:not-allowed;appearance:none;-webkit-appearance:none;';
     if (status === 'critical') {
-        statusSelect.classList.add('border-danger', 'text-danger');
-
+        statusSelect.style.color = '#dc3545';
+        statusSelect.style.borderColor = '#dc3545';
     } else if (status === 'high' || status === 'low') {
-        statusSelect.classList.add('border-warning', 'text-warning');
-
+        statusSelect.style.color = '#856404';
+        statusSelect.style.borderColor = '#ffc107';
     } else {
-        statusSelect.classList.add('border-success', 'text-success');
-
+        statusSelect.style.color = '#155724';
+        statusSelect.style.borderColor = '#28a745';
     }
-    
 
 }
 
@@ -584,6 +589,29 @@ setTimeout(() => {
 </script>
 
 <style>
+/* Readonly fields styling */
+.lab-readonly,
+input[readonly].form-control,
+input[readonly].form-control-sm {
+    background-color: #f0f0f0 !important;
+    cursor: not-allowed !important;
+    pointer-events: none !important;
+    color: #555;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+}
+
+.status-select-readonly {
+    background-color: #f0f0f0 !important;
+    cursor: not-allowed !important;
+    pointer-events: none !important;
+    color: #555;
+    appearance: none;
+    -webkit-appearance: none;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+}
+
 /* Enhanced styling for value status indicators */
 .value-input {
     transition: border-color 0.3s ease, box-shadow 0.3s ease;

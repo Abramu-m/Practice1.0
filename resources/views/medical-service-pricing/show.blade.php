@@ -8,6 +8,9 @@
                 <div class="card-header">
                     <h3 class="card-title">Medical Service Pricing Details</h3>
                     <div class="card-tools">
+                        <a href="{{ route('medical-service-pricing.create', ['medical_service_id' => $medicalServicePricing->medical_service_id]) }}" class="btn btn-success btn-sm">
+                            <i class="fas fa-plus"></i> Add New Pricing
+                        </a>
                         <a href="{{ route('medical-service-pricing.edit', $medicalServicePricing) }}" class="btn btn-primary btn-sm">
                             <i class="fas fa-edit"></i> Edit
                         </a>
@@ -18,6 +21,13 @@
                 </div>
 
                 <div class="card-body">
+                    @if(session('success'))
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            {{ session('success') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    @endif
+
                     <div class="row">
                         <div class="col-md-6">
                             <table class="table table-borderless">
