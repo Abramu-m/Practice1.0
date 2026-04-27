@@ -120,20 +120,31 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    @if($procedureType['type'])
-                        @include('procedures.forms.' . $procedureType['type'])
-                    @else
-                        @include('procedures.forms.default')
-                    @endif
-                    @if($errors->any())
-                        <div class="alert alert-danger mt-3">
-                            <ul class="mb-0">
-                                @foreach($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
+                    <form method="POST" action="{{ route('procedures.store-result', $investigation->id) }}" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="result_type" value="{{ $procedureType['type'] ?: 'default' }}">
+                        @include('lab.result_templates.' . ($procedureType['type'] ?: 'default'))
+                        @if($errors->any())
+                            <div class="alert alert-danger mt-3">
+                                <ul class="mb-0">
+                                    @foreach($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+                        <div class="d-flex gap-2 mt-4">
+                            <button type="submit" name="action" value="final" class="btn btn-primary">
+                                <i class="fas fa-check-circle me-1"></i> Submit Final
+                            </button>
+                            <button type="submit" name="action" value="preliminary" class="btn btn-warning">
+                                <i class="fas fa-clock me-1"></i> Save Preliminary
+                            </button>
+                            <button type="submit" name="action" value="draft" class="btn btn-outline-secondary">
+                                <i class="fas fa-save me-1"></i> Save Draft
+                            </button>
                         </div>
-                    @endif
+                    </form>
                 </div>
             </div>
 
@@ -158,6 +169,20 @@
                                         </h6>
                                         <div class="timeline-body">
                                             @if($result->form_data)
+                                                @php
+                                                    $rTplCode = $result->metadata['template_code'] ?? $result->template_name ?? '';
+                                                @endphp
+                                                @if($rTplCode === 'narrative_lab' && isset($result->form_data['parameters']))
+                                                    @php
+                                                        $rParams = $result->form_data['parameters'];
+                                                        if (is_string($rParams)) $rParams = json_decode($rParams, true);
+                                                        $rText = $rParams[0]['value'] ?? null;
+                                                    @endphp
+                                                    <div class="border rounded p-2 bg-light" style="white-space:pre-wrap;font-size:0.9rem;">{{ $rText ?? '—' }}</div>
+                                                    @if(!empty($result->form_data['additional_comments']))
+                                                        <div class="mt-2 text-muted small"><strong>Comments:</strong> {{ $result->form_data['additional_comments'] }}</div>
+                                                    @endif
+                                                @else
                                                 @foreach($result->form_data as $key => $value)
                                                     @if(!is_array($value))
                                                         <div class="row mb-1">
@@ -193,6 +218,7 @@
                                                         </div>
                                                     </div>
                                                 @endif
+                                                @endif {{-- end @else for non-narrative --}}
                                             @endif
                                         </div>
                                     </div>

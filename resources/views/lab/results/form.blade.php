@@ -38,26 +38,7 @@
     </div>
 
     <!-- Navigation -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            @if(isset($returnTo) && $returnTo === 'investigations.show' && isset($investigationIdForReturn))
-                <a href="{{ route('investigations.show', $investigationIdForReturn) }}" class="btn btn-outline-secondary">
-                    <i class="fas fa-arrow-left"></i> Back to Investigation Details
-                </a>
-            @elseif(isset($returnTo) && $returnTo === 'investigations.index')
-                <a href="{{ route('investigations.index') }}" class="btn btn-outline-secondary">
-                    <i class="fas fa-arrow-left"></i> Back to Investigations List
-                </a>
-            @elseif($investigation->consultation && $investigation->consultation->visit)
-                <a href="{{ route('lab.visits.investigations', $investigation->consultation->visit->id) }}" class="btn btn-outline-secondary">
-                    <i class="fas fa-arrow-left"></i> Back to Investigations
-                </a>
-            @else
-                <a href="{{ route('lab.visits.index') }}" class="btn btn-outline-secondary">
-                    <i class="fas fa-arrow-left"></i> Back to Lab Dashboard
-                </a>
-            @endif
-        </div>
+    <div class="d-flex justify-content-end align-items-center mb-4">
         <div>
             @if($investigation->templateResults->count() > 0)
                 <span class="badge bg-info">{{ $investigation->templateResults->count() }} existing result(s)</span>
@@ -96,11 +77,6 @@
                             </div>
                             <p class="mt-2 mb-0">Loading result template...</p>
                         </div>
-                    </div>
-                    <div class="mt-3">
-                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="hideResultTemplate()">
-                            <i class="fas fa-times"></i> Hide Template
-                        </button>
                     </div>
                 </div>
 

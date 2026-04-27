@@ -57,7 +57,10 @@
         </h6>
     </div>
     <div class="card-body">
-        @if($result->template_name === 'simple' && isset($result->form_data['parameters']))
+        @php
+            $tplCode = $result->metadata['template_code'] ?? $result->template_name ?? '';
+        @endphp
+        @if(in_array($tplCode, ['simple', 'simple_lab', 'single_numeric_lab', 'qualitative_lab']) && isset($result->form_data['parameters']))
             {{-- Simple lab results display --}}
             <div class="table-responsive">
                 <table class="table table-striped">
@@ -213,7 +216,33 @@
                 </div>
             @endif
 
-        @elseif($result->template_name === 'tb')
+        @elseif($tplCode === 'narrative_lab')
+            {{-- Narrative / free-text result --}}
+            @php
+                $narrativeValue = null;
+                if (isset($result->form_data['parameters'])) {
+                    $params = $result->form_data['parameters'];
+                    if (is_string($params)) $params = json_decode($params, true);
+                    $narrativeValue = $params[0]['value'] ?? null;
+                }
+            @endphp
+            <div class="border rounded p-3 bg-light" style="white-space:pre-wrap;font-size:0.95rem;min-height:80px;">{{ $narrativeValue ?? '—' }}</div>
+            @if(isset($result->form_data['additional_comments']) && $result->form_data['additional_comments'])
+                <div class="mt-3">
+                    <h6>Additional Comments:</h6>
+                    <div class="alert alert-light">{{ $result->form_data['additional_comments'] }}</div>
+                </div>
+            @endif
+            <div class="mt-3 d-flex gap-4">
+                @if(isset($result->form_data['analyzed_by']) && $result->form_data['analyzed_by'])
+                    <div><span class="text-muted small">Analyzed By</span><br><strong>{{ $result->form_data['analyzed_by'] }}</strong></div>
+                @endif
+                @if(isset($result->form_data['analysis_date']) && $result->form_data['analysis_date'])
+                    <div><span class="text-muted small">Analysis Date</span><br><strong>{{ \Carbon\Carbon::parse($result->form_data['analysis_date'])->format('M d, Y H:i') }}</strong></div>
+                @endif
+            </div>
+
+        @elseif($tplCode === 'tb')
             {{-- TB results display --}}
             <div class="row">
                 @if(isset($result->form_data['microscopy_result']))

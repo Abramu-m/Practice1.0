@@ -1389,7 +1389,24 @@
                                     <div class="border p-3 mb-3 rounded bg-light">
                                         <div class="d-flex justify-content-between align-items-start">
                                             <div class="flex-grow-1">
-                                                @if($result->is_simple && isset($result->form_data['parameters']))
+                                                @php
+                                                    $tplCode = $result->template_result->metadata['template_code'] ?? null;
+                                                    // Fallback: map template display names to codes for legacy records
+                                                    if (!$tplCode) {
+                                                        $tplNameMap = ['Long Text' => 'narrative_lab', 'Qualitative Positive Negative' => 'qualitative_lab', 'Single Numeric Lab Values' => 'single_numeric_lab'];
+                                                        $tplCode = $tplNameMap[$result->template_result->template_name ?? ''] ?? ($result->template_result->template_name ?? '');
+                                                    }
+                                                @endphp
+                                                @if($tplCode === 'narrative_lab' && $result->template_result)
+                                                    {{-- Narrative: show name + button inline --}}
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <span class="fw-semibold">{{ $result->test_name }}</span>
+                                                        <button type="button" class="btn btn-sm btn-outline-primary ms-3"
+                                                                onclick="viewComplexResult({{ $result->investigation_id ?? 'null' }}, {{ $result->template_result->id }})">
+                                                            <i class="fas fa-expand-alt me-1"></i> View Full Results
+                                                        </button>
+                                                    </div>
+                                                @elseif($result->is_simple && isset($result->form_data['parameters']))
                                                     {{-- Display simple results directly --}}
                                                     <div class="table-responsive mt-2">
                                                         <table class="table table-sm table-borderless">

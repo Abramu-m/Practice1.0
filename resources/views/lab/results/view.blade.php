@@ -62,8 +62,41 @@
             @php
                 $templateCode = $result->metadata['template_code'] ?? $result->template_name ?? '';
                 $isSimpleTemplate = in_array($templateCode, ['simple', 'simple_lab', 'single_numeric_lab']) && isset($result->form_data['parameters']);
+                $isQualitative = $templateCode === 'qualitative_lab' && isset($result->form_data['parameters']);
+                $isNarrative = $templateCode === 'narrative_lab';
             @endphp
-            @if($isSimpleTemplate)
+            @if($isNarrative)
+                {{-- Narrative / free-text result --}}
+                @php
+                    $narrativeValue = null;
+                    if (isset($result->form_data['parameters'])) {
+                        $params = $result->form_data['parameters'];
+                        if (is_string($params)) $params = json_decode($params, true);
+                        $narrativeValue = $params[0]['value'] ?? null;
+                    }
+                @endphp
+                <div class="p-4">
+                    <p class="text-muted small mb-1">{{ $result->investigation->medicalService->name }}</p>
+                    <div class="border rounded p-3 bg-light" style="white-space:pre-wrap;font-size:0.95rem;">{{ $narrativeValue ?? '—' }}</div>
+                </div>
+                <div class="px-4 py-3 border-top bg-light d-flex flex-wrap gap-4">
+                    @if(isset($result->form_data['analyzed_by']) && $result->form_data['analyzed_by'])
+                        <div><span class="text-muted small">Analyzed By</span><br><span class="fw-semibold">{{ $result->form_data['analyzed_by'] }}</span></div>
+                    @endif
+                    @if(isset($result->form_data['analysis_date']) && $result->form_data['analysis_date'])
+                        <div><span class="text-muted small">Analysis Date</span><br><span class="fw-semibold">{{ \Carbon\Carbon::parse($result->form_data['analysis_date'])->format('M d, Y H:i') }}</span></div>
+                    @endif
+                    @if($result->reportedBy)
+                        <div><span class="text-muted small">Reported By</span><br><span class="fw-semibold">{{ $result->reportedBy->name }}</span></div>
+                    @endif
+                </div>
+                @if(isset($result->form_data['additional_comments']) && $result->form_data['additional_comments'])
+                    <div class="px-4 py-3 border-top">
+                        <p class="text-muted small mb-1">Additional Comments</p>
+                        <p class="mb-0">{{ $result->form_data['additional_comments'] }}</p>
+                    </div>
+                @endif
+            @elseif($isSimpleTemplate)
                 {{-- Simple / numeric lab results --}}
                 @php
                     $parameters = $result->form_data['parameters'];

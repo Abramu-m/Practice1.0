@@ -222,6 +222,8 @@ Route::get('/result-template/{templateName}', function($templateName) {
             'simple_lab' => 'lab.result_templates.single_numeric_lab',
             'simple' => 'lab.result_templates.single_numeric_lab',
             'single_numeric_lab' => 'lab.result_templates.single_numeric_lab',
+            'qualitative_lab' => 'lab.result_templates.qualitative_lab',
+            'narrative_lab' => 'lab.result_templates.narrative_lab',
             'blood_count' => 'lab.result_templates.general',
             'chemistry' => 'lab.result_templates.general',
             'imaging' => 'lab.result_templates.general',
