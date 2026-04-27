@@ -526,15 +526,15 @@
                   <p class="text-bold">System Management<i class="nav-arrow bi bi-chevron-right"></i></p>
                 </a>
                 <ul class="nav nav-treeview" style="{{ nav_display_style(['medical_services.*', 'medical-service-pricing.*', 'service_categories.*', 'sample_types.*', 'lab.service-consumables.*', 'result-templates.*', 'form-templates.*', 'icd10.*'], ['doctors', 'patient_categories', 'visit_types', 'designations', 'consultation_fees']) }}">
-                  <li class="nav-item has-treeview">
-                    <a href="#" class="nav-link nav-sub-header">
+                  <li class="nav-item has-treeview {{ nav_menu_open_class([], ['doctors', 'patient_categories', 'visit_types', 'designations', 'consultation_fees']) }}">
+                    <a href="#" class="nav-link nav-sub-header {{ nav_active_class([], ['doctors', 'patient_categories', 'visit_types', 'designations', 'consultation_fees']) }}">
                       <i class="nav-icon bi bi-hospital text-info"></i>
                       <p>
                         Consultations
                         <i class="nav-arrow bi bi-chevron-right"></i>
                       </p>
                     </a>
-                    <ul class="nav nav-treeview">
+                    <ul class="nav nav-treeview" style="{{ nav_display_style([], ['doctors', 'patient_categories', 'visit_types', 'designations', 'consultation_fees']) }}">
                       <li class="nav-item">
                         <a href="{{ url('doctors') }}" class="nav-link nav-sub-sub-item {{ nav_active_class([], ['doctors', 'doctors/*']) }}">
                           <i class="nav-icon bi bi-person-badge text-primary"></i>
@@ -577,15 +577,15 @@
                       </li>
                   </ul>
                   </li>
-                  <li class="nav-item has-treeview">
-                    <a href="#" class="nav-link nav-sub-header">
+                  <li class="nav-item has-treeview {{ nav_menu_open_class(['medical_services.*', 'medical-service-pricing.*', 'service_categories.*', 'sample_types.*', 'lab.service-consumables.*', 'result-templates.*', 'form-templates.*']) }}">
+                    <a href="#" class="nav-link nav-sub-header {{ nav_active_class(['medical_services.*', 'medical-service-pricing.*', 'service_categories.*', 'sample_types.*', 'lab.service-consumables.*', 'result-templates.*', 'form-templates.*']) }}">
                       <i class="nav-icon bi bi-heart-pulse text-danger"></i>
                       <p>
                         Medical Services
                         <i class="nav-arrow bi bi-chevron-right"></i>
                       </p>
                     </a>
-                    <ul class="nav nav-treeview">
+                    <ul class="nav nav-treeview" style="{{ nav_display_style(['medical_services.*', 'medical-service-pricing.*', 'service_categories.*', 'sample_types.*', 'lab.service-consumables.*', 'result-templates.*', 'form-templates.*']) }}">
                       <li class="nav-item">
                         <a href="{{ route('medical_services.index') }}" class="nav-link nav-sub-sub-item {{ nav_active_query_class(['medical_services.index'], ['category' => null]) }}">
                           <i class="nav-icon bi bi-speedometer text-primary"></i>
@@ -643,15 +643,15 @@
                     </ul>
                   </li>
                                    </li>
-                  <li class="nav-item has-treeview">
-                    <a href="#" class="nav-link nav-sub-header">
+                  <li class="nav-item has-treeview {{ nav_menu_open_class(['icd10.*']) }}">
+                    <a href="#" class="nav-link nav-sub-header {{ nav_active_class(['icd10.*']) }}">
                       <i class="nav-icon bi bi-gear-fill text-danger"></i>
                       <p>
                         Configure reports
                         <i class="nav-arrow bi bi-chevron-right"></i>
                       </p>
                     </a>
-                    <ul class="nav nav-treeview">
+                    <ul class="nav nav-treeview" style="{{ nav_display_style(['icd10.*']) }}">
                       <li class="nav-item">
                           <a href="{{ route('icd10.index') }}" class="nav-link nav-sub-sub-item {{ nav_active_class(['icd10.*']) }}">
                             <i class="nav-icon bi bi-gear-fill text-secondary"></i>
@@ -685,15 +685,15 @@
                   </li>
 
                   <!-- Rules Management -->
-                  <li class="nav-item has-treeview">
-                    <a href="#" class="nav-link nav-sub-header">
+                  <li class="nav-item has-treeview {{ nav_menu_open_class(['admin.cds.rules.*']) }}">
+                    <a href="#" class="nav-link nav-sub-header {{ nav_active_class(['admin.cds.rules.*']) }}">
                       <i class="nav-icon bi bi-list-check text-info"></i>
                       <p>
                         Rules Management
                         <i class="nav-arrow bi bi-chevron-right"></i>
                       </p>
                     </a>
-                    <ul class="nav nav-treeview">
+                    <ul class="nav nav-treeview" style="{{ nav_display_style(['admin.cds.rules.*']) }}">
                       <li class="nav-item">
                         <a href="{{ route('admin.cds.rules.index') }}" class="nav-link nav-sub-sub-item {{ nav_active_query_class(['admin.cds.rules.index'], ['status' => null, 'category' => null, 'type' => null, 'view' => null, 'sort' => null]) }}">
                           <i class="nav-icon bi bi-list-ul text-primary"></i>
@@ -722,15 +722,15 @@
                   </li>
 
                   <!-- Medication Safety -->
-                  <li class="nav-item has-treeview">
-                    <a href="#" class="nav-link nav-sub-header">
+                  <li class="nav-item has-treeview {{ nav_menu_open_class(['admin.cds.medication-policies.*']) }}">
+                    <a href="#" class="nav-link nav-sub-header {{ nav_active_class(['admin.cds.medication-policies.*']) }}">
                       <i class="nav-icon bi bi-shield-fill-check text-success"></i>
                       <p>
                         Medication Safety
                         <i class="nav-arrow bi bi-chevron-right"></i>
                       </p>
                     </a>
-                    <ul class="nav nav-treeview">
+                    <ul class="nav nav-treeview" style="{{ nav_display_style(['admin.cds.medication-policies.*']) }}">
                       <li class="nav-item">
                         <a href="{{ route('admin.cds.medication-policies.index') }}" class="nav-link nav-sub-sub-item {{ nav_active_class(['admin.cds.medication-policies.*']) }}">
                           <i class="nav-icon bi bi-file-medical text-primary"></i>
@@ -767,7 +767,7 @@
                         <i class="nav-arrow bi bi-chevron-right"></i>
                       </p>
                     </a>
-                    <ul class="nav nav-treeview">
+                    <ul class="nav nav-treeview" style="display:none">
                       <li class="nav-item">
                         <a href="{{ route('admin.cds.rules.index', ['category' => 'laboratory']) }}" class="nav-link nav-sub-sub-item {{ nav_active_query_class(['admin.cds.rules.index'], ['category' => 'laboratory', 'type' => null]) }}">
                           <i class="nav-icon bi bi-vial text-primary"></i>
@@ -798,7 +798,7 @@
                         <i class="nav-arrow bi bi-chevron-right"></i>
                       </p>
                     </a>
-                    <ul class="nav nav-treeview">
+                    <ul class="nav nav-treeview" style="display:none">
                       <li class="nav-item">
                         <a href="{{ route('admin.cds.rules.index', ['category' => 'workflow']) }}" class="nav-link nav-sub-sub-item {{ nav_active_query_class(['admin.cds.rules.index'], ['category' => 'workflow', 'type' => null]) }}">
                           <i class="nav-icon bi bi-flow-chart text-primary"></i>
@@ -829,7 +829,7 @@
                         <i class="nav-arrow bi bi-chevron-right"></i>
                       </p>
                     </a>
-                    <ul class="nav nav-treeview">
+                    <ul class="nav nav-treeview" style="display:none">
                       <li class="nav-item">
                         <a href="{{ route('admin.cds.rules.index', ['view' => 'categories']) }}" class="nav-link nav-sub-sub-item {{ nav_active_query_class(['admin.cds.rules.index'], ['view' => 'categories']) }}">
                           <i class="nav-icon bi bi-tags text-warning"></i>
@@ -860,7 +860,7 @@
                         <i class="nav-arrow bi bi-chevron-right"></i>
                       </p>
                     </a>
-                    <ul class="nav nav-treeview">
+                    <ul class="nav nav-treeview" style="display:none">
                       <li class="nav-item">
                         <a href="{{ route('admin.cds.dashboard') }}#alerts" class="nav-link nav-sub-sub-item {{ nav_active_class(['admin.cds.dashboard']) }}">
                           <i class="nav-icon bi bi-bell text-warning"></i>
