@@ -476,7 +476,6 @@ class ClinicalController extends Controller
             }])
                 ->where(function($q) use ($query) {
                     $q->where('name', 'LIKE', "%{$query}%")
-                      ->orWhere('code', 'LIKE', "%{$query}%")
                       ->orWhere('description', 'LIKE', "%{$query}%");
                 })
                 ->where('is_active', true);

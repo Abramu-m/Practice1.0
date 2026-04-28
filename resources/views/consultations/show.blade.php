@@ -1104,8 +1104,7 @@
                                                 @foreach($investigations as $investigation)
                                                 <tr>
                                                     <td>
-                                                        <strong>{{ $investigation->medicalService->name ?? 'N/A' }}</strong><br>
-                                                        <small class="text-muted">Code: {{ $investigation->medicalService->code ?? '' }}</small>
+                                                        <strong>{{ $investigation->medicalService->name ?? 'N/A' }}</strong>
                                                     </td>
                                                     <td>{{ $investigation->quantity }}</td>
                                                     <td>
