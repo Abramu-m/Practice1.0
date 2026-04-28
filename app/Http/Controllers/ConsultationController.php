@@ -172,7 +172,7 @@ class ConsultationController extends Controller
                         'form_status' => $latestResult->form_status,
                         'reported_at' => $latestResult->reported_at,
                         'reported_by' => $latestResult->reportedBy->name ?? 'Unknown',
-                        'is_simple' => in_array($latestResult->metadata['template_code'] ?? $latestResult->template_name, ['simple', 'simple_lab', 'single_numeric_lab', 'qualitative_lab', 'narrative_lab', 'blood_count', 'chemistry']),
+                        'is_simple' => in_array($latestResult->metadata['template_code'] ?? $latestResult->template_name, ['simple', 'simple_lab', 'single_numeric_lab', 'qualitative_lab', 'narrative_lab', 'chemistry']),
                         'is_manual' => false
                     ]);
                 }

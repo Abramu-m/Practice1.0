@@ -60,7 +60,7 @@
         @php
             $tplCode = $result->metadata['template_code'] ?? $result->template_name ?? '';
         @endphp
-        @if(in_array($tplCode, ['simple', 'simple_lab', 'single_numeric_lab', 'qualitative_lab']) && isset($result->form_data['parameters']))
+        @if(in_array($tplCode, ['simple', 'simple_lab', 'single_numeric_lab', 'qualitative_lab', 'urinalysis', 'full_blood_picture', 'blood_count', 'genxpert_tb', 'zn_stain_tb', 'blood_grouping', 'pbs_microfilaria', 'pbs_malaria', 'pbs_rbc_morphology', 'psa_semiquantitative', 'gram_stain']) && isset($result->form_data['parameters']))
             {{-- Simple lab results display --}}
             <div class="table-responsive">
                 <table class="table table-striped">

@@ -61,7 +61,7 @@
         <div class="card-body p-0">
             @php
                 $templateCode = $result->metadata['template_code'] ?? $result->template_name ?? '';
-                $isSimpleTemplate = in_array($templateCode, ['simple', 'simple_lab', 'single_numeric_lab']) && isset($result->form_data['parameters']);
+                $isSimpleTemplate = in_array($templateCode, ['simple', 'simple_lab', 'single_numeric_lab', 'qualitative_lab', 'urinalysis', 'full_blood_picture', 'blood_count', 'genxpert_tb', 'zn_stain_tb', 'blood_grouping', 'pbs_microfilaria', 'pbs_malaria', 'pbs_rbc_morphology', 'psa_semiquantitative', 'gram_stain']) && isset($result->form_data['parameters']);
                 $isQualitative = $templateCode === 'qualitative_lab' && isset($result->form_data['parameters']);
                 $isNarrative = $templateCode === 'narrative_lab';
             @endphp

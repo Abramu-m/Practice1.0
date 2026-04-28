@@ -3,19 +3,16 @@ require __DIR__ . '/../vendor/autoload.php';
 $app = require __DIR__ . '/../bootstrap/app.php';
 $app->make('Illuminate\Contracts\Console\Kernel')->bootstrap();
 
-// Fix any InvestigationTemplateResult records where template_name is 'Long Text'
-// but metadata['template_code'] is null — set it to 'narrative_lab'
-$results = \App\Models\InvestigationTemplateResult::where('template_name', 'Long Text')->get();
-$fixed = 0;
-foreach ($results as $r) {
-    if (empty($r->metadata['template_code'])) {
-        $meta = $r->metadata ?? [];
-        $meta['template_code'] = 'narrative_lab';
-        $r->metadata = $meta;
-        $r->save();
-        echo "Fixed ID:{$r->id} — set template_code=narrative_lab\n";
-        $fixed++;
-    }
+$exists = \App\Models\ResultTemplate::where('code', 'full_blood_picture')->first();
+if ($exists) {
+    echo "Already exists: ID:{$exists->id} | name:{$exists->name} | code:{$exists->code}\n";
+} else {
+    $t = \App\Models\ResultTemplate::create([
+        'name'        => 'Full Blood Picture',
+        'code'        => 'full_blood_picture',
+        'description' => 'Complete blood count with RBC indices, WBC differential and platelet indices',
+        'is_active'   => true,
+    ]);
+    echo "Created: ID:{$t->id} | name:{$t->name} | code:{$t->code}\n";
 }
-echo "Done. Fixed {$fixed} record(s).\n";
 
