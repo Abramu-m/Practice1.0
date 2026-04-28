@@ -1384,191 +1384,130 @@
                     <div class="card">
                         <div class="card-body">
                             @if(isset($testResults) && $testResults->count() > 0)
-                                <div class="results-list">
-                                    @foreach($testResults as $result)
-                                    <div class="border p-3 mb-3 rounded bg-light">
-                                        <div class="d-flex justify-content-between align-items-start">
-                                            <div class="flex-grow-1">
+                                @php
+                                    // Helpers for status computation
+                                    $resultToFloat = function ($val) {
+                                        if ($val === null || $val === '') return null;
+                                        if (is_numeric($val)) return (float)$val;
+                                        if (preg_match('/-?\d+(?:[\.,]\d+)?/', (string)$val, $m)) return (float) str_replace(',', '.', $m[0]);
+                                        return null;
+                                    };
+                                    $resultComputeStatus = function ($valueRaw, $rangeRaw) use ($resultToFloat) {
+                                        $val = $resultToFloat($valueRaw);
+                                        if ($val === null || !$rangeRaw) return null;
+                                        $r = str_replace(["–","—","−"], "-", trim((string)$rangeRaw));
+                                        if (preg_match('/^\s*(-?\d+(?:\.\d+)?)\s*(?:-|to)\s*(-?\d+(?:\.\d+)?)\s*$/i', $r, $mm)) {
+                                            if ($val < (float)$mm[1]) return 'low';
+                                            if ($val > (float)$mm[2]) return 'high';
+                                            return 'normal';
+                                        }
+                                        if (preg_match('/^\s*([<>]=?)\s*(-?\d+(?:\.\d+)?)\s*$/', $r, $mm)) {
+                                            $op = $mm[1]; $cut = (float)$mm[2];
+                                            if ($op === '<')  return $val <  $cut ? 'normal' : 'high';
+                                            if ($op === '<=') return $val <= $cut ? 'normal' : 'high';
+                                            if ($op === '>')  return $val >  $cut ? 'normal' : 'low';
+                                            if ($op === '>=') return $val >= $cut ? 'normal' : 'low';
+                                        }
+                                        return null;
+                                    };
+                                    $tplNameMap = ['Long Text' => 'narrative_lab', 'Qualitative Positive Negative' => 'qualitative_lab', 'Single Numeric Lab Values' => 'single_numeric_lab'];
+
+                                    $simpleResults  = collect();
+                                    $complexResults = collect();
+                                    foreach ($testResults as $result) {
+                                        $tc = $result->template_result->metadata['template_code'] ?? null;
+                                        if (!$tc) $tc = $tplNameMap[$result->template_result->template_name ?? ''] ?? ($result->template_result->template_name ?? '');
+                                        $result->_tplCode = $tc;
+                                        if ($tc === 'narrative_lab') $complexResults->push($result);
+                                        else $simpleResults->push($result);
+                                    }
+                                @endphp
+
+                                {{-- ── Simple results: one unified table ── --}}
+                                @if($simpleResults->count())
+                                <div class="table-responsive mb-4">
+                                    <table class="table table-sm table-hover align-middle mb-0">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Investigation</th>
+                                                <th>Value</th>
+                                                <th>Unit</th>
+                                                <th>Normal Range</th>
+                                                <th>Status</th>
+                                                <th>Reported</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach($simpleResults as $result)
                                                 @php
-                                                    $tplCode = $result->template_result->metadata['template_code'] ?? null;
-                                                    // Fallback: map template display names to codes for legacy records
-                                                    if (!$tplCode) {
-                                                        $tplNameMap = ['Long Text' => 'narrative_lab', 'Qualitative Positive Negative' => 'qualitative_lab', 'Single Numeric Lab Values' => 'single_numeric_lab'];
-                                                        $tplCode = $tplNameMap[$result->template_result->template_name ?? ''] ?? ($result->template_result->template_name ?? '');
-                                                    }
+                                                    $params = $result->form_data['parameters'] ?? [];
+                                                    if (is_string($params)) $params = json_decode($params, true);
+                                                    if (!is_array($params)) $params = [];
+                                                    $statusBadge = $result->form_status === 'final' ? 'bg-success' : ($result->form_status === 'preliminary' ? 'bg-warning' : 'bg-secondary');
+                                                    $firstRow = true;
                                                 @endphp
-                                                @if($tplCode === 'narrative_lab' && $result->template_result)
-                                                    {{-- Narrative: show name + button inline --}}
-                                                    <div class="d-flex justify-content-between align-items-center">
-                                                        <span class="fw-semibold">{{ $result->test_name }}</span>
-                                                        <button type="button" class="btn btn-sm btn-outline-primary ms-3"
-                                                                onclick="viewComplexResult({{ $result->investigation_id ?? 'null' }}, {{ $result->template_result->id }})">
-                                                            <i class="fas fa-expand-alt me-1"></i> View Full Results
-                                                        </button>
-                                                    </div>
-                                                @elseif($result->is_simple && isset($result->form_data['parameters']))
-                                                    {{-- Display simple results directly --}}
-                                                    <div class="table-responsive mt-2">
-                                                        <table class="table table-sm table-borderless">
-                                                            <thead>
-                                                                <tr class="text-muted" style="font-size: 0.85em;">
-                                                                    <th></th>
-                                                                    <th>Value</th>
-                                                                    <th>Unit</th>
-                                                                    <th>Normal Range</th>
-                                                                    <th>Status</th>
-                                                                    <th class="text-muted">Reported</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                @php
-                                                                    // Handle both array and object formats
-                                                                    $parameters = $result->form_data['parameters'];
-                                                                    if (is_string($parameters)) {
-                                                                        $parameters = json_decode($parameters, true);
-                                                                    }
-                                                                    // If it's still not an array, try to make it one
-                                                                    if (!is_array($parameters)) {
-                                                                        $parameters = [$parameters];
-                                                                    }
-
-                                                                    // Small helpers for parsing values and ranges
-                                                                    $toFloat = function ($val) {
-                                                                        if ($val === null || $val === '') return null;
-                                                                        if (is_numeric($val)) return (float)$val;
-                                                                        // Extract first numeric (handles strings like "<5", ">= 3.2", "5 mg/dL")
-                                                                        if (preg_match('/-?\d+(?:[\.,]\d+)?/', (string)$val, $m)) {
-                                                                            return (float) str_replace(',', '.', $m[0]);
-                                                                        }
-                                                                        return null;
-                                                                    };
-
-                                                                    $computeStatusFromRange = function ($valueRaw, $rangeRaw) use ($toFloat) {
-                                                                        $val = $toFloat($valueRaw);
-                                                                        if ($val === null || !$rangeRaw) return null;
-                                                                        $r = trim((string)$rangeRaw);
-                                                                        // Normalize unicode dashes to hyphen
-                                                                        $r = str_replace(["–", "—", "−"], "-", $r);
-                                                                        // Common patterns: "a-b" or "a to b"
-                                                                        if (preg_match('/^\s*(-?\d+(?:\.\d+)?)\s*(?:-|to)\s*(-?\d+(?:\.\d+)?)\s*$/i', $r, $mm)) {
-                                                                            $lo = (float)$mm[1];
-                                                                            $hi = (float)$mm[2];
-                                                                            if ($val < $lo) return 'low';
-                                                                            if ($val > $hi) return 'high';
-                                                                            return 'normal';
-                                                                        }
-                                                                        // Comparator patterns: "< x", "<= x", "> x", ">= x"
-                                                                        if (preg_match('/^\s*([<>]=?)\s*(-?\d+(?:\.\d+)?)\s*$/', $r, $mm)) {
-                                                                            $op = $mm[1];
-                                                                            $cut = (float)$mm[2];
-                                                                            if ($op === '<')  return $val <  $cut ? 'normal' : 'high';
-                                                                            if ($op === '<=') return $val <= $cut ? 'normal' : 'high';
-                                                                            if ($op === '>')  return $val >  $cut ? 'normal' : 'low';
-                                                                            if ($op === '>=') return $val >= $cut ? 'normal' : 'low';
-                                                                        }
-                                                                        // Fallback: cannot determine
-                                                                        return null;
-                                                                    };
-                                                                @endphp
-                                                                
-                                                                @foreach($parameters as $param)
-                                                                    @php
-                                                                        // Handle both array and object parameter formats
-                                                                        if (is_string($param)) {
-                                                                            $param = json_decode($param, true);
-                                                                        }
-                                                                        
-                                                                        // Ensure we have an array
-                                                                        if (!is_array($param)) {
-                                                                            continue;
-                                                                        }
-
-                                                                        // Support both schema variants: parameter_name vs parameter
-                                                                        $pname = $param['parameter_name'] ?? ($param['parameter'] ?? 'N/A');
-                                                                        $pvalue = $param['value'] ?? null;
-                                                                        $punit = $param['unit'] ?? '';
-                                                                        $prange = $param['normal_range'] ?? '';
-                                                                        // Prefer existing status if provided, else compute from range
-                                                                        $computed = $param['status'] ?? null;
-                                                                        if (!$computed) {
-                                                                            $computed = $computeStatusFromRange($pvalue, $prange) ?? 'unknown';
-                                                                        }
-                                                                        $status = $computed;
-                                                                        $badgeClass = match($status) {
-                                                                            'high' => 'bg-danger',
-                                                                            'low' => 'bg-warning',
-                                                                            'normal' => 'bg-success',
-                                                                            'critical' => 'bg-danger',
-                                                                            default => 'bg-secondary'
-                                                                        };
-                                                                    @endphp
-                                                                    <tr>
-                                                                        <td class="fw-medium">
-                                                                            {{ $pname }}
-                                                                            <span class="badge bg-{{ $result->form_status === 'final' ? 'success' : ($result->form_status === 'preliminary' ? 'warning' : 'secondary') }} ms-1" style="font-size:0.7em;">{{ ucfirst($result->form_status) }}</span>
-                                                                        </td>
-                                                                        <td>{{ $pvalue ?? 'N/A' }}</td>
-                                                                        <td class="text-muted">{{ $punit }}</td>
-                                                                        <td class="text-muted">{{ $prange }}</td>
-                                                                        <td><span class="badge {{ $badgeClass }}">{{ ucfirst($status) }}</span></td>
-                                                                        <td class="text-muted" style="font-size:0.85em;white-space:nowrap;">
-                                                                            {{ $result->reported_at->format('d/m/Y H:i') }}
-                                                                            @if($result->reported_by)<br>{{ $result->reported_by }}@endif
-                                                                        </td>
-                                                                    </tr>
-                                                                @endforeach
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                    
-                                                    @if(isset($result->form_data['additional_comments']) && $result->form_data['additional_comments'])
-                                                        <div class="mt-2">
-                                                            <strong class="text-muted">Comments:</strong>
-                                                            <p class="mb-0">{{ $result->form_data['additional_comments'] }}</p>
-                                                        </div>
-                                                    @endif
-                                                @elseif($result->is_manual)
-                                                    {{-- Display manual results --}}
-                                                    <div class="mt-2">
-                                                        <div class="row">
-                                                            <div class="col-md-6">
-                                                                <strong>Result:</strong> {{ $result->form_data['result_value'] ?? 'N/A' }}
-                                                            </div>
-                                                            @if(isset($result->form_data['reference_range']) && $result->form_data['reference_range'])
-                                                            <div class="col-md-6">
-                                                                <strong>Reference Range:</strong> {{ $result->form_data['reference_range'] }}
-                                                            </div>
-                                                            @endif
-                                                        </div>
-                                                        
-                                                        @if(isset($result->form_data['interpretation']) && $result->form_data['interpretation'])
-                                                        <div class="mt-2">
-                                                            <strong>Interpretation:</strong>
-                                                            <p class="mb-1">{{ $result->form_data['interpretation'] }}</p>
-                                                        </div>
-                                                        @endif
-                                                        
-                                                        <div class="mt-2">
-                                                            <span class="badge bg-{{ isset($result->form_data['is_abnormal']) && $result->form_data['is_abnormal'] ? 'warning' : 'success' }}">
-                                                                {{ isset($result->form_data['is_abnormal']) && $result->form_data['is_abnormal'] ? 'Abnormal' : 'Normal' }}
-                                                            </span>
-                                                        </div>
-                                                    </div>
+                                                @if(empty($params))
+                                                    <tr>
+                                                        <td class="fw-medium">{{ $result->test_name }} <span class="badge {{ $statusBadge }} ms-1" style="font-size:0.7em;">{{ ucfirst($result->form_status) }}</span></td>
+                                                        <td colspan="3" class="text-muted">—</td>
+                                                        <td>—</td>
+                                                        <td class="text-muted small" style="white-space:nowrap;">{{ $result->reported_at->format('d/m/Y H:i') }}<br>{{ $result->reported_by }}</td>
+                                                    </tr>
                                                 @else
-                                                    {{-- Generic fallback: show key fields --}}
-                                                    @foreach($result->form_data as $key => $value)
-                                                        @if(!in_array($key, ['_token', 'action']) && !empty($value) && !is_array($value))
-                                                            <div class="small"><strong>{{ ucwords(str_replace('_', ' ', $key)) }}:</strong> {{ $value }}</div>
-                                                        @endif
+                                                    @foreach($params as $param)
+                                                        @php
+                                                            if (is_string($param)) $param = json_decode($param, true);
+                                                            if (!is_array($param)) continue;
+                                                            $pvalue = $param['value'] ?? null;
+                                                            $punit  = $param['unit'] ?? '';
+                                                            $prange = $param['normal_range'] ?? '';
+                                                            $status = $param['status'] ?? $resultComputeStatus($pvalue, $prange) ?? 'unknown';
+                                                            $badgeClass = match($status) {
+                                                                'high'     => 'bg-danger',
+                                                                'low'      => 'bg-warning',
+                                                                'normal'   => 'bg-success',
+                                                                'critical' => 'bg-danger',
+                                                                default    => 'bg-secondary'
+                                                            };
+                                                        @endphp
+                                                        <tr>
+                                                            <td class="fw-medium">
+                                                                @if($firstRow)
+                                                                    {{ $result->test_name }}
+                                                                    <span class="badge {{ $statusBadge }} ms-1" style="font-size:0.7em;">{{ ucfirst($result->form_status) }}</span>
+                                                                    @php $firstRow = false; @endphp
+                                                                @endif
+                                                            </td>
+                                                            <td>{{ $pvalue ?? '—' }}</td>
+                                                            <td class="text-muted">{{ $punit }}</td>
+                                                            <td class="text-muted">{{ $prange }}</td>
+                                                            <td><span class="badge {{ $badgeClass }}">{{ ucfirst($status) }}</span></td>
+                                                            <td class="text-muted small" style="white-space:nowrap;">
+                                                                @if($loop->first)
+                                                                    {{ $result->reported_at->format('d/m/Y H:i') }}<br>{{ $result->reported_by }}
+                                                                @endif
+                                                            </td>
+                                                        </tr>
                                                     @endforeach
                                                 @endif
-                                                
-
-                                            </div>
-                                        </div>
-                                    </div>
-                                    @endforeach
+                                            @endforeach
+                                        </tbody>
+                                    </table>
                                 </div>
+                                @endif
+
+                                {{-- ── Complex / narrative results ── --}}
+                                @foreach($complexResults as $result)
+                                    <div class="d-flex justify-content-between align-items-center border p-3 mb-2 rounded bg-light">
+                                        <span class="fw-semibold">{{ $result->test_name }}</span>
+                                        @if($result->template_result)
+                                            <button type="button" class="btn btn-sm btn-outline-primary"
+                                                    onclick="viewComplexResult({{ $result->investigation_id ?? 'null' }}, {{ $result->template_result->id }})">
+                                                <i class="fas fa-expand-alt me-1"></i> View Full Results
+                                            </button>
+                                        @endif
+                                    </div>
+                                @endforeach
                             @else
                                 <p class="text-muted">No test results available yet.</p>
                             @endif

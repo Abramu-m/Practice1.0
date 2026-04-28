@@ -536,7 +536,7 @@
                     </a>
                     <ul class="nav nav-treeview" style="{{ nav_display_style([], ['doctors', 'patient_categories', 'visit_types', 'designations', 'consultation_fees']) }}">
                       <li class="nav-item">
-                        <a href="{{ url('doctors') }}" class="nav-link nav-sub-sub-item {{ nav_active_class([], ['doctors', 'doctors/*']) }}">
+                        <a href="{{ url('doctors') }}" class="nav-link nav-sub-item {{ nav_active_class([], ['doctors', 'doctors/*']) }}">
                           <i class="nav-icon bi bi-person-badge text-primary"></i>
                           <p>
                             Doctors
@@ -544,7 +544,7 @@
                         </a>
                       </li>
                       <li class="nav-item">
-                        <a href="{{ url('patient_categories') }}" class="nav-link nav-sub-sub-item {{ nav_active_class([], ['patient_categories', 'patient_categories/*']) }}">
+                        <a href="{{ url('patient_categories') }}" class="nav-link nav-sub-item {{ nav_active_class([], ['patient_categories', 'patient_categories/*']) }}">
                           <i class="nav-icon bi bi-tags text-warning"></i>
                           <p>
                             Patient Categories
@@ -552,7 +552,7 @@
                         </a>
                       </li>
                       <li class="nav-item">
-                        <a href="{{ url('visit_types') }}" class="nav-link nav-sub-sub-item {{ nav_active_class([], ['visit_types', 'visit_types/*']) }}">
+                        <a href="{{ url('visit_types') }}" class="nav-link nav-sub-item {{ nav_active_class([], ['visit_types', 'visit_types/*']) }}">
                           <i class="nav-icon bi bi-calendar-event text-info"></i>
                           <p>
                             Visit Types 
@@ -560,7 +560,7 @@
                         </a>
                       </li>
                       <li class="nav-item">
-                        <a href="{{ url('designations') }}" class="nav-link nav-sub-sub-item {{ nav_active_class([], ['designations', 'designations/*']) }}">
+                        <a href="{{ url('designations') }}" class="nav-link nav-sub-item {{ nav_active_class([], ['designations', 'designations/*']) }}">
                           <i class="nav-icon bi bi-award text-purple"></i>
                           <p>
                             Designations
@@ -568,7 +568,7 @@
                         </a>
                       </li>
                       <li class="nav-item">
-                        <a href="{{ url('consultation_fees') }}" class="nav-link nav-sub-sub-item {{ nav_active_class([], ['consultation_fees', 'consultation_fees/*']) }}">
+                        <a href="{{ url('consultation_fees') }}" class="nav-link nav-sub-item {{ nav_active_class([], ['consultation_fees', 'consultation_fees/*']) }}">
                           <i class="nav-icon bi bi-currency-dollar text-success"></i>
                           <p>
                             Consultation Fees
@@ -587,19 +587,19 @@
                     </a>
                     <ul class="nav nav-treeview" style="{{ nav_display_style(['medical_services.*', 'medical-service-pricing.*', 'service_categories.*', 'sample_types.*', 'lab.service-consumables.*', 'result-templates.*', 'form-templates.*']) }}">
                       <li class="nav-item">
-                        <a href="{{ route('medical_services.index') }}" class="nav-link nav-sub-sub-item {{ nav_active_query_class(['medical_services.index'], ['category' => null]) }}">
+                        <a href="{{ route('medical_services.index') }}" class="nav-link nav-sub-item {{ nav_active_query_class(['medical_services.index'], ['category' => null]) }}">
                           <i class="nav-icon bi bi-speedometer text-primary"></i>
                           <p>All Medical Services</p>
                         </a>
                       </li>
                       <li class="nav-item">
-                        <a href="{{ route('medical_services.index', ['category' => 'investigations']) }}" class="nav-link nav-sub-sub-item {{ nav_active_query_class(['medical_services.index'], ['category' => 'investigations']) }}">
+                        <a href="{{ route('medical_services.index', ['category' => 'investigations']) }}" class="nav-link nav-sub-item {{ nav_active_query_class(['medical_services.index'], ['category' => 'investigations']) }}">
                           <i class="nav-icon bi bi-search text-info"></i>
                           <p>Investigations</p>
                         </a>
                       </li>
                       <li class="nav-item">
-                        <a href="{{ route('medical_services.index', ['category' => 'procedures']) }}" class="nav-link nav-sub-sub-item {{ nav_active_query_class(['medical_services.index'], ['category' => 'procedures']) }}">
+                        <a href="{{ route('medical_services.index', ['category' => 'procedures']) }}" class="nav-link nav-sub-item {{ nav_active_query_class(['medical_services.index'], ['category' => 'procedures']) }}">
                           <i class="nav-icon bi bi-clipboard-plus text-success"></i>
                           <p>Medical Procedures</p>
                         </a>
@@ -642,7 +642,6 @@
                       </li>
                     </ul>
                   </li>
-                                   </li>
                   <li class="nav-item has-treeview {{ nav_menu_open_class(['icd10.*']) }}">
                     <a href="#" class="nav-link nav-sub-header {{ nav_active_class(['icd10.*']) }}">
                       <i class="nav-icon bi bi-gear-fill text-danger"></i>
@@ -653,7 +652,7 @@
                     </a>
                     <ul class="nav nav-treeview" style="{{ nav_display_style(['icd10.*']) }}">
                       <li class="nav-item">
-                          <a href="{{ route('icd10.index') }}" class="nav-link nav-sub-sub-item {{ nav_active_class(['icd10.*']) }}">
+                          <a href="{{ route('icd10.index') }}" class="nav-link nav-sub-item {{ nav_active_class(['icd10.*']) }}">
                             <i class="nav-icon bi bi-gear-fill text-secondary"></i>
                             <p>Mtuha</p>
                           </a>
