@@ -414,4 +414,18 @@ class ResultTemplateController extends Controller
 
         return response()->json(['html' => $html]);
     }
+
+    /**
+     * Return a mock results-view HTML for the given template (AJAX) — mirrors the real results display.
+     */
+    public function resultsPreview(Request $request, ResultTemplate $resultTemplate)
+    {
+        try {
+            $html = view('result_templates._results_preview', ['template' => $resultTemplate])->render();
+        } catch (\Exception $e) {
+            $html = '<div class="alert alert-danger">Failed to render results preview: ' . e($e->getMessage()) . '</div>';
+        }
+
+        return response($html, 200)->header('Content-Type', 'text/html');
+    }
 }

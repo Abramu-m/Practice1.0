@@ -139,7 +139,35 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsAdmin::class])->grou
             $fakeInvestigation->form_data = [];
             $fakeInvestigation->formData = (object) [];
 
-            $data = ['investigation' => $fakeInvestigation, 'medicalService' => $fakeInvestigation->medicalService, 'patient' => $fakeInvestigation->patient];
+            // Build a fake $visit with all sub-objects commonly accessed by form partials
+            $fakePatientInfo = (object) [
+                'first_name'   => 'Preview',
+                'last_name'    => 'Patient',
+                'full_name'    => 'Preview Patient',
+                'age'          => '',
+                'gender'       => '',
+                'address'      => '',
+                'phone_number' => '',
+                'file_number'  => '',
+                'id'           => -1,
+            ];
+            $fakeDoctorInfo = (object) ['user' => (object) ['name' => '']];
+            $fakeFacility   = (object) ['name' => 'Medical Facility'];
+            $fakeVisit = (object) [
+                'id'          => -1,
+                'created_at'  => now(),
+                'department'  => 'OPD',
+                'patientInfo' => $fakePatientInfo,
+                'doctorInfo'  => $fakeDoctorInfo,
+                'facility'    => $fakeFacility,
+            ];
+
+            $data = [
+                'investigation'  => $fakeInvestigation,
+                'medicalService' => $fakeInvestigation->medicalService,
+                'patient'        => $fakeInvestigation->patient,
+                'visit'          => $fakeVisit,
+            ];
 
             $html = view($view, $data)->render();
         } catch (\Throwable $e) {
@@ -256,6 +284,9 @@ Route::get('medications/search', [\App\Http\Controllers\MedicationController::cl
     // Preview route for rendering template partials in a modal (AJAX)
     Route::get('result-templates/{result_template}/preview', [\App\Http\Controllers\ResultTemplateController::class, 'preview'])
         ->name('result-templates.preview');
+    // Results preview route — shows mock finalized-results display (AJAX)
+    Route::get('result-templates/{result_template}/results-preview', [\App\Http\Controllers\ResultTemplateController::class, 'resultsPreview'])
+        ->name('result-templates.results-preview');
     Route::get('api/result-templates/by-category', [\App\Http\Controllers\ResultTemplateController::class, 'getByServiceCategory'])
         ->name('api.result-templates.by-category');
 
