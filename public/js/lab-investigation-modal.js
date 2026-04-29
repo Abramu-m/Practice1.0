@@ -613,8 +613,43 @@ function saveLabInvestigation() {
         ? `/consultations/${visitId}/investigations`
         : `/investigations`;
     
-    // Serialize all inputs including dynamically loaded form fields
-    const formData = $('#labInvestigationModal').find('input, select, textarea').not(':disabled').serialize();
+    // Serialize main form inputs, excluding the dynamically loaded clinical form fields
+    const mainFormData = $('#labInvestigationForm').find('input, select, textarea')
+        .not(':disabled')
+        .not('#form-display-container input, #form-display-container select, #form-display-container textarea')
+        .serialize();
+
+    // Collect clinical form fields and bundle as a JSON string in `clinical_data`
+    let clinicalDataParam = '';
+    const formDisplay = $('#form-display-container');
+    if (formDisplay.is(':visible') && formDisplay.find('input, select, textarea').length) {
+        const clinicalFields = {};
+        formDisplay.find('input, select, textarea').not(':disabled').each(function() {
+            const el = $(this);
+            const name = el.attr('name');
+            if (!name) return;
+            const type = (el.attr('type') || '').toLowerCase();
+            if (type === 'radio') {
+                if (el.is(':checked')) {
+                    clinicalFields[name] = el.val();
+                }
+            } else if (type === 'checkbox') {
+                const key = name.replace(/\[\]$/, '');
+                if (el.is(':checked')) {
+                    if (Array.isArray(clinicalFields[key])) {
+                        clinicalFields[key].push(el.val());
+                    } else {
+                        clinicalFields[key] = [el.val()];
+                    }
+                }
+            } else {
+                clinicalFields[name] = el.val();
+            }
+        });
+        clinicalDataParam = '&clinical_data=' + encodeURIComponent(JSON.stringify(clinicalFields));
+    }
+
+    const formData = mainFormData + clinicalDataParam;
     
     $.ajax({
         url: url,
