@@ -4,6 +4,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>@yield("page_title")</title>
+    <link rel="icon" type="image/x-icon" href="{{ asset('images/logo.png') }}" />
     <!--begin::Primary Meta Tags-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="title" content="@yield("page_title")" />
@@ -338,7 +339,7 @@
           <a href="{{ url('dashboard')}}" class="brand-link">
             <!--begin::Brand Image-->
             <img
-              src="{{ asset('images/icon.ico') }}"
+              src="{{ asset('images/logo.png') }}"
               alt="Facility Logo"
               class="brand-image opacity-75 shadow"
             />
