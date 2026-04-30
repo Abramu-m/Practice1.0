@@ -86,7 +86,7 @@
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-body text-center">
                     <div class="text-success mb-2">
-                        <i class="fas fa-dollar-sign fa-2x"></i>
+                        <i class="fas fa-money-bill-wave fa-2x"></i>
                     </div>
                     <h3 class="fw-bold mb-1">${{ number_format($statistics['total_value_transferred'], 2) }}</h3>
                     <p class="text-muted mb-0 small">Value Transferred</p>

@@ -312,7 +312,7 @@
         <div class="col-lg-6">
             <div class="info-card">
                 <div class="info-card-header">
-                    <h5 class="mb-0"><i class="fas fa-dollar-sign"></i> Financial Information</h5>
+                    <h5 class="mb-0"><i class="fas fa-money-bill-wave"></i> Financial Information</h5>
                 </div>
                 <div class="info-card-body">
                     <!-- Credit Status -->

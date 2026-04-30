@@ -49,7 +49,7 @@
                             <p>Total Stock Value</p>
                         </div>
                         <div class="icon">
-                            <i class="fas fa-dollar-sign"></i>
+                            <i class="fas fa-money-bill-wave"></i>
                         </div>
                         <a href="{{ route('store.reports.stock-valuation') }}" class="small-box-footer">
                             More info <i class="fas fa-arrow-circle-right"></i>

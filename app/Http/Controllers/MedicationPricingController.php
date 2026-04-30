@@ -58,7 +58,7 @@ class MedicationPricingController extends Controller
                     return '<span class="badge bg-info text-black">' . e($price->patientCategory->description) . '</span>';
                 })
                 ->addColumn('selling_price_display', function ($price) {
-                    return '$' . number_format($price->selling_price, 2);
+                    return 'Tsh ' . number_format($price->selling_price, 2);
                 })
                 ->addColumn('markup_display', function ($price) {
                     if ($price->markup_percentage) {

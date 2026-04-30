@@ -164,7 +164,7 @@
                       </li>
                       <li class="nav-item">
                         <a href="{{ route('medication-pricing.index') }}" class="nav-link nav-sub-sub-item {{ nav_active_class(['medication-pricing.*']) }}">
-                          <i class="nav-icon bi bi-currency-dollar text-success"></i>
+                          <i class="nav-icon bi bi-cash-coin text-success"></i>
                           <p>Medication Pricing</p>
                         </a>
                       </li>
@@ -569,7 +569,7 @@
                       </li>
                       <li class="nav-item">
                         <a href="{{ url('consultation_fees') }}" class="nav-link nav-sub-item {{ nav_active_class([], ['consultation_fees', 'consultation_fees/*']) }}">
-                          <i class="nav-icon bi bi-currency-dollar text-success"></i>
+                          <i class="nav-icon bi bi-cash-coin text-success"></i>
                           <p>
                             Consultation Fees
                           </p>
@@ -606,7 +606,7 @@
                       </li>
                       <li class="nav-item">
                         <a href="{{ route('medical-service-pricing.index') }}" class="nav-link nav-sub-item {{ nav_active_class(['medical-service-pricing.*']) }}">
-                          <i class="nav-icon bi bi-currency-dollar text-success"></i>
+                          <i class="nav-icon bi bi-cash-coin text-success"></i>
                           <p>Service Pricing</p>
                         </a>
                       </li>

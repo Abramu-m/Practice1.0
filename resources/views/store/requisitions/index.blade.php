@@ -61,7 +61,7 @@
                                     <p class="mb-0">Total Value</p>
                                 </div>
                                 <div class="align-self-center">
-                                    <i class="fas fa-dollar-sign fa-2x"></i>
+                                    <i class="fas fa-money-bill-wave fa-2x"></i>
                                 </div>
                             </div>
                         </div>

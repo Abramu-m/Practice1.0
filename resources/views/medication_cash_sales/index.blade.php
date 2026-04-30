@@ -89,7 +89,7 @@
                                     <div class="h4 mb-0 fw-bold text-gray-800">TSh {{ number_format($stats['daily_revenue'], 2) }}</div>
                                 </div>
                                 <div class="col-auto">
-                                    <i class="fas fa-dollar-sign fa-3x text-gray-300"></i>
+                                    <i class="fas fa-money-bill-wave fa-3x text-gray-300"></i>
                                 </div>
                             </div>
                         </div>

@@ -317,7 +317,7 @@
                     <div class="card analytics-card">
                         <div class="card-header">
                             <h3 class="card-title">
-                                <i class="fas fa-dollar-sign me-2"></i>
+                                <i class="fas fa-money-bill-wave me-2"></i>
                                 Cost Analysis
                             </h3>
                         </div>

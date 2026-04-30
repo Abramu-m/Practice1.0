@@ -51,7 +51,7 @@
                                     <div class="text-lg fw-bold">${{ number_format($todayRevenue ?? 0, 2) }}</div>
                                 </div>
                                 <div class="align-self-center">
-                                    <i class="fas fa-dollar-sign fa-2x text-white-25"></i>
+                                    <i class="fas fa-money-bill-wave fa-2x text-white-25"></i>
                                 </div>
                             </div>
                         </div>
@@ -66,7 +66,7 @@
                                     <div class="text-lg fw-bold">{{ $pendingStatements ?? 0 }}</div>
                                 </div>
                                 <div class="align-self-center">
-                                    <i class="fas fa-file-invoice-dollar fa-2x text-white-25"></i>
+                                    <i class="fas fa-file-invoice fa-2x text-white-25"></i>
                                 </div>
                             </div>
                         </div>

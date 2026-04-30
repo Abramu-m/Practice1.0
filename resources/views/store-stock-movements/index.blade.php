@@ -49,7 +49,7 @@
                                     <p>Total Value Moved</p>
                                 </div>
                                 <div class="icon">
-                                    <i class="fas fa-dollar-sign"></i>
+                                    <i class="fas fa-money-bill-wave"></i>
                                 </div>
                             </div>
                         </div>

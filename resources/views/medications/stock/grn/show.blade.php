@@ -221,7 +221,7 @@
                         <div class="col-md-6">
                             <div class="info-card">
                                 <h5 class="text-warning mb-3">
-                                    <i class="fas fa-dollar-sign"></i> Financial Summary
+                                    <i class="fas fa-money-bill-wave"></i> Financial Summary
                                 </h5>
                                 
                                 <div class="financial-summary">
