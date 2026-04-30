@@ -190,12 +190,11 @@ $(document).ready(function() {
                                     }
 
                                     if (!used) {
-                                        // If the server returned HTML, insert it. Otherwise, fallback to mock.
+                                        // Insert server HTML or show unavailable message
                                         if (text && text.trim()) {
                                             rendered.innerHTML = text;
                                         } else {
                                             rendered.innerHTML = '<div class="text-muted">Preview not available from server.</div>';
-                                            buildClientMock(fields, rendered);
                                         }
                                     }
 

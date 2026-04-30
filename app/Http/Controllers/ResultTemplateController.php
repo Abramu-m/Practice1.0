@@ -240,9 +240,9 @@ class ResultTemplateController extends Controller
      */
     public function preview(Request $request, ResultTemplate $resultTemplate)
     {
-        // Derive view path from the template code. Use service category to decide folder:
-        // - if service category looks like 'lab' prefer lab.result_templates.{code}
-        // - otherwise prefer procedures.forms.{code}
+        // Derive view path from the template code.
+        // Try lab.result_templates.{code} first, then procedures.forms.{code},
+        // then fall back to a legacy name mapping for uncommon codes.
         $code = trim((string) ($resultTemplate->code ?? ''));
 
         $labView = 'lab.result_templates.' . $code;
