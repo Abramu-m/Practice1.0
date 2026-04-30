@@ -1400,7 +1400,11 @@ class ConsultationController extends Controller
     public function acknowledgeCdsAlert(Request $request, $consultationId, $alertId)
     {
         try {
-            $consultation = Consultation::findOrFail($consultationId);
+            // Support both consultation ID and visit ID (the modal passes visit ID)
+            $consultation = Consultation::find($consultationId);
+            if (!$consultation) {
+                $consultation = Consultation::where('visit_id', $consultationId)->firstOrFail();
+            }
             $alert = \App\Models\CdsAlert::findOrFail($alertId);
 
             // Validate that this alert belongs to this consultation's patient/visit
