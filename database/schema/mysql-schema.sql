@@ -1390,18 +1390,13 @@ CREATE TABLE `result_templates` (
   `name` varchar(255) NOT NULL COMMENT 'Display name for the template',
   `code` varchar(255) NOT NULL COMMENT 'Unique code matching enum values',
   `description` varchar(255) DEFAULT NULL COMMENT 'Description of the template',
-  `service_category_id` bigint(20) unsigned DEFAULT NULL COMMENT 'Link to service category for filtering',
-  `investigation_type` varchar(255) DEFAULT NULL COMMENT 'Type of investigation this template is for',
-  `template_fields` text DEFAULT NULL COMMENT 'JSON structure of template fields',
   `is_active` tinyint(1) NOT NULL DEFAULT 1,
   `sort_order` int(11) NOT NULL DEFAULT 0,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `result_templates_code_unique` (`code`),
-  KEY `result_templates_service_category_id_is_active_index` (`service_category_id`,`is_active`),
-  KEY `result_templates_code_index` (`code`),
-  CONSTRAINT `result_templates_service_category_id_foreign` FOREIGN KEY (`service_category_id`) REFERENCES `service_categories` (`id`) ON DELETE SET NULL
+  KEY `result_templates_code_index` (`code`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `sample_types`;

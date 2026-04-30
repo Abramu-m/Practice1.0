@@ -559,16 +559,10 @@ class ProcedureController extends Controller
             ];
         }
         
-        // Parse template fields to get additional metadata if available
-        $templateFields = $resultTemplate->template_fields ?? [];
-        $description = isset($templateFields['description']) 
-            ? $templateFields['description'] 
-            : 'Template-based results entry form';
-            
         return [
             'type' => $resultTemplate->code,
             'title' => $resultTemplate->name,
-            'description' => $description
+            'description' => $resultTemplate->description ?? 'Template-based results entry form'
         ];
     }
 

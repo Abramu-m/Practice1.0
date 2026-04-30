@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\ResultTemplate;
-use App\Models\ServiceCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
@@ -16,7 +15,7 @@ class ResultTemplateController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $query = ResultTemplate::with('serviceCategory');
+            $query = ResultTemplate::query();
 
             // Apply filters
             if ($request->filled('search')) {
@@ -25,10 +24,6 @@ class ResultTemplateController extends Controller
                       ->orWhere('code', 'like', '%' . $request->search . '%')
                       ->orWhere('description', 'like', '%' . $request->search . '%');
                 });
-            }
-
-            if ($request->filled('service_category_id')) {
-                $query->where('service_category_id', $request->service_category_id);
             }
 
             if ($request->filled('status')) {
@@ -45,18 +40,6 @@ class ResultTemplateController extends Controller
                 })
                 ->addColumn('code_display', function ($template) {
                     return '<code>' . e($template->code) . '</code>';
-                })
-                ->addColumn('category_display', function ($template) {
-                    if ($template->serviceCategory) {
-                        return '<span class="badge bg-secondary">' . e($template->serviceCategory->name) . '</span>';
-                    }
-                    return '<span class="text-muted">All Categories</span>';
-                })
-                ->addColumn('type_display', function ($template) {
-                    if ($template->investigation_type) {
-                        return '<span class="badge bg-info">' . e($template->investigation_type) . '</span>';
-                    }
-                    return '<span class="text-muted">All Types</span>';
                 })
                 ->addColumn('sort_order_display', function ($template) {
                     return '<span class="badge bg-light text-dark">' . e($template->sort_order) . '</span>';
@@ -75,10 +58,7 @@ class ResultTemplateController extends Controller
                                   'data-id="' . $template->id . '" ' .
                                   'data-name="' . e($template->name) . '" ' .
                                   'data-code="' . e($template->code) . '" ' .
-                                  'data-description="' . e($template->description) . '" ' .
-                                  'data-service_category="' . ($template->serviceCategory ? e($template->serviceCategory->name) : '') . '" ' .
-                                  'data-investigation_type="' . e($template->investigation_type) . '" ' .
-                                  'data-fields=\'' . json_encode($template->template_fields) . '\'>' .
+                                  'data-description="' . e($template->description) . '">' .
                                   '<i class="fas fa-eye-dropper"></i></button>';
                     
                     $editBtn = '<a href="' . route('result-templates.edit', $template) . '" class="btn btn-warning" title="Edit">' .
@@ -100,13 +80,11 @@ class ResultTemplateController extends Controller
                            $viewBtn . $previewBtn . $editBtn . $toggleBtn . $deleteBtn . 
                            '</div>';
                 })
-                ->rawColumns(['name_display', 'code_display', 'category_display', 'type_display', 'sort_order_display', 'status_display', 'actions'])
+                ->rawColumns(['name_display', 'code_display', 'sort_order_display', 'status_display', 'actions'])
                 ->make(true);
         }
 
-        $serviceCategories = ServiceCategory::active()->ordered()->get();
-
-        return view('result_templates.index', compact('serviceCategories'));
+        return view('result_templates.index');
     }
 
     /**
@@ -114,9 +92,7 @@ class ResultTemplateController extends Controller
      */
     public function create()
     {
-        $serviceCategories = ServiceCategory::active()->ordered()->get();
-        
-        return view('result_templates.create', compact('serviceCategories'));
+        return view('result_templates.create');
     }
 
     /**
@@ -128,9 +104,6 @@ class ResultTemplateController extends Controller
             'name' => 'required|string|max:255',
             'code' => 'required|string|max:100|unique:result_templates,code',
             'description' => 'nullable|string|max:1000',
-            'service_category_id' => 'nullable|exists:service_categories,id',
-            'investigation_type' => 'nullable|string|max:255',
-            'template_fields' => 'nullable|json',
             'is_active' => 'boolean',
             'sort_order' => 'nullable|integer|min:0'
         ]);
@@ -142,9 +115,6 @@ class ResultTemplateController extends Controller
                 'name' => $request->name,
                 'code' => $request->code,
                 'description' => $request->description,
-                'service_category_id' => $request->service_category_id,
-                'investigation_type' => $request->investigation_type,
-                'template_fields' => $request->template_fields ? json_decode($request->template_fields, true) : null,
                 'is_active' => $request->boolean('is_active', true),
                 'sort_order' => $request->sort_order ?? 0
             ]);
@@ -166,7 +136,7 @@ class ResultTemplateController extends Controller
      */
     public function show(ResultTemplate $resultTemplate)
     {
-        $resultTemplate->load(['serviceCategory', 'medicalServices']);
+        $resultTemplate->load(['medicalServices']);
         
         return view('result_templates.show', compact('resultTemplate'));
     }
@@ -176,9 +146,7 @@ class ResultTemplateController extends Controller
      */
     public function edit(ResultTemplate $resultTemplate)
     {
-        $serviceCategories = ServiceCategory::active()->ordered()->get();
-        
-        return view('result_templates.edit', compact('resultTemplate', 'serviceCategories'));
+        return view('result_templates.edit', compact('resultTemplate'));
     }
 
     /**
@@ -190,9 +158,6 @@ class ResultTemplateController extends Controller
             'name' => 'required|string|max:255',
             'code' => 'required|string|max:100|unique:result_templates,code,' . $resultTemplate->id,
             'description' => 'nullable|string|max:1000',
-            'service_category_id' => 'nullable|exists:service_categories,id',
-            'investigation_type' => 'nullable|string|max:255',
-            'template_fields' => 'nullable|json',
             'is_active' => 'boolean',
             'sort_order' => 'nullable|integer|min:0'
         ]);
@@ -204,9 +169,6 @@ class ResultTemplateController extends Controller
                 'name' => $request->name,
                 'code' => $request->code,
                 'description' => $request->description,
-                'service_category_id' => $request->service_category_id,
-                'investigation_type' => $request->investigation_type,
-                'template_fields' => $request->template_fields ? json_decode($request->template_fields, true) : null,
                 'is_active' => $request->boolean('is_active', true),
                 'sort_order' => $request->sort_order ?? 0
             ]);
@@ -266,12 +228,7 @@ class ResultTemplateController extends Controller
      */
     public function getByServiceCategory(Request $request)
     {
-        $categoryId = $request->get('service_category_id');
-        
         $templates = ResultTemplate::active()
-            ->when($categoryId, function($query) use ($categoryId) {
-                return $query->where('service_category_id', $categoryId);
-            })
             ->ordered()
             ->get(['id', 'name', 'code', 'description']);
 
@@ -283,50 +240,10 @@ class ResultTemplateController extends Controller
      */
     public function preview(Request $request, ResultTemplate $resultTemplate)
     {
-        // Derive view path from the template code. Use service category to decide folder:
-        // - if service category looks like 'lab' prefer lab.result_templates.{code}
-        // - otherwise prefer procedures.forms.{code}
+        // Always resolve preview view from lab.result_templates.{code}
         $code = trim((string) ($resultTemplate->code ?? ''));
-    // Determine lab category by service_category_id. Default to id=1 for Laboratory (per DB dump)
-    // If your lab category uses a different id, adjust $labCategoryIds accordingly.
-    $labCategoryIds = [1];
-    $isLabCategory = in_array((int) $resultTemplate->service_category_id, $labCategoryIds, true);
 
-        $labView = 'lab.result_templates.' . $code;
-        $procView = 'procedures.forms.' . $code;
-
-        $view = null;
-        // First try the folder suggested by service category
-        if ($code && $isLabCategory && view()->exists($labView)) {
-            $view = $labView;
-        } elseif ($code && !$isLabCategory && view()->exists($procView)) {
-            $view = $procView;
-        } else {
-            // If the preferred folder didn't contain the view, try the other one
-            if ($code && view()->exists($labView)) {
-                $view = $labView;
-            } elseif ($code && view()->exists($procView)) {
-                $view = $procView;
-            } else {
-            // Fallback mapping for legacy names (keeps prior behavior for uncommon codes)
-            $mapping = [
-                // Procedures forms
-                'simple_procedure' => 'procedures.forms.simple',
-                'vital_observations' => 'procedures.forms.vital_observations',
-                'complex_form' => 'procedures.forms.complex',
-                'imaging' => 'procedures.forms.imaging',
-                'general_procedure' => 'procedures.forms.default',
-
-                // Lab result templates
-                'simple_lab' => 'lab.result_templates.simple',
-                'general_lab' => 'lab.result_templates.general',
-                'cd4' => 'lab.result_templates.cd4',
-                'tb' => 'lab.result_templates.tb',
-            ];
-
-            $view = $mapping[$code] ?? null;
-            }
-        }
+        $view = $code ? 'lab.result_templates.' . $code : null;
 
         if (!$view || !view()->exists($view)) {
             $message = '<div class="alert alert-info">No preview available for this template.</div>';

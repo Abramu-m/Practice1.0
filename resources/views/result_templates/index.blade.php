@@ -22,23 +22,11 @@
                     <div class="row mb-4">
                         <div class="col-md-12">
                             <form method="GET" action="{{ route('result-templates.index') }}" class="row g-3">
-                                <div class="col-md-4">
+                                <div class="col-md-5">
                                     <label class="form-label">Search</label>
                                     <input type="text" name="search" class="form-control" 
                                            value="{{ request('search') }}" 
                                            placeholder="Search by name, code, or description">
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label">Service Category</label>
-                                    <select name="service_category_id" class="form-control">
-                                        <option value="">All Categories</option>
-                                        @foreach($serviceCategories as $category)
-                                            <option value="{{ $category->id }}" 
-                                                {{ request('service_category_id') == $category->id ? 'selected' : '' }}>
-                                                {{ $category->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
                                 </div>
                                 <div class="col-md-2">
                                     <label class="form-label">Status</label>
@@ -70,8 +58,6 @@
                                 <tr>
                                     <th>Template Name</th>
                                     <th>Code</th>
-                                    <th>Service Category</th>
-                                    <th>Investigation Type</th>
                                     <th>Sort Order</th>
                                     <th>Status</th>
                                     <th>Actions</th>
@@ -96,15 +82,12 @@ $(document).ready(function() {
             url: '{{ route("result-templates.index") }}',
             data: function(d) {
                 d.search = $('input[name="search"]').val();
-                d.service_category_id = $('select[name="service_category_id"]').val();
                 d.status = $('select[name="status"]').val();
             }
         },
         columns: [
             { data: 'name_display', name: 'name', orderable: true },
             { data: 'code_display', name: 'code', orderable: true },
-            { data: 'category_display', name: 'serviceCategory.name', orderable: true },
-            { data: 'type_display', name: 'investigation_type', orderable: true },
             { data: 'sort_order_display', name: 'sort_order', orderable: true },
             { data: 'status_display', name: 'is_active', orderable: true },
             { data: 'actions', name: 'actions', orderable: false, searchable: false }
@@ -121,7 +104,7 @@ $(document).ready(function() {
     });
 
     // Reload on filter changes
-    $('select[name="service_category_id"], select[name="status"]').on('change', function() {
+    $('select[name="status"]').on('change', function() {
         table.draw();
     });
 
@@ -138,17 +121,6 @@ $(document).ready(function() {
 @endsection
 
 @section('extra_footer_content')
-<script>
-    // Auto-submit form on filter changes
-    document.addEventListener('DOMContentLoaded', function() {
-        const filterSelects = document.querySelectorAll('select[name="service_category_id"], select[name="status"]');
-        filterSelects.forEach(select => {
-            select.addEventListener('change', function() {
-                this.form.submit();
-            });
-        });
-    });
-</script>
 <!-- Preview Modal -->
 <div class="modal fade" id="templatePreviewModal" tabindex="-1" aria-labelledby="templatePreviewModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-scrollable">
@@ -187,20 +159,10 @@ $(document).ready(function() {
                             const name = this.dataset.name || '';
                             const code = this.dataset.code || '';
                             const description = this.dataset.description || '';
-                            const serviceCategory = this.dataset.service_category || '';
-                            const investigationType = this.dataset.investigation_type || '';
-                            let fields = {};
-                            if (this.dataset.fields) {
-                                try {
-                                    fields = JSON.parse(this.dataset.fields || '{}');
-                                } catch (e) {
-                                    fields = {};
-                                }
-                            }
 
                             // Fill modal meta early
                             document.getElementById('previewName').textContent = name + ' (' + code + ')';
-                            document.getElementById('previewMeta').textContent = [serviceCategory, investigationType].filter(Boolean).join(' • ') + (description ? ' — ' + description : '');
+                            document.getElementById('previewMeta').textContent = description ? '— ' + description : '';
 
                             const rendered = document.getElementById('previewRendered');
                             rendered.innerHTML = '<div class="text-center text-muted p-4">Loading preview…</div>';
@@ -228,62 +190,23 @@ $(document).ready(function() {
                                     }
 
                                     if (!used) {
-                                        // If the server returned HTML, insert it. Otherwise, fallback to mock.
+                                        // Insert server HTML or show unavailable message
                                         if (text && text.trim()) {
                                             rendered.innerHTML = text;
                                         } else {
                                             rendered.innerHTML = '<div class="text-muted">Preview not available from server.</div>';
-                                            buildClientMock(fields, rendered);
                                         }
                                     }
 
                                     previewModal.show();
                                 })
                                 .catch(err => {
-                                    // Fallback: show helpful message and build client-side mock
+                                    // Fallback: show helpful message
                                     rendered.innerHTML = '<div class="text-muted">Preview not available from server.</div>';
-                                    buildClientMock(fields, rendered);
                                     previewModal.show();
                                 });
                         });
                 });
         });
-
-                function buildClientMock(fields, rendered) {
-                    if (fields && typeof fields === 'object' && Object.keys(fields).length > 0) {
-                        const container = document.createElement('div');
-                        container.className = 'table-responsive';
-                        const table = document.createElement('table');
-                        table.className = 'table table-sm';
-                        const tbody = document.createElement('tbody');
-
-                        const fieldList = Array.isArray(fields) ? fields : Object.values(fields);
-                        fieldList.forEach(f => {
-                            const tr = document.createElement('tr');
-                            const tdLabel = document.createElement('td');
-                            tdLabel.style.width = '30%';
-                            tdLabel.innerHTML = '<strong>' + (f.label || f.name || 'Field') + '</strong>';
-                            const tdValue = document.createElement('td');
-                            if (f.type === 'textarea' || f.type === 'longtext') {
-                                tdValue.innerHTML = '<div class="p-2 border rounded bg-white text-muted">[Multiline text]</div>';
-                            } else if (f.type === 'number') {
-                                tdValue.innerHTML = '<input class="form-control form-control-sm" value="0" disabled />';
-                            } else if (f.type === 'checkbox') {
-                                tdValue.innerHTML = '<input type="checkbox" disabled />';
-                            } else {
-                                tdValue.innerHTML = '<input class="form-control form-control-sm" value="" disabled />';
-                            }
-                            tr.appendChild(tdLabel);
-                            tr.appendChild(tdValue);
-                            tbody.appendChild(tr);
-                        });
-
-                        table.appendChild(tbody);
-                        container.appendChild(table);
-                        rendered.appendChild(container);
-                    } else {
-                        rendered.innerHTML = '<p class="text-muted">No template fields defined for this template.</p>';
-                    }
-                }
 </script>
 @endsection

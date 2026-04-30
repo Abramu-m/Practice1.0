@@ -17,9 +17,6 @@ class ResultTemplate extends Model
         'name',
         'code',
         'description',
-        'service_category_id',
-        'investigation_type',
-        'template_fields',
         'is_active',
         'sort_order'
     ];
@@ -27,17 +24,7 @@ class ResultTemplate extends Model
     protected $casts = [
         'is_active' => 'boolean',
         'sort_order' => 'integer',
-        'template_fields' => 'array',
-        'service_category_id' => 'integer'
     ];
-
-    /**
-     * Get the service category this template belongs to
-     */
-    public function serviceCategory()
-    {
-        return $this->belongsTo(ServiceCategory::class);
-    }
 
     /**
      * Get medical services that use this template
@@ -53,14 +40,6 @@ class ResultTemplate extends Model
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
-    }
-
-    /**
-     * Scope for a specific service category
-     */
-    public function scopeForCategory($query, $categoryId)
-    {
-        return $query->where('service_category_id', $categoryId);
     }
 
     /**
