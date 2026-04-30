@@ -436,7 +436,6 @@ function showCdsAlertInterstitial(alerts, consultationId) {
     document.getElementById('cdsInterstitialOverrideReason').value = '';
 
     // Show the modal
-    console.log('Showing CDS alert interstitial with alerts:', alerts);
     var interstitialEl = document.getElementById('cdsAlertInterstitialModal');
     var modal = new bootstrap.Modal(interstitialEl);
     modal.show();
