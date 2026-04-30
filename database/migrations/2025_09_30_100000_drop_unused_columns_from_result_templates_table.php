@@ -8,10 +8,24 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (! Schema::hasTable('result_templates')) {
+            return;
+        }
+
         Schema::table('result_templates', function (Blueprint $table) {
             if (Schema::hasColumn('result_templates', 'service_category_id')) {
-                $table->dropForeign(['service_category_id']);
-                $table->dropIndex('result_templates_service_category_id_is_active_index');
+                try {
+                    $table->dropForeign(['service_category_id']);
+                } catch (\Throwable $e) {
+                    // Foreign key may already be absent or use a different name.
+                }
+
+                try {
+                    $table->dropIndex('result_templates_service_category_id_is_active_index');
+                } catch (\Throwable $e) {
+                    // Index may already be absent or use a different name.
+                }
+
                 $table->dropColumn('service_category_id');
             }
 
