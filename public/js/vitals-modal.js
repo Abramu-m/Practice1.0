@@ -20,7 +20,6 @@
      * @param {Object} patient - Patient object with id and name
      */
     window.openVitalsModal = function(visit, patient) {
-        // console.log('[Vitals Modal] Opening for visit:', visit, 'patient:', patient);
         
         // Store context
         window.vitalsModalContext.visitId = visit.id;
@@ -53,7 +52,6 @@
             method: 'GET',
             global: false // Don't trigger global error handler - we handle 404 explicitly
         }).done(function(response) {
-            // console.log('[Vitals] Current vitals loaded:', response);
             
             if (response && response.vitals) {
                 window.vitalsModalContext.currentVitals = response.vitals;
@@ -68,7 +66,6 @@
         }).fail(function(xhr) {
             // 404 is expected when no vitals exist - not an error
             if (xhr.status === 404) {
-                // console.log('[Vitals] No vitals recorded yet for this visit');
                 $('#currentVitalsDisplay').html(`
                     <div class="alert alert-info mb-0">
                         <i class="fas fa-info-circle"></i> No vitals recorded for this visit yet. Click "Add New Vitals" below to record measurements.
@@ -217,7 +214,6 @@
             url: `/vitals/visit/${visitId}/history`,
             method: 'GET'
         }).done(function(response) {
-            // console.log('[Vitals] History loaded:', response);
             
             if (response && response.history && response.history.length > 0) {
                 displayVitalsHistory(response.history);
@@ -358,7 +354,6 @@
                 'Accept': 'application/json'
             }
         }).done(function(response) {
-            // console.log('[Vitals] Saved successfully:', response);
             toastr.success('Vital signs saved successfully');
             
             button.prop('disabled', false);
@@ -400,6 +395,5 @@
         clearVitalsForm();
     });
 
-    // console.log('[Vitals Modal] Component initialized');
 
 })();

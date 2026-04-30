@@ -20,7 +20,6 @@
      * @param {Object} patient - Patient object with id and name
      */
     window.openMedicalHistoryModal = function(patient) {
-        // console.log('[Medical History Modal] Opening for patient:', patient);
         
         // Store context
         window.medicalHistoryModalContext.patientId = patient.id;
@@ -118,7 +117,6 @@
             url: `/patients/${patientId}/medical-history`,
             method: 'GET'
         }).done(function(response) {
-            // console.log('[Medical History] Loaded:', response);
             
             if (response && response.data) {
                 const history = response.data;
@@ -172,7 +170,6 @@
      */
     function fetchDrugAllergiesList(patientId) {
         $.getJSON(`/patients/${patientId}/allergies`, function(resp) {
-            // console.log('[Drug Allergies] Fetch response:', resp);
             if (resp && resp.data) {
                 allergies = resp.data.map(a => ({
                     ...a, 
@@ -202,7 +199,6 @@
      * Render drug allergy tags
      */
     function renderDrugAllergyTags() {
-        // console.log('[Drug Allergies] Rendering tags. Full allergies array:', allergies);
         const actives = activeAllergies();
         const tagsWrap = $('#modalDrugAllergyTags');
         
@@ -443,7 +439,6 @@
             // Close modal
             bootstrap.Modal.getInstance(document.getElementById('pastMedicalHistoryModal')).hide();
             
-            // console.log('[Medical History] Saved successfully:', response);
         }).fail(function(xhr) {
             console.error('[Medical History] AJAX Error:', xhr);
             button.prop('disabled', false);
@@ -470,6 +465,5 @@
         }
     });
 
-    // console.log('[Medical History Modal] Component initialized');
 
 })();

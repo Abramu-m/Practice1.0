@@ -5,7 +5,6 @@
 
 // Enhanced save quick vitals function
 function saveQuickVitals() {
-    // console.log('saveQuickVitals() function called');
     const button = $('#saveQuickVitalsBtn');
     
     // Show saving state
@@ -32,7 +31,6 @@ function saveQuickVitals() {
             method: 'POST',
             data: formData
         }).done(function(response) {
-            // console.log('Quick vitals AJAX success:', response);
             toastr.success('Vital signs saved successfully.');
             markFormAsSaved('quickVitalsFormElement', 'saveQuickVitalsBtn', 'examinations');
             button.prop('disabled', false);
@@ -59,7 +57,6 @@ function saveQuickVitals() {
 
 // Function to update vitals preview display
 function updateVitalsPreview(vitals) {
-    // console.log('Updating vitals preview with:', vitals);
     
     if (!vitals) {
         console.warn('No vitals data provided to updateVitalsPreview');
@@ -242,7 +239,6 @@ function updateVitalsFormFields(vitals) {
 
 // Enhanced save systemic examination function
 function saveSystemicExamination() {
-    // console.log('saveSystemicExamination() function called');
     const button = $('#saveSystemicExamBtn');
     const form = $('#systemicExaminationForm');
     
@@ -296,7 +292,6 @@ function saveSystemicExamination() {
 
 // Edit existing systemic examination
 function editExamination(examinationId) {
-    // console.log('Editing examination:', examinationId);
     
     // Get examination data via AJAX
     $.ajax({
@@ -344,7 +339,6 @@ function editExamination(examinationId) {
 
 // Update existing systemic examination
 function updateSystemicExamination() {
-    // console.log('updateSystemicExamination() function called');
     const button = $('#saveSystemicExamBtn');
     const form = $('#systemicExaminationForm');
     const examinationId = form.data('examination-id');
@@ -434,7 +428,6 @@ function resetExaminationForm() {
 function initializeExaminationHandlers() {
     // Add event listener for when systemic examination form collapse is shown
     $('#systemicExamForm').on('shown.bs.collapse', function () {
-        // console.log('Systemic examination form collapse opened - reinitializing tracking');
         // Reinitialize tracking for the systemic examination form
         const formConfig = { id: 'systemicExaminationForm', tab: 'examinations', button: 'saveSystemicExamBtn' };
         const formElement = document.getElementById(formConfig.id);
@@ -446,16 +439,13 @@ function initializeExaminationHandlers() {
             const inputs = formElement.querySelectorAll('input, textarea, select');
             inputs.forEach(input => {
                 input.addEventListener('input', () => {
-                    // console.log('Input change detected in systemic examination form');
                     checkFormChanges(formConfig);
                 });
                 input.addEventListener('change', () => {
-                    // console.log('Change event detected in systemic examination form');
                     checkFormChanges(formConfig);
                 });
             });
             
-            // console.log('Tracking reinitialized for systemic examination form');
         }
     });
 }

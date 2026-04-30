@@ -73,7 +73,6 @@ window.openLabModal = function openLabModal(patientId, visitId, consultationIdOr
         actualContext = 'visit';
     }
     
-    // console.log('openLabModal called', { patientId, visitId: actualVisitId, consultationId, patientName, context: actualContext });
     
     // Set modal context
     window.labModalContext.mode = actualContext;
@@ -445,7 +444,6 @@ function hideModalServiceSuggestions() {
  * Show service information and load form if required
  */
 function showModalServiceInfo(serviceId, serviceName, servicePrice, serviceCategory, hasPricing = false, requiresForm = false, formType = null) {
-    // console.log('showModalServiceInfo called', { serviceId: serviceId, serviceName: serviceName, requiresForm: requiresForm, formType: formType });
     const info = $('#modal-service-info');
     const quantity = parseInt($('#modal_investigation_quantity').val()) || 1;
     const total = (parseFloat(servicePrice) * quantity).toFixed(2);
@@ -472,7 +470,6 @@ function showModalServiceInfo(serviceId, serviceName, servicePrice, serviceCateg
     // If the service requires a form, show info and load the form
     if (requiresForm && formType) {
         showFormTypeInfo(formType);
-        // console.log('showModalServiceInfo: requesting loadFormDisplay for', formType);
         loadFormDisplay(formType);
     } else {
         hideFormTypeInfo();
@@ -514,10 +511,8 @@ function loadFormDisplay(formType) {
     formContainer.html('<div class="text-center py-3"><div class="spinner-border"></div></div>');
 
     const url = '/api/investigation-form/' + encodeURIComponent(formType);
-    // console.log('loadFormDisplay called for formType:', formType, 'url:', url);
 
     $.get(url, function(data) {
-        // console.log('loadFormDisplay: received response for', formType);
         formContainer.html(data).show();
         
         // Visual highlight for debugging
@@ -543,7 +538,6 @@ function loadFormDisplay(formType) {
                 }
             }, 50);
 
-            // console.log('Form loaded and displayed for formType:', formType);
         } catch (e) {
             console.error('Error showing loaded form:', e);
         }
@@ -734,7 +728,6 @@ function configureinvestigation() {
                                 first.focus();
                                 scrollToForm($container);
                             }
-                            // console.log('MutationObserver: form inserted, ensured visible and focused');
                         }
                     } catch (err) { 
                         console.error('Observer error', err); 
