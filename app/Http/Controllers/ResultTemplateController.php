@@ -240,39 +240,10 @@ class ResultTemplateController extends Controller
      */
     public function preview(Request $request, ResultTemplate $resultTemplate)
     {
-        // Derive view path from the template code.
-        // Try lab.result_templates.{code} first, then procedures.forms.{code},
-        // then fall back to a legacy name mapping for uncommon codes.
+        // Always resolve preview view from lab.result_templates.{code}
         $code = trim((string) ($resultTemplate->code ?? ''));
 
-        $labView = 'lab.result_templates.' . $code;
-        $procView = 'procedures.forms.' . $code;
-
-        $view = null;
-        // Try lab view first, then procedure view
-        if ($code && view()->exists($labView)) {
-            $view = $labView;
-        } elseif ($code && view()->exists($procView)) {
-            $view = $procView;
-        } else {
-            // Fallback mapping for legacy names (keeps prior behavior for uncommon codes)
-            $mapping = [
-                // Procedures forms
-                'simple_procedure' => 'procedures.forms.simple',
-                'vital_observations' => 'procedures.forms.vital_observations',
-                'complex_form' => 'procedures.forms.complex',
-                'imaging' => 'procedures.forms.imaging',
-                'general_procedure' => 'procedures.forms.default',
-
-                // Lab result templates
-                'simple_lab' => 'lab.result_templates.simple',
-                'general_lab' => 'lab.result_templates.general',
-                'cd4' => 'lab.result_templates.cd4',
-                'tb' => 'lab.result_templates.tb',
-            ];
-
-            $view = $mapping[$code] ?? null;
-        }
+        $view = $code ? 'lab.result_templates.' . $code : null;
 
         if (!$view || !view()->exists($view)) {
             $message = '<div class="alert alert-info">No preview available for this template.</div>';
