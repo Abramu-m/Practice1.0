@@ -24,7 +24,7 @@
      * @param {number} consultationId - Optional consultation ID
      */
     window.openSystemicExaminationModal = function(visit, patientName, mode = 'visit', consultationId = null) {
-        console.log('[Systemic Examination Modal] Opening for visit:', visit, 'patient:', patientName, 'mode:', mode);
+        // console.log('[Systemic Examination Modal] Opening for visit:', visit, 'patient:', patientName, 'mode:', mode);
         
         // Store context
         window.systemicExaminationModalContext.visitId = visit.id || visit;
@@ -66,7 +66,7 @@
             url: `/patient-visits/${visitId}/examinations`,
             method: 'GET'
         }).done(function(response) {
-            console.log('[Systemic Examination] Examinations loaded:', response);
+            // console.log('[Systemic Examination] Examinations loaded:', response);
             
             if (response.success && response.examinations) {
                 displayExaminations(response.examinations);
@@ -147,7 +147,7 @@
      * Edit examination
      */
     window.editSystemicExamination = function(examinationId) {
-        console.log('[Systemic Examination] Editing examination:', examinationId);
+        // console.log('[Systemic Examination] Editing examination:', examinationId);
         
         $.ajax({
             url: `/consultations/examinations/${examinationId}`,
@@ -229,7 +229,7 @@
                 'Accept': 'application/json'
             }
         }).done(function(response) {
-            console.log('[Systemic Examination] Saved successfully:', response);
+            // console.log('[Systemic Examination] Saved successfully:', response);
             toastr.success('Examination recorded successfully');
             
             button.prop('disabled', false);
@@ -286,7 +286,7 @@
                 'Accept': 'application/json'
             }
         }).done(function(response) {
-            console.log('[Systemic Examination] Updated successfully:', response);
+            // console.log('[Systemic Examination] Updated successfully:', response);
             toastr.success('Examination updated successfully');
             
             button.prop('disabled', false);
@@ -341,7 +341,7 @@
                 _token: $('meta[name="csrf-token"]').attr('content')
             }
         }).done(function(response) {
-            console.log('[Systemic Examination] Deleted successfully');
+            // console.log('[Systemic Examination] Deleted successfully');
             toastr.success('Examination deleted successfully');
             
             button.prop('disabled', false);
@@ -390,6 +390,6 @@
         };
     });
 
-    console.log('[Systemic Examination Modal] Component initialized');
+    // console.log('[Systemic Examination Modal] Component initialized');
 
 })();

@@ -8,7 +8,7 @@ window.consultationId = null;
 
 // Initialize consultation application
 $(document).ready(function() {
-    console.log('DOM Content Loaded - Initializing consultation application');
+    // console.log('DOM Content Loaded - Initializing consultation application');
     
     // Setup CSRF token for all jQuery AJAX requests
     if (typeof $ !== 'undefined') {
@@ -17,7 +17,7 @@ $(document).ready(function() {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
-        console.log('jQuery CSRF setup complete');
+        // console.log('jQuery CSRF setup complete');
     }
     
     // Initialize all modules
@@ -35,7 +35,7 @@ $(document).ready(function() {
 
 // Initialize all consultation modules
 function initializeConsultationApp() {
-    console.log('Initializing consultation application modules...');
+    // console.log('Initializing consultation application modules...');
     
     // Initialize change tracking system
     if (typeof initializeChangeTracking === 'function') {
@@ -63,12 +63,12 @@ function initializeConsultationApp() {
     // Fix collapse element initialization
     initializeCollapseElements();
     
-    console.log('Consultation application modules initialized successfully');
+    // console.log('Consultation application modules initialized successfully');
 }
 
 // Initialize collapse elements to prevent flashing
 function initializeCollapseElements() {
-    console.log('Initializing collapse elements...');
+    // console.log('Initializing collapse elements...');
     
     // Get all collapse elements
     const collapseElements = document.querySelectorAll('.collapse');
@@ -81,7 +81,7 @@ function initializeCollapseElements() {
         
         // Add event listeners to handle visibility properly
         element.addEventListener('show.bs.collapse', function() {
-            console.log('Collapse showing:', element.id);
+            // console.log('Collapse showing:', element.id);
             this.style.display = 'block';
             const forms = this.querySelectorAll('form');
             forms.forEach(form => {
@@ -90,7 +90,7 @@ function initializeCollapseElements() {
         });
         
         element.addEventListener('hide.bs.collapse', function() {
-            console.log('Collapse hiding:', element.id);
+            // console.log('Collapse hiding:', element.id);
             const forms = this.querySelectorAll('form');
             forms.forEach(form => {
                 form.style.visibility = 'hidden';
@@ -98,17 +98,17 @@ function initializeCollapseElements() {
         });
         
         element.addEventListener('hidden.bs.collapse', function() {
-            console.log('Collapse hidden:', element.id);
+            // console.log('Collapse hidden:', element.id);
             this.style.display = 'none';
         });
     });
     
-    console.log('Collapse elements initialized');
+    // console.log('Collapse elements initialized');
 }
 
 // Load initial data for the consultation
 function loadInitialData() {
-    console.log('Loading initial consultation data...');
+    // console.log('Loading initial consultation data...');
     
     // Load prescriptions if the treatment tab is visible and function is available
     if ($('#prescriptions-list').length > 0 && typeof window.loadPrescriptions === 'function') {
@@ -116,20 +116,20 @@ function loadInitialData() {
     }
     
     // Load any other initial data as needed
-    console.log('Initial data loading completed');
+    // console.log('Initial data loading completed');
 }
 
 // Global utility functions
 function dischargePatient() {
     if (confirm('Are you sure you want to discharge this patient?')) {
         // Implement discharge logic
-        console.log('Patient discharge initiated');
+        // console.log('Patient discharge initiated');
         toastr.info('Patient discharge functionality to be implemented');
     }
 }
 
 function printConsultation() {
-    console.log('Print consultation initiated');
+    // console.log('Print consultation initiated');
     // Implement print functionality
     window.print();
 }

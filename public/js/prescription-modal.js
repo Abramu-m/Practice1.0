@@ -23,7 +23,7 @@ let modalMedicationSearchTimeout;
  * @param {string} context - 'visit' (default) or 'consultation'
  */
 window.openPrescriptionModal = function openPrescriptionModal(patientId, visitId, patientName, context = 'visit') {
-    console.log('openPrescriptionModal called', { patientId, visitId, patientName, context });
+    // console.log('openPrescriptionModal called', { patientId, visitId, patientName, context });
     
     // Set modal context
     window.prescriptionModalContext.mode = context;
@@ -165,7 +165,7 @@ function initializeMedicationSearch() {
  * @param {string} query - Search query
  */
 function searchMedications(query) {
-    console.log('Searching medications for:', query);
+    // console.log('Searching medications for:', query);
     
     $.ajax({
         url: '/medications/api/list',
@@ -175,7 +175,7 @@ function searchMedications(query) {
             limit: 10 
         },
         success: function(response) {
-            console.log('Medications search response:', response);
+            // console.log('Medications search response:', response);
             
             // The response should be an array of medications
             let medications = [];
@@ -235,7 +235,7 @@ function showMedicationSuggestions(medications) {
         // Hide suggestions
         hideMedicationSuggestions();
         
-        console.log('Selected medication:', medicationId, medicationName);
+        // console.log('Selected medication:', medicationId, medicationName);
     });
 }
 
@@ -382,7 +382,7 @@ function updateCDSDrawer(response) {
                     header.addClass('text-white');
                 }
             }
-            console.log('CDS drawer updated, alerts:', response.cds_alerts_count);
+            // console.log('CDS drawer updated, alerts:', response.cds_alerts_count);
         }
     } catch (e) {
         console.warn('CDS drawer update failed:', e);
@@ -548,7 +548,7 @@ window.deletePrescriptionFromModal = function deletePrescriptionFromModal(prescr
  * @param {number} prescriptionId - Prescription ID to edit
  */
 window.updatePrescriptionStatus = function updatePrescriptionStatus(prescriptionId) {
-    console.log('Opening prescription edit modal for ID:', prescriptionId);
+    // console.log('Opening prescription edit modal for ID:', prescriptionId);
     
     // Clear any previous modal content
     $('#editPrescriptionModalContent').html('<div class="p-4 text-center"><i class="fas fa-spinner fa-spin"></i> Loading...</div>');
@@ -565,7 +565,7 @@ window.updatePrescriptionStatus = function updatePrescriptionStatus(prescription
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         },
         success: function(response) {
-            console.log('Prescription edit form loaded successfully');
+            // console.log('Prescription edit form loaded successfully');
             $('#editPrescriptionModalContent').html(response);
             
             // Initialize form validation or any other necessary scripts
@@ -598,7 +598,7 @@ window.updatePrescriptionStatus = function updatePrescriptionStatus(prescription
  * Initialize prescription edit form after loading
  */
 function initializePrescriptionEditForm() {
-    console.log('Initializing prescription edit form...');
+    // console.log('Initializing prescription edit form...');
     
     // Set up form validation
     const form = $('#editPrescriptionForm');
@@ -614,7 +614,7 @@ function initializePrescriptionEditForm() {
  * Submit prescription update
  */
 function submitPrescriptionUpdate() {
-    console.log('Submitting prescription update...');
+    // console.log('Submitting prescription update...');
     
     const form = $('#editPrescriptionForm');
     const submitButton = $('#submitPrescriptionUpdate');
@@ -634,8 +634,8 @@ function submitPrescriptionUpdate() {
     const formData = form.serialize() + '&_method=PUT';
     const prescriptionId = form.data('prescription-id');
     
-    console.log('Prescription ID:', prescriptionId);
-    console.log('Form data:', formData);
+    // console.log('Prescription ID:', prescriptionId);
+    // console.log('Form data:', formData);
     
     if (!prescriptionId) {
         console.error('Prescription ID not found');
@@ -654,7 +654,7 @@ function submitPrescriptionUpdate() {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         },
         success: function(response) {
-            console.log('Prescription update successful:', response);
+            // console.log('Prescription update successful:', response);
             toastr.success('Prescription updated successfully!');
             
             // Close modal
@@ -701,7 +701,7 @@ window.deletePrescription = function deletePrescription(prescriptionId) {
         return;
     }
     
-    console.log('Deleting prescription:', prescriptionId);
+    // console.log('Deleting prescription:', prescriptionId);
     
     $.ajax({
         url: `/prescriptions/${prescriptionId}`,
@@ -710,7 +710,7 @@ window.deletePrescription = function deletePrescription(prescriptionId) {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         },
         success: function(response) {
-            console.log('Prescription deleted successfully');
+            // console.log('Prescription deleted successfully');
             toastr.success('Prescription deleted successfully!');
             
             // Refresh prescriptions list
@@ -736,13 +736,13 @@ window.deletePrescription = function deletePrescription(prescriptionId) {
  * Initialize prescription module
  */
 function initializePrescriptionModule() {
-    console.log('Initializing prescription module...');
+    // console.log('Initializing prescription module...');
     
     // Set up modal event handlers for edit prescription modal
     const editModalElement = document.getElementById('editPrescriptionModal');
     if (editModalElement) {
         editModalElement.addEventListener('hidden.bs.modal', function () {
-            console.log('Prescription edit modal closed');
+            // console.log('Prescription edit modal closed');
             // Clear modal content when closed
             $('#editPrescriptionModalContent').html('');
         });

@@ -8,7 +8,7 @@ let selectedIcdCodes = [];
 
 // Initialize ICD-10 functionality
 function initializeIcd10Module() {
-    console.log('Initializing ICD-10 module...');
+    // console.log('Initializing ICD-10 module...');
     
     // Initialize ICD-10 autocomplete
     initializeIcd10Search();
@@ -74,7 +74,7 @@ function searchIcd10Codes(query, searchType) {
             limit: 10
         },
         success: function(response) {
-            console.log('ICD-10 search response:', response);
+            // console.log('ICD-10 search response:', response);
             
             // Handle different response formats
             let codes = [];
@@ -210,7 +210,7 @@ function addIcdDiagnosis() {
         method: 'POST',
         data: icdData,
         success: function(response) {
-            console.log('Add ICD diagnosis response:', response);
+            // console.log('Add ICD diagnosis response:', response);
             
             if (response.success) {
                 toastr.success('ICD-10 diagnosis added successfully!');
@@ -418,7 +418,7 @@ function loadExistingIcdDiagnoses() {
         url: `/consultations/${window.consultationId}/icd-diagnoses`,
         method: 'GET',
         success: function(response) {
-            console.log('Load existing ICD diagnoses response:', response);
+            // console.log('Load existing ICD diagnoses response:', response);
             
             if (response.success) {
                 // Handle different response structures
