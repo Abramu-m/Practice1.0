@@ -176,9 +176,6 @@
                                         <strong>Result Template:</strong>
                                         @if($medicalService->resultTemplate)
                                             <span class="badge bg-success">{{ $medicalService->resultTemplate->name }}</span>
-                                            @if($medicalService->resultTemplate->investigation_type)
-                                                <small class="text-muted">({{ $medicalService->resultTemplate->investigation_type }})</small>
-                                            @endif
                                         @else
                                             <span class="badge bg-warning">Not Set</span>
                                         @endif

@@ -39,33 +39,6 @@
                     <div class="row mb-4">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label><strong>Service Category:</strong></label>
-                                <p class="form-control-plaintext">
-                                    @if($resultTemplate->serviceCategory)
-                                        <span class="badge bg-secondary">{{ $resultTemplate->serviceCategory->name }}</span>
-                                    @else
-                                        <span class="text-muted">All Categories</span>
-                                    @endif
-                                </p>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label><strong>Investigation Type:</strong></label>
-                                <p class="form-control-plaintext">
-                                    @if($resultTemplate->investigation_type)
-                                        <span class="badge bg-info">{{ $resultTemplate->investigation_type }}</span>
-                                    @else
-                                        <span class="text-muted">All Types</span>
-                                    @endif
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row mb-4">
-                        <div class="col-md-6">
-                            <div class="mb-3">
                                 <label><strong>Sort Order:</strong></label>
                                 <p class="form-control-plaintext">
                                     <span class="badge bg-light text-dark">{{ $resultTemplate->sort_order }}</span>
@@ -93,18 +66,6 @@
                             <div class="mb-3">
                                 <label><strong>Description:</strong></label>
                                 <p class="form-control-plaintext">{{ $resultTemplate->description }}</p>
-                            </div>
-                        </div>
-                    </div>
-                    @endif
-
-                    <!-- Template Fields -->
-                    @if($resultTemplate->template_fields)
-                    <div class="row mb-4">
-                        <div class="col-md-12">
-                            <div class="mb-3">
-                                <label><strong>Template Fields (JSON):</strong></label>
-                                <pre class="bg-light p-3 rounded" style="max-height: 300px; overflow-y: auto;">{{ json_encode($resultTemplate->template_fields, JSON_PRETTY_PRINT) }}</pre>
                             </div>
                         </div>
                     </div>

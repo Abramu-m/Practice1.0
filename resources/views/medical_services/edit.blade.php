@@ -237,13 +237,8 @@
                                         <option value="">Select Result Template</option>
                                         @foreach($resultTemplates as $template)
                                             <option value="{{ $template->id }}" 
-                                                    data-category="{{ $template->service_category_id }}"
-                                                    data-type="{{ $template->investigation_type }}"
                                                     {{ old('result_template_id', $medicalService->result_template_id) == $template->id ? 'selected' : '' }}>
                                                 {{ $template->name }} 
-                                                @if($template->investigation_type)
-                                                    ({{ $template->investigation_type }})
-                                                @endif
                                             </option>
                                         @endforeach
                                     </select>
@@ -341,43 +336,6 @@ $(document).ready(function() {
         }
     });
 
-    // Filter result templates based on service category
-    $('#service_category_id').change(function() {
-        const selectedCategory = $(this).val();
-        const templateSelect = $('#result_template_id');
-        const allOptions = templateSelect.find('option');
-        
-        // Show/hide options based on category match
-        allOptions.each(function() {
-            const option = $(this);
-            const optionCategory = option.data('category');
-            
-            // Always show empty option and legacy options
-            if (!option.val() || option.parent().attr('label') === 'Legacy Options') {
-                option.show();
-                return;
-            }
-            
-            // Show if template has no specific category (available for all) or matches selected category
-            if (!optionCategory || optionCategory == selectedCategory) {
-                option.show();
-            } else {
-                option.hide();
-                // Deselect if hidden option was selected
-                if (option.is(':selected')) {
-                    templateSelect.val('');
-                }
-            }
-        });
-        
-        // Refresh select if it's a select2 or similar plugin
-        if (templateSelect.hasClass('select2-hidden-accessible')) {
-            templateSelect.trigger('change.select2');
-        }
-    });
-
-    // Initialize template filtering on page load
-    $('#service_category_id').trigger('change');
 });
 </script>
 @endpush
