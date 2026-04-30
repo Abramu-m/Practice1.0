@@ -325,6 +325,11 @@ window.savePrescriptionFromModal = function savePrescriptionFromModal() {
                 if (response.cds_drawer_html !== undefined && context === 'consultation') {
                     updateCDSDrawer(response);
                 }
+
+                // Show CDS interstitial modal if new alerts were triggered
+                if (context === 'consultation' && response.cds_alerts && response.cds_alerts.length > 0) {
+                    showCdsAlertInterstitial(response.cds_alerts, visitId);
+                }
                 
                 // Reset the form but keep the modal open
                 resetPrescriptionModalForm();
@@ -383,6 +388,124 @@ function updateCDSDrawer(response) {
         console.warn('CDS drawer update failed:', e);
     }
 }
+
+/**
+ * Show CDS alert interstitial modal stacked on top of the prescription modal.
+ * @param {Array} alerts  - Array of {id, severity, message, rationale}
+ * @param {number} consultationId - Consultation / visit ID used for the ACK endpoint
+ */
+function showCdsAlertInterstitial(alerts, consultationId) {
+    window._cdsInterstitialAlerts = alerts;
+    window._cdsInterstitialConsultationId = consultationId;
+
+    var severityOrder = ['critical', 'high', 'medium', 'low', 'info'];
+    var severityColors = {
+        critical: '#dc3545',
+        high: '#fd7e14',
+        medium: '#e0a800',
+        low: '#17a2b8',
+        info: '#6c757d'
+    };
+
+    // Determine highest severity for the header colour
+    var topSeverity = 'info';
+    alerts.forEach(function (alert) {
+        if (severityOrder.indexOf(alert.severity) < severityOrder.indexOf(topSeverity)) {
+            topSeverity = alert.severity;
+        }
+    });
+
+    document.getElementById('cdsAlertInterstitialHeader').style.backgroundColor = severityColors[topSeverity] || '#dc3545';
+
+    // Build alert list
+    var html = '<p class="mb-3 text-muted small">The following safety alerts were triggered by this prescription. Please review and acknowledge before continuing.</p>';
+    alerts.forEach(function (alert) {
+        var color = severityColors[alert.severity] || '#6c757d';
+        html += '<div class="border rounded p-3 mb-2" style="border-left: 4px solid ' + color + ' !important;">'
+            + '<div class="d-flex align-items-start gap-2">'
+            + '<span class="badge text-white" style="background-color:' + color + ';white-space:nowrap;">' + alert.severity.toUpperCase() + '</span>'
+            + '<div><div class="fw-semibold">' + alert.message + '</div>'
+            + (alert.rationale ? '<div class="text-muted small mt-1">' + alert.rationale + '</div>' : '')
+            + '</div></div></div>';
+    });
+    document.getElementById('cdsAlertInterstitialBody').innerHTML = html;
+
+    // Reset override state
+    document.getElementById('cdsInterstitialOverrideGroup').classList.add('d-none');
+    document.getElementById('cdsInterstitialConfirmOverride').classList.add('d-none');
+    document.getElementById('cdsInterstitialOverrideReason').value = '';
+
+    // Show the modal
+    console.log('Showing CDS alert interstitial with alerts:', alerts);
+    var interstitialEl = document.getElementById('cdsAlertInterstitialModal');
+    var modal = new bootstrap.Modal(interstitialEl);
+    modal.show();
+
+    // After showing, lift the new backdrop above the prescription modal
+    interstitialEl.addEventListener('shown.bs.modal', function onShown() {
+        var backdrops = document.querySelectorAll('.modal-backdrop');
+        if (backdrops.length > 0) {
+            backdrops[backdrops.length - 1].style.zIndex = '1060';
+        }
+        interstitialEl.removeEventListener('shown.bs.modal', onShown);
+    });
+}
+
+/**
+ * Toggle the override reason textarea visibility.
+ */
+window.toggleCdsInterstitialOverride = function toggleCdsInterstitialOverride() {
+    var group   = document.getElementById('cdsInterstitialOverrideGroup');
+    var confirm = document.getElementById('cdsInterstitialConfirmOverride');
+    var show = group.classList.contains('d-none');
+    group.classList.toggle('d-none', !show);
+    confirm.classList.toggle('d-none', !show);
+};
+
+/**
+ * Handle accept / override / dismiss for the CDS interstitial.
+ * @param {string} action - 'accept' | 'override' | 'dismiss'
+ */
+window.handleCdsInterstitialAction = async function handleCdsInterstitialAction(action) {
+    var alerts         = window._cdsInterstitialAlerts || [];
+    var consultationId = window._cdsInterstitialConsultationId;
+    var reason         = null;
+
+    if (action === 'override') {
+        reason = document.getElementById('cdsInterstitialOverrideReason').value.trim();
+        if (!reason) {
+            toastr.warning('Please provide a reason for overriding this alert.');
+            return;
+        }
+    }
+
+    var csrfToken = $('meta[name="csrf-token"]').attr('content');
+
+    try {
+        var promises = alerts.map(function (alert) {
+            return $.ajax({
+                url: '/consultations/' + consultationId + '/cds-alerts/' + alert.id + '/ack',
+                method: 'POST',
+                data: { action: action, reason: reason, _token: csrfToken }
+            });
+        });
+
+        await Promise.all(promises);
+
+        var interstitialEl = document.getElementById('cdsAlertInterstitialModal');
+        var modal = bootstrap.Modal.getInstance(interstitialEl);
+        if (modal) modal.hide();
+
+        var labels = { accept: 'accepted', override: 'overridden', dismiss: 'dismissed' };
+        toastr.info('Alert ' + (labels[action] || 'acknowledged') + '.');
+
+        window._cdsInterstitialAlerts         = null;
+        window._cdsInterstitialConsultationId = null;
+    } catch (e) {
+        console.error('Failed to acknowledge CDS alert:', e);
+        toastr.error('Failed to acknowledge alert. Please try again.');
+    }
+};
 
 /**
  * Delete prescription from modal list
