@@ -108,10 +108,10 @@ class PatientVisitController extends Controller
                     return optional(optional($visit->doctorInfo)->user)->name ?? 'N/A';
                 })
                 ->addColumn('cash_amount', function ($visit) {
-                    return 'Tsh ' . number_format($visit->amount_cash, 2);
+                    return 'TSh ' . number_format($visit->amount_cash, 2);
                 })
                 ->addColumn('covered_amount', function ($visit) {
-                    return 'Tsh ' . number_format($visit->amount_covered ?? 0, 2);
+                    return 'TSh ' . number_format($visit->amount_covered ?? 0, 2);
                 })
                 ->addColumn('status', function ($visit) {
                     return '<span class="badge ' . $visit->visit_status_badge_class . ' text-black">' . e($visit->visit_status_label) . '</span>';

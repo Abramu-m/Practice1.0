@@ -57,7 +57,7 @@
                         <div class="card-body">
                             <div class="d-flex justify-content-between">
                                 <div>
-                                    <h4>${{ number_format($statistics['total_value'] ?? 0, 0) }}</h4>
+                                    <h4>Tsh {{ number_format($statistics['total_value'] ?? 0, 0) }}</h4>
                                     <p class="mb-0">Total Value</p>
                                 </div>
                                 <div class="align-self-center">
@@ -167,7 +167,7 @@
                                     <td>
                                         <span class="badge bg-light">{{ $requisition->items_count ?? 0 }} items</span>
                                     </td>
-                                    <td>${{ number_format($requisition->total_estimated_cost ?? 0, 2) }}</td>
+                                    <td>Tsh {{ number_format($requisition->total_estimated_cost ?? 0, 2) }}</td>
                                     <td>{{ $requisition->requestedBy->first_name ?? '' }} {{ $requisition->requestedBy->last_name ?? '' }}</td>
                                     <td>
                                         <div class="btn-group" role="group">

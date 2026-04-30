@@ -45,7 +45,7 @@
                         <div class="col-lg-3 col-6">
                             <div class="small-box bg-success">
                                 <div class="inner">
-                                    <h3>${{ number_format($stats['total_value'] ?? 0, 2) }}</h3>
+                                    <h3>Tsh {{ number_format($stats['total_value'] ?? 0, 2) }}</h3>
                                     <p>Total Value Moved</p>
                                 </div>
                                 <div class="icon">
@@ -223,8 +223,8 @@
                                                 {{ $movement->movement_type === 'in' ? '+' : '-' }}{{ number_format($movement->quantity) }}
                                             </span>
                                         </td>
-                                        <td>${{ number_format($movement->unit_cost, 2) }}</td>
-                                        <td><strong>${{ number_format($movement->total_cost, 2) }}</strong></td>
+                                        <td>Tsh {{ number_format($movement->unit_cost, 2) }}</td>
+                                        <td><strong>Tsh {{ number_format($movement->total_cost, 2) }}</strong></td>
                                         <td>
                                             <small>
                                                 Before: {{ number_format($movement->balance_before) }}<br>

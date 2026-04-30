@@ -48,7 +48,7 @@
                             <div class="d-flex justify-content-between">
                                 <div>
                                     <div class="text-white-75 small">Today's Revenue</div>
-                                    <div class="text-lg fw-bold">${{ number_format($todayRevenue ?? 0, 2) }}</div>
+                                    <div class="text-lg fw-bold">Tsh {{ number_format($todayRevenue ?? 0, 2) }}</div>
                                 </div>
                                 <div class="align-self-center">
                                     <i class="fas fa-money-bill-wave fa-2x text-white-25"></i>
@@ -78,7 +78,7 @@
                             <div class="d-flex justify-content-between">
                                 <div>
                                     <div class="text-white-75 small">This Month</div>
-                                    <div class="text-lg fw-bold">${{ number_format($monthRevenue ?? 0, 2) }}</div>
+                                    <div class="text-lg fw-bold">Tsh {{ number_format($monthRevenue ?? 0, 2) }}</div>
                                 </div>
                                 <div class="align-self-center">
                                     <i class="fas fa-chart-bar fa-2x text-white-25"></i>
@@ -142,9 +142,9 @@
                                         </span>
                                     </td>
                                     <td>
-                                        <strong>${{ number_format($receipt->amount, 2) }}</strong>
+                                        <strong>Tsh {{ number_format($receipt->amount, 2) }}</strong>
                                         @if($receipt->insurance_covered_amount > 0)
-                                            <br><small class="text-success">Insurance: ${{ number_format($receipt->insurance_covered_amount, 2) }}</small>
+                                            <br><small class="text-success">Insurance: Tsh {{ number_format($receipt->insurance_covered_amount, 2) }}</small>
                                         @endif
                                     </td>
                                     <td>

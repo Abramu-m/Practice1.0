@@ -88,7 +88,7 @@
                     <div class="text-success mb-2">
                         <i class="fas fa-money-bill-wave fa-2x"></i>
                     </div>
-                    <h3 class="fw-bold mb-1">${{ number_format($statistics['total_value_transferred'], 2) }}</h3>
+                    <h3 class="fw-bold mb-1">Tsh {{ number_format($statistics['total_value_transferred'], 2) }}</h3>
                     <p class="text-muted mb-0 small">Value Transferred</p>
                 </div>
             </div>
@@ -227,7 +227,7 @@
                                         <span class="badge {{ $statusClass }}">{{ ucfirst($transfer->status ?? 'Pending') }}</span>
                                     </td>
                                     <td>
-                                        <span class="fw-bold">${{ number_format($transfer->quantity * $transfer->unit_cost, 2) }}</span>
+                                        <span class="fw-bold">Tsh {{ number_format($transfer->quantity * $transfer->unit_cost, 2) }}</span>
                                     </td>
                                     <td>
                                         <div class="btn-group btn-group-sm" role="group">
