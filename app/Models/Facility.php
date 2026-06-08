@@ -18,6 +18,7 @@ class Facility extends Model
         'phone',
         'email',
         'nhif_facility_code',
+        'hfr_code',
         'logo',
     ];
 

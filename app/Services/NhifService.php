@@ -694,7 +694,7 @@ class NhifService
                 $totalAmount += $amount;
 
                 $folioItems[] = [
-                    'ItemCode'         => $pricing['item_code'] ?? $investigation->medicalService->code ?? '',
+                    'ItemCode'         => $pricing['item_code'] ?? $investigation->medicalService->loincCode?->code ?? '',
                     'ItemName'         => $pricing['item_name'] ?? $investigation->medicalService->name ?? '',
                     'OtherDetails'     => 'Consultation',
                     'ItemQuantity'     => 1,
@@ -716,7 +716,7 @@ class NhifService
                 $totalAmount += $amount;
 
                 $folioItems[] = [
-                    'ItemCode'         => $pricing['item_code'] ?? $prescription->medication->code ?? '',
+                    'ItemCode'         => $pricing['item_code'] ?? $prescription->medication->msdCode?->code ?? '',
                     'ItemName'         => $pricing['item_name'] ?? $prescription->medication->name ?? '',
                     'OtherDetails'     => 'Medication',
                     'ItemQuantity'     => $prescription->quantity,

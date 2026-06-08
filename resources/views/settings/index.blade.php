@@ -99,6 +99,14 @@
                         <input type="text" name="nhif_facility_code" class="form-control"
                                value="{{ old('nhif_facility_code', $facility->nhif_facility_code) }}">
                     </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">HFR Code</label>
+                        <input type="text" name="hfr_code" class="form-control"
+                               value="{{ old('hfr_code', $facility->hfr_code) }}"
+                               placeholder="MoH Health Facility Registry code">
+                        <small class="text-muted">Official MoH Health Facility Registry identifier (separate from the NHIF facility code).</small>
+                    </div>
                 </div>
 
                 <div class="mt-4">

@@ -92,6 +92,54 @@
                                 </div>
                             </div>
 
+                            <!-- Coding Standards Section -->
+                            <div class="col-md-12">
+                                <h5 class="text-primary">Coding Standards</h5>
+                                <hr>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="loinc_code_id" class="form-label">LOINC Code</label>
+                                    <select name="loinc_code_id"
+                                            id="loinc_code_id"
+                                            class="form-control select2-loinc-code @error('loinc_code_id') is-invalid @enderror"
+                                            style="width: 100%;">
+                                        <option value="">-- not mapped --</option>
+                                        @if($medicalService->loincCode)
+                                            <option value="{{ $medicalService->loincCode->id }}" selected>
+                                                {{ $medicalService->loincCode->code }} - {{ $medicalService->loincCode->display_name }}
+                                            </option>
+                                        @endif
+                                    </select>
+                                    <small class="text-muted">Search the LOINC library by code or name.</small>
+                                    @error('loinc_code_id')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="snomed_code_id" class="form-label">SNOMED CT Code</label>
+                                    <select name="snomed_code_id"
+                                            id="snomed_code_id"
+                                            class="form-control select2-snomed-code @error('snomed_code_id') is-invalid @enderror"
+                                            style="width: 100%;">
+                                        <option value="">-- not mapped --</option>
+                                        @if($medicalService->snomedCode)
+                                            <option value="{{ $medicalService->snomedCode->id }}" selected>
+                                                {{ $medicalService->snomedCode->code }} - {{ $medicalService->snomedCode->display_name }}
+                                            </option>
+                                        @endif
+                                    </select>
+                                    <small class="text-muted">Search the SNOMED CT library by code or name.</small>
+                                    @error('snomed_code_id')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
                             <!-- Reference Values Section -->
                             <div class="col-md-12">
                                 <h5 class="text-primary">Reference Values (for Lab Tests)</h5>
@@ -325,11 +373,41 @@ $(document).ready(function() {
         $('#form_type_container').show();
     }
 
+    // Lab coding-standard pickers — remote search against the lab code library
+    function initLabCodeSelect(selector, system, placeholder) {
+        $(selector).select2({
+            theme: 'bootstrap',
+            placeholder: placeholder,
+            allowClear: true,
+            width: '100%',
+            minimumInputLength: 2,
+            ajax: {
+                url: '/api/lab-codes/search',
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return { query: params.term, system: system, limit: 20 };
+                },
+                processResults: function (data) {
+                    if (!data.success) return { results: [] };
+                    return {
+                        results: data.data.map(function (item) {
+                            return { id: item.id, text: item.code + ' - ' + item.display_name };
+                        })
+                    };
+                }
+            }
+        });
+    }
+
+    initLabCodeSelect('.select2-loinc-code', 'loinc', 'Search LOINC code by code or name...');
+    initLabCodeSelect('.select2-snomed-code', 'snomed', 'Search SNOMED CT code by code or name...');
+
     // Reference values validation
     $('#min_value, #max_value').on('input', function() {
         const minValue = parseFloat($('#min_value').val());
         const maxValue = parseFloat($('#max_value').val());
-        
+
         if (!isNaN(minValue) && !isNaN(maxValue) && minValue >= maxValue) {
             $('#max_value')[0].setCustomValidity('Maximum value must be greater than minimum value');
         } else {

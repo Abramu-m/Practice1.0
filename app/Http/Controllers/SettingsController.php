@@ -40,6 +40,7 @@ class SettingsController extends Controller
             'phone'              => 'nullable|string|max:50',
             'email'              => 'nullable|email|max:255',
             'nhif_facility_code' => 'nullable|string|max:50',
+            'hfr_code'           => 'nullable|string|max:50',
         ]);
 
         $facility = Facility::first();

@@ -218,7 +218,9 @@
                                         @php
                                             $statusColors = [
                                                 'draft'     => 'warning',
+                                                'queued'    => 'info',
                                                 'submitted' => 'success',
+                                                'pending'   => 'secondary',
                                                 'approved'  => 'primary',
                                                 'rejected'  => 'danger',
                                             ];
@@ -605,7 +607,7 @@ function viewClaim(claimId) {
                 </div>`;
         }
 
-        const statusColors = { draft:'warning', submitted:'success', approved:'primary', rejected:'danger' };
+        const statusColors = { draft:'warning', queued:'info', submitted:'success', pending:'secondary', approved:'primary', rejected:'danger' };
         const statusColor  = statusColors[data.claim_status] ?? 'secondary';
 
         const html = `

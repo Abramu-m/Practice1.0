@@ -24,6 +24,7 @@ class Medication extends Model
         'minimum_stock_level',
         'is_active',
         'category_id',
+        'msd_code_id',
         'reorder_level',
         'maximum_stock_level',
         'requires_prescription',
@@ -73,6 +74,14 @@ class Medication extends Model
     public function formulation()
     {
         return $this->belongsTo(MedicationFormulation::class, 'formulation_id');
+    }
+
+    /**
+     * Get the mapped MSD (Medical Stores Department) item code
+     */
+    public function msdCode()
+    {
+        return $this->belongsTo(MsdCode::class);
     }
 
     /**

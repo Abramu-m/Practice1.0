@@ -837,13 +837,23 @@ Route::get('/api/medical-services/{serviceId}/form-check', [ApiClinicalControlle
 // ICD10 API
 Route::get('/api/icd10/search', [App\Http\Controllers\Icd10Controller::class, 'search']);
 
-// Medications API  
+// MSD code library API (medication item-code search/attach)
+Route::get('/api/msd-codes/search', [App\Http\Controllers\MsdCodeController::class, 'search']);
+
+// Lab code library API (LOINC / SNOMED search/attach)
+Route::get('/api/lab-codes/search', [App\Http\Controllers\LabCodeController::class, 'search']);
+
+// Medications API
 Route::get('/api/medications/search', [App\Http\Controllers\MedicationSearchController::class, 'search']);
 
 // ICD10 web UI for assigning/editing mtuha diagnosis mappings
 Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsVerified::class, 'facility_setup'])->group(function () {
     Route::get('/icd10', [App\Http\Controllers\Icd10Controller::class, 'index'])->name('icd10.index');
     Route::patch('/icd10/{id}', [App\Http\Controllers\Icd10Controller::class, 'update'])->name('icd10.update');
+
+    // Coding-standard libraries: MSD item codes, LOINC / SNOMED CT lab codes
+    Route::get('/msd-codes', [App\Http\Controllers\MsdCodeController::class, 'index'])->name('msd-codes.index');
+    Route::get('/lab-codes', [App\Http\Controllers\LabCodeController::class, 'index'])->name('lab-codes.index');
 });
 
 // Medication API (auth required)

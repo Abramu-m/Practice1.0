@@ -131,6 +131,27 @@
                             </div>
                         </div>
 
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="msd_code_id">MSD Item Code</label>
+                                    <select class="form-control select2-msd-code @error('msd_code_id') is-invalid @enderror"
+                                            id="msd_code_id" name="msd_code_id" style="width: 100%;">
+                                        <option value="">-- not mapped --</option>
+                                        @if($medication->msdCode)
+                                            <option value="{{ $medication->msdCode->id }}" selected>
+                                                {{ $medication->msdCode->code }} - {{ $medication->msdCode->name }}
+                                            </option>
+                                        @endif
+                                    </select>
+                                    <small class="text-muted">Search the MSD national item code library by code or name.</small>
+                                    @error('msd_code_id')
+                                        <span class="invalid-feedback">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="mb-3">
                             <label for="drug_classes">Drug Classes</label>
                             @php
@@ -407,13 +428,38 @@ $(document).ready(function() {
         width: '100%'
     });
 
+    // MSD item code — remote search against the MSD code library
+    $('.select2-msd-code').select2({
+        theme: 'bootstrap',
+        placeholder: 'Search MSD code by code or name...',
+        allowClear: true,
+        width: '100%',
+        minimumInputLength: 2,
+        ajax: {
+            url: '/api/msd-codes/search',
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return { query: params.term, limit: 20 };
+            },
+            processResults: function (data) {
+                if (!data.success) return { results: [] };
+                return {
+                    results: data.data.map(function (item) {
+                        return { id: item.id, text: item.code + ' - ' + item.name };
+                    })
+                };
+            }
+        }
+    });
+
     // Handle validation state - make select2 work with Bootstrap validation
-    $('.select2-formulation, .select2-dispensing-unit, .select2-drug-classes').on('select2:close', function() {
+    $('.select2-formulation, .select2-dispensing-unit, .select2-drug-classes, .select2-msd-code').on('select2:close', function() {
         $(this).trigger('blur');
     });
 
     // Fix validation styling for select2
-    $('.select2-formulation, .select2-dispensing-unit, .select2-drug-classes').on('select2:open', function() {
+    $('.select2-formulation, .select2-dispensing-unit, .select2-drug-classes, .select2-msd-code').on('select2:open', function() {
         $('.select2-dropdown').addClass('select2-dropdown--bootstrap');
     });
 });

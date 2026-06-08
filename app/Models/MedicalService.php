@@ -28,6 +28,8 @@ class MedicalService extends Model
         'name',
         'description',
         'service_category_id',
+        'loinc_code_id',
+        'snomed_code_id',
         'requires_sample',
         'sample_type',
         'turnaround_time_hours',
@@ -86,6 +88,22 @@ class MedicalService extends Model
     public function resultTemplate()
     {
         return $this->belongsTo(ResultTemplate::class);
+    }
+
+    /**
+     * Get the mapped LOINC code
+     */
+    public function loincCode()
+    {
+        return $this->belongsTo(LabCode::class, 'loinc_code_id');
+    }
+
+    /**
+     * Get the mapped SNOMED CT code
+     */
+    public function snomedCode()
+    {
+        return $this->belongsTo(LabCode::class, 'snomed_code_id');
     }
 
     /**

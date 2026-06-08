@@ -6,6 +6,7 @@
 .phpactor.json
 .claude_key
 .phpunit.result.cache
+/.claude
 /.fleet
 /.idea
 /.nova
@@ -17,6 +18,8 @@
 /public/build
 /public/hot
 /public/storage
+/public/webhook-deploy.php
+/deploy-practice.ps1
 /storage/*.key
 /storage/pail
 /storage/composer-home

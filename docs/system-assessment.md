@@ -28,7 +28,7 @@ password and NHIF account password have been rotated** (2026-06-08). This item i
 ### 1. Regulatory & Compliance
 | Item | Status | Notes |
 |---|---|---|
-| HFR / facility code | PARTIAL | NHIF `facility_code` exists, but no general MoH **HFR** code field on the `facilities` table used across modules. |
+| HFR / facility code | **READY** | `facilities.hfr_code` added (2026-06-08, separate from `nhif_facility_code`), editable via Settings → Facility Details. |
 | PDPA — encryption at rest | **MISSING** | Only `NhifSetting.username/password` are encrypted. Patient PII (NIDA, card no., contact, address) and all clinical data are plaintext. No data-access audit log. |
 | MoH certification readiness | MISSING | No audit trail of clinical/claim changes; no documented security posture. |
 
@@ -36,8 +36,8 @@ password and NHIF account password have been rotated** (2026-06-08). This item i
 | Item | Status | Notes |
 |---|---|---|
 | ICD-10 diagnosis coding | **READY** | Full `icd_10` library, `icd_diagnoses` (provisional/final), MTUHA category mapping. Diagnoses are coded, not free-text. Strongest area. |
-| MSD item codes (pharmacy/inventory) | **MISSING** | `medications` has no `msd_code`/national item code. Tracked by generic name only. |
-| LOINC / SNOMED CT (lab) | **MISSING** | `medical_services`/`investigations` carry no LOINC/SNOMED/national lab code; results stored as untyped JSON `form_data`. |
+| MSD item codes (pharmacy/inventory) | **PARTIAL** | `msd_codes` reference library + `medications.msd_code_id` mapping, library browser, Select2 attach-picker on the medication form, and `codes:import msd <file>` bulk import now exist. Library is empty until a real MSD code list is sourced and imported — structure is ready, data is the user's responsibility. |
+| LOINC / SNOMED CT (lab) | **PARTIAL** | Unified `lab_codes` library (`coding_system` discriminator) + `medical_services.loinc_code_id`/`snomed_code_id` mapping, library browser with system filter, independent Select2 attach-pickers on the service form, and `codes:import loinc\|snomed <file>` bulk import now exist. Library is empty until real LOINC/SNOMED CT lists are sourced and imported. |
 
 ### 3. Government System Endpoints
 | Item | Status | Notes |
@@ -63,7 +63,8 @@ password and NHIF account password have been rotated** (2026-06-08). This item i
   visits/consultation, prescriptions, lab, pharmacy/store/inventory, billing, CDS rule engine,
   reporting, NHIF.
 - **Strongest:** ICD-10 coding, MTUHA aggregation engine, NHIF live API (claim submission path).
-- **Weakest / blocking for government integration:** no DHIS2 push, no MSD/LOINC codes, no async
+- **Weakest / blocking for government integration:** no DHIS2 push, MSD/LOINC/SNOMED coding
+  structure now in place but libraries are unseeded (real code lists still need sourcing), no async
   queue + retry layer, patient PII unencrypted.
 
 ---
@@ -84,5 +85,7 @@ password and NHIF account password have been rotated** (2026-06-08). This item i
   build, referral & pre-approval UI.
 - **Phase 3 — Coding standards (2–3 wk):** `msd_code` on medications + LOINC/SNOMED on lab services, with mapping UIs + seed import.
 - **Phase 4 — DHIS2 push (2–3 wk):** DHIS2 client, data-element/orgUnit mapping, dataValueSet from `MtuhaReportService`, scheduled submission + audit log.
-- **Phase 5 — Compliance hardening (ongoing):** encrypt patient PII at rest; data-access audit log; NIDA validation/uniqueness; HFR facility code; activate Spatie / 2FA.
+- **Phase 5 — Compliance hardening (ongoing):** encrypt patient PII at rest; data-access audit log;
+  NIDA format validation (uniqueness already enforced — `PatientController.php:156,311`); activate
+  Spatie / 2FA. ~~HFR facility code~~ — **done** (`facilities.hfr_code`, 2026-06-08).
 - **GePG:** deferred — only if the facility collects official government fees.
