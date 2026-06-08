@@ -543,11 +543,6 @@ Route::get('medications/search', [\App\Http\Controllers\MedicationController::cl
         ->middleware(\App\Http\Middleware\EnsureUserIsAdmin::class)
         ->name('system.logs.clear');
 
-    // Redundancy Analysis (admin only)
-    Route::get('/admin/redundancy-analysis', [App\Http\Controllers\RedundancyAnalysisController::class, 'index'])
-        ->middleware(\App\Http\Middleware\EnsureUserIsAdmin::class)
-        ->name('admin.redundancy-analysis.index');
-
     // ================================
     // VITALS MANAGEMENT
     // ================================

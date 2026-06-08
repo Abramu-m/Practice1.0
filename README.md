@@ -32,7 +32,6 @@ Key features:
 - [Admin Interface Fixes](ADMIN_INTERFACE_FIXES.md)
 - [AJAX Optimization](AJAX_OPTIMIZATION_COMPLETE.md)
 - [CDS Implementation](CDS_IMPLEMENTATION_COMPLETE.md)
-- [Redundancy Analysis](REDUNDANCY_ANALYSIS_IMPLEMENTATION.md)
 - [Relationship Fixes](RELATIONSHIP_FIXES.md)
 - [Bluehost DataTables Install](BLUEHOST_DATATABLES_INSTALL.md)
 

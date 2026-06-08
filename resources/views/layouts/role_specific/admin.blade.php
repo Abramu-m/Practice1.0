@@ -1113,25 +1113,19 @@
                   </li>
                 </ul>
               </li>
-              <li class="nav-item has-treeview {{ nav_menu_open_class(['system.logs.*', 'admin.redundancy-analysis.*']) }}">
-                <a href="#" class="nav-link nav-header {{ nav_active_class(['system.logs.*', 'admin.redundancy-analysis.*']) }}">
+              <li class="nav-item has-treeview {{ nav_menu_open_class(['system.logs.*']) }}">
+                <a href="#" class="nav-link nav-header {{ nav_active_class(['system.logs.*']) }}">
                   <i class="nav-icon bi bi-file-earmark-text-fill text-secondary"></i>
                   <p class="text-bold">
                     Logs
                     <i class="nav-arrow bi bi-chevron-right"></i>
                   </p>
                 </a>
-                <ul class="nav nav-treeview" style="{{ nav_display_style(['system.logs.*', 'admin.redundancy-analysis.*']) }}">
+                <ul class="nav nav-treeview" style="{{ nav_display_style(['system.logs.*']) }}">
                   <li class="nav-item">
                     <a href="{{ route('system.logs.index') }}" class="nav-link nav-sub-item {{ nav_active_class(['system.logs.*']) }}">
                       <i class="nav-icon bi bi-list-columns-reverse text-primary"></i>
                       <p>All logs</p>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="{{ route('admin.redundancy-analysis.index') }}" class="nav-link nav-sub-item {{ nav_active_class(['admin.redundancy-analysis.*']) }}">
-                      <i class="nav-icon bi bi-diagram-3 text-warning"></i>
-                      <p>Redundancy Analysis</p>
                     </a>
                   </li>
                 </ul>
