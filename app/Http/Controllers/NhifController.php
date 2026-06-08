@@ -11,9 +11,12 @@ use App\Models\NhifClaim;
 use App\Models\NhifClaimBatch;
 use App\Models\NhifSetting;
 use App\Models\NhifTariff;
+use App\Jobs\SubmitNhifClaimJob;
+use App\Jobs\SyncNhifTariffsJob;
 use App\Services\NhifService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
@@ -743,68 +746,12 @@ class NhifController extends Controller
             'facility_code' => 'required|string',
         ]);
 
-        try {
-            $result = $this->nhifService->downloadTariffsWithoutExcludedService($request->facility_code);
+        SyncNhifTariffsJob::dispatch($request->facility_code);
 
-            if ($result['success']) {
-                $data = $result['data'];
-                $pricePackages = $data['PricePackage'] ?? [];
-                $excludedServices = $data['ExcludedServices'] ?? [];
-
-                $syncedCount = 0;
-
-                // Sync price packages
-                foreach ($pricePackages as $package) {
-                    NhifTariff::updateOrCreate(
-                        [
-                            'facility_code' => $request->facility_code,
-                            'item_code' => $package['ItemCode'],
-                            'scheme_id' => $package['SchemeID'],
-                        ],
-                        [
-                            'item_name' => $package['ItemName'] ?? null,
-                            'package_id' => $package['PackageID'] ?? null,
-                            'unit_price' => $package['UnitPrice'] ?? 0,
-                            'is_restricted' => $package['IsRestricted'] ?? false,
-                            'is_excluded' => false,
-                            'last_updated' => now(),
-                        ]
-                    );
-                    $syncedCount++;
-                }
-
-                // Mark excluded services
-                foreach ($excludedServices as $excluded) {
-                    NhifTariff::where('facility_code', $request->facility_code)
-                        ->where('item_code', $excluded['ItemCode'])
-                        ->where('scheme_id', $excluded['SchemeID'])
-                        ->update([
-                            'is_excluded' => true,
-                            'excluded_for_products' => explode(',', $excluded['ExcludedForProducts'] ?? ''),
-                        ]);
-                }
-
-                return response()->json([
-                    'success' => true,
-                    'message' => "Successfully synced {$syncedCount} tariff items",
-                    'synced_count' => $syncedCount
-                ]);
-            }
-
-            return response()->json([
-                'success' => false,
-                'message' => $result['message'],
-                'error' => $result['error'] ?? null
-            ], 400);
-
-        } catch (\Exception $e) {
-            Log::error('NHIF Tariffs Sync Error: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'An error occurred during tariffs synchronization',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+        return response()->json([
+            'success' => true,
+            'message' => 'Tariff sync queued — refresh in a few minutes to see updated tariffs',
+        ]);
     }
 
     /**
@@ -817,7 +764,7 @@ class NhifController extends Controller
         ]);
 
         try {
-            $claim = NhifClaim::with('claimDiseases', 'claimItems')->findOrFail($request->claim_id);
+            $claim = NhifClaim::findOrFail($request->claim_id);
 
             if ($claim->claim_status !== 'draft') {
                 return response()->json([
@@ -826,9 +773,15 @@ class NhifController extends Controller
                 ], 422);
             }
 
-            $result = $this->nhifService->submitSingleFolio($claim);
+            $claim->update(['claim_status' => 'queued']);
 
-            return response()->json($result, $result['success'] ? 200 : 400);
+            SubmitNhifClaimJob::dispatch($claim->id);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Queued for submission — check back shortly',
+                'status'  => 'queued',
+            ]);
 
         } catch (\Exception $e) {
             Log::error('NHIF Claim Submission Error: ' . $e->getMessage());
@@ -851,7 +804,7 @@ class NhifController extends Controller
 
         try {
             $batch = NhifClaimBatch::with(['claims' => function ($q) {
-                $q->where('claim_status', 'draft')->with('claimDiseases', 'claimItems');
+                $q->where('claim_status', 'draft');
             }])->findOrFail($request->batch_id);
 
             $draftClaims = $batch->claims;
@@ -863,33 +816,21 @@ class NhifController extends Controller
                 ], 422);
             }
 
-            $submitted = 0;
-            $failed    = 0;
-            $errors    = [];
+            $claimIds = $draftClaims->pluck('id')->all();
 
-            foreach ($draftClaims as $claim) {
-                $result = $this->nhifService->submitSingleFolio($claim);
-                if ($result['success']) {
-                    $submitted++;
-                } else {
-                    $failed++;
-                    $errors[] = [
-                        'folio_no' => $claim->folio_no,
-                        'message'  => $result['message'],
-                    ];
-                }
-            }
+            NhifClaim::whereIn('id', $claimIds)->update(['claim_status' => 'queued']);
 
-            if ($submitted > 0) {
-                $batch->update(['status' => 'Submitted']);
-            }
+            Bus::batch(
+                array_map(fn (int $claimId) => new SubmitNhifClaimJob($claimId), $claimIds)
+            )
+                ->finally(fn ($batchJob) => $batch->update(['status' => 'Submitted']))
+                ->dispatch();
 
             return response()->json([
-                'success'   => $failed === 0,
-                'message'   => "Submitted: {$submitted}, Failed: {$failed}",
-                'submitted' => $submitted,
-                'failed'    => $failed,
-                'errors'    => $errors,
+                'success' => true,
+                'message' => 'Queued ' . count($claimIds) . ' claim(s) for submission — check back shortly',
+                'status'  => 'queued',
+                'queued'  => count($claimIds),
             ]);
 
         } catch (\Exception $e) {

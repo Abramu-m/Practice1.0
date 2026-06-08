@@ -115,6 +115,14 @@ class NhifClaim extends Model
         return $this->claim_status === 'pending';
     }
 
+     /**
+     * Check if claim is queued for submission
+     */
+    public function isQueued(): bool
+    {
+        return $this->claim_status === 'queued';
+    }
+
       /**
      * Relationship with Claim Errors
      */

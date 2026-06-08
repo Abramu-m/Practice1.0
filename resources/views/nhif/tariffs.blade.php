@@ -293,16 +293,11 @@ $(document).ready(function() {
             type: 'POST',
             data: $(this).serialize(),
             success: function(response) {
-                updateProgress(100, 'Sync completed successfully!');
-                
                 if (response.success) {
-                    showResponse('Tariffs Sync Successful', response, 'success');
-                    
-                    // Refresh the page after 3 seconds
-                    setTimeout(() => {
-                        location.reload();
-                    }, 3000);
+                    updateProgress(100, 'Sync queued — running in the background.');
+                    showResponse('Tariff Sync Queued', response, 'success');
                 } else {
+                    updateProgress(0, 'Sync failed!');
                     showResponse('Tariffs Sync Failed', response, 'error');
                 }
             },

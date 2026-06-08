@@ -395,9 +395,9 @@ $(document).ready(function () {
             data: $(this).serialize(),
             success: function (response) {
                 if (response.success) {
-                    showResponse('Claim Submitted', response, 'success');
+                    showResponse('Claim Queued', response, 'success');
                     $('#claim_to_submit').val(null).trigger('change');
-                    setTimeout(() => location.reload(), 2500);
+                    setTimeout(() => location.reload(), 4000);
                 } else {
                     showResponse('Submission Failed', response, 'error');
                 }
@@ -423,9 +423,9 @@ $(document).ready(function () {
             type: 'POST',
             data: $(this).serialize(),
             success: function (response) {
-                showResponse('Batch Submission Result', response, response.success ? 'success' : 'warning');
-                if (response.submitted > 0) {
-                    setTimeout(() => location.reload(), 3000);
+                showResponse('Batch Queued', response, response.success ? 'success' : 'warning');
+                if (response.success) {
+                    setTimeout(() => location.reload(), 4000);
                 }
             },
             error: function (xhr) {
