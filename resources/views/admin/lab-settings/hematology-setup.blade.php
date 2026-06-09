@@ -91,6 +91,8 @@
                             <td class="align-middle text-center">
                                 @if($row->track_low_high)
                                     <span class="badge bg-info text-dark">LOW / HIGH</span>
+                                @elseif($row->positive_results_only)
+                                    <span class="badge bg-warning text-dark">Positives only</span>
                                 @else
                                     <span class="badge bg-light text-muted border">Count only</span>
                                 @endif

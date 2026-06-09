@@ -53,11 +53,33 @@ class LabHematologyReportService extends BaseReportService
         $ids = $row->service_ids ?? [];
         if (empty($ids)) return 0;
 
+        if ($row->positive_results_only) {
+            return $this->countPositiveResults($row, $ids);
+        }
+
         return DB::table('investigations')
             ->join('patient_visits', 'investigations.visit_id', '=', 'patient_visits.id')
             ->whereIn('investigations.medical_service_id', $ids)
             ->whereBetween('patient_visits.visit_date', [$this->startDate, $this->endDate])
             ->count();
+    }
+
+    private function countPositiveResults(HematologyReportRow $row, array $ids): int
+    {
+        $query = DB::table('investigation_template_results as itr')
+            ->join('investigations as i', 'itr.investigation_id', '=', 'i.id')
+            ->join('patient_visits as pv', 'i.visit_id', '=', 'pv.id')
+            ->whereIn('i.medical_service_id', $ids)
+            ->whereBetween('pv.visit_date', [$this->startDate, $this->endDate])
+            ->whereRaw(
+                "JSON_SEARCH(JSON_EXTRACT(itr.form_data, '$.parameters'), 'one', 'Positive', NULL, '\$[*].value') IS NOT NULL"
+            );
+
+        if ($row->required_template_name) {
+            $query->where('itr.template_name', $row->required_template_name);
+        }
+
+        return $query->distinct()->count('i.id');
     }
 
     private function countWithStatus(HematologyReportRow $row, string $status): int
