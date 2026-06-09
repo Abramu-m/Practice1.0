@@ -230,6 +230,90 @@
                     </div>
                 @endif
 
+            @elseif(in_array($templateCode, ['genxpert_tb', 'zn_stain_tb']))
+                {{-- GeneXpert TB / ZN Stain — load official MoH form read-only with saved data --}}
+                <div id="gx-tb-form-view">
+                    <div id="gx-tb-loading" class="p-4 text-center text-muted">
+                        <i class="fas fa-spinner fa-spin me-2"></i> Loading form&hellip;
+                    </div>
+                    <div id="gx-tb-tpl-container"></div>
+                </div>
+                <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    var investigationId = {{ $result->investigation->id }};
+                    var savedData       = @json($result->form_data);
+                    var container       = document.getElementById('gx-tb-tpl-container');
+                    var loading         = document.getElementById('gx-tb-loading');
+
+                    fetch('/api/result-template/{{ $templateCode }}?investigation_id=' + investigationId, {
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    })
+                    .then(function (r) { return r.text(); })
+                    .then(function (html) {
+                        loading.style.display = 'none';
+                        container.innerHTML = html;
+
+                        // Execute template inline scripts (registers event listeners + fill logic)
+                        container.querySelectorAll('script').forEach(function (oldScript) {
+                            var s = document.createElement('script');
+                            s.textContent = oldScript.textContent;
+                            document.head.appendChild(s);
+                            oldScript.remove();
+                        });
+
+                        // Fill saved form_data into template fields
+                        Object.entries(savedData).forEach(function ([key, val]) {
+                            if (val === null || val === undefined || val === '') return;
+                            var strVal = String(val);
+
+                            // Text / date / time inputs and selects
+                            var el = container.querySelector('[name="' + key + '"]:not([type="radio"]):not([type="checkbox"])');
+                            if (el) el.value = strVal;
+
+                            // Radios — iterate to match value without CSS escaping issues
+                            container.querySelectorAll('input[type="radio"][name="' + key + '"]').forEach(function (radio) {
+                                if (radio.value === strVal) {
+                                    radio.checked = true;
+                                    radio.dispatchEvent(new Event('change', { bubbles: true }));
+                                }
+                            });
+
+                            // Checkboxes
+                            var vals = Array.isArray(val) ? val.map(String) : [strVal];
+                            container.querySelectorAll('input[type="checkbox"][name="' + key + '"]').forEach(function (cb) {
+                                if (vals.includes(cb.value)) cb.checked = true;
+                            });
+
+                            // auto-val / pre-filled spans
+                            container.querySelectorAll('[data-field="' + key + '"]').forEach(function (span) {
+                                span.textContent = strVal;
+                            });
+                        });
+
+                        // Show all result sections regardless of ordering data
+                        ['section-microscopy', 'section-xpert', 'section-lflam', 'section-skin'].forEach(function (id) {
+                            var el = document.getElementById(id);
+                            if (el) el.style.display = '';
+                        });
+
+                        // Show request section at full opacity in view mode
+                        var reqSection = container.querySelector('.tb-request-section');
+                        if (reqSection) {
+                            reqSection.style.opacity   = '1';
+                            reqSection.style.pointerEvents = 'none';
+                        }
+
+                        // Make all form controls read-only (disabled preserves value in print)
+                        container.querySelectorAll('input, select, textarea').forEach(function (el) {
+                            el.disabled = true;
+                        });
+                    })
+                    .catch(function () {
+                        loading.innerHTML = '<div class="alert alert-warning m-3">Could not load form template.</div>';
+                    });
+                });
+                </script>
+
             @elseif($templateCode === 'tb')
                 {{-- TB results display --}}
                 <div class="row">
@@ -313,7 +397,7 @@
     </div>
 
     <!-- Action Buttons -->
-    <div class="d-flex justify-content-between align-items-center mt-3">
+    <div class="d-flex justify-content-between align-items-center mt-3 no-print">
         <div class="d-flex gap-2">
             <a href="{{ route('lab.results.form', $result->investigation->id) }}" class="btn btn-sm btn-outline-secondary">
                 <i class="fas fa-edit"></i> Edit Results
@@ -341,7 +425,6 @@
     </div>
 
 </div>
-@endsection
 
 <script>
 function promoteToFinal() {
@@ -350,3 +433,5 @@ function promoteToFinal() {
     }
 }
 </script>
+
+@endsection

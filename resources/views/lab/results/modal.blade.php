@@ -305,6 +305,165 @@
                 </div>
             @endif
 
+        @elseif(in_array($tplCode, ['genxpert_tb', 'zn_stain_tb']))
+            {{-- GeneXpert TB / ZN Stain — structured summary of saved results --}}
+            @php
+                $fd = $result->form_data;
+                $microRows = collect(['A', 'B', 'C'])->filter(fn($r) => !empty($fd['micro_result_' . $r]))->values();
+                $hasXpert  = !empty($fd['xpert_result']);
+                $hasLflam  = !empty($fd['lflam_result']);
+                $skinSites = ['left_earlobe' => 'L. Earlobe', 'right_earlobe' => 'R. Earlobe', 'lesion_1' => 'Lesion 1', 'lesion_2' => 'Lesion 2'];
+                $skinRows  = collect($skinSites)->filter(fn($label, $key) => !empty($fd['skin_result_' . $key]));
+                $noResults = $microRows->isEmpty() && !$hasXpert && !$hasLflam && $skinRows->isEmpty();
+
+                $rBadge = function (string $val): string {
+                    $v = strtolower($val);
+                    $class = match(true) {
+                        in_array($v, ['neg', 'negative'])             => 'success',
+                        in_array($v, ['positive'])                    => 'danger',
+                        in_array($v, ['1+', '2+', '3+', 'scanty'])   => 'warning text-dark',
+                        in_array($v, ['indeterminate'])               => 'warning text-dark',
+                        default                                       => 'secondary',
+                    };
+                    return '<span class="badge bg-' . $class . '">' . e(strtoupper($val)) . '</span>';
+                };
+            @endphp
+
+            @if($noResults)
+                <div class="p-4 text-center text-muted">
+                    <i class="fas fa-flask fa-2x mb-2 d-block"></i>
+                    No test results recorded yet.
+                </div>
+            @endif
+
+            @if($microRows->isNotEmpty())
+            <div class="border-bottom px-3 py-2">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <span class="text-uppercase fw-bold small text-muted" style="letter-spacing:.05em;">Microscopy</span>
+                    @if(!empty($fd['zn_fm']))
+                        <span class="badge bg-light text-dark border">{{ strtoupper($fd['zn_fm']) }}</span>
+                    @endif
+                </div>
+                <table class="table table-sm table-bordered mb-0" style="font-size:.82rem;">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width:28px;">Spec.</th>
+                            <th>Date</th>
+                            <th>Appearance</th>
+                            <th>Result</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($microRows as $r)
+                        <tr>
+                            <td class="fw-bold">{{ $r }}</td>
+                            <td>{{ $fd['micro_date_' . $r] ?? '—' }}</td>
+                            <td class="text-muted small">{{ $fd['micro_appearance_' . $r] ?? '—' }}</td>
+                            <td>{!! $rBadge($fd['micro_result_' . $r]) !!}</td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            @endif
+
+            @if($hasXpert)
+            <div class="border-bottom px-3 py-2">
+                <div class="fw-bold small text-muted text-uppercase mb-2" style="letter-spacing:.05em;">Xpert MTB/RIF</div>
+                <div class="d-flex flex-wrap gap-4">
+                    <div>
+                        <div class="text-muted" style="font-size:.75rem;">MTB Result</div>
+                        {!! $rBadge($fd['xpert_result']) !!}
+                    </div>
+                    @if(!empty($fd['xpert_appearance']))
+                    <div>
+                        <div class="text-muted" style="font-size:.75rem;">Appearance</div>
+                        <strong class="small">{{ $fd['xpert_appearance'] }}</strong>
+                    </div>
+                    @endif
+                    @if(!empty($fd['xpert_date']))
+                    <div>
+                        <div class="text-muted" style="font-size:.75rem;">Date</div>
+                        <strong class="small">{{ $fd['xpert_date'] }}</strong>
+                    </div>
+                    @endif
+                </div>
+            </div>
+            @endif
+
+            @if($hasLflam)
+            <div class="border-bottom px-3 py-2">
+                <div class="fw-bold small text-muted text-uppercase mb-2" style="letter-spacing:.05em;">TB LF-LAM</div>
+                <div class="d-flex flex-wrap gap-4">
+                    <div>
+                        <div class="text-muted" style="font-size:.75rem;">Result</div>
+                        {!! $rBadge($fd['lflam_result']) !!}
+                    </div>
+                    @if(!empty($fd['lflam_date']))
+                    <div>
+                        <div class="text-muted" style="font-size:.75rem;">Date</div>
+                        <strong class="small">{{ $fd['lflam_date'] }}</strong>
+                    </div>
+                    @endif
+                </div>
+            </div>
+            @endif
+
+            @if($skinRows->isNotEmpty())
+            <div class="border-bottom px-3 py-2">
+                <div class="fw-bold small text-muted text-uppercase mb-2" style="letter-spacing:.05em;">Skin Smear — Leprosy</div>
+                <table class="table table-sm table-bordered mb-0" style="font-size:.82rem;">
+                    <thead class="table-light">
+                        <tr><th>Site</th><th>Date</th><th>Result</th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach($skinRows as $key => $label)
+                        <tr>
+                            <td>{{ $label }}</td>
+                            <td>{{ $fd['skin_date_' . $key] ?? '—' }}</td>
+                            <td>{!! $rBadge($fd['skin_result_' . $key]) !!}</td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            @endif
+
+            @if(!empty($fd['examined_by']) || !empty($fd['reviewed_by']) || !empty($fd['comments']))
+            <div class="px-3 py-2 bg-light d-flex flex-wrap gap-3">
+                @if(!empty($fd['examined_by']))
+                <div>
+                    <div class="text-muted" style="font-size:.75rem;">Examined By</div>
+                    <strong class="small">{{ $fd['examined_by'] }}</strong>
+                </div>
+                @endif
+                @if(!empty($fd['examined_date']))
+                <div>
+                    <div class="text-muted" style="font-size:.75rem;">Date</div>
+                    <strong class="small">{{ $fd['examined_date'] }}</strong>
+                </div>
+                @endif
+                @if(!empty($fd['reviewed_by']))
+                <div>
+                    <div class="text-muted" style="font-size:.75rem;">Reviewed By</div>
+                    <strong class="small">{{ $fd['reviewed_by'] }}</strong>
+                </div>
+                @endif
+                @if(!empty($fd['comments']))
+                <div class="w-100">
+                    <div class="text-muted" style="font-size:.75rem;">Comments</div>
+                    <span class="small">{{ $fd['comments'] }}</span>
+                </div>
+                @endif
+            </div>
+            @endif
+
+            <div class="px-3 pt-2 pb-1 text-end">
+                <a href="{{ route('lab.template-results.view', $result->id) }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                    <i class="fas fa-expand-alt me-1"></i> View Full Form
+                </a>
+            </div>
+
         @else
             {{-- Generic complex result display --}}
             <div class="row">

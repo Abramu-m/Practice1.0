@@ -10,10 +10,10 @@
 --}}
 <style>
 .tb-form, .tb-form * { box-sizing: border-box; }
-.tb-form { font-family: Arial, sans-serif; font-size: 9px; max-width: 760px; margin: 0 auto; background: #fff; padding: 14px 18px; color: #000; line-height: 1.3; }
+.tb-form { font-family: Arial, sans-serif; font-size: 10px; max-width: 780px; margin: 0 auto; background: #fff; padding: 14px 18px; color: #000; line-height: 1.3; }
 .tb-form table { border-collapse: collapse; width: 100%; }
 .tb-form .grid td { border: none; padding: 1px 3px; vertical-align: middle; }
-.tb-form .results-table td, .tb-form .results-table th { border: 1px solid #000; padding: 2px 3px; vertical-align: middle; font-size: 8.5px; }
+.tb-form .results-table td, .tb-form .results-table th { border: 1px solid #000; padding: 3px 4px; vertical-align: middle; font-size: 9px; }
 .tb-form .results-table th { text-align: center; font-weight: bold; }
 .tb-form input[type="text"],
 .tb-form input[type="date"],
@@ -25,41 +25,68 @@
 .tb-form input[type="text"].cell-input { width: 100%; height: 13px; }
 .tb-form input[type="date"].cell-input,
 .tb-form input[type="time"].cell-input { width: 100%; height: 13px; }
-.tb-form select { font-size: 8px; font-family: Arial, sans-serif; border: none; border-bottom: 1px solid #000; background: transparent; padding: 0; width: 100%; height: 14px; outline: none; -webkit-appearance: none; -moz-appearance: none; appearance: none; }
+.tb-form select { font-size: 8.5px; font-family: Arial, sans-serif; border: none; border-bottom: 1px solid #000; background: transparent; padding: 0; width: 100%; height: 14px; outline: none; -webkit-appearance: none; -moz-appearance: none; appearance: none; }
 .tb-form input[type="radio"],
 .tb-form input[type="checkbox"] { margin: 0 1px; transform: scale(0.85); vertical-align: middle; }
-.tb-form .pre-filled { font-weight: bold; font-style: italic; border-bottom: 1px solid #000; display: inline-block; min-width: 60px; color: #cc0000; line-height: 13px; }
+.tb-form .pre-filled { font-weight: bold; font-style: italic; border-bottom: 1px solid #000; display: inline-block; min-width: 60px; color: #000; line-height: 13px; }
 .tb-form .sig-line { border-bottom: 1px solid #000; display: inline-block; width: 90px; height: 13px; }
-.tb-form .section-italic { font-style: italic; font-weight: bold; font-size: 9px; margin: 5px 0 2px; }
-.tb-form .footnote { font-size: 7.5px; font-style: italic; line-height: 1.4; }
+.tb-form .section-italic { font-style: italic; font-weight: bold; font-size: 10px; margin: 5px 0 2px; }
+.tb-form .footnote { font-size: 8px; font-style: italic; line-height: 1.4; }
 .tb-form .bordered { border: 1px solid #000; padding: 3px 5px; }
-
+.tb-form .auto-val { font-size: 9px; line-height: 13px; display: inline-block; }
+/* Neutralise Bootstrap form-control inside the tb-form so it doesn't inflate cell sizes */
+.tb-form input.form-control,
+.tb-form input[type="text"].form-control,
+.tb-form input[type="date"].form-control,
+.tb-form input[type="time"].form-control {
+    border: none !important; border-bottom: 1px solid #000 !important;
+    border-radius: 0 !important; padding: 0 1px !important;
+    height: 14px !important; font-size: 9px !important;
+    box-shadow: none !important; background: transparent !important;
+    min-height: unset !important;
+}
+.tb-form select.form-control,
+.tb-form select.form-select {
+    border: none !important; border-bottom: 1px solid #000 !important;
+    border-radius: 0 !important; padding: 0 !important;
+    height: 14px !important; font-size: 8.5px !important;
+    box-shadow: none !important; background: transparent !important;
+    min-height: unset !important;
+}
 /* Request section: visually muted so lab tech knows it's read-only context */
 .tb-request-section { opacity: 0.75; pointer-events: none; }
 .tb-request-section input[type="radio"],
 .tb-request-section input[type="checkbox"] { cursor: not-allowed; }
-
 /* Result section: full opacity, interactive */
 .tb-result-section { opacity: 1; }
-
-/* Section divider banner */
-.tb-section-banner {
-    font-size: 9px; font-weight: bold; font-style: italic;
-    padding: 3px 6px; margin: 6px 0 3px;
-    border-left: 3px solid #000;
-}
-.tb-section-banner.request-banner { background: #f5f5f5; color: #555; border-color: #999; }
-.tb-section-banner.result-banner  { background: #e8f5e9; color: #1b5e20; border-color: #388e3c; }
-
 @media print {
-    .tb-form { padding: 8px 12px; }
+    @page { size: A4 portrait; margin: 10mm 12mm; }
+    /* Hide AdminLTE app chrome */
+    .app-header, .app-sidebar, .app-footer { display: none !important; }
+    .app-wrapper, .app-main, .app-content, .container-fluid { margin: 0 !important; padding: 0 !important; width: 100% !important; background: #fff !important; }
+    /* Hide Bootstrap form.blade.php chrome */
+    .alert.alert-primary, .d-flex.justify-content-end, .card-header, .card.mt-4 { display: none !important; }
+    .card, .card-body { border: none !important; box-shadow: none !important; padding: 0 !important; margin: 0 !important; background: transparent !important; }
+    #custom_template_form, #template_content_container, .result-template-container { padding: 0 !important; border: none !important; background: white !important; }
+    /* TB form sizing for A4 */
+    .tb-form { max-width: 186mm !important; padding: 0 !important; font-size: 8pt !important; line-height: 1.4 !important; }
+    .tb-form .results-table td, .tb-form .results-table th { font-size: 7.5pt !important; padding: 3px 4px !important; }
+    .tb-form .grid td { padding: 2px 3px !important; }
+    .tb-form .section-italic { font-size: 8pt !important; margin: 5px 0 2px !important; }
+    .tb-form .footnote { font-size: 7pt !important; line-height: 1.35 !important; margin-bottom: 5px !important; }
+    .tb-form .bordered { padding: 3px 5px !important; margin-bottom: 5px !important; }
+    .tb-form .pre-filled { line-height: 15px !important; }
+    .tb-form .sig-line { height: 15px !important; }
     .tb-form input, .tb-form select { color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     .tb-request-section { opacity: 1 !important; }
-    .tb-section-banner { display: none !important; }
+    /* Always show all result sections in print */
+    #section-microscopy, #section-xpert, #section-lflam { display: table-row-group !important; }
+    #section-skin { display: block !important; }
 }
 </style>
 
-<div class="tb-form" id="tb-investigation-form" data-printable="true">
+<div class="tb-form" id="tb-investigation-form" data-printable="true"
+     data-received-by="{{ trim((auth()->user()->first_name ?? '') . ' ' . (auth()->user()->last_name ?? '')) }}">
 
     {{-- ===== HEADER ===== --}}
     @php
@@ -84,7 +111,6 @@
     {{-- ============================================================ --}}
     {{-- REQUEST SECTION — disabled, not submitted, display-only       --}}
     {{-- ============================================================ --}}
-    <div class="tb-section-banner request-banner">Request (pre-filled from ordering — not saved again)</div>
     <div class="tb-request-section">
 
         <table class="grid" style="margin-bottom: 3px;">
@@ -226,7 +252,7 @@
     {{-- ============================================================ --}}
     {{-- RESULT SECTION — active, submitted and saved                  --}}
     {{-- ============================================================ --}}
-    <div class="tb-section-banner result-banner">Results (to be completed in the laboratory)</div>
+    <div class="section-italic">Results (to be completed in the laboratory)</div>
     <div class="tb-result-section">
 
         <table class="grid" style="margin-bottom:3px;">
@@ -267,21 +293,23 @@
                     <th style="width:9%;">3+</th>
                 </tr>
             </thead>
-            <tbody>
+
+            {{-- MICROSCOPY SECTION (ZN / FM staining) --}}
+            <tbody id="section-microscopy">
                 @foreach(['A','B','C'] as $r)
                 <tr>
-                    <td style="text-align:center; font-size:8px;">
-                        <strong>{{ $r }}</strong><br>
-                        <input type="date" name="micro_date_{{ $r }}" class="cell-input" style="font-size:7.5px;">
+                    <td>
+                        <span class="auto-val" data-field="micro_date_{{ $r }}"></span>
+                        <input type="hidden" name="micro_date_{{ $r }}">
                     </td>
                     <td>
-                        <select name="micro_specimen_{{ $r }}">
-                            <option value=""></option>
-                            <option>Sputum</option><option>CSF</option><option>Urine</option>
-                            <option>Pleural fluid</option><option>Peritoneal fluid</option><option>Tissue</option>
-                        </select>
+                        <strong>{{ $r }}</strong>
+                        <input type="hidden" name="micro_specimen_{{ $r }}">
                     </td>
-                    <td><input type="text" name="micro_received_{{ $r }}" class="cell-input"></td>
+                    <td>
+                        <span class="auto-val" data-field="micro_received_{{ $r }}"></span>
+                        <input type="hidden" name="micro_received_{{ $r }}">
+                    </td>
                     <td>
                         <select name="micro_appearance_{{ $r }}">
                             <option value="">—</option>
@@ -296,13 +324,20 @@
                     <td style="text-align:center;"><input type="radio" name="micro_result_{{ $r }}" value="3+"></td>
                 </tr>
                 @endforeach
+            </tbody>
 
+            {{-- XPERT MTB/RIF SECTION --}}
+            <tbody id="section-xpert">
                 <tr>
-                    <td style="font-size:7.5px;">
-                        <input type="date" name="xpert_date" value="{{ now()->format('Y-m-d') }}" class="cell-input" style="font-size:7.5px;">
+                    <td>
+                        <span class="auto-val" data-field="xpert_date"></span>
+                        <input type="hidden" name="xpert_date">
                     </td>
-                    <td style="font-weight:bold; font-size:8px;">Xpert MTB/RIF</td>
-                    <td><input type="text" name="xpert_received_by" class="cell-input" value="{{ auth()->user()->first_name ?? '' }} {{ auth()->user()->last_name ?? '' }}"></td>
+                    <td style="font-weight:bold;">Xpert MTB/RIF</td>
+                    <td>
+                        <span class="auto-val" data-field="xpert_received_by"></span>
+                        <input type="hidden" name="xpert_received_by">
+                    </td>
                     <td>
                         <select name="xpert_appearance">
                             <option value="">—</option>
@@ -320,20 +355,27 @@
                     </td>
                 </tr>
                 <tr style="background:#f9f9f9;">
-                    <td colspan="4" style="font-size:7.5px; font-style:italic; border-right:none;"></td>
-                    <td style="text-align:center; font-size:7.5px; font-style:italic;">3*</td>
-                    <td style="text-align:center; font-size:7.5px; font-style:italic;">T*</td>
-                    <td style="text-align:center; font-size:7.5px; font-style:italic;">TI*</td>
-                    <td style="text-align:center; font-size:7.5px; font-style:italic;">RR*</td>
-                    <td style="text-align:center; font-size:7.5px; font-style:italic;">I*</td>
+                    <td colspan="4" style="font-style:italic; border-right:none;"></td>
+                    <td style="text-align:center; font-style:italic;">3*</td>
+                    <td style="text-align:center; font-style:italic;">T*</td>
+                    <td style="text-align:center; font-style:italic;">TI*</td>
+                    <td style="text-align:center; font-style:italic;">RR*</td>
+                    <td style="text-align:center; font-style:italic;">I*</td>
                 </tr>
+            </tbody>
 
+            {{-- TB LF-LAM SECTION --}}
+            <tbody id="section-lflam">
                 <tr>
-                    <td style="font-size:7.5px;">
-                        <input type="date" name="lflam_date" class="cell-input" style="font-size:7.5px;">
+                    <td>
+                        <span class="auto-val" data-field="lflam_date"></span>
+                        <input type="hidden" name="lflam_date">
                     </td>
-                    <td style="font-weight:bold; font-size:8px;">TB LF-LAM</td>
-                    <td><input type="text" name="lflam_received_by" class="cell-input"></td>
+                    <td style="font-weight:bold;">TB LF-LAM</td>
+                    <td>
+                        <span class="auto-val" data-field="lflam_received_by"></span>
+                        <input type="hidden" name="lflam_received_by">
+                    </td>
                     <td></td>
                     <td colspan="5" style="padding:2px;">
                         <div style="display:flex; justify-content:space-evenly; flex-wrap:wrap; gap:2px;">
@@ -345,6 +387,7 @@
                     </td>
                 </tr>
             </tbody>
+
         </table>
 
         <div class="footnote" style="margin-bottom:7px;">
@@ -353,7 +396,8 @@
             :TI = MTB detected, Rifampicin resistance indeterminate, I = Error / No result / Invalid
         </div>
 
-        <div class="section-italic">Skin smear result (to be completed in laboratory)</div>
+        <div id="section-skin">
+        <div class="section-italic">SKIN SMEAR RESULT — LEPROSY (to be completed in laboratory)</div>
 
         <table class="results-table" style="margin-bottom:5px;">
             <thead>
@@ -374,9 +418,15 @@
             <tbody>
                 @foreach(['Left Earlobe' => 'left_earlobe', 'Right Earlobe' => 'right_earlobe', 'Lesion 1' => 'lesion_1', 'Lesion 2' => 'lesion_2'] as $label => $key)
                 <tr>
-                    <td><input type="date" name="skin_date_{{ $key }}" class="cell-input" style="font-size:7.5px;"></td>
-                    <td style="font-size:8px;">{{ $label }}</td>
-                    <td><input type="text" name="skin_received_{{ $key }}" class="cell-input"></td>
+                    <td>
+                        <span class="auto-val" data-field="skin_date_{{ $key }}"></span>
+                        <input type="hidden" name="skin_date_{{ $key }}">
+                    </td>
+                    <td>{{ $label }}</td>
+                    <td>
+                        <span class="auto-val" data-field="skin_received_{{ $key }}"></span>
+                        <input type="hidden" name="skin_received_{{ $key }}">
+                    </td>
                     <td style="text-align:center;"><input type="radio" name="skin_result_{{ $key }}" value="neg"></td>
                     <td style="text-align:center;"><input type="radio" name="skin_result_{{ $key }}" value="scanty"></td>
                     <td style="text-align:center;"><input type="radio" name="skin_result_{{ $key }}" value="1+"></td>
@@ -386,6 +436,7 @@
                 @endforeach
             </tbody>
         </table>
+        </div>{{-- end #section-skin --}}
 
         <table class="grid" style="margin-bottom:6px;">
             <tr>
@@ -453,53 +504,125 @@
 
 </div>
 
-@if(!empty($orderingFormData))
 <script>
 (function () {
-    const data = @json($orderingFormData);
-    if (!data || typeof data !== 'object') return;
+    var form = document.getElementById('tb-investigation-form');
+    if (!form) return;
 
-    function fill(data) {
-        Object.entries(data).forEach(function ([name, value]) {
-            if (Array.isArray(value)) {
-                // Checkboxes — find by name (including disabled ones)
-                value.forEach(function (v) {
-                    const el = document.querySelector(
-                        'input[type="checkbox"][name="' + CSS.escape(name) + '[]"][value="' + CSS.escape(v) + '"],' +
-                        'input[type="checkbox"][name="' + CSS.escape(name) + '"][value="' + CSS.escape(v) + '"]'
-                    );
-                    if (el) el.checked = true;
-                });
-                return;
-            }
+    var todayStr = (new Date()).toISOString().split('T')[0];
+    // receivedBy is read lazily inside the handler — form.blade.php sets data-received-by
+    // after executeTemplateScripts() runs, so we must not capture it at IIFE time.
 
-            // Radio buttons
-            const radio = document.querySelector(
-                'input[type="radio"][name="' + CSS.escape(name) + '"][value="' + CSS.escape(String(value)) + '"]'
-            );
-            if (radio) { radio.checked = true; return; }
+    // Set hidden input value + matching span text.
+    // Input names may carry a "template_" prefix added by makeTemplateFieldsInteractive()
+    // after our script runs, so always try the prefixed name first, then the bare name.
+    function syncField(name, value) {
+        if (!value) return;
+        var base = name.replace(/^template_/, '');
+        var inp  = form.querySelector('[name="template_' + base + '"]') ||
+                   form.querySelector('[name="' + base + '"]');
+        var span = form.querySelector('.auto-val[data-field="' + base + '"]');
+        if (inp)  inp.value        = String(value);
+        if (span) span.textContent = String(value);
+    }
 
-            // Select
-            const select = document.querySelector('select[name="' + CSS.escape(name) + '"]');
-            if (select) { select.value = value; return; }
-
-            // Textarea
-            const textarea = document.querySelector('textarea[name="' + CSS.escape(name) + '"]');
-            if (textarea) { textarea.value = value; return; }
-
-            // Text / date / time inputs (including disabled ones — they are displayable even if not submitted)
-            const input = document.querySelector(
-                'input:not([type="radio"]):not([type="checkbox"])[name="' + CSS.escape(name) + '"]'
-            );
-            if (input) { input.value = value; }
+    // After filling hidden inputs from saved data, update the display spans.
+    function syncAllSpans() {
+        form.querySelectorAll('.auto-val[data-field]').forEach(function (span) {
+            var base = span.dataset.field;
+            var inp  = form.querySelector('[name="template_' + base + '"]') ||
+                       form.querySelector('[name="' + base + '"]');
+            if (inp && inp.value) span.textContent = inp.value;
         });
     }
 
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', function () { fill(data); });
-    } else {
-        fill(data);
-    }
+    // Auto-fill date + received_by when a result radio is selected.
+    // receivedBy is read at event time (lazy) so it picks up the value set by form.blade.php
+    // after executeTemplateScripts() finishes.
+    form.addEventListener('change', function (e) {
+        if (e.target.type !== 'radio') return;
+        var row = e.target.closest('tr');
+        if (!row) return;
+
+        var receivedBy = form.dataset.receivedBy || '';
+        row.querySelectorAll('input[type="hidden"][name]').forEach(function (inp) {
+            if (inp.value) return; // already set — don't overwrite
+            var n = inp.name;
+            if (/_date($|_)/.test(n))     syncField(n, todayStr);
+            else if (/_received/.test(n)) syncField(n, receivedBy);
+        });
+    });
+
+    @if(!empty($orderingFormData))
+    (function () {
+        var data = @json($orderingFormData);
+        if (!data || typeof data !== 'object') return;
+
+        function fill(data) {
+            Object.entries(data).forEach(function ([name, value]) {
+                if (Array.isArray(value)) {
+                    value.forEach(function (v) {
+                        var el = document.querySelector(
+                            'input[type="checkbox"][name="' + CSS.escape(name) + '[]"][value="' + CSS.escape(v) + '"],' +
+                            'input[type="checkbox"][name="' + CSS.escape(name) + '"][value="' + CSS.escape(v) + '"]'
+                        );
+                        if (el) el.checked = true;
+                    });
+                    return;
+                }
+                var radio = document.querySelector('input[type="radio"][name="' + CSS.escape(name) + '"][value="' + CSS.escape(String(value)) + '"]');
+                if (radio) { radio.checked = true; return; }
+
+                var select = document.querySelector('select[name="' + CSS.escape(name) + '"]');
+                if (select) { select.value = value; return; }
+
+                var textarea = document.querySelector('textarea[name="' + CSS.escape(name) + '"]');
+                if (textarea) { textarea.value = value; return; }
+
+                var input = document.querySelector('input:not([type="radio"]):not([type="checkbox"])[name="' + CSS.escape(name) + '"]');
+                if (input) { input.value = value; }
+            });
+        }
+
+        function applySpecimen(data) {
+            var map = { sputum: 'Sputum', csf: 'CSF', urine: 'Urine',
+                        skin: 'Skin smear', peritoneal: 'Peritoneal fluid',
+                        lymph: 'Lymph node', other_spec: 'Other' };
+            var label = data.specimen ? (map[data.specimen] || data.specimen) : '';
+            if (label) {
+                ['A', 'B', 'C'].forEach(function (r) { syncField('micro_specimen_' + r, label); });
+            }
+        }
+
+        function applySections(data) {
+            var tests = Array.isArray(data.test_requested) ? data.test_requested
+                      : (data.test_requested ? [data.test_requested] : []);
+            var isLeprosy = data.reason === 'diagnosis' && data.diagnosis_type === 'leprosy';
+            function setSection(id, visible) {
+                var el = document.getElementById(id);
+                if (el) el.style.display = visible ? '' : 'none';
+            }
+            if (tests.length > 0) {
+                setSection('section-microscopy', tests.includes('microscopy'));
+                setSection('section-xpert',      tests.includes('xpert'));
+                setSection('section-lflam',      tests.includes('tb_lf_lam'));
+            }
+            if (data.reason) { setSection('section-skin', isLeprosy); }
+        }
+
+        function run() {
+            fill(data);
+            applySpecimen(data);
+            applySections(data);
+            syncAllSpans();
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', run);
+        } else {
+            run();
+        }
+    })();
+    @endif
 })();
 </script>
-@endif
