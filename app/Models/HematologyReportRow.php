@@ -8,7 +8,8 @@ class HematologyReportRow extends Model
 {
     protected $fillable = [
         'row_key', 'row_label', 'sort_order',
-        'service_ids', 'fbp_param_name', 'track_low_high', 'is_section_header',
+        'service_ids', 'fbp_param_name', 'required_template_name',
+        'track_low_high', 'is_section_header',
     ];
 
     protected $casts = [

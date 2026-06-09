@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\HematologyReportRow;
 use App\Models\MedicalService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class HematologyReportSetupController extends Controller
 {
@@ -25,9 +26,10 @@ class HematologyReportSetupController extends Controller
             ->orderBy('name')
             ->get(['id', 'name']);
 
-        $fbpRow = HematologyReportRow::where('row_key', 'fbp')->first();
+        // name → code lookup for display
+        $templateCodes = DB::table('result_templates')->pluck('code', 'name');
 
-        return view('admin.lab-settings.hematology-setup', compact('rows', 'labServices', 'fbpRow'));
+        return view('admin.lab-settings.hematology-setup', compact('rows', 'labServices', 'templateCodes'));
     }
 
     public function update(Request $request)

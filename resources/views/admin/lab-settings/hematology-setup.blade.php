@@ -24,10 +24,11 @@
 
     <div class="alert alert-info">
         <i class="fas fa-info-circle me-2"></i>
-        <strong>How this works:</strong> Select which lab investigation corresponds to each form row.
-        Rows marked <span class="badge bg-info text-dark">LOW / HIGH</span> will also count results
-        that fall below or above the reference range. Configuring <strong>FBP</strong> automatically
-        covers WBC COUNT, WBC DIFF, Platelets, Reticulocytes, Peripheral Blood film, PCV and RBC Count.
+        <strong>How this works:</strong> Select which lab investigation maps to each form row.
+        Lab staff <strong>must</strong> use the listed result template when recording results —
+        otherwise LOW / HIGH extraction will not find any data.
+        Configuring <strong>FBP</strong> automatically covers WBC COUNT, WBC DIFF, Platelets,
+        Reticulocytes, Peripheral Blood film, PCV and RBC Count.
     </div>
 
     <form method="POST" action="{{ route('admin.lab-settings.hematology.update') }}">
@@ -42,10 +43,11 @@
                 <table class="table table-sm table-bordered mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th style="width:35%">Form Row</th>
-                            <th>Lab Investigation</th>
-                            <th style="width:130px" class="text-center">Tracks</th>
-                            <th style="width:110px" class="text-center">Status</th>
+                            <th style="width:22%">Form Row</th>
+                            <th style="width:28%">Lab Investigation</th>
+                            <th>Required Result Template</th>
+                            <th style="width:110px" class="text-center">Tracks</th>
+                            <th style="width:100px" class="text-center">Status</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -70,6 +72,21 @@
                                         </option>
                                     @endforeach
                                 </select>
+                            </td>
+                            <td class="align-middle">
+                                @if($row->required_template_name)
+                                    @php $code = $templateCodes[$row->required_template_name] ?? null; @endphp
+                                    <div class="d-flex align-items-center gap-2 p-2 bg-light rounded border">
+                                        <i class="bi bi-lock-fill text-secondary"></i>
+                                        <span class="fw-semibold small">{{ $row->required_template_name }}</span>
+                                        @if($code)
+                                            <code class="ms-1 text-muted" style="font-size:0.75em">{{ $code }}</code>
+                                        @endif
+                                    </div>
+                                    <div class="form-text">Lab staff must select this template when entering results.</div>
+                                @else
+                                    <span class="text-muted small">—</span>
+                                @endif
                             </td>
                             <td class="align-middle text-center">
                                 @if($row->track_low_high)

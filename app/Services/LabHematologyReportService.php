@@ -71,6 +71,10 @@ class LabHematologyReportService extends BaseReportService
             ->whereIn('i.medical_service_id', $ids)
             ->whereBetween('pv.visit_date', [$this->startDate, $this->endDate]);
 
+        if ($row->required_template_name) {
+            $query->where('itr.template_name', $row->required_template_name);
+        }
+
         if ($row->fbp_param_name) {
             // Match specific parameter name AND status in the JSON parameters array
             $query->whereRaw(
