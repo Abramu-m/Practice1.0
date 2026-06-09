@@ -483,13 +483,13 @@
         </div>{{-- end #section-skin --}}
 
         @php
-            $resultedAt  = $investigation->resulted_at ?? null;
-            $resultedUser = $investigation->resultedBy ?? auth()->user();
+            $resultedAt   = $investigation->resulted_at ?? null;
+            $resultedUser = $investigation->resultedBy ?? null;
             $resultedName = $resultedUser
                 ? trim(($resultedUser->first_name ?? '') . ' ' . ($resultedUser->last_name ?? ''))
                 : '';
-            $examDate = $resultedAt ? $resultedAt->format('Y-m-d') : now()->format('Y-m-d');
-            $examTime = $resultedAt ? $resultedAt->format('H:i')   : now()->format('H:i');
+            $examDate = $resultedAt ? $resultedAt->format('Y-m-d') : '';
+            $examTime = $resultedAt ? $resultedAt->format('H:i')   : '';
         @endphp
         <table class="grid" style="margin-bottom:6px;">
             <tr>
