@@ -2,80 +2,89 @@
 
 namespace App\Services;
 
-use App\Models\Investigation;
-use App\Models\MedicalService;
+use App\Models\HematologyReportRow;
 use Carbon\Carbon;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class LabHematologyReportService extends BaseReportService
 {
-    /**
-     * Build hematology lab report
-     */
     public function buildReport(): array
     {
-        $investigations = $this->getHematologyInvestigations();
+        $rows = HematologyReportRow::orderBy('sort_order')->get()->keyBy('row_key');
+
+        $totals = [];
+        $lows   = [];
+        $highs  = [];
+
+        foreach ($rows as $key => $row) {
+            if ($row->is_section_header) {
+                $totals[$key] = null;
+                $lows[$key]   = null;
+                $highs[$key]  = null;
+                continue;
+            }
+
+            $totals[$key] = $this->countTotal($row);
+
+            if ($row->track_low_high) {
+                $lows[$key]  = $this->countWithStatus($row, 'low');
+                $highs[$key] = $this->countWithStatus($row, 'high');
+            } else {
+                $lows[$key]  = null;
+                $highs[$key] = null;
+            }
+        }
+
+        $grandTotal = array_sum(array_filter($totals, fn($v) => $v !== null));
 
         return [
-            'facility' => $this->getFacilityInfo(),
-            'month_year' => $this->date_from->format('M Y'),
-            'total_tests' => $investigations->count(),
-            'completed_tests' => $investigations->whereNotNull('result_value')->count(),
-            'pending_tests' => $investigations->whereNull('result_value')->count(),
-            'completion_rate' => $this->calculateCompletionRate(
-                $investigations->count(),
-                $investigations->whereNotNull('result_value')->count()
-            ),
-            'investigations' => $investigations->map(function ($inv) {
-                return [
-                    'test_name' => $inv->medicalService->name ?? 'Unknown',
-                    'patient_id' => $inv->patient_id,
-                    'visit_date' => $inv->visit_date->format('d-m-Y'),
-                    'status' => $inv->status ?? 'Pending',
-                    'result_value' => $inv->result_value,
-                    'result_unit' => $inv->result_unit,
-                    'normal_range' => $this->getNormalRange($inv),
-                ];
-            })->toArray(),
+            'facility'     => $this->getFacilityInfo(),
+            'rows'         => $rows,
+            'totals'       => $totals,
+            'lows'         => $lows,
+            'highs'        => $highs,
+            'grand_total'  => $grandTotal,
             'generated_at' => Carbon::now(),
         ];
     }
 
-    /**
-     * Get hematology investigations
-     */
-    private function getHematologyInvestigations()
+    private function countTotal(HematologyReportRow $row): int
     {
-        return Investigation::join('patient_visits', 'investigations.visit_id', '=', 'patient_visits.id')
-            ->join('medical_services', 'investigations.medical_service_id', '=', 'medical_services.id')
-            ->join('service_categories', 'medical_services.service_category_id', '=', 'service_categories.id')
-            ->whereBetween('patient_visits.created_at', [$this->date_from, $this->date_to])
-            ->where('service_categories.name', 'LIKE', '%Hematology%')
-            ->select('investigations.*')
-            ->with('medicalService')
-            ->orderBy('investigations.created_at', 'DESC')
-            ->get();
+        $ids = $row->service_ids ?? [];
+        if (empty($ids)) return 0;
+
+        return DB::table('investigations')
+            ->join('patient_visits', 'investigations.visit_id', '=', 'patient_visits.id')
+            ->whereIn('investigations.medical_service_id', $ids)
+            ->whereBetween('patient_visits.visit_date', [$this->startDate, $this->endDate])
+            ->count();
     }
 
-    /**
-     * Get normal range for a test
-     */
-    private function getNormalRange($investigation): string
+    private function countWithStatus(HematologyReportRow $row, string $status): int
     {
-        if ($investigation->medicalService->min_value && $investigation->medicalService->max_value) {
-            return "{$investigation->medicalService->min_value} - {$investigation->medicalService->max_value}";
-        }
-        return 'N/A';
-    }
+        $ids = $row->service_ids ?? [];
+        if (empty($ids)) return 0;
 
-    /**
-     * Calculate completion rate
-     */
-    private function calculateCompletionRate(int $total, int $completed): int
-    {
-        if ($total === 0) {
-            return 0;
+        $query = DB::table('investigation_template_results as itr')
+            ->join('investigations as i', 'itr.investigation_id', '=', 'i.id')
+            ->join('patient_visits as pv', 'i.visit_id', '=', 'pv.id')
+            ->whereIn('i.medical_service_id', $ids)
+            ->whereBetween('pv.visit_date', [$this->startDate, $this->endDate]);
+
+        if ($row->fbp_param_name) {
+            // Match specific parameter name AND status in the JSON parameters array
+            $query->whereRaw(
+                "JSON_CONTAINS(JSON_EXTRACT(itr.form_data, '$.parameters'), JSON_OBJECT('parameter_name', ?, 'status', ?))",
+                [$row->fbp_param_name, $status]
+            );
+        } else {
+            // Any parameter in the result has the given status
+            $query->whereRaw(
+                "JSON_SEARCH(JSON_EXTRACT(itr.form_data, '$.parameters'), 'one', ?, NULL, '\$[*].status') IS NOT NULL",
+                [$status]
+            );
         }
-        return round(($completed / $total) * 100);
+
+        return $query->distinct()->count('i.id');
     }
 }

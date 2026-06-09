@@ -240,6 +240,11 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsAdmin::class, 'facil
     Route::put('/admin/lab-settings/blood-transfusion', [\App\Http\Controllers\BloodTransfusionReportSetupController::class, 'update'])
         ->name('admin.lab-settings.blood-transfusion.update');
 
+    Route::get('/admin/lab-settings/hematology', [\App\Http\Controllers\HematologyReportSetupController::class, 'index'])
+        ->name('admin.lab-settings.hematology.index');
+    Route::put('/admin/lab-settings/hematology', [\App\Http\Controllers\HematologyReportSetupController::class, 'update'])
+        ->name('admin.lab-settings.hematology.update');
+
 });
 
 // ================================
