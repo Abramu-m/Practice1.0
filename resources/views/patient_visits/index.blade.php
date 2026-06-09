@@ -188,9 +188,6 @@
                                 <div class="input-group">
                                     <span class="input-group-text">Tsh</span>
                                     <input type="text" class="form-control" id="vm_fee_display" readonly placeholder="Auto-calculated">
-                                    <button class="btn btn-outline-secondary" type="button" id="vm_apply_fee_btn">
-                                        <i class="fas fa-check"></i> Apply
-                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -355,29 +352,20 @@ $(document).ready(function() {
                     var cash    = parseFloat(data.cash_amount)    || 0;
                     var covered = parseFloat(data.covered_amount) || 0;
                     $('#vm_fee_display').val((cash + covered).toFixed(2))
-                        .removeClass('text-warning text-danger').addClass('text-success fw-bold')
-                        .data('cash', cash).data('covered', covered);
-                    $('#vm_apply_fee_btn').prop('disabled', false);
+                        .removeClass('text-warning text-danger').addClass('text-success fw-bold');
+                    $('#vm_amount_cash').val(cash.toFixed(2));
+                    $('#vm_amount_covered').val(covered.toFixed(2));
                 } else {
                     $('#vm_fee_display').val('No fee structure found')
                         .removeClass('text-success fw-bold').addClass('text-warning');
-                    $('#vm_apply_fee_btn').prop('disabled', true);
                 }
             }).fail(function() {
                 $('#vm_fee_display').val('Error loading fee').addClass('text-danger');
-                $('#vm_apply_fee_btn').prop('disabled', true);
             });
         } else {
             $('#vm_fee_display').val('').removeClass('text-success text-warning text-danger fw-bold');
         }
     }
-
-    $('#vm_apply_fee_btn').on('click', function() {
-        var cash    = parseFloat($('#vm_fee_display').data('cash'))    || 0;
-        var covered = parseFloat($('#vm_fee_display').data('covered')) || 0;
-        $('#vm_amount_cash').val(cash.toFixed(2));
-        $('#vm_amount_covered').val(covered.toFixed(2));
-    });
 
     // ---- Lab Only toggle ----
     function vmCheckLabOnly() {
@@ -386,7 +374,6 @@ $(document).ready(function() {
             $('#vm_doctor_wrap').hide();
             $('#vm_doctor').val('');
             $('#vm_fee_display').val('Not applicable').removeClass('text-success fw-bold');
-            $('#vm_apply_fee_btn').prop('disabled', true);
             $('#vm_amount_covered').val('0.00').prop('disabled', true);
             $('#vm_covered_label').html('Covered Amount <small class="text-muted">(Not applicable)</small>');
             $('#vm_cash_label').html('Cash Amount <span class="text-danger">*</span> <small class="text-success">(Cash Only)</small>');
