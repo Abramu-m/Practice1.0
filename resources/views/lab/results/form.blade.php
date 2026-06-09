@@ -147,58 +147,6 @@
         </div>
     </div>
 
-    @if($investigation->templateResults->count() > 0)
-    <!-- Existing Results -->
-    <div class="card mt-4">
-        <div class="card-header">
-            <h6 class="mb-0">
-                <i class="fas fa-history"></i> 
-                Existing Template Results ({{ $investigation->templateResults->count() }})
-            </h6>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-sm">
-                    <thead>
-                        <tr>
-                            <th>Template</th>
-                            <th>Status</th>
-                            <th>Reported By</th>
-                            <th>Date</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($investigation->templateResults as $result)
-                        <tr>
-                            <td>
-                                <strong>{{ ucfirst($result->template_name) }}</strong>
-                                <br><small class="text-muted">v{{ $result->template_version }}</small>
-                            </td>
-                            <td>
-                                <span class="badge bg-{{ $result->form_status === 'final' ? 'success' : ($result->form_status === 'preliminary' ? 'info' : 'warning') }}">
-                                    {{ ucfirst($result->form_status) }}
-                                </span>
-                            </td>
-                            <td>
-                                {{ $result->reportedBy->name ?? 'System' }}
-                            </td>
-                            <td>
-                                {{ $result->reported_at ? $result->reported_at->format('M d, Y H:i') : 'N/A' }}
-                            </td>
-                            <td>
-                                <button class="btn btn-sm btn-outline-primary" onclick="viewTemplateResult({{ $result->id }})">
-                                    <i class="fas fa-eye"></i> View
-                                </button>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-    @endif
 </div>
 
 @endsection
@@ -377,16 +325,14 @@ function makeTemplateFieldsInteractive() {
         if (field.name && !field.name.startsWith('template_')) {
             field.name = 'template_' + field.name;
         }
-        
+
         // Add some styling to make them look integrated
         field.classList.add('form-control');
         if (field.tagName.toLowerCase() === 'select') {
             field.classList.add('form-select');
         }
-        
-        // Remove any disabled states
-        field.disabled = false;
-        field.readOnly = false;
+
+        // Preserve readonly/disabled state set by the template (e.g. final results)
     });
     
 

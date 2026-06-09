@@ -328,6 +328,18 @@ Route::get('/result-template/{templateName}', function($templateName) {
             return response()->json(['error' => 'Template file not found'], 404);
         }
         
+        // Load existing template result for prefilling on edit
+        $existingResult = \App\Models\InvestigationTemplateResult::where('investigation_id', $investigationId)
+            ->latest('reported_at')
+            ->first();
+
+        $existingData = null;
+        $editMode = false;
+        if ($existingResult) {
+            $existingData = $existingResult->form_data ?? [];
+            $editMode = true;
+        }
+
         // Render the template with investigation data
         $html = view($viewPath, [
             'visit'             => $visit,
@@ -337,6 +349,8 @@ Route::get('/result-template/{templateName}', function($templateName) {
             'consultation'      => $investigation->consultation,
             'currentUser'       => auth('web')->user(),
             'orderingFormData'  => $investigation->formData?->form_data ?? [],
+            'existingData'      => $existingData,
+            'editMode'          => $editMode,
         ])->render();
         
         return response($html)->header('Content-Type', 'text/html');

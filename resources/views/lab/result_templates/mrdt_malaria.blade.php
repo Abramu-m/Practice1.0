@@ -8,6 +8,12 @@
         <small class="text-muted">Select the mRDT result for each parameter</small>
     </div>
 
+    @php
+        $formData       = $existingData ?? [];
+        $mrdtParameters = $formData['parameters'] ?? [];
+        $serviceName    = isset($investigation) && $investigation->medicalService ? $investigation->medicalService->name : '';
+    @endphp
+
     @if(isset($investigation) && $investigation->medicalService)
     <script>
         window.mrdtServiceData = {
@@ -28,46 +34,48 @@
                 </tr>
             </thead>
             <tbody id="mrdtParametersBody">
-                @if(isset($investigation) && $investigation->results->count() > 0)
-                    @foreach($investigation->results as $result)
+                @if(count($mrdtParameters) > 0)
+                    @foreach($mrdtParameters as $index => $param)
                     <tr>
                         <td>
                             <input type="text" class="form-control form-control-sm"
                                    style="background:#f0f0f0;pointer-events:none;cursor:not-allowed;" tabindex="-1"
-                                   name="parameters[{{ $loop->index }}][parameter_name]"
-                                   value="{{ $result->parameter_name }}" required readonly>
+                                   name="parameters[{{ $index }}][parameter_name]"
+                                   value="{{ $param['parameter_name'] ?? $serviceName }}"
+                                   required readonly>
                         </td>
                         <td>
                             <select class="form-select form-select-sm mrdt-value-select"
-                                    name="parameters[{{ $loop->index }}][value]"
-                                    data-row-index="{{ $loop->index }}"
+                                    name="parameters[{{ $index }}][value]"
+                                    data-row-index="{{ $index }}"
                                     onchange="updateMrdtStatus(this)">
                                 <option value="">-- Select --</option>
-                                <option value="Indifferent"       {{ $result->value === 'Indifferent'       ? 'selected' : '' }}>Indifferent</option>
-                                <option value="Negative"          {{ $result->value === 'Negative'          ? 'selected' : '' }}>Negative</option>
-                                <option value="Positive"          {{ $result->value === 'Positive'          ? 'selected' : '' }}>Positive</option>
-                                <option value="Positive. pf"      {{ $result->value === 'Positive. pf'      ? 'selected' : '' }}>Positive. pf</option>
-                                <option value="Positive. pf, pan" {{ $result->value === 'Positive. pf, pan' ? 'selected' : '' }}>Positive. pf, pan</option>
-                                <option value="Positive. pan"     {{ $result->value === 'Positive. pan'     ? 'selected' : '' }}>Positive. pan</option>
+                                <option value="Indifferent"       {{ ($param['value'] ?? '') === 'Indifferent'       ? 'selected' : '' }}>Indifferent</option>
+                                <option value="Negative"          {{ ($param['value'] ?? '') === 'Negative'          ? 'selected' : '' }}>Negative</option>
+                                <option value="Positive"          {{ ($param['value'] ?? '') === 'Positive'          ? 'selected' : '' }}>Positive</option>
+                                <option value="Positive. pf"      {{ ($param['value'] ?? '') === 'Positive. pf'      ? 'selected' : '' }}>Positive. pf</option>
+                                <option value="Positive. pf, pan" {{ ($param['value'] ?? '') === 'Positive. pf, pan' ? 'selected' : '' }}>Positive. pf, pan</option>
+                                <option value="Positive. pan"     {{ ($param['value'] ?? '') === 'Positive. pan'     ? 'selected' : '' }}>Positive. pan</option>
                             </select>
                         </td>
                         <td>
                             <select class="form-select form-select-sm mrdt-status-select"
                                     style="background:#f0f0f0;pointer-events:none;cursor:not-allowed;appearance:none;" tabindex="-1"
-                                    name="parameters[{{ $loop->index }}][status]">
-                                <option value="normal"   {{ ($result->status ?? 'normal') === 'normal'   ? 'selected' : '' }}>Normal</option>
-                                <option value="abnormal" {{ ($result->status ?? '') === 'abnormal' ? 'selected' : '' }}>Abnormal</option>
-                                <option value="unknown"  {{ ($result->status ?? '') === 'unknown'  ? 'selected' : '' }}>Unknown</option>
+                                    name="parameters[{{ $index }}][status]">
+                                <option value="normal"   {{ ($param['status'] ?? 'normal') === 'normal'   ? 'selected' : '' }}>Normal</option>
+                                <option value="abnormal" {{ ($param['status'] ?? '') === 'abnormal' ? 'selected' : '' }}>Abnormal</option>
+                                <option value="unknown"  {{ ($param['status'] ?? '') === 'unknown'  ? 'selected' : '' }}>Unknown</option>
                             </select>
                         </td>
                         <td>
                             <input type="text" class="form-control form-control-sm"
-                                   name="parameters[{{ $loop->index }}][remarks]"
-                                   value="{{ $result->remarks }}"
+                                   name="parameters[{{ $index }}][remarks]"
+                                   value="{{ $param['remarks'] ?? '' }}"
                                    placeholder="Optional remarks">
                         </td>
                         <td>
-                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeMrdtParameter(this)">
+                            <button type="button" class="btn btn-sm btn-outline-danger"
+                                    onclick="removeMrdtParameter(this)">
                                 <i class="fas fa-times"></i>
                             </button>
                         </td>
@@ -79,7 +87,7 @@
                             <input type="text" class="form-control form-control-sm"
                                    style="background:#f0f0f0;pointer-events:none;cursor:not-allowed;" tabindex="-1"
                                    name="parameters[0][parameter_name]"
-                                   value="{{ isset($investigation) && $investigation->medicalService ? $investigation->medicalService->name : '' }}"
+                                   value="{{ $serviceName }}"
                                    required readonly>
                         </td>
                         <td>
@@ -121,11 +129,13 @@
         </table>
     </div>
 
+    @if($investigation->medicalService->multiple_parameters)
     <div class="mt-3">
         <button type="button" class="btn btn-outline-primary btn-sm" onclick="addMrdtParameter()">
             <i class="fas fa-plus"></i> Add Parameter
         </button>
     </div>
+    @endif
 
     <div class="card mt-4">
         <div class="card-header bg-light">
@@ -142,7 +152,7 @@
                 <div class="col-md-6 d-flex align-items-center gap-2">
                     <label class="form-label mb-0 text-nowrap"><strong>Analysis Date:</strong></label>
                     <input type="datetime-local" class="form-control form-control-sm" name="analysis_date"
-                           value="{{ now()->format('Y-m-d\TH:i') }}" readonly
+                           value="{{ $formData['analysis_date'] ?? now()->format('Y-m-d\TH:i') }}" readonly
                            style="background:#f0f0f0;pointer-events:none;cursor:not-allowed;">
                 </div>
             </div>
@@ -150,7 +160,7 @@
                 <div class="col-md-12 d-flex align-items-center gap-2">
                     <label class="form-label mb-0 text-nowrap"><strong>Additional Comments:</strong></label>
                     <textarea class="form-control form-control-sm" name="additional_comments" rows="2"
-                              placeholder="Any additional observations or comments..."></textarea>
+                              placeholder="Any additional observations or comments...">{{ $formData['additional_comments'] ?? '' }}</textarea>
                 </div>
             </div>
         </div>
@@ -158,7 +168,7 @@
 </div>
 
 <script>
-let mrdtParameterCount = {{ isset($investigation) && $investigation->results->count() > 0 ? $investigation->results->count() : 1 }};
+let mrdtParameterCount = {{ count($mrdtParameters) > 0 ? count($mrdtParameters) : 1 }};
 
 const mrdtStatusMap = {
     'Indifferent':       { status: 'unknown',  cssText: 'background:#f0f0f0;pointer-events:none;cursor:not-allowed;appearance:none;-webkit-appearance:none;color:#6c757d;border-color:#6c757d;' },

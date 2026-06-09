@@ -100,8 +100,8 @@
                     </div>
                 @endif
             </div>
-            @if(!$isReadOnly)
-                <button type="button" class="btn btn-outline-primary btn-sm" 
+            @if(!$isReadOnly && $investigation->medicalService->multiple_parameters)
+                <button type="button" class="btn btn-outline-primary btn-sm"
                         onclick="addDynamicField('test-parameters', 'parameters')">
                     <i class="fas fa-plus"></i> Add Parameter
                 </button>

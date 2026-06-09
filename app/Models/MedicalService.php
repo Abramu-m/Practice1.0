@@ -43,6 +43,7 @@ class MedicalService extends Model
         'is_active',
         'selling_price',
         'discount_percentage',
+        'multiple_parameters',
     ];
 
     protected $casts = [
@@ -50,6 +51,7 @@ class MedicalService extends Model
         'requires_sample' => 'boolean',
         'requires_form' => 'boolean',
         'is_active' => 'boolean',
+        'multiple_parameters' => 'boolean',
         'min_value' => 'decimal:1',
         'max_value' => 'decimal:1',
         'selling_price' => 'decimal:2',

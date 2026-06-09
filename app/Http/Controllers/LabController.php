@@ -328,23 +328,25 @@ class LabController extends Controller
                 }
             }
 
-            // Store the template-based result
-            $result = InvestigationTemplateResult::create([
-                'investigation_id' => $investigation->id,
-                'template_name' => $templateName,
-                'template_version' => '1.0',
-                'form_data' => $templateData,
-                'form_status' => $request->action,
-                'metadata' => [
-                    'template_code' => $templateCode,
-                    'user_agent' => $request->header('User-Agent'),
-                    'ip_address' => $request->ip(),
-                    'submitted_at' => now()->toISOString(),
-                    'form_fields_count' => count($templateData)
-                ],
-                'reported_by' => Auth::id(),
-                'reported_at' => now()
-            ]);
+            // Store the template-based result (update if one already exists for this investigation)
+            $result = InvestigationTemplateResult::updateOrCreate(
+                ['investigation_id' => $investigation->id],
+                [
+                    'template_name' => $templateName,
+                    'template_version' => '1.0',
+                    'form_data' => $templateData,
+                    'form_status' => $request->action,
+                    'metadata' => [
+                        'template_code' => $templateCode,
+                        'user_agent' => $request->header('User-Agent'),
+                        'ip_address' => $request->ip(),
+                        'submitted_at' => now()->toISOString(),
+                        'form_fields_count' => count($templateData)
+                    ],
+                    'reported_by' => Auth::id(),
+                    'reported_at' => now()
+                ]
+            );
 
             // Update investigation status
             $status = $request->action === 'draft' 

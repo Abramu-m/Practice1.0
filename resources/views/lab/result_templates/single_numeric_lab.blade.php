@@ -142,11 +142,13 @@
     </div>
 
     {{-- Add Parameter Button --}}
+    @if($investigation->medicalService->multiple_parameters)
     <div class="mt-3">
         <button type="button" class="btn btn-outline-primary btn-sm" onclick="addSimpleParameter()">
             <i class="fas fa-plus"></i> Add Parameter
         </button>
     </div>
+    @endif
 
     {{-- Quality Control Section --}}
     <div class="card mt-4">
