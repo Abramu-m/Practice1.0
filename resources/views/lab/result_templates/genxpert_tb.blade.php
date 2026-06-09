@@ -477,11 +477,13 @@
             <tr>
                 <td style="width:24%;">
                     <strong>Date:</strong>
-                    <input type="date" name="examined_date" value="{{ now()->format('Y-m-d') }}" style="width:95px;">
+                    <span class="auto-val" data-field="examined_date">{{ now()->format('Y-m-d') }}</span>
+                    <input type="hidden" name="examined_date" value="{{ now()->format('Y-m-d') }}">
                 </td>
                 <td style="width:20%;">
                     <strong>Time:</strong>
-                    <input type="time" name="examined_time" value="{{ now()->format('H:i') }}" style="width:60px;">
+                    <span class="auto-val" data-field="examined_time">{{ now()->format('H:i') }}</span>
+                    <input type="hidden" name="examined_time" value="{{ now()->format('H:i') }}">
                 </td>
                 <td style="width:32%;">
                     <strong>Examined by:</strong>
@@ -494,15 +496,17 @@
             <tr>
                 <td>
                     <strong>Date:</strong>
-                    <input type="date" name="reviewed_date" value="{{ now()->format('Y-m-d') }}" style="width:95px;">
+                    <span class="auto-val" data-field="reviewed_date">{{ now()->format('Y-m-d') }}</span>
+                    <input type="hidden" name="reviewed_date" value="{{ now()->format('Y-m-d') }}">
                 </td>
                 <td>
                     <strong>Time:</strong>
-                    <input type="time" name="reviewed_time" value="{{ now()->format('H:i') }}" style="width:60px;">
+                    <span class="auto-val" data-field="reviewed_time">{{ now()->format('H:i') }}</span>
+                    <input type="hidden" name="reviewed_time" value="{{ now()->format('H:i') }}">
                 </td>
                 <td>
                     <strong>Reviewed by:</strong>
-                    <input type="text" name="reviewed_by" placeholder="Supervisor/Pathologist" style="width:110px;">
+                    <input type="text" name="reviewed_by" style="width:110px;">
                 </td>
                 <td>
                     <strong>Signature</strong> <span class="sig-line"></span>
@@ -522,11 +526,13 @@
                     </td>
                     <td style="width:22%;">
                         <strong>Date:</strong>
-                        <input type="date" name="verified_date" style="width:95px;">
+                        <span class="auto-val" data-field="verified_date"></span>
+                        <input type="hidden" name="verified_date">
                     </td>
                     <td style="width:18%;">
                         <strong>Time:</strong>
-                        <input type="time" name="verified_time" style="width:60px;">
+                        <span class="auto-val" data-field="verified_time"></span>
+                        <input type="hidden" name="verified_time">
                     </td>
                     <td>
                         <strong>Signature</strong> <span class="sig-line"></span>
