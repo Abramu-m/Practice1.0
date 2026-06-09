@@ -157,7 +157,7 @@ class ReceiptController extends Controller
 
             // Collectors who processed income that day (for filter dropdown)
             $collectorIds = $income->pluck('created_by')->filter()->unique();
-            $collectors = User::whereIn('id', $collectorIds)->orderBy('name')->get();
+            $collectors = User::whereIn('id', $collectorIds)->orderBy('first_name')->get();
 
             $total_cash    = $income->sum('patient_paid_amount');
             $total_covered = $income->sum('insurance_covered_amount');
