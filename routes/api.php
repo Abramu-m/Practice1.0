@@ -265,6 +265,7 @@ Route::get('/result-template/{templateName}', function($templateName) {
             'consultation.patientVisit',
             'medicalService',
             'formData',
+            'resultedBy',
         ])->findOrFail($investigationId);
         
         // Override medical service for testing if specified

@@ -35,7 +35,7 @@
 .tb-form .bordered { border: 1px solid #000; padding: 3px 5px; }
 .tb-form .auto-val { font-size: 9px; line-height: 13px; display: inline-block; }
 /* Neutralise Bootstrap form-control inside the tb-form so it doesn't inflate cell sizes */
-.tb-form input.form-control,
+.tb-form input.form-control:not([type="radio"]):not([type="checkbox"]),
 .tb-form input[type="text"].form-control,
 .tb-form input[type="date"].form-control,
 .tb-form input[type="time"].form-control {
@@ -44,6 +44,14 @@
     height: 14px !important; font-size: 9px !important;
     box-shadow: none !important; background: transparent !important;
     min-height: unset !important;
+}
+/* Restore radio/checkbox appearance when Bootstrap adds form-control */
+.tb-form input[type="radio"].form-control,
+.tb-form input[type="checkbox"].form-control {
+    border: none !important; border-bottom: none !important;
+    height: auto !important; width: auto !important; min-height: unset !important;
+    display: inline-block !important; box-shadow: none !important;
+    background: transparent !important; padding: 0 !important;
 }
 .tb-form select.form-control,
 .tb-form select.form-select {
@@ -72,8 +80,10 @@
     .tb-form .section-italic { font-size: 13px !important; }
     .tb-form .footnote { font-size: 10px !important; }
     /* Re-calibrate Bootstrap form-control overrides for screen */
-    .tb-form input.form-control, .tb-form input[type="text"].form-control,
-    .tb-form input[type="date"].form-control, .tb-form input[type="time"].form-control {
+    .tb-form input.form-control:not([type="radio"]):not([type="checkbox"]),
+    .tb-form input[type="text"].form-control,
+    .tb-form input[type="date"].form-control,
+    .tb-form input[type="time"].form-control {
         height: 20px !important; font-size: 12px !important;
     }
     .tb-form select.form-control, .tb-form select.form-select {
@@ -473,21 +483,30 @@
         </table>
         </div>{{-- end #section-skin --}}
 
+        @php
+            $resultedAt  = $investigation->resulted_at ?? null;
+            $resultedUser = $investigation->resultedBy ?? auth()->user();
+            $resultedName = $resultedUser
+                ? trim(($resultedUser->first_name ?? '') . ' ' . ($resultedUser->last_name ?? ''))
+                : '';
+            $examDate = $resultedAt ? $resultedAt->format('Y-m-d') : now()->format('Y-m-d');
+            $examTime = $resultedAt ? $resultedAt->format('H:i')   : now()->format('H:i');
+        @endphp
         <table class="grid" style="margin-bottom:6px;">
             <tr>
                 <td style="width:24%;">
                     <strong>Date:</strong>
-                    <span class="auto-val" data-field="examined_date">{{ now()->format('Y-m-d') }}</span>
-                    <input type="hidden" name="examined_date" value="{{ now()->format('Y-m-d') }}">
+                    <span class="auto-val" data-field="examined_date">{{ $examDate }}</span>
+                    <input type="hidden" name="examined_date" value="{{ $examDate }}">
                 </td>
                 <td style="width:20%;">
                     <strong>Time:</strong>
-                    <span class="auto-val" data-field="examined_time">{{ now()->format('H:i') }}</span>
-                    <input type="hidden" name="examined_time" value="{{ now()->format('H:i') }}">
+                    <span class="auto-val" data-field="examined_time">{{ $examTime }}</span>
+                    <input type="hidden" name="examined_time" value="{{ $examTime }}">
                 </td>
                 <td style="width:32%;">
                     <strong>Examined by:</strong>
-                    <input type="text" name="examined_by" value="{{ auth()->user()->first_name ?? '' }} {{ auth()->user()->last_name ?? '' }}" style="width:110px;">
+                    <input type="text" name="examined_by" value="{{ $resultedName }}" style="width:110px;">
                 </td>
                 <td>
                     <strong>Signature</strong> <span class="sig-line"></span>
@@ -496,17 +515,17 @@
             <tr>
                 <td>
                     <strong>Date:</strong>
-                    <span class="auto-val" data-field="reviewed_date">{{ now()->format('Y-m-d') }}</span>
-                    <input type="hidden" name="reviewed_date" value="{{ now()->format('Y-m-d') }}">
+                    <span class="auto-val" data-field="reviewed_date">{{ $examDate }}</span>
+                    <input type="hidden" name="reviewed_date" value="{{ $examDate }}">
                 </td>
                 <td>
                     <strong>Time:</strong>
-                    <span class="auto-val" data-field="reviewed_time">{{ now()->format('H:i') }}</span>
-                    <input type="hidden" name="reviewed_time" value="{{ now()->format('H:i') }}">
+                    <span class="auto-val" data-field="reviewed_time">{{ $examTime }}</span>
+                    <input type="hidden" name="reviewed_time" value="{{ $examTime }}">
                 </td>
                 <td>
                     <strong>Reviewed by:</strong>
-                    <input type="text" name="reviewed_by" style="width:110px;">
+                    <input type="text" name="reviewed_by" value="{{ $resultedName }}" style="width:110px;">
                 </td>
                 <td>
                     <strong>Signature</strong> <span class="sig-line"></span>
@@ -522,17 +541,17 @@
                 <tr>
                     <td style="width:38%;">
                         <strong>Result report verified by:</strong>
-                        <input type="text" name="verified_by" style="width:110px;">
+                        <input type="text" name="verified_by" value="{{ $resultedName }}" style="width:110px;">
                     </td>
                     <td style="width:22%;">
                         <strong>Date:</strong>
-                        <span class="auto-val" data-field="verified_date"></span>
-                        <input type="hidden" name="verified_date">
+                        <span class="auto-val" data-field="verified_date">{{ $examDate }}</span>
+                        <input type="hidden" name="verified_date" value="{{ $examDate }}">
                     </td>
                     <td style="width:18%;">
                         <strong>Time:</strong>
-                        <span class="auto-val" data-field="verified_time"></span>
-                        <input type="hidden" name="verified_time">
+                        <span class="auto-val" data-field="verified_time">{{ $examTime }}</span>
+                        <input type="hidden" name="verified_time" value="{{ $examTime }}">
                     </td>
                     <td>
                         <strong>Signature</strong> <span class="sig-line"></span>
