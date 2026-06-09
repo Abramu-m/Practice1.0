@@ -95,12 +95,12 @@
                                         <td>{{ $fee->visitType->description ?? 'N/A' }}</td>
                                         <td>
                                             <span class="badge bg-success badge-lg">
-                                                ${{ number_format($fee->cash_amount, 2) }}
+                                                {{ number_format($fee->cash_amount, 2) }}
                                             </span>
                                         </td>
                                         <td>
                                             <span class="badge bg-info badge-lg">
-                                                ${{ number_format($fee->covered_amount, 2) }}
+                                                {{ number_format($fee->covered_amount, 2) }}
                                             </span>
                                         </td>
                                         <td>{{ $fee->description ? Str::limit($fee->description, 50) : 'N/A' }}</td>
@@ -139,9 +139,6 @@
                             </tbody>
                         </table>
                     </div>
-                </div>
-                <div class="card-footer">
-                    {{ $consultationFees->appends(request()->query())->links('pagination::bootstrap-5') }}
                 </div>
             </div>
         </div>

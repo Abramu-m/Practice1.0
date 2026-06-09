@@ -46,7 +46,7 @@ class ConsultationFeeController extends Controller
             $query->where('doctor_id', $request->doctor_filter);
         }
 
-        $consultationFees = $query->orderBy('created_at', 'desc')->paginate(15);
+        $consultationFees = $query->orderBy('created_at', 'desc')->get();
         
         // Get doctors for filter dropdown
         $doctors = Doctor::with('user')->where('status', 1)->get();
