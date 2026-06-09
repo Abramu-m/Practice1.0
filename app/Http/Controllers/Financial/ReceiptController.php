@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Financial;
 use App\Http\Controllers\Controller;
 use App\Models\FinancialTransaction;
 use App\Models\Patient;
+use App\Models\User;
 use App\Services\ReceiptGenerationService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -110,60 +111,65 @@ class ReceiptController extends Controller
     {
         try {
             $date = $request->get('date', now()->toDateString());
+            $userId = $request->get('user_id');
             $summary_date = Carbon::parse($date);
-            
-            // Get transactions for the specified date
-            $transactions = FinancialTransaction::whereDate('transaction_date', $date)
+
+            $incomeQuery = FinancialTransaction::whereBetween('transaction_date', [$date . ' 00:00:00', $date . ' 23:59:59'])
                 ->where('transaction_type', 'income')
-                ->with(['patient', 'creator'])
+                ->with(['patient', 'creator', 'visit.visitCategory'])
+                ->orderBy('transaction_date');
+
+            if ($userId) {
+                $incomeQuery->where('created_by', $userId);
+            }
+
+            $income = $incomeQuery->get();
+
+            // Group consultation by insurance scheme (Cash / NHIF / SHIB / CTC-TB etc.)
+            $consultationGroups = $income
+                ->whereIn('category', ['consultation', 'consultation_fees'])
+                ->groupBy(fn($t) => $t->visit?->visitCategory?->description ?? 'Cash');
+
+            // Group investigations by subcategory (Laboratory / Procedure / Specialized etc.)
+            $investigationGroups = $income
+                ->whereIn('category', ['investigation', 'investigation_services'])
+                ->groupBy('subcategory');
+
+            // Group pharmacy: Consulted (prescription-linked) vs Cash Sales
+            $pharmacyGroups = $income
+                ->whereIn('category', ['medication', 'medication_sales'])
+                ->groupBy(fn($t) => $t->subcategory === 'cash_sales' ? 'Cash Sales' : 'Consulted');
+
+            // Non-service income (other income lines)
+            $otherIncome = $income
+                ->whereNotIn('category', [
+                    'consultation', 'consultation_fees',
+                    'investigation', 'investigation_services',
+                    'medication', 'medication_sales',
+                ]);
+
+            // Expenditure for the day (no collector filter — expenses are facility-wide)
+            $expenses = FinancialTransaction::whereBetween('transaction_date', [$date . ' 00:00:00', $date . ' 23:59:59'])
+                ->where('transaction_type', 'expense')
+                ->with(['creator'])
                 ->orderBy('transaction_date')
                 ->get();
 
-            // Calculate metrics
-            $total_revenue = $transactions->sum('amount');
-            $total_transactions = $transactions->count();
-            $patient_payments = $transactions->whereIn('payment_method', ['cash', 'card', 'mobile_money'])->sum('amount');
-            $insurance_payments = $transactions->sum('insurance_covered_amount');
-            
-            // Revenue by category
-            $consultation_revenue = $transactions->where('category', 'consultation')->sum('amount');
-            $investigation_revenue = $transactions->where('category', 'investigation')->sum('amount');
-            $medication_revenue = $transactions->where('category', 'medication')->sum('amount');
-            
-            // Payment methods breakdown
-            $payment_methods = [];
-            foreach ($transactions->groupBy('payment_method') as $method => $methodTransactions) {
-                $payment_methods[$method] = [
-                    'count' => $methodTransactions->count(),
-                    'amount' => $methodTransactions->sum('amount')
-                ];
-            }
-            
-            // Hourly breakdown
-            $hourly_breakdown = [];
-            foreach ($transactions as $transaction) {
-                $hour = $transaction->transaction_date->format('H');
-                if (!isset($hourly_breakdown[$hour])) {
-                    $hourly_breakdown[$hour] = ['count' => 0, 'amount' => 0];
-                }
-                $hourly_breakdown[$hour]['count']++;
-                $hourly_breakdown[$hour]['amount'] += $transaction->amount;
-            }
-            ksort($hourly_breakdown);
+            // Collectors who processed income that day (for filter dropdown)
+            $collectorIds = $income->pluck('created_by')->filter()->unique();
+            $collectors = User::whereIn('id', $collectorIds)->orderBy('name')->get();
 
-            return view('financial.receipts.daily-summary', [
-                'summary_date' => $summary_date,
-                'transactions' => $transactions,
-                'total_revenue' => $total_revenue,
-                'total_transactions' => $total_transactions,
-                'patient_payments' => $patient_payments,
-                'insurance_payments' => $insurance_payments,
-                'consultation_revenue' => $consultation_revenue,
-                'investigation_revenue' => $investigation_revenue,
-                'medication_revenue' => $medication_revenue,
-                'payment_methods' => $payment_methods,
-                'hourly_breakdown' => $hourly_breakdown
-            ]);
+            $total_cash    = $income->sum('patient_paid_amount');
+            $total_covered = $income->sum('insurance_covered_amount');
+            $total_revenue = $income->sum('amount');
+            $total_expenses = $expenses->sum('amount');
+
+            return view('financial.receipts.daily-summary', compact(
+                'summary_date', 'date', 'userId',
+                'consultationGroups', 'investigationGroups', 'pharmacyGroups',
+                'otherIncome', 'expenses', 'collectors',
+                'total_cash', 'total_covered', 'total_revenue', 'total_expenses'
+            ));
 
         } catch (\Exception $e) {
             return back()->with('error', 'Error generating daily summary: ' . $e->getMessage());
