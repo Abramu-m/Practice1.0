@@ -67,6 +67,26 @@
                 @endif
                 
                 {{-- Result Template Section --}}
+                <input type="hidden" name="selected_template_code" id="selected_template_code"
+                       value="{{ $investigation->medicalService->resultTemplate->code ?? '' }}">
+
+                @if(!$investigation->medicalService->resultTemplate)
+                <div class="alert alert-warning d-flex align-items-center gap-3 mb-3" id="template_selector_card">
+                    <i class="fas fa-exclamation-triangle fs-5 flex-shrink-0"></i>
+                    <div class="flex-grow-1">
+                        <strong>No result template assigned to this investigation.</strong>
+                        <div class="mt-2 d-flex align-items-center gap-2 flex-wrap">
+                            <label class="mb-0 text-nowrap">Select template:</label>
+                            <select id="manual_template_select" class="form-select form-select-sm" style="width:auto; min-width:240px">
+                                <option value="">— Choose a template —</option>
+                                @foreach($availableTemplates as $t)
+                                    <option value="{{ $t->code }}">{{ $t->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                @endif
 
                 {{-- Custom Template Form Container --}}
                 <div id="custom_template_form" class="result-form border rounded p-3 mb-4" style="display: none; background-color: #f8f9fa;">
@@ -187,10 +207,16 @@
 let parameterCount = {{ $investigation->templateResults->count() > 0 ? $investigation->templateResults->count() : 1 }};
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Auto-load template (custom or simple)
-    setTimeout(function() {
-        loadResultTemplate();
-    }, 500);
+    const manualSelect = document.getElementById('manual_template_select');
+    if (manualSelect) {
+        // No template assigned — wait for user to pick one
+        manualSelect.addEventListener('change', function() {
+            if (this.value) loadResultTemplate(this.value);
+        });
+    } else {
+        // Template pre-assigned — auto-load
+        setTimeout(loadResultTemplate, 500);
+    }
 });
 
 // Form validation
@@ -219,13 +245,24 @@ if (resultsForm) {
 }
 
 // Custom Result Template Functions
-function loadResultTemplate() {
+function loadResultTemplate(overrideCode = null) {
     const templateContainer = document.getElementById('custom_template_form');
     const contentContainer = document.getElementById('template_content_container');
-    
+
+    // Determine which template to load
+    let templateName = overrideCode || '{{ $investigation->medicalService->resultTemplate->code ?? "" }}';
+
+    if (!templateName || templateName === 'none' || templateName === '') {
+        return; // No template — wait for user to select
+    }
+
+    // Update the hidden input so storeResults receives the chosen template
+    const hiddenCode = document.getElementById('selected_template_code');
+    if (hiddenCode) hiddenCode.value = templateName;
+
     // Show the template container
     templateContainer.style.display = 'block';
-    
+
     // Show loading state
     contentContainer.innerHTML = `
         <div class="text-center p-3">
@@ -235,14 +272,6 @@ function loadResultTemplate() {
             <p class="mt-2 mb-0">Loading result template...</p>
         </div>
     `;
-    
-    // Get the template name from the medical service
-    let templateName = '{{ $investigation->medicalService->resultTemplate->code ?? "" }}';
-    
-    // If no custom template or 'none', use 'simple' template
-    if (!templateName || templateName === 'none' || templateName === '') {
-        templateName = 'simple';
-    }
     
     // Load the template via AJAX
     const url = `/api/result-template/${templateName}?investigation_id={{ $investigation->id }}`;
@@ -255,7 +284,11 @@ function loadResultTemplate() {
                     ${data}
                 </div>
             `;
-            
+
+            // Hide the selector card once a template is loaded
+            const selectorCard = document.getElementById('template_selector_card');
+            if (selectorCard) selectorCard.style.display = 'none';
+
             // Execute any scripts in the loaded template
             executeTemplateScripts(contentContainer);
             
@@ -264,7 +297,13 @@ function loadResultTemplate() {
             if (analyzedByInput) {
                 analyzedByInput.value = '{{ auth()->user()->name ?? "" }}';
             }
-            
+
+            // Expose current user name so template JS can auto-fill "received by" fields
+            const tbForm = contentContainer.querySelector('#tb-investigation-form');
+            if (tbForm) {
+                tbForm.dataset.receivedBy = '{{ trim((auth()->user()->first_name ?? "") . " " . (auth()->user()->last_name ?? "")) }}';
+            }
+
             // Make the template form fields interactive
             makeTemplateFieldsInteractive();
         })

@@ -281,7 +281,11 @@ class LabController extends Controller
             $templateDisplayName = 'Simple Lab Values';
         }
 
-        return view('lab.results.form', compact('investigation', 'resultType', 'returnTo', 'investigationIdForReturn', 'resultTemplateTypes', 'templateDisplayName'));
+        $availableTemplates = \App\Models\ResultTemplate::where('is_active', true)
+            ->orderBy('name')
+            ->get(['id', 'name', 'code']);
+
+        return view('lab.results.form', compact('investigation', 'resultType', 'returnTo', 'investigationIdForReturn', 'resultTemplateTypes', 'templateDisplayName', 'availableTemplates'));
     }
 
     /**
@@ -298,16 +302,19 @@ class LabController extends Controller
         try {
             DB::beginTransaction();
 
-            // Get the template from the relationship
+            // Get the template from the relationship; fall back to manually selected template
             $resultTemplate = $investigation->medicalService->resultTemplate;
-            $templateCode = $resultTemplate ? $resultTemplate->code : 'simple_lab';
-            
-            // Ensure we have a valid template code
-            if ($templateCode === 'none' || empty($templateCode)) {
-                $templateCode = 'simple_lab';
+
+            if (!$resultTemplate && $request->filled('selected_template_code')) {
+                $resultTemplate = \App\Models\ResultTemplate::where('code', $request->input('selected_template_code'))->first();
             }
-            
-            $templateName = $resultTemplate ? $resultTemplate->name : 'Simple Lab Results';
+
+            $templateCode = $resultTemplate ? $resultTemplate->code : 'single_numeric_lab';
+            if (empty($templateCode) || $templateCode === 'none') {
+                $templateCode = 'single_numeric_lab';
+            }
+
+            $templateName = $resultTemplate ? $resultTemplate->name : 'Single Numeric Lab Values';
 
             // Collect all template data from the request
             $templateData = [];
