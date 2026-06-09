@@ -59,6 +59,36 @@
 .tb-request-section input[type="checkbox"] { cursor: not-allowed; }
 /* Result section: full opacity, interactive */
 .tb-result-section { opacity: 1; }
+
+/* ── Screen-only: larger, more readable ── */
+@media screen {
+    .tb-form { font-size: 13px !important; padding: 20px 24px !important; }
+    .tb-form .results-table td, .tb-form .results-table th { font-size: 12px !important; padding: 5px 6px !important; }
+    .tb-form .grid td { padding: 3px 6px !important; }
+    .tb-form input[type="text"], .tb-form input[type="date"], .tb-form input[type="time"] { font-size: 12px !important; height: 20px !important; }
+    .tb-form select { font-size: 12px !important; height: 20px !important; }
+    .tb-form .auto-val { font-size: 12px !important; line-height: 20px !important; }
+    .tb-form .pre-filled { font-size: 13px !important; line-height: 20px !important; }
+    .tb-form .section-italic { font-size: 13px !important; }
+    .tb-form .footnote { font-size: 10px !important; }
+    /* Re-calibrate Bootstrap form-control overrides for screen */
+    .tb-form input.form-control, .tb-form input[type="text"].form-control,
+    .tb-form input[type="date"].form-control, .tb-form input[type="time"].form-control {
+        height: 20px !important; font-size: 12px !important;
+    }
+    .tb-form select.form-control, .tb-form select.form-select {
+        height: 20px !important; font-size: 12px !important;
+    }
+    /* Blue outline marks the entry zone */
+    .tb-result-section { border: 2px solid #0d6efd !important; border-radius: 6px !important; padding: 12px !important; }
+    /* Section label rows — visible on screen, hidden in print */
+    .tb-section-label td {
+        background: #dbeafe !important; color: #1e40af !important;
+        font-weight: bold !important; text-transform: uppercase !important;
+        letter-spacing: .05em !important; font-size: 11px !important;
+        padding: 4px 6px !important; border-bottom: 2px solid #93c5fd !important;
+    }
+}
 @media print {
     @page { size: A4 portrait; margin: 10mm 12mm; }
     /* Hide AdminLTE app chrome */
@@ -79,6 +109,8 @@
     .tb-form .sig-line { height: 15px !important; }
     .tb-form input, .tb-form select { color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     .tb-request-section { opacity: 1 !important; }
+    /* Hide screen-only section labels */
+    .tb-section-label { display: none !important; }
     /* Always show all result sections in print */
     #section-microscopy, #section-xpert, #section-lflam { display: table-row-group !important; }
     #section-skin { display: block !important; }
@@ -296,6 +328,7 @@
 
             {{-- MICROSCOPY SECTION (ZN / FM staining) --}}
             <tbody id="section-microscopy">
+                <tr class="tb-section-label"><td colspan="9">Microscopy (ZN / FM Staining)</td></tr>
                 @foreach(['A','B','C'] as $r)
                 <tr>
                     <td>
@@ -328,6 +361,7 @@
 
             {{-- XPERT MTB/RIF SECTION --}}
             <tbody id="section-xpert">
+                <tr class="tb-section-label"><td colspan="9">Xpert MTB/RIF</td></tr>
                 <tr>
                     <td>
                         <span class="auto-val" data-field="xpert_date"></span>
@@ -366,6 +400,7 @@
 
             {{-- TB LF-LAM SECTION --}}
             <tbody id="section-lflam">
+                <tr class="tb-section-label"><td colspan="9">TB LF-LAM</td></tr>
                 <tr>
                     <td>
                         <span class="auto-val" data-field="lflam_date"></span>
