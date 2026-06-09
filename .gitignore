@@ -27,3 +27,6 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Large local migration dumps
+/docs/migrate/local/*.sql
