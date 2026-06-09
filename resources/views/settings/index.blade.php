@@ -125,55 +125,13 @@
 <div class="container" id="report-config">
     <div class="card mt-4">
         <div class="card-header">
-            <h5 class="card-title mb-0"><i class="fas fa-chart-bar me-2"></i>Configure Reports — Malaria Vipimo</h5>
+            <h5 class="card-title mb-0"><i class="fas fa-chart-bar me-2"></i>Configure Reports</h5>
         </div>
         <div class="card-body">
-            <p class="text-muted mb-3">
-                Select which laboratory investigation corresponds to mRDT (Rapid Diagnostic Test) and which to BS (Blood Smear)
-                for the <strong>Fomu ya Taarifa ya Vipimo vya Malaria</strong> monthly PDF report.
-            </p>
-            <form method="POST" action="{{ route('settings.report-config.update') }}">
-                @csrf
-                @method('PUT')
-
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold">mRDT Investigation <span class="text-danger">*</span></label>
-                        <select name="malaria_mrdt_service_id" class="form-select">
-                            <option value="">— Select investigation —</option>
-                            @foreach($labServices as $svc)
-                            <option value="{{ $svc->id }}"
-                                {{ $reportConfig['malaria_mrdt_service_id'] == $svc->id ? 'selected' : '' }}>
-                                {{ $svc->name }}
-                            </option>
-                            @endforeach
-                        </select>
-                        <div class="form-text">Which investigation is the Malaria Rapid Diagnostic Test (mRDT)?</div>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold">Blood Smear (BS) Investigation <span class="text-danger">*</span></label>
-                        <select name="malaria_bs_service_id" class="form-select">
-                            <option value="">— Select investigation —</option>
-                            @foreach($labServices as $svc)
-                            <option value="{{ $svc->id }}"
-                                {{ $reportConfig['malaria_bs_service_id'] == $svc->id ? 'selected' : '' }}>
-                                {{ $svc->name }}
-                            </option>
-                            @endforeach
-                        </select>
-                        <div class="form-text">Which investigation is the Malaria Blood Smear (BS)?</div>
-                    </div>
-                </div>
-
-                <div class="mt-3">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save me-1"></i> Save Report Configuration
-                    </button>
-                    <a href="{{ route('admin.reports.malaria-vipimo') }}" class="btn btn-outline-secondary ms-2">
-                        <i class="fas fa-eye me-1"></i> View Malaria Vipimo Report
-                    </a>
-                </div>
-            </form>
+            <p class="text-muted mb-3">Each report has its own dedicated configuration page.</p>
+            <a href="{{ route('settings.reports.malaria-vipimo') }}" class="btn btn-outline-primary">
+                <i class="bi bi-virus me-1 text-danger"></i> Malaria Vipimo — Configure
+            </a>
         </div>
     </div>
 </div>

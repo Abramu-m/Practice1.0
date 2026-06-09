@@ -784,7 +784,7 @@
                           </a>
                       </li>
                       <li class="nav-item">
-                          <a href="{{ route('settings.index') }}#report-config" class="nav-link nav-sub-item">
+                          <a href="{{ route('settings.reports.malaria-vipimo') }}" class="nav-link nav-sub-item {{ nav_active_class(['settings.reports.malaria-vipimo']) }}">
                             <i class="nav-icon bi bi-virus text-danger"></i>
                             <p>Malaria Vipimo</p>
                           </a>

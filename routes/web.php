@@ -76,6 +76,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/settings', [App\Http\Controllers\SettingsController::class, 'index'])->name('settings.index');
     Route::put('/settings/facility', [App\Http\Controllers\SettingsController::class, 'updateFacility'])->name('settings.facility.update');
     Route::put('/settings/report-config', [App\Http\Controllers\SettingsController::class, 'updateReportConfig'])->name('settings.report-config.update');
+    Route::get('/settings/reports/malaria-vipimo', [App\Http\Controllers\SettingsController::class, 'malariaVipimoSettings'])->name('settings.reports.malaria-vipimo');
+    Route::put('/settings/reports/malaria-vipimo', [App\Http\Controllers\SettingsController::class, 'updateMalariaVipimoSettings'])->name('settings.reports.malaria-vipimo.update');
 
     Route::get('/facility-setup-required', function () {
         return view('facility.setup-required');

@@ -114,13 +114,17 @@ class MalariaVipimoReportService extends BaseReportService
         return $counts;
     }
 
-    private function queryInvestigations(int $serviceId): array
+    private function queryInvestigations(int $serviceId, ?string $templateName = null): array
     {
+        $templateClause = $templateName
+            ? "AND template_name = " . DB::connection()->getPdo()->quote($templateName)
+            : '';
+
         return DB::table('investigations as inv')
             ->join('patient_visits as pv', 'pv.id', '=', 'inv.visit_id')
             ->join('patients as p', 'p.id', '=', 'pv.patient')
             ->leftJoin(
-                DB::raw('(SELECT investigation_id, form_data FROM investigation_template_results WHERE form_status = "final" ORDER BY id DESC) as itr'),
+                DB::raw("(SELECT investigation_id, form_data FROM investigation_template_results WHERE form_status = 'final' {$templateClause} ORDER BY id DESC) as itr"),
                 'itr.investigation_id', '=', 'inv.id'
             )
             ->where('inv.medical_service_id', $serviceId)
@@ -157,15 +161,17 @@ class MalariaVipimoReportService extends BaseReportService
     {
         $baseData = $this->getBaseReportData();
 
-        $mrdtId = (int) SystemSetting::get('malaria_mrdt_service_id', 0);
-        $bsId   = (int) SystemSetting::get('malaria_bs_service_id',   0);
+        $mrdtId       = (int) SystemSetting::get('malaria_mrdt_service_id', 0);
+        $bsId         = (int) SystemSetting::get('malaria_bs_service_id',   0);
+        $mrdtTemplate = SystemSetting::get('malaria_mrdt_template_name') ?: null;
+        $bsTemplate   = SystemSetting::get('malaria_bs_template_name')   ?: null;
 
         $mrdtService = $mrdtId ? DB::table('medical_services')->where('id', $mrdtId)->value('name') : null;
         $bsService   = $bsId   ? DB::table('medical_services')->where('id', $bsId)->value('name')   : null;
 
-        // Query investigations
-        $mrdtRows = $mrdtId ? $this->queryInvestigations($mrdtId) : [];
-        $bsRows   = $bsId   ? $this->queryInvestigations($bsId)   : [];
+        // Query investigations (filtered by template when configured)
+        $mrdtRows = $mrdtId ? $this->queryInvestigations($mrdtId, $mrdtTemplate) : [];
+        $bsRows   = $bsId   ? $this->queryInvestigations($bsId,   $bsTemplate)   : [];
 
         // Process results
         $mrdtCounts = $this->processInvestigations(

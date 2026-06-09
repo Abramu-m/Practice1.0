@@ -6,6 +6,7 @@ use App\Models\Facility;
 use App\Models\MedicalService;
 use App\Models\SystemSetting;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class SettingsController extends Controller
 {
@@ -67,5 +68,42 @@ class SettingsController extends Controller
         }
 
         return redirect()->route('settings.index', ['#report-config'])->with('success', 'Report configuration saved.');
+    }
+
+    public function malariaVipimoSettings()
+    {
+        $labServices = MedicalService::whereHas('serviceCategory', fn($q) => $q->where('name', 'Laboratory'))
+            ->orderBy('name')
+            ->get(['id', 'name']);
+
+        $availableTemplates = DB::table('investigation_template_results')
+            ->distinct()
+            ->orderBy('template_name')
+            ->pluck('template_name');
+
+        $config = [
+            'malaria_mrdt_service_id'    => SystemSetting::get('malaria_mrdt_service_id'),
+            'malaria_mrdt_template_name' => SystemSetting::get('malaria_mrdt_template_name'),
+            'malaria_bs_service_id'      => SystemSetting::get('malaria_bs_service_id'),
+            'malaria_bs_template_name'   => SystemSetting::get('malaria_bs_template_name'),
+        ];
+
+        return view('settings.reports.malaria_vipimo', compact('labServices', 'availableTemplates', 'config'));
+    }
+
+    public function updateMalariaVipimoSettings(Request $request)
+    {
+        $keys = [
+            'malaria_mrdt_service_id',
+            'malaria_mrdt_template_name',
+            'malaria_bs_service_id',
+            'malaria_bs_template_name',
+        ];
+
+        foreach ($keys as $key) {
+            SystemSetting::set($key, $request->input($key, ''));
+        }
+
+        return redirect()->route('settings.reports.malaria-vipimo')->with('success', 'Malaria Vipimo report configuration saved.');
     }
 }
