@@ -27,7 +27,13 @@
 .tb-form input[type="time"].cell-input { width: 100%; height: 13px; }
 .tb-form select { font-size: 8.5px; font-family: Arial, sans-serif; border: none; border-bottom: 1px solid #000; background: transparent; padding: 0; width: 100%; height: 14px; outline: none; -webkit-appearance: none; -moz-appearance: none; appearance: none; }
 .tb-form input[type="radio"],
-.tb-form input[type="checkbox"] { margin: 0 1px; transform: scale(0.85); vertical-align: middle; }
+.tb-form input[type="checkbox"] {
+    -webkit-appearance: auto !important; appearance: auto !important;
+    display: inline-block !important; width: auto !important; height: auto !important;
+    min-height: unset !important; border: none !important; border-bottom: none !important;
+    padding: 0 !important; box-shadow: none !important; background: transparent !important;
+    margin: 0 1px; transform: scale(0.85); vertical-align: middle;
+}
 .tb-form .pre-filled { font-weight: bold; font-style: italic; border-bottom: 1px solid #000; display: inline-block; min-width: 60px; color: #000; line-height: 13px; }
 .tb-form .sig-line { border-bottom: 1px solid #000; display: inline-block; width: 90px; height: 13px; }
 .tb-form .section-italic { font-style: italic; font-weight: bold; font-size: 10px; margin: 5px 0 2px; }
@@ -45,14 +51,7 @@
     box-shadow: none !important; background: transparent !important;
     min-height: unset !important;
 }
-/* Restore radio/checkbox appearance when Bootstrap adds form-control */
-.tb-form input[type="radio"].form-control,
-.tb-form input[type="checkbox"].form-control {
-    border: none !important; border-bottom: none !important;
-    height: auto !important; width: auto !important; min-height: unset !important;
-    display: inline-block !important; box-shadow: none !important;
-    background: transparent !important; padding: 0 !important;
-}
+
 .tb-form select.form-control,
 .tb-form select.form-select {
     border: none !important; border-bottom: 1px solid #000 !important;
