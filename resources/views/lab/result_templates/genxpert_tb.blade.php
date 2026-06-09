@@ -425,7 +425,13 @@
                         <span class="auto-val" data-field="lflam_received_by"></span>
                         <input type="hidden" name="lflam_received_by">
                     </td>
-                    <td></td>
+                    <td>
+                        <select name="lflam_appearance">
+                            <option value="">—</option>
+                            <option>Salivary</option><option>Mucoid</option><option>Purulent</option>
+                            <option>Blood-stained</option><option>Mucopurulent</option><option>Other</option>
+                        </select>
+                    </td>
                     <td style="text-align:center;"><input type="radio" name="lflam_result" value="negative"></td>
                     <td style="text-align:center;"><input type="radio" name="lflam_result" value="positive"></td>
                     <td style="text-align:center;"><input type="radio" name="lflam_result" value="indeterminate"></td>
