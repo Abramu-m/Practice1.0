@@ -1,29 +1,36 @@
 @extends('layouts.app_main_layout')
 
-@section('page_title', 'Blood Transfusion Lab Report')
+@section('page_title', 'Blood Transfusion Monthly Report')
+
+@section('styles')
+<style>
+@media print {
+    .app-header,
+    .app-sidebar,
+    .app-footer,
+    .no-print { display: none !important; }
+
+    .app-wrapper, .app-main, .app-content, .container-fluid {
+        margin: 0 !important; padding: 0 !important;
+        width: 100% !important; background: #fff !important;
+    }
+
+    @page { margin: 10mm 12mm; }
+}
+</style>
+@endsection
 
 @section('main_content')
 <div class="container-fluid">
-    <div class="row mb-4">
-        <div class="col-md-12">
-            <h1 class="page-title">
-                <i class="fas fa-flask"></i> Blood Transfusion Lab Report
-            </h1>
-            <p class="text-muted">
-                {{ $facility['name'] ?? 'Facility' }} |
-                {{ $month_name }} {{ $year }}
-            </p>
-        </div>
-    </div>
 
-    <!-- Report Filters & Controls -->
-    <div class="row mb-3">
+    {{-- Controls --}}
+    <div class="row mb-3 no-print">
         <div class="col-md-12">
             <div class="card">
-                <div class="card-body">
-                    <form method="GET" action="{{ route('admin.reports.lab-blood-transfusion') }}" class="form-inline">
-                        <label class="mr-2">Select Month:</label>
-                        <select name="month" class="form-control form-control-sm mr-2" required>
+                <div class="card-body py-2">
+                    <form method="GET" action="{{ route('admin.reports.lab-blood-transfusion') }}" class="d-flex align-items-center gap-2 flex-wrap">
+                        <label class="mb-0 me-1">Month:</label>
+                        <select name="month" class="form-select form-select-sm" style="width:auto" required>
                             @for ($m = 1; $m <= 12; $m++)
                                 <option value="{{ $m }}" {{ $m == $month ? 'selected' : '' }}>
                                     {{ \Carbon\Carbon::createFromDate($year, $m, 1)->format('F') }}
@@ -31,14 +38,14 @@
                             @endfor
                         </select>
                         <input type="hidden" name="year" value="{{ $year }}">
-                        <button type="submit" class="btn btn-sm btn-primary mr-2">
+                        <button type="submit" class="btn btn-sm btn-primary">
                             <i class="fas fa-search"></i> Filter
                         </button>
                         <button type="submit" name="pdf" value="1" class="btn btn-sm btn-danger">
                             <i class="fas fa-file-pdf"></i> Download PDF
                         </button>
-                        <a href="{{ route('admin.reports.index') }}" class="btn btn-sm btn-secondary ml-2">
-                            <i class="fas fa-arrow-left"></i> Back
+                        <a href="{{ route('admin.lab-settings.blood-transfusion.index') }}" class="btn btn-sm btn-secondary ms-auto">
+                            <i class="fas fa-sliders-h"></i> Configure Mapping
                         </a>
                     </form>
                 </div>
@@ -46,132 +53,57 @@
         </div>
     </div>
 
-    <!-- Summary Statistics -->
-    <div class="row mb-4">
-        <div class="col-md-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h6 class="card-title">Total Tests</h6>
-                    <h2 class="text-primary mb-0">{{ $total_tests }}</h2>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h6 class="card-title">Completed</h6>
-                    <h2 class="text-success mb-0">{{ $completed_tests }}</h2>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h6 class="card-title">Pending</h6>
-                    <h2 class="text-warning mb-0">{{ $pending_tests }}</h2>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h6 class="card-title">Completion Rate</h6>
-                    <h2 class="text-info mb-0">{{ $completion_rate }}%</h2>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Investigations List -->
+    {{-- Report --}}
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-8 mx-auto">
             <div class="card">
-                <div class="card-header bg-info text-white">
-                    <h6 class="mb-0">Blood Transfusion Investigations</h6>
-                </div>
                 <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-sm table-striped">
-                            <thead class="bg-light">
-                                <tr>
-                                    <th>Test Name</th>
-                                    <th class="text-center">Patient ID</th>
-                                    <th class="text-center">Visit Date</th>
-                                    <th class="text-center">Status</th>
-                                    <th class="text-center">Result Value</th>
-                                    <th class="text-center">Unit</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse ($investigations as $inv)
-                                    <tr>
-                                        <td>{{ $inv['test_name'] }}</td>
-                                        <td class="text-center">{{ $inv['patient_id'] }}</td>
-                                        <td class="text-center">{{ $inv['visit_date'] }}</td>
-                                        <td class="text-center">
-                                            @if ($inv['status'] === 'Completed' || !empty($inv['result_value']))
-                                                <span class="badge badge-success">Completed</span>
-                                            @else
-                                                <span class="badge badge-warning">Pending</span>
-                                            @endif
-                                        </td>
-                                        <td class="text-center">{{ $inv['result_value'] ?? '-' }}</td>
-                                        <td class="text-center">{{ $inv['result_unit'] ?? '-' }}</td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="6" class="text-center text-muted">No blood transfusion investigations found this month</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
 
-            <!-- Summary Information -->
-            <div class="row mt-4">
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-body">
-                            <h6 class="card-title">Report Information</h6>
-                            <p class="mb-1"><strong>Facility:</strong> {{ $facility['name'] ?? 'N/A' }}</p>
-                            <p class="mb-1"><strong>Region:</strong> {{ $facility['region'] ?? 'N/A' }}</p>
-                            <p class="mb-1"><strong>District:</strong> {{ $facility['district'] ?? 'N/A' }}</p>
-                            <p class="mb-0"><strong>Generated:</strong> {{ $generated_at->format('d M Y H:i') }}</p>
-                        </div>
+                    <div class="text-center mb-3">
+                        <h5 class="fw-bold mb-1">{{ $facility['name'] ?? '' }}</h5>
+                        <h5 class="fw-bold mb-0">BLOOD TRANSFUSION MONTHLY REPORT</h5>
                     </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-body">
-                            <h6 class="card-title">Laboratory Summary</h6>
-                            <p class="mb-1"><strong>Total Tests:</strong> {{ $total_tests }}</p>
-                            <p class="mb-1"><strong>Completed:</strong> {{ $completed_tests }}</p>
-                            <p class="mb-1"><strong>Pending:</strong> {{ $pending_tests }}</p>
-                            <p class="mb-0"><strong>Completion Rate:</strong> {{ $completion_rate }}%</p>
-                        </div>
-                    </div>
+
+                    <table class="table table-bordered table-sm mb-3">
+                        <tr>
+                            <td><strong>Council:</strong> {{ $facility['district'] ?? '' }}</td>
+                            <td><strong>Region:</strong> {{ $facility['region'] ?? '' }}</td>
+                            <td><strong>Month:</strong> {{ $month_name }}</td>
+                            <td><strong>Year:</strong> {{ $year }}</td>
+                        </tr>
+                    </table>
+
+                    <table class="table table-bordered table-sm">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Test</th>
+                                <th class="text-center" style="width:80px">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($rows as $row)
+                            <tr>
+                                <td>{{ $row->row_label }}</td>
+                                <td class="text-center">{{ $counts[$row->row_key] ?? 0 }}</td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                        <tfoot>
+                            <tr class="table-light fw-bold">
+                                <td>GRAND TOTAL</td>
+                                <td class="text-center">{{ $grand_total }}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+                    <p class="text-muted small mt-2 mb-0 no-print">
+                        Generated: {{ $generated_at->format('d M Y H:i') }}
+                    </p>
+
                 </div>
             </div>
         </div>
     </div>
+
 </div>
-
-<style>
-.page-title {
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 0.5rem;
-}
-
-.table-responsive {
-    border-radius: 4px;
-}
-
-.table thead th {
-    border-bottom: 2px solid #dee2e6;
-    font-weight: 600;
-}
-</style>
 @endsection

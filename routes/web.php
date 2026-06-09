@@ -234,6 +234,12 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsAdmin::class, 'facil
             ->name('lab-parasitology');
     });
 
+    // Lab Report Setup
+    Route::get('/admin/lab-settings/blood-transfusion', [\App\Http\Controllers\BloodTransfusionReportSetupController::class, 'index'])
+        ->name('admin.lab-settings.blood-transfusion.index');
+    Route::put('/admin/lab-settings/blood-transfusion', [\App\Http\Controllers\BloodTransfusionReportSetupController::class, 'update'])
+        ->name('admin.lab-settings.blood-transfusion.update');
+
 });
 
 // ================================
