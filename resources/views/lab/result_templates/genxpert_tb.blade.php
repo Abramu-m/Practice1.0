@@ -371,6 +371,14 @@
             {{-- XPERT MTB/RIF SECTION --}}
             <tbody id="section-xpert">
                 <tr class="tb-section-label"><td colspan="9">Xpert MTB/RIF</td></tr>
+                <tr style="background:#f0f0f0;">
+                    <td colspan="4" style="border-right:none;"></td>
+                    <td style="text-align:center; font-style:italic; font-weight:bold;">N#</td>
+                    <td style="text-align:center; font-style:italic; font-weight:bold;">T#</td>
+                    <td style="text-align:center; font-style:italic; font-weight:bold;">TI#</td>
+                    <td style="text-align:center; font-style:italic; font-weight:bold;">RR#</td>
+                    <td style="text-align:center; font-style:italic; font-weight:bold;">I#</td>
+                </tr>
                 <tr>
                     <td>
                         <span class="auto-val" data-field="xpert_date"></span>
@@ -388,28 +396,25 @@
                             <option>Blood-stained</option><option>Mucopurulent</option><option>Other</option>
                         </select>
                     </td>
-                    <td colspan="5" style="padding:2px;">
-                        <div style="display:flex; justify-content:space-evenly; flex-wrap:wrap; gap:2px;">
-                            <label><input type="radio" name="xpert_result" value="negative"> Negative</label>
-                            <label><input type="radio" name="xpert_result" value="positive"> Positive</label>
-                            <label><input type="radio" name="xpert_result" value="indeterminate"> Indeterminate</label>
-                            <label><input type="radio" name="xpert_result" value="invalid"> Invalid</label>
-                        </div>
-                    </td>
-                </tr>
-                <tr style="background:#f9f9f9;">
-                    <td colspan="4" style="font-style:italic; border-right:none;"></td>
-                    <td style="text-align:center; font-style:italic;">3*</td>
-                    <td style="text-align:center; font-style:italic;">T*</td>
-                    <td style="text-align:center; font-style:italic;">TI*</td>
-                    <td style="text-align:center; font-style:italic;">RR*</td>
-                    <td style="text-align:center; font-style:italic;">I*</td>
+                    <td style="text-align:center;"><input type="radio" name="xpert_result" value="negative"></td>
+                    <td style="text-align:center;"><input type="radio" name="xpert_result" value="positive"></td>
+                    <td style="text-align:center;"><input type="radio" name="xpert_result" value="indeterminate"></td>
+                    <td style="text-align:center;"><input type="radio" name="xpert_result" value="rr"></td>
+                    <td style="text-align:center;"><input type="radio" name="xpert_result" value="invalid"></td>
                 </tr>
             </tbody>
 
             {{-- TB LF-LAM SECTION --}}
             <tbody id="section-lflam">
                 <tr class="tb-section-label"><td colspan="9">TB LF-LAM</td></tr>
+                <tr style="background:#f0f0f0;">
+                    <td colspan="4" style="border-right:none;"></td>
+                    <td style="text-align:center; font-style:italic; font-weight:bold;">Negative</td>
+                    <td style="text-align:center; font-style:italic; font-weight:bold;">Positive</td>
+                    <td style="text-align:center; font-style:italic; font-weight:bold;">Indeterminate</td>
+                    <td style="text-align:center; font-style:italic; font-weight:bold;">Invalid</td>
+                    <td></td>
+                </tr>
                 <tr>
                     <td>
                         <span class="auto-val" data-field="lflam_date"></span>
@@ -421,14 +426,11 @@
                         <input type="hidden" name="lflam_received_by">
                     </td>
                     <td></td>
-                    <td colspan="5" style="padding:2px;">
-                        <div style="display:flex; justify-content:space-evenly; flex-wrap:wrap; gap:2px;">
-                            <label><input type="radio" name="lflam_result" value="negative"> Negative</label>
-                            <label><input type="radio" name="lflam_result" value="positive"> Positive</label>
-                            <label><input type="radio" name="lflam_result" value="indeterminate"> Indeterminate</label>
-                            <label><input type="radio" name="lflam_result" value="invalid"> Invalid</label>
-                        </div>
-                    </td>
+                    <td style="text-align:center;"><input type="radio" name="lflam_result" value="negative"></td>
+                    <td style="text-align:center;"><input type="radio" name="lflam_result" value="positive"></td>
+                    <td style="text-align:center;"><input type="radio" name="lflam_result" value="indeterminate"></td>
+                    <td style="text-align:center;"><input type="radio" name="lflam_result" value="invalid"></td>
+                    <td></td>
                 </tr>
             </tbody>
 

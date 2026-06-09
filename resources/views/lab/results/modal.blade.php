@@ -320,7 +320,7 @@
                     $v = strtolower($val);
                     $class = match(true) {
                         in_array($v, ['neg', 'negative'])             => 'success',
-                        in_array($v, ['positive'])                    => 'danger',
+                        in_array($v, ['positive', 'rr'])              => 'danger',
                         in_array($v, ['1+', '2+', '3+', 'scanty'])   => 'warning text-dark',
                         in_array($v, ['indeterminate'])               => 'warning text-dark',
                         default                                       => 'secondary',
