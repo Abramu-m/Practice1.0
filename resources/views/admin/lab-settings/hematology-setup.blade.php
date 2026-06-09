@@ -26,7 +26,8 @@
         <i class="fas fa-info-circle me-2"></i>
         <strong>How this works:</strong> Select which lab investigation corresponds to each form row.
         Rows marked <span class="badge bg-info text-dark">LOW / HIGH</span> will also count results
-        that fall below or above the reference range.
+        that fall below or above the reference range. Configuring <strong>FBP</strong> automatically
+        covers WBC COUNT, WBC DIFF, Platelets, Reticulocytes, Peripheral Blood film, PCV and RBC Count.
     </div>
 
     <form method="POST" action="{{ route('admin.lab-settings.hematology.update') }}">
@@ -50,7 +51,15 @@
                     <tbody>
                         @foreach($rows as $row)
                         <tr>
-                            <td class="align-middle fw-semibold">{{ $row->row_label }}</td>
+                            <td class="align-middle fw-semibold">
+                                {{ $row->row_label }}
+                                @if($row->row_key === 'fbp')
+                                    <div class="text-muted small fw-normal mt-1">
+                                        Also covers: WBC COUNT, WBC DIFF, Platelets,
+                                        Reticulocytes, Peripheral Blood film, PCV, RBC Count
+                                    </div>
+                                @endif
+                            </td>
                             <td class="align-middle">
                                 <select name="service_id_{{ $row->row_key }}" class="form-select form-select-sm">
                                     <option value="">— Not set —</option>
