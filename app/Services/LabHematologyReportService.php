@@ -35,16 +35,20 @@ class LabHematologyReportService extends BaseReportService
             }
         }
 
-        $grandTotal = array_sum(array_filter($totals, fn($v) => $v !== null));
+        $grandTotal    = array_sum(array_filter($totals, fn($v) => $v !== null));
+        $grandTotalLow  = array_sum(array_filter($lows,   fn($v) => $v !== null));
+        $grandTotalHigh = array_sum(array_filter($highs,  fn($v) => $v !== null));
 
         return [
-            'facility'     => $this->getFacilityInfo(),
-            'rows'         => $rows,
-            'totals'       => $totals,
-            'lows'         => $lows,
-            'highs'        => $highs,
-            'grand_total'  => $grandTotal,
-            'generated_at' => Carbon::now(),
+            'facility'        => $this->getFacilityInfo(),
+            'rows'            => $rows,
+            'totals'          => $totals,
+            'lows'            => $lows,
+            'highs'           => $highs,
+            'grand_total'     => $grandTotal,
+            'grand_total_low'  => $grandTotalLow,
+            'grand_total_high' => $grandTotalHigh,
+            'generated_at'    => Carbon::now(),
         ];
     }
 

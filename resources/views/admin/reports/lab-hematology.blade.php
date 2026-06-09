@@ -108,8 +108,8 @@
                             <tr class="table-light fw-bold">
                                 <td>GRAND TOTAL</td>
                                 <td class="text-center">{{ $grand_total }}</td>
-                                <td></td>
-                                <td></td>
+                                <td class="text-center">{{ $grand_total_low }}</td>
+                                <td class="text-center">{{ $grand_total_high }}</td>
                             </tr>
                         </tfoot>
                     </table>

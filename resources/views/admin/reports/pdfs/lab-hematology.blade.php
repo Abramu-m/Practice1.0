@@ -97,8 +97,8 @@
             <tr class="grand-total">
                 <td>GRAND TOTAL</td>
                 <td style="text-align:center">{{ $grand_total }}</td>
-                <td></td>
-                <td></td>
+                <td style="text-align:center">{{ $grand_total_low }}</td>
+                <td style="text-align:center">{{ $grand_total_high }}</td>
             </tr>
         </tfoot>
     </table>
