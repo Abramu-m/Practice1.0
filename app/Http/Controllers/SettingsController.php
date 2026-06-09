@@ -76,33 +76,22 @@ class SettingsController extends Controller
             ->orderBy('name')
             ->get(['id', 'name']);
 
-        $availableTemplates = DB::table('investigation_template_results')
-            ->distinct()
-            ->orderBy('template_name')
-            ->pluck('template_name');
+        // Look up the fixed template display names so the view can show them as read-only info
+        $mrdtTemplate = DB::table('result_templates')->where('code', 'mrdt_malaria')->first(['name', 'code']);
+        $bsTemplate   = DB::table('result_templates')->where('code', 'pbs_malaria')->first(['name', 'code']);
 
         $config = [
-            'malaria_mrdt_service_id'    => SystemSetting::get('malaria_mrdt_service_id'),
-            'malaria_mrdt_template_name' => SystemSetting::get('malaria_mrdt_template_name'),
-            'malaria_bs_service_id'      => SystemSetting::get('malaria_bs_service_id'),
-            'malaria_bs_template_name'   => SystemSetting::get('malaria_bs_template_name'),
+            'malaria_mrdt_service_id' => SystemSetting::get('malaria_mrdt_service_id'),
+            'malaria_bs_service_id'   => SystemSetting::get('malaria_bs_service_id'),
         ];
 
-        return view('settings.reports.malaria_vipimo', compact('labServices', 'availableTemplates', 'config'));
+        return view('settings.reports.malaria_vipimo', compact('labServices', 'mrdtTemplate', 'bsTemplate', 'config'));
     }
 
     public function updateMalariaVipimoSettings(Request $request)
     {
-        $keys = [
-            'malaria_mrdt_service_id',
-            'malaria_mrdt_template_name',
-            'malaria_bs_service_id',
-            'malaria_bs_template_name',
-        ];
-
-        foreach ($keys as $key) {
-            SystemSetting::set($key, $request->input($key, ''));
-        }
+        SystemSetting::set('malaria_mrdt_service_id', $request->input('malaria_mrdt_service_id', ''));
+        SystemSetting::set('malaria_bs_service_id',   $request->input('malaria_bs_service_id',   ''));
 
         return redirect()->route('settings.reports.malaria-vipimo')->with('success', 'Malaria Vipimo report configuration saved.');
     }

@@ -8,6 +8,10 @@ use Illuminate\Support\Facades\DB;
 
 class MalariaVipimoReportService extends BaseReportService
 {
+    // Template codes are fixed by the classification logic — not admin-configurable
+    private const MRDT_TEMPLATE_CODE = 'mrdt_malaria';
+    private const BS_TEMPLATE_CODE   = 'pbs_malaria';
+
     // Hardcoded age group keys matching the official MoH malaria vipimo form
     private const AGE_GROUPS = [
         'under_1m' => 'Umri chini ya mwezi 1',
@@ -114,17 +118,15 @@ class MalariaVipimoReportService extends BaseReportService
         return $counts;
     }
 
-    private function queryInvestigations(int $serviceId, ?string $templateName = null): array
+    private function queryInvestigations(int $serviceId, string $templateCode): array
     {
-        $templateClause = $templateName
-            ? "AND template_name = " . DB::connection()->getPdo()->quote($templateName)
-            : '';
+        $quotedCode = DB::connection()->getPdo()->quote($templateCode);
 
         return DB::table('investigations as inv')
             ->join('patient_visits as pv', 'pv.id', '=', 'inv.visit_id')
             ->join('patients as p', 'p.id', '=', 'pv.patient')
             ->leftJoin(
-                DB::raw("(SELECT investigation_id, form_data FROM investigation_template_results WHERE form_status = 'final' {$templateClause} ORDER BY id DESC) as itr"),
+                DB::raw("(SELECT investigation_id, form_data FROM investigation_template_results WHERE form_status = 'final' AND JSON_UNQUOTE(JSON_EXTRACT(metadata, '$.template_code')) = {$quotedCode} ORDER BY id DESC) as itr"),
                 'itr.investigation_id', '=', 'inv.id'
             )
             ->where('inv.medical_service_id', $serviceId)
@@ -161,17 +163,15 @@ class MalariaVipimoReportService extends BaseReportService
     {
         $baseData = $this->getBaseReportData();
 
-        $mrdtId       = (int) SystemSetting::get('malaria_mrdt_service_id', 0);
-        $bsId         = (int) SystemSetting::get('malaria_bs_service_id',   0);
-        $mrdtTemplate = SystemSetting::get('malaria_mrdt_template_name') ?: null;
-        $bsTemplate   = SystemSetting::get('malaria_bs_template_name')   ?: null;
+        $mrdtId = (int) SystemSetting::get('malaria_mrdt_service_id', 0);
+        $bsId   = (int) SystemSetting::get('malaria_bs_service_id',   0);
 
         $mrdtService = $mrdtId ? DB::table('medical_services')->where('id', $mrdtId)->value('name') : null;
         $bsService   = $bsId   ? DB::table('medical_services')->where('id', $bsId)->value('name')   : null;
 
-        // Query investigations (filtered by template when configured)
-        $mrdtRows = $mrdtId ? $this->queryInvestigations($mrdtId, $mrdtTemplate) : [];
-        $bsRows   = $bsId   ? $this->queryInvestigations($bsId,   $bsTemplate)   : [];
+        // Template codes are fixed — determined by the classifier logic
+        $mrdtRows = $mrdtId ? $this->queryInvestigations($mrdtId, self::MRDT_TEMPLATE_CODE) : [];
+        $bsRows   = $bsId   ? $this->queryInvestigations($bsId,   self::BS_TEMPLATE_CODE)   : [];
 
         // Process results
         $mrdtCounts = $this->processInvestigations(

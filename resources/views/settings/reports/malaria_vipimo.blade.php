@@ -23,9 +23,9 @@
 
     <div class="alert alert-info">
         <i class="fas fa-info-circle me-2"></i>
-        <strong>How this works:</strong> Each test slot (mRDT and BS) is paired to a lab investigation <em>and</em> a result template.
-        The report will only count results that were entered using the specified template.
-        Make sure lab staff select the correct template when recording results for each of these tests.
+        <strong>How this works:</strong> Select which lab investigation corresponds to each test slot.
+        The report will only count results entered using the <strong>required template</strong> shown on each panel —
+        make sure lab staff select that template when recording results.
     </div>
 
     <form method="POST" action="{{ route('settings.reports.malaria-vipimo.update') }}">
@@ -40,10 +40,10 @@
                     <div class="card-header d-flex align-items-center gap-2">
                         <i class="bi bi-droplet-half text-danger fs-5"></i>
                         <h6 class="card-title mb-0">mRDT — Malaria Rapid Diagnostic Test</h6>
-                        @if($config['malaria_mrdt_service_id'] && !$config['malaria_mrdt_template_name'])
-                            <span class="badge bg-warning text-dark ms-auto">Template not set</span>
-                        @elseif($config['malaria_mrdt_service_id'] && $config['malaria_mrdt_template_name'])
+                        @if($config['malaria_mrdt_service_id'])
                             <span class="badge bg-success ms-auto">Configured</span>
+                        @else
+                            <span class="badge bg-secondary ms-auto">Not set</span>
                         @endif
                     </div>
                     <div class="card-body">
@@ -57,21 +57,17 @@
                                     </option>
                                 @endforeach
                             </select>
-                            <div class="form-text">Which investigation is the Malaria RDT?</div>
+                            <div class="form-text">Which lab investigation is the Malaria RDT?</div>
                         </div>
-                        <div class="mb-0">
-                            <label class="form-label fw-semibold">Expected Result Template</label>
-                            <select name="malaria_mrdt_template_name" class="form-select">
-                                <option value="">— No template filter —</option>
-                                @foreach($availableTemplates as $tpl)
-                                    <option value="{{ $tpl }}" {{ $config['malaria_mrdt_template_name'] === $tpl ? 'selected' : '' }}>
-                                        {{ $tpl }}
-                                    </option>
-                                @endforeach
-                            </select>
+                        <div>
+                            <label class="form-label fw-semibold">Required Result Template</label>
+                            <div class="d-flex align-items-center gap-2 p-2 bg-light rounded border">
+                                <i class="bi bi-lock-fill text-secondary"></i>
+                                <span class="fw-semibold">{{ $mrdtTemplate->name ?? 'mRDT Malaria' }}</span>
+                                <code class="ms-1 text-muted small">{{ $mrdtTemplate->code ?? 'mrdt_malaria' }}</code>
+                            </div>
                             <div class="form-text">
-                                Results will only be counted if they use this template.
-                                Leave blank to count results from any template (not recommended).
+                                Fixed by the report logic. Lab staff must select this template when entering mRDT results.
                             </div>
                         </div>
                     </div>
@@ -83,11 +79,11 @@
                 <div class="card h-100">
                     <div class="card-header d-flex align-items-center gap-2">
                         <i class="bi bi-eyedropper text-primary fs-5"></i>
-                        <h6 class="card-title mb-0">BS — Blood Smear (Peripheral Blood Smear)</h6>
-                        @if($config['malaria_bs_service_id'] && !$config['malaria_bs_template_name'])
-                            <span class="badge bg-warning text-dark ms-auto">Template not set</span>
-                        @elseif($config['malaria_bs_service_id'] && $config['malaria_bs_template_name'])
+                        <h6 class="card-title mb-0">BS — Peripheral Blood Smear</h6>
+                        @if($config['malaria_bs_service_id'])
                             <span class="badge bg-success ms-auto">Configured</span>
+                        @else
+                            <span class="badge bg-secondary ms-auto">Not set</span>
                         @endif
                     </div>
                     <div class="card-body">
@@ -101,21 +97,17 @@
                                     </option>
                                 @endforeach
                             </select>
-                            <div class="form-text">Which investigation is the Malaria Blood Smear?</div>
+                            <div class="form-text">Which lab investigation is the Malaria Blood Smear?</div>
                         </div>
-                        <div class="mb-0">
-                            <label class="form-label fw-semibold">Expected Result Template</label>
-                            <select name="malaria_bs_template_name" class="form-select">
-                                <option value="">— No template filter —</option>
-                                @foreach($availableTemplates as $tpl)
-                                    <option value="{{ $tpl }}" {{ $config['malaria_bs_template_name'] === $tpl ? 'selected' : '' }}>
-                                        {{ $tpl }}
-                                    </option>
-                                @endforeach
-                            </select>
+                        <div>
+                            <label class="form-label fw-semibold">Required Result Template</label>
+                            <div class="d-flex align-items-center gap-2 p-2 bg-light rounded border">
+                                <i class="bi bi-lock-fill text-secondary"></i>
+                                <span class="fw-semibold">{{ $bsTemplate->name ?? 'PBS – Malaria Parasites' }}</span>
+                                <code class="ms-1 text-muted small">{{ $bsTemplate->code ?? 'pbs_malaria' }}</code>
+                            </div>
                             <div class="form-text">
-                                Results will only be counted if they use this template.
-                                Leave blank to count results from any template (not recommended).
+                                Fixed by the report logic. Lab staff must select this template when entering Blood Smear results.
                             </div>
                         </div>
                     </div>
