@@ -144,3 +144,7 @@ Add `class="no-print"` to any toolbar, breadcrumb, or action-button container th
 
 **Official form reproduction:**
 When a report corresponds to an official government or MoH form (e.g. the Tracer Medicines form, NHIF claim forms), the PDF **must reproduce the exact structure** of that form — same heading layout, same field labels, same table columns, same legend/footnote text. Content (facility name, data values) is filled dynamically; the visual structure is fixed. Never redesign an official form's layout.
+
+## Proactive improvement suggestions
+
+When working on any task and you notice code that could be improved — route ordering, controller logic, accessor bugs, view structure — **mention it inline** in your response. Keep suggestions short (one line). Don't implement unless asked. Preferred improvements: fixing wrong accessors, consolidating redundant logic, correcting misplaced routes, simplifying Blade/controller split. Avoid suggesting excessive JS, new abstractions, or changes unrelated to the file you're touching.

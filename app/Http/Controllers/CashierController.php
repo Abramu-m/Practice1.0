@@ -160,7 +160,7 @@ class CashierController extends Controller
     {
         $request->validate([
             'action' => 'required|in:paid,cancelled',
-            'payment_method' => 'nullable|required_if:action,paid|in:cash,card,insurance,nhif',
+            'payment_method' => 'nullable|required_if:action,paid|in:cash,mobile_money,card',
             'amount_paid' => 'required_if:action,paid|numeric|min:0',
             'discount_percent' => 'nullable|numeric|min:0|max:100'
         ]);
@@ -218,7 +218,7 @@ class CashierController extends Controller
     {
         $request->validate([
             'action' => 'required|in:paid,cancelled',
-            'payment_method' => 'nullable|required_if:action,paid|in:cash,card,insurance,nhif',
+            'payment_method' => 'nullable|required_if:action,paid|in:cash,mobile_money,card',
             'amount_paid' => 'required_if:action,paid|numeric|min:0',
             'discount_percent' => 'nullable|numeric|min:0|max:100'
         ]);
@@ -291,7 +291,7 @@ class CashierController extends Controller
             'investigation_ids' => 'required|array',
             'investigation_ids.*' => 'exists:investigations,id',
             'action' => 'required|in:paid,cancelled',
-            'payment_method' => 'nullable|required_if:action,paid|in:cash,card,insurance,nhif',
+            'payment_method' => 'nullable|required_if:action,paid|in:cash,mobile_money,card',
             'discount_percent' => 'nullable|numeric|min:0|max:100'
         ]);
 
@@ -335,7 +335,7 @@ class CashierController extends Controller
             'prescription_ids' => 'required|array',
             'prescription_ids.*' => 'exists:prescriptions,id',
             'action' => 'required|in:paid,cancelled',
-            'payment_method' => 'nullable|required_if:action,paid|in:cash,card,insurance,nhif',
+            'payment_method' => 'nullable|required_if:action,paid|in:cash,mobile_money,card',
             'discount_percent' => 'nullable|numeric|min:0|max:100'
         ]);
 

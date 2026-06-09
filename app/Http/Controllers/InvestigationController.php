@@ -196,7 +196,7 @@ class InvestigationController extends Controller
                     $visitCategoryId = $request->patient_category_id; // Get visit category ID from request if provided
                 }elseif ($request->visit_id) {
                     $visit = \App\Models\PatientVisit::findOrFail($request->visit_id);
-                    $visitCategoryId = $visit->visit_category->id;
+                    $visitCategoryId = $visit->visit_category; // raw FK integer
                 }else {
                     return response()->json([
                         'success' => false,

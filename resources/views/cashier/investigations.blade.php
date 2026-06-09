@@ -30,9 +30,8 @@
                     <div id="bulkInvPaymentMethodGroup" style="display:none;">
                         <select class="form-select form-select-sm" id="bulkPaymentMethod" style="min-width:140px;">
                             <option value="cash">Cash</option>
-                            <option value="card">Card</option>
-                            <option value="insurance">Insurance</option>
-                            <option value="nhif">NHIF</option>
+                            <option value="mobile_money" disabled>Mobile Money</option>
+                            <option value="card" disabled>Card</option>
                         </select>
                     </div>
                     <button type="button" class="btn btn-success" id="btnBulkInvPay" onclick="processBulkInvestigations('paid')" disabled>
@@ -66,7 +65,11 @@
                     @foreach($investigations as $investigation)
                     <tr id="investigation-row-{{ $investigation->id }}">
                         <td>
-                            <input type="checkbox" class="investigation-checkbox" value="{{ $investigation->id }}" onchange="updateInvBulkButtons()"
+                            <input type="checkbox" class="investigation-checkbox" value="{{ $investigation->id }}"
+                                data-name="{{ $investigation->medicalService ? $investigation->medicalService->name : 'Service not found' }}"
+                                data-amount="{{ $investigation->cash_amount }}"
+                                data-discount="{{ optional($investigation->medicalService)->discount_percentage ?? 0 }}"
+                                onchange="updateInvBulkButtons()"
                                 @if($investigation->is_paid) disabled style="opacity:0.35;cursor:not-allowed;" @endif>
                         </td>
                         <td>
@@ -111,8 +114,8 @@
                         <td>
                             @if(!$investigation->is_paid && $investigation->status !== 'cancelled')
                                 <div class="btn-group-vertical btn-group-sm">
-                                    <button class="btn btn-success btn-sm" 
-                                            onclick="markAsPaid({{ $investigation->id }}, {{ $investigation->total_price }})">
+                                    <button class="btn btn-success btn-sm"
+                                            onclick="markAsPaid({{ $investigation->id }}, {{ $investigation->cash_amount }}, {{ optional($investigation->medicalService)->discount_percentage ?? 0 }})">
                                         <i class="bi bi-check-circle"></i> Process Payment
                                     </button>
                                     <button class="btn btn-danger btn-sm" 
@@ -184,9 +187,8 @@
                         <label for="paymentMethod" class="form-label">Payment Method</label>
                         <select class="form-select" id="paymentMethod" name="payment_method" required>
                             <option value="cash">Cash</option>
-                            <option value="card">Card</option>
-                            <option value="insurance">Insurance</option>
-                            <option value="nhif">NHIF</option>
+                            <option value="mobile_money" disabled>Mobile Money</option>
+                            <option value="card" disabled>Card</option>
                         </select>
                     </div>
                     
@@ -194,8 +196,9 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="discountPercent" class="form-label">Discount %</label>
-                                <input type="number" class="form-control" id="discountPercent" name="discount_percent" 
-                                       step="0.01" min="0" max="100" value="0" onchange="calculateFinalAmount()">
+                                <input type="number" class="form-control bg-light" id="discountPercent" name="discount_percent"
+                                       step="0.01" min="0" max="100" value="0" readonly>
+                                <small class="text-muted">From service pricing</small>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -223,15 +226,52 @@
     </div>
 </div>
 
+<!-- Bulk Payment Confirmation Modal -->
+<div class="modal fade" id="bulkPayConfirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-cash-coin"></i> Confirm Bulk Payment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted mb-2">The following investigations will be marked as <strong>Paid</strong>:</p>
+                <table class="table table-sm table-bordered mb-3">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>Investigation</th>
+                            <th class="text-end">Amount</th>
+                            <th class="text-end">Discount</th>
+                            <th class="text-end">Final</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bulkConfirmRows"></tbody>
+                    <tfoot class="table-secondary fw-bold">
+                        <tr>
+                            <td colspan="4" class="text-end">Total</td>
+                            <td class="text-end" id="bulkConfirmTotal"></td>
+                        </tr>
+                    </tfoot>
+                </table>
+                <p class="mb-0"><strong>Payment Method:</strong> <span id="bulkConfirmMethod"></span></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" id="btnBulkConfirmProceed">
+                    <i class="bi bi-check-circle"></i> Confirm Payment
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
-function markAsPaid(investigationId, amount) {
+function markAsPaid(investigationId, amount, discountPercent) {
     $('#investigationId').val(investigationId);
     $('#originalAmount').val(amount);
-    $('#amountPaid').val(amount);
-    $('#discountPercent').val(0);
-    $('#displayOriginalAmount').text('Tsh ' + parseFloat(amount).toFixed(2));
-    $('#displayDiscountAmount').text('Tsh 0.00');
-    $('#displayFinalAmount').text('Tsh ' + parseFloat(amount).toFixed(2));
+    $('#discountPercent').val(parseFloat(discountPercent) || 0);
+    calculateFinalAmount();
     $('#paymentModal').modal('show');
 }
 
@@ -293,51 +333,82 @@ function processBulkInvestigations(action) {
         return;
     }
     
-    const label = action === 'paid' ? 'mark as paid' : 'cancel';
-    if (confirm(`Are you sure you want to ${label} ${selectedIds.length} investigation(s)?`)) {
-        fetch('/cashier/investigations/bulk-update', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            },
-            body: JSON.stringify({
-                investigation_ids: selectedIds,
-                action: action,
-                payment_method: paymentMethod
-            })
-        })
-        .then(async response => {
-            const contentType = response.headers.get('content-type') || '';
-            const text = await response.text();
-            const data = contentType.includes('application/json') ? JSON.parse(text) : null;
-
-            if (!response.ok) {
-                const message = data?.message || `Request failed (${response.status})`;
-                throw new Error(message);
-            }
-
-            if (!data) {
-                throw new Error(`Expected JSON response, received ${contentType || 'unknown content type'}`);
-            }
-
-            return data;
-        })
-        .then(data => {
-            if (data.success) {
-                alert(data.message);
-                location.reload(); // Reload the main page
-            } else {
-                alert('Error: ' + (data.message || 'Unknown error'));
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred while processing the request.');
+    if (action === 'paid') {
+        const methodLabel = { cash: 'Cash', mobile_money: 'Mobile Money', card: 'Card' }[paymentMethod] || paymentMethod;
+        let rows = '';
+        let total = 0;
+        selectedIds.forEach((id, i) => {
+            const cb = $(`.investigation-checkbox[value="${id}"]`);
+            const name = cb.data('name');
+            const amount = parseFloat(cb.data('amount')) || 0;
+            const discount = parseFloat(cb.data('discount')) || 0;
+            const discountAmt = (amount * discount) / 100;
+            const final = amount - discountAmt;
+            total += final;
+            const discountCell = discount > 0
+                ? `${discount}% (−Tsh ${discountAmt.toFixed(2)})`
+                : '—';
+            rows += `<tr><td>${i + 1}</td><td>${name}</td><td class="text-end">Tsh ${amount.toFixed(2)}</td><td class="text-end">${discountCell}</td><td class="text-end">Tsh ${final.toFixed(2)}</td></tr>`;
         });
+        $('#bulkConfirmRows').html(rows);
+        $('#bulkConfirmTotal').text('Tsh ' + total.toFixed(2));
+        $('#bulkConfirmMethod').text(methodLabel);
+        $('#btnBulkConfirmProceed').off('click').on('click', function () {
+            $('#bulkPayConfirmModal').modal('hide');
+            doBulkInvestigationUpdate(selectedIds, action, paymentMethod);
+        });
+        $('#bulkPayConfirmModal').modal('show');
+        return;
     }
+
+    if (confirm(`Are you sure you want to cancel ${selectedIds.length} investigation(s)?`)) {
+        doBulkInvestigationUpdate(selectedIds, action, paymentMethod);
+    }
+}
+
+function doBulkInvestigationUpdate(selectedIds, action, paymentMethod) {
+    fetch('/cashier/investigations/bulk-update', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify({
+            investigation_ids: selectedIds,
+            action: action,
+            payment_method: paymentMethod
+        })
+    })
+    .then(async response => {
+        const contentType = response.headers.get('content-type') || '';
+        const text = await response.text();
+        const data = contentType.includes('application/json') ? JSON.parse(text) : null;
+
+        if (!response.ok) {
+            const message = data?.message || `Request failed (${response.status})`;
+            throw new Error(message);
+        }
+
+        if (!data) {
+            throw new Error(`Expected JSON response, received ${contentType || 'unknown content type'}`);
+        }
+
+        return data;
+    })
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            location.reload(); // Reload the main page
+        } else {
+            alert('Error: ' + (data.message || 'Unknown error'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while processing the request.');
+    });
 }
 function updateInvestigationStatus(investigationId, action, paymentMethod, amountPaid, discountPercent) {
     fetch(`/cashier/investigations/${investigationId}/payment`, {
@@ -395,14 +466,5 @@ $('#paymentForm').on('submit', function(e) {
     
     updateInvestigationStatus(investigationId, 'paid', paymentMethod, amountPaid, discountPercent);
     $('#paymentModal').modal('hide');
-});
-
-// Show/hide payment method for bulk actions
-$('#bulkStatus').on('change', function() {
-    if ($(this).val() === 'paid') {
-        $('#bulkPaymentMethodGroup').show();
-    } else {
-        $('#bulkPaymentMethodGroup').hide();
-    }
 });
 </script>

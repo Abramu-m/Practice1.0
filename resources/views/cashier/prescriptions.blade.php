@@ -30,9 +30,8 @@
                     <div id="bulkRxPaymentMethodGroup" style="display:none;">
                         <select class="form-select form-select-sm" id="bulkRxPaymentMethod" style="min-width:140px;">
                             <option value="cash">Cash</option>
-                            <option value="card">Card</option>
-                            <option value="insurance">Insurance</option>
-                            <option value="nhif">NHIF</option>
+                            <option value="mobile_money" disabled>Mobile Money</option>
+                            <option value="card" disabled>Card</option>
                         </select>
                     </div>
                     <button type="button" class="btn btn-success" id="btnBulkRxPay" onclick="processBulkPrescriptions('paid')" disabled>
@@ -67,7 +66,11 @@
                     @foreach($prescriptions as $prescription)
                     <tr id="prescription-row-{{ $prescription->id }}">
                         <td>
-                            <input type="checkbox" class="prescription-checkbox" value="{{ $prescription->id }}" onchange="updateRxBulkButtons()"
+                            <input type="checkbox" class="prescription-checkbox" value="{{ $prescription->id }}"
+                                data-name="{{ $prescription->medication ? $prescription->medication->name : 'Medication not found' }}"
+                                data-amount="{{ $prescription->cash_amount }}"
+                                data-discount="{{ optional($prescription->medication)->discount_percentage ?? 0 }}"
+                                onchange="updateRxBulkButtons()"
                                 @if($prescription->is_paid) disabled style="opacity:0.35;cursor:not-allowed;" @endif>
                         </td>
                         <td>
@@ -113,8 +116,8 @@
                         <td>
                             @if(!$prescription->is_paid)
                                 <div class="btn-group-vertical btn-group-sm">
-                                    <button class="btn btn-success btn-sm" 
-                                            onclick="markRxAsPaid({{ $prescription->id }}, {{ $prescription->cash_amount }})">
+                                    <button class="btn btn-success btn-sm"
+                                            onclick="markRxAsPaid({{ $prescription->id }}, {{ $prescription->cash_amount }}, {{ optional($prescription->medication)->discount_percentage ?? 0 }})">
                                         <i class="bi bi-check-circle"></i> Process Payment
                                     </button>
                                     <button class="btn btn-danger btn-sm" 
@@ -178,18 +181,40 @@
                 @csrf
                 <div class="modal-body">
                     <input type="hidden" id="prescriptionId" name="prescription_id">
+                    <input type="hidden" id="rxOriginalAmount" name="original_amount">
+
                     <div class="mb-3">
                         <label for="rxPaymentMethod" class="form-label">Payment Method</label>
                         <select class="form-select" id="rxPaymentMethod" name="payment_method" required>
                             <option value="cash">Cash</option>
-                            <option value="card">Card</option>
-                            <option value="insurance">Insurance</option>
-                            <option value="nhif">NHIF</option>
+                            <option value="mobile_money" disabled>Mobile Money</option>
+                            <option value="card" disabled>Card</option>
                         </select>
                     </div>
-                    <div class="mb-3">
-                        <label for="rxAmountPaid" class="form-label">Amount Paid</label>
-                        <input type="number" class="form-control" id="rxAmountPaid" name="amount_paid" step="0.01" min="0" required>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="rxDiscountPercent" class="form-label">Discount %</label>
+                                <input type="number" class="form-control bg-light" id="rxDiscountPercent" name="discount_percent"
+                                       step="0.01" min="0" max="100" value="0" readonly>
+                                <small class="text-muted">From medication pricing</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="rxAmountPaid" class="form-label">Amount to Pay</label>
+                                <input type="number" class="form-control" id="rxAmountPaid" name="amount_paid" step="0.01" min="0" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <small>
+                            <strong>Original Amount:</strong> <span id="rxDisplayOriginalAmount">Tsh 0.00</span><br>
+                            <strong>Discount:</strong> <span id="rxDisplayDiscountAmount">Tsh 0.00</span><br>
+                            <strong>Final Amount:</strong> <span id="rxDisplayFinalAmount">Tsh 0.00</span>
+                        </small>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -201,11 +226,65 @@
     </div>
 </div>
 
+<!-- Bulk Payment Confirmation Modal -->
+<div class="modal fade" id="bulkRxPayConfirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-cash-coin"></i> Confirm Bulk Payment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted mb-2">The following prescriptions will be marked as <strong>Paid</strong>:</p>
+                <table class="table table-sm table-bordered mb-3">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>Medication</th>
+                            <th class="text-end">Amount</th>
+                            <th class="text-end">Discount</th>
+                            <th class="text-end">Final</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bulkRxConfirmRows"></tbody>
+                    <tfoot class="table-secondary fw-bold">
+                        <tr>
+                            <td colspan="4" class="text-end">Total</td>
+                            <td class="text-end" id="bulkRxConfirmTotal"></td>
+                        </tr>
+                    </tfoot>
+                </table>
+                <p class="mb-0"><strong>Payment Method:</strong> <span id="bulkRxConfirmMethod"></span></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" id="btnBulkRxConfirmProceed">
+                    <i class="bi bi-check-circle"></i> Confirm Payment
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
-function markRxAsPaid(prescriptionId, amount) {
+function markRxAsPaid(prescriptionId, amount, discountPercent) {
     $('#prescriptionId').val(prescriptionId);
-    $('#rxAmountPaid').val(amount);
+    $('#rxOriginalAmount').val(amount);
+    $('#rxDiscountPercent').val(parseFloat(discountPercent) || 0);
+    calculateRxFinalAmount();
     $('#rxPaymentModal').modal('show');
+}
+
+function calculateRxFinalAmount() {
+    const originalAmount = parseFloat($('#rxOriginalAmount').val()) || 0;
+    const discountPercent = parseFloat($('#rxDiscountPercent').val()) || 0;
+    const discountAmount = (originalAmount * discountPercent) / 100;
+    const finalAmount = originalAmount - discountAmount;
+
+    $('#rxDisplayOriginalAmount').text('Tsh ' + originalAmount.toFixed(2));
+    $('#rxDisplayDiscountAmount').text('Tsh ' + discountAmount.toFixed(2));
+    $('#rxDisplayFinalAmount').text('Tsh ' + finalAmount.toFixed(2));
+    $('#rxAmountPaid').val(finalAmount.toFixed(2));
 }
 
 function cancelPrescription(prescriptionId) {
@@ -250,51 +329,82 @@ function processBulkPrescriptions(action) {
         return;
     }
     
-    const label = action === 'paid' ? 'mark as paid' : 'cancel';
-    if (confirm(`Are you sure you want to ${label} ${selectedIds.length} prescription(s)?`)) {
-        fetch('/cashier/prescriptions/bulk-update', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            },
-            body: JSON.stringify({
-                prescription_ids: selectedIds,
-                action: action,
-                payment_method: paymentMethod
-            })
-        })
-        .then(async response => {
-            const contentType = response.headers.get('content-type') || '';
-            const text = await response.text();
-            const data = contentType.includes('application/json') ? JSON.parse(text) : null;
-
-            if (!response.ok) {
-                const message = data?.message || `Request failed (${response.status})`;
-                throw new Error(message);
-            }
-
-            if (!data) {
-                throw new Error(`Expected JSON response, received ${contentType || 'unknown content type'}`);
-            }
-
-            return data;
-        })
-        .then(data => {
-            if (data.success) {
-                alert(data.message);
-                location.reload(); // Reload the main page
-            } else {
-                alert('Error: ' + (data.message || 'Unknown error'));
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred while processing the request.');
+    if (action === 'paid') {
+        const methodLabel = { cash: 'Cash', mobile_money: 'Mobile Money', card: 'Card' }[paymentMethod] || paymentMethod;
+        let rows = '';
+        let total = 0;
+        selectedIds.forEach((id, i) => {
+            const cb = $(`.prescription-checkbox[value="${id}"]`);
+            const name = cb.data('name');
+            const amount = parseFloat(cb.data('amount')) || 0;
+            const discount = parseFloat(cb.data('discount')) || 0;
+            const discountAmt = (amount * discount) / 100;
+            const final = amount - discountAmt;
+            total += final;
+            const discountCell = discount > 0
+                ? `${discount}% (−Tsh ${discountAmt.toFixed(2)})`
+                : '—';
+            rows += `<tr><td>${i + 1}</td><td>${name}</td><td class="text-end">Tsh ${amount.toFixed(2)}</td><td class="text-end">${discountCell}</td><td class="text-end">Tsh ${final.toFixed(2)}</td></tr>`;
         });
+        $('#bulkRxConfirmRows').html(rows);
+        $('#bulkRxConfirmTotal').text('Tsh ' + total.toFixed(2));
+        $('#bulkRxConfirmMethod').text(methodLabel);
+        $('#btnBulkRxConfirmProceed').off('click').on('click', function () {
+            $('#bulkRxPayConfirmModal').modal('hide');
+            doBulkPrescriptionUpdate(selectedIds, action, paymentMethod);
+        });
+        $('#bulkRxPayConfirmModal').modal('show');
+        return;
     }
+
+    if (confirm(`Are you sure you want to cancel ${selectedIds.length} prescription(s)?`)) {
+        doBulkPrescriptionUpdate(selectedIds, action, paymentMethod);
+    }
+}
+
+function doBulkPrescriptionUpdate(selectedIds, action, paymentMethod) {
+    fetch('/cashier/prescriptions/bulk-update', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify({
+            prescription_ids: selectedIds,
+            action: action,
+            payment_method: paymentMethod
+        })
+    })
+    .then(async response => {
+        const contentType = response.headers.get('content-type') || '';
+        const text = await response.text();
+        const data = contentType.includes('application/json') ? JSON.parse(text) : null;
+
+        if (!response.ok) {
+            const message = data?.message || `Request failed (${response.status})`;
+            throw new Error(message);
+        }
+
+        if (!data) {
+            throw new Error(`Expected JSON response, received ${contentType || 'unknown content type'}`);
+        }
+
+        return data;
+    })
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            location.reload(); // Reload the main page
+        } else {
+            alert('Error: ' + (data.message || 'Unknown error'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while processing the request.');
+    });
 }
 
 function updatePrescriptionStatus(prescriptionId, status, paymentMethod, amountPaid) {
@@ -352,14 +462,5 @@ $('#rxPaymentForm').on('submit', function(e) {
     
     updatePrescriptionStatus(prescriptionId, 'paid', paymentMethod, amountPaid);
     $('#rxPaymentModal').modal('hide');
-});
-
-// Show/hide payment method for bulk actions
-$('#bulkRxStatus').on('change', function() {
-    if ($(this).val() === 'paid') {
-        $('#bulkRxPaymentMethodGroup').show();
-    } else {
-        $('#bulkRxPaymentMethodGroup').hide();
-    }
 });
 </script>
