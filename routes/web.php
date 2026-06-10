@@ -14,11 +14,8 @@ use App\Http\Controllers\ServiceCategoryController;
 use App\Http\Controllers\VitalsController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\CashierController;
-use App\Http\Controllers\PharmacistController;
 use App\Http\Controllers\AllergyController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
-use App\Http\Controllers\IcdDiagnosisController;
 use App\Http\Controllers\InvestigationFormController;
 use App\Http\Controllers\Api\ClinicalController as ApiClinicalController;
 use App\Http\Controllers\AdminReportController;
@@ -131,7 +128,6 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsAdmin::class, 'facil
             'created_at' => now(),
             'department' => 'OPD',
             'patientInfo' => (object) [
-                'id'           => 'DEMO',
                 'first_name'   => 'Preview',
                 'last_name'    => 'Patient',
                 'full_name'    => 'Preview Patient',
