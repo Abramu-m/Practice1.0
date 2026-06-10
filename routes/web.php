@@ -255,6 +255,16 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsAdmin::class, 'facil
     Route::put('/admin/lab-settings/serology', [\App\Http\Controllers\SerologyReportSetupController::class, 'update'])
         ->name('admin.lab-settings.serology.update');
 
+    Route::get('/admin/lab-settings/parasitology', [\App\Http\Controllers\ParasitologyReportSetupController::class, 'index'])
+        ->name('admin.lab-settings.parasitology.index');
+    Route::put('/admin/lab-settings/parasitology', [\App\Http\Controllers\ParasitologyReportSetupController::class, 'update'])
+        ->name('admin.lab-settings.parasitology.update');
+
+    Route::get('/admin/lab-settings/microbiology', [\App\Http\Controllers\MicrobiologyReportSetupController::class, 'index'])
+        ->name('admin.lab-settings.microbiology.index');
+    Route::put('/admin/lab-settings/microbiology', [\App\Http\Controllers\MicrobiologyReportSetupController::class, 'update'])
+        ->name('admin.lab-settings.microbiology.update');
+
 });
 
 // ================================
