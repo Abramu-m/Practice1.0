@@ -1,3 +1,15 @@
+//// commands to run after migration
+
+php artisan finance:backfill-legacy-transactions
+  - backfills financial_transactions for patient_visits / investigations / prescriptions
+    that were imported via raw SQL (no observers fired, so no ledger rows exist)
+  - safe to re-run (skips source rows that already have a financial_transactions entry)
+  - --dry-run            preview counts/totals, no writes
+  - --only=visits,investigations,prescriptions   limit to specific sources
+  - --chunk=2000         rows per chunk
+
+
+
 ////tables
 cds_rule_categories
 cds_rule_types
@@ -12,10 +24,5 @@ DROP general_expenses, fk_test(s), store_items, store_stock_batches, visit_diagn
 2. ADD inv on VISIT, check form logik
 
 
-////////////////////REVERSE
-fee66555f8e6fab976452f2255ebc4b8c6bd56b2 (commit hash)
 
-continue.........................................
-        ? `/consultations/${consultationId}/investigations`
-fuatilia: ? `/consultations/${consultationId}/investigations-partial`, 
  

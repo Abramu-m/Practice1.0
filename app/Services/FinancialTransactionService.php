@@ -65,7 +65,9 @@ class FinancialTransactionService
     public function createFromInvestigationPayment(Investigation $investigation): ?FinancialTransaction
     {
         try {
-            if (!$investigation->is_paid || $investigation->total_price <= 0) {
+            $totalAmount = ($investigation->cash_amount ?? 0) + ($investigation->insurance_covered_amount ?? 0);
+
+            if (!$investigation->is_paid || $totalAmount <= 0) {
                 return null;
             }
 
@@ -83,14 +85,14 @@ class FinancialTransactionService
                 'transaction_type' => 'income',
                 'category' => 'investigation',
                 'subcategory' => $investigation->medicalService->serviceCategory->name ?? 'laboratory',
-                'amount' => $investigation->total_price,
+                'amount' => $totalAmount,
                 'description' => "Investigation: {$investigation->medicalService->name}",
                 'source_type' => 'investigation',
                 'source_id' => $investigation->id,
                 'patient_id' => $investigation->patient_id,
                 'visit_id' => $investigation->visit_id,
                 'payment_method' => $investigation->insurance_covered_amount > 0 ? 'insurance' : 'cash',
-                'patient_paid_amount' => $investigation->total_price - $investigation->insurance_covered_amount,
+                'patient_paid_amount' => $investigation->cash_amount,
                 'insurance_covered_amount' => $investigation->insurance_covered_amount,
                 'status' => 'completed'
             ]);

@@ -69,9 +69,9 @@ class InvestigationFinancialObserver
             }
 
             // Calculate amounts
-            $totalAmount = $investigation->total_price ?? 0;
             $insuranceCovered = $investigation->insurance_covered_amount ?? 0;
-            $patientPaid = $totalAmount - $insuranceCovered;
+            $patientPaid = $investigation->cash_amount ?? 0;
+            $totalAmount = $patientPaid + $insuranceCovered;
 
             // Create financial transaction
             $serviceName = $investigation->medicalService->name ?? 'Laboratory Investigation';
