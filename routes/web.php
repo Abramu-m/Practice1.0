@@ -245,6 +245,11 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsAdmin::class, 'facil
     Route::put('/admin/lab-settings/hematology', [\App\Http\Controllers\HematologyReportSetupController::class, 'update'])
         ->name('admin.lab-settings.hematology.update');
 
+    Route::get('/admin/lab-settings/clinical-chemistry', [\App\Http\Controllers\ClinicalChemistryReportSetupController::class, 'index'])
+        ->name('admin.lab-settings.clinical-chemistry.index');
+    Route::put('/admin/lab-settings/clinical-chemistry', [\App\Http\Controllers\ClinicalChemistryReportSetupController::class, 'update'])
+        ->name('admin.lab-settings.clinical-chemistry.update');
+
 });
 
 // ================================
