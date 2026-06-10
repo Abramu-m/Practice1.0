@@ -6,9 +6,6 @@
 - **Database**: MySQL via XAMPP
 - **Auth**: Laravel Breeze
 
-## Deployment
-- **Do NOT run `deploy-practice.ps1` (or any deploy) until further notice.** Commit only; deployment is on hold. This overrides any prior "always deploy after commit" guidance.
-
 ## Tables — always use DataTables
 
 Any table that may contain more than a handful of rows **must** use DataTables. Never build a plain HTML table with manual search, pagination, or sorting.
