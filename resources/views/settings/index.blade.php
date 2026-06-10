@@ -132,6 +132,9 @@
             <a href="{{ route('settings.reports.malaria-vipimo') }}" class="btn btn-outline-primary">
                 <i class="bi bi-virus me-1 text-danger"></i> Malaria Vipimo — Configure
             </a>
+            <a href="{{ route('settings.reports.alu-monthly') }}" class="btn btn-outline-primary">
+                <i class="bi bi-capsule me-1 text-danger"></i> ALu Report — Configure
+            </a>
         </div>
     </div>
 </div>

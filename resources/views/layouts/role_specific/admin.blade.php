@@ -982,19 +982,25 @@
                   </li>
 
                   <!-- Disease Surveillance Reports -->
-                  <li class="nav-item has-treeview {{ nav_menu_open_class(['admin.reports.idsr-weekly', 'admin.reports.std-sti-monthly', 'admin.reports.dtc-monthly']) }}">
-                    <a href="#" class="nav-link nav-sub-header {{ nav_active_class(['admin.reports.idsr-weekly', 'admin.reports.std-sti-monthly', 'admin.reports.dtc-monthly']) }}">
+                  <li class="nav-item has-treeview {{ nav_menu_open_class(['admin.reports.idsr-weekly', 'admin.reports.malaria-weekly-surveillance', 'admin.reports.std-sti-monthly', 'admin.reports.dtc-monthly']) }}">
+                    <a href="#" class="nav-link nav-sub-header {{ nav_active_class(['admin.reports.idsr-weekly', 'admin.reports.malaria-weekly-surveillance', 'admin.reports.std-sti-monthly', 'admin.reports.dtc-monthly']) }}">
                       <i class="nav-icon bi bi-virus text-danger"></i>
                       <p>
                         Disease Surveillance
                         <i class="nav-arrow bi bi-chevron-right"></i>
                       </p>
                     </a>
-                    <ul class="nav nav-treeview" style="{{ nav_display_style(['admin.reports.idsr-weekly', 'admin.reports.std-sti-monthly', 'admin.reports.dtc-monthly']) }}">
+                    <ul class="nav nav-treeview" style="{{ nav_display_style(['admin.reports.idsr-weekly', 'admin.reports.malaria-weekly-surveillance', 'admin.reports.std-sti-monthly', 'admin.reports.dtc-monthly']) }}">
                       <li class="nav-item">
                         <a href="{{ route('admin.reports.idsr-weekly') }}" class="nav-link nav-sub-sub-item {{ nav_active_class(['admin.reports.idsr-weekly']) }}">
                           <i class="nav-icon bi bi-graph-up text-warning"></i>
                           <p>IDSR Weekly</p>
+                        </a>
+                      </li>
+                      <li class="nav-item">
+                        <a href="{{ route('admin.reports.malaria-weekly-surveillance') }}" class="nav-link nav-sub-sub-item {{ nav_active_class(['admin.reports.malaria-weekly-surveillance']) }}">
+                          <i class="nav-icon bi bi-virus text-danger"></i>
+                          <p>Malaria Weekly Surveillance</p>
                         </a>
                       </li>
                       <li class="nav-item">
@@ -1013,19 +1019,25 @@
                   </li>
 
                   <!-- Pharmacy & Inventory Reports -->
-                  <li class="nav-item has-treeview {{ nav_menu_open_class(['admin.reports.medicines-monthly', 'admin.reports.tracer-medicines', 'admin.reports.low-stock-medicines']) }}">
-                    <a href="#" class="nav-link nav-sub-header {{ nav_active_class(['admin.reports.medicines-monthly', 'admin.reports.tracer-medicines', 'admin.reports.low-stock-medicines']) }}">
+                  <li class="nav-item has-treeview {{ nav_menu_open_class(['admin.reports.medicines-monthly', 'admin.reports.tracer-medicines', 'admin.reports.low-stock-medicines', 'admin.reports.alu-monthly']) }}">
+                    <a href="#" class="nav-link nav-sub-header {{ nav_active_class(['admin.reports.medicines-monthly', 'admin.reports.tracer-medicines', 'admin.reports.low-stock-medicines', 'admin.reports.alu-monthly']) }}">
                       <i class="nav-icon bi bi-capsule-pill text-success"></i>
                       <p>
                         Pharmacy & Inventory
                         <i class="nav-arrow bi bi-chevron-right"></i>
                       </p>
                     </a>
-                    <ul class="nav nav-treeview" style="{{ nav_display_style(['admin.reports.medicines-monthly', 'admin.reports.tracer-medicines', 'admin.reports.low-stock-medicines']) }}">
+                    <ul class="nav nav-treeview" style="{{ nav_display_style(['admin.reports.medicines-monthly', 'admin.reports.tracer-medicines', 'admin.reports.low-stock-medicines', 'admin.reports.alu-monthly']) }}">
                       <li class="nav-item">
                         <a href="{{ route('admin.reports.medicines-monthly') }}" class="nav-link nav-sub-sub-item {{ nav_active_class(['admin.reports.medicines-monthly']) }}">
                           <i class="nav-icon bi bi-pill text-info"></i>
                           <p>Medicines Monthly</p>
+                        </a>
+                      </li>
+                      <li class="nav-item">
+                        <a href="{{ route('admin.reports.alu-monthly') }}" class="nav-link nav-sub-sub-item {{ nav_active_class(['admin.reports.alu-monthly']) }}">
+                          <i class="nav-icon bi bi-capsule text-danger"></i>
+                          <p>ALu Report</p>
                         </a>
                       </li>
                       <li class="nav-item">

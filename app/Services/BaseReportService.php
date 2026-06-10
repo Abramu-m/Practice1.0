@@ -69,6 +69,20 @@ abstract class BaseReportService
     }
 
     /**
+     * Get ISO week number and start/end dates for the current report range
+     */
+    protected function getWeekInfo(): array
+    {
+        $weekNumber = $this->startDate->weekOfYear;
+        return [
+            'week_number' => $weekNumber,
+            'start_date'  => $this->startDate->format('Y-m-d'),
+            'end_date'    => $this->endDate->format('Y-m-d'),
+            'formatted'   => "Week {$weekNumber} ({$this->startDate->format('d M')} - {$this->endDate->format('d M Y')})",
+        ];
+    }
+
+    /**
      * Get standard report data structure
      */
     protected function getBaseReportData()

@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Taarifa ya Mwezi ya Kutolea Dawa</title>
+    <title>Taarifa ya Mwezi ya Dawa za Matibabu ya Malaria</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: Arial, sans-serif; font-size: 10px; color: #000; padding: 18px 22px; }
@@ -15,6 +15,7 @@
             vertical-align: middle;
         }
         .main-table thead th { font-weight: bold; font-size: 9px; }
+        .main-table .section-header { font-size: 10px; text-align: left; }
         .main-table .drug-label { text-align: left; }
     </style>
 </head>
@@ -32,7 +33,7 @@
         </td>
         <td style="text-align:center; vertical-align:middle;">
             <div style="font-size:13px; font-weight:bold; letter-spacing:0.5px;">WIZARA YA AFYA</div>
-            <div style="font-size:12px; font-weight:bold; margin-top:5px;">FOMU YA TAARIFA YA MWEZI YA KUTOLEA DAWA</div>
+            <div style="font-size:12px; font-weight:bold; margin-top:5px;">FOMU YA TAARIFA YA MWEZI YA DAWA ZA MATIBABU YA MALARIA</div>
         </td>
         <td style="width:70px;">&nbsp;</td>
     </tr>
@@ -64,38 +65,87 @@
     </tr>
 </table>
 
-{{-- MAIN DATA TABLE --}}
+{{-- TABLE 1: ALu DOSES --}}
 <table class="main-table">
     <thead>
         <tr>
-            <th rowspan="2" style="width:30px">Na</th>
-            <th rowspan="2" style="width:170px">Dawa</th>
-            <th rowspan="2" style="width:80px">Kipimo cha kugawa</th>
-            <th colspan="3">Kiasi cha dawa kilichotolewa kwa wagonjwa</th>
-            <th rowspan="2" style="width:45px">Jumla</th>
+            <th colspan="8" class="section-header">JUMLA YA VIDONGE VYA DAWA MSETO YA MALARIA (ALu) VILIVYOTOLEWA</th>
         </tr>
         <tr>
-            <th>Umri chini ya miaka 5</th>
-            <th>Umri miaka 5 hadi 59</th>
-            <th>Umri miaka 60 na zaidi</th>
+            <th style="width:25px">Na</th>
+            <th style="width:140px">Dawa</th>
+            <th style="width:80px">Kipimo cha kugawa</th>
+            <th>Miaka 0-3<br>(0-15kg)</th>
+            <th>Miaka 3.1-8<br>(15.1-25kg)</th>
+            <th>Miaka 8.1-12<br>(25.1-35kg)</th>
+            <th>Miaka 12 na zaidi<br>(35kg+)</th>
+            <th style="width:45px">Jumla<br>(a+b+c+d)</th>
         </tr>
     </thead>
     <tbody>
-        @foreach ($dispensing_rows as $row)
+        @foreach ($alu_rows as $i => $row)
         <tr>
-            @if($row['row_no_rowspan'] > 0)
-                <td rowspan="{{ $row['row_no_rowspan'] }}">{{ $row['row_no'] }}</td>
-            @endif
-            @if($row['drug_rowspan'] > 0)
-                <td rowspan="{{ $row['drug_rowspan'] }}" class="drug-label">{{ $row['drug_label'] }}</td>
-            @endif
-            <td>{{ $row['unit_label'] }}</td>
-            <td>{{ $row['under_5'] ?? '' }}</td>
-            <td>{{ $row['5_to_59'] ?? '' }}</td>
-            <td>{{ $row['60_plus'] ?? '' }}</td>
-            <td>{{ $row['total'] ?? '' }}</td>
+            <td>{{ $i + 1 }}</td>
+            <td class="drug-label">{{ $row['label'] }}</td>
+            <td>{{ $row['unit'] }}</td>
+            <td>{{ $row['a'] }}</td>
+            <td>{{ $row['b'] }}</td>
+            <td>{{ $row['c'] }}</td>
+            <td>{{ $row['d'] }}</td>
+            <td>{{ $row['total'] }}</td>
         </tr>
         @endforeach
+    </tbody>
+</table>
+
+{{-- TABLE 2: ARTESUNATE (static placeholder structure) --}}
+<table class="main-table" style="margin-top:14px;">
+    <thead>
+        <tr>
+            <th colspan="8" class="section-header">KIASI KILICHOTOLEWA CHA DAWA YA SINDANO YA ARTESUNATE</th>
+        </tr>
+        <tr>
+            <th style="width:25px">Na</th>
+            <th style="width:140px">Dawa</th>
+            <th style="width:80px">Kipimo cha kugawa</th>
+            <th>Chini au sawa ya kg 25</th>
+            <th>Uzito wa 26-50kg</th>
+            <th>Uzito wa 51-70kg</th>
+            <th>Uzito wa 76-100kg</th>
+            <th style="width:45px">Jumla</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>5a</td>
+            <td class="drug-label">Idadi ya vichupa vilivyotumika (Initiated treatment and admitted)</td>
+            <td>Sindano</td>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>5b</td>
+            <td class="drug-label">Idadi ya vichupa vilivyotumika (Initiated treatment and referred out)</td>
+            <td>Sindano</td>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>5c</td>
+            <td class="drug-label">Idadi ya vichupa vilivyotumika (Referred in and treated)</td>
+            <td>Sindano</td>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+        </tr>
     </tbody>
 </table>
 
@@ -114,7 +164,7 @@
     </tr>
     <tr><td colspan="4" style="height:5px; border:none;"></td></tr>
     <tr>
-        <td style="white-space:nowrap; border:none;">Inapitiwa na</td>
+        <td style="white-space:nowrap; border:none;">Imepitiwa na</td>
         <td colspan="3" style="border-bottom:1px solid #000; border-top:none; border-left:none; border-right:none;"></td>
     </tr>
     <tr><td colspan="4" style="height:5px; border:none;"></td></tr>
@@ -124,7 +174,7 @@
     </tr>
     <tr><td colspan="4" style="height:5px; border:none;"></td></tr>
     <tr>
-        <td style="white-space:nowrap; border:none;">Tarehe ya kupokelewa Wilayani</td>
+        <td style="white-space:nowrap; border:none;">Tarehe ya kupokelewa Wilayani/Kutumwa kwenye mfumo</td>
         <td colspan="3" style="border-bottom:1px solid #000; border-top:none; border-left:none; border-right:none;"></td>
     </tr>
 </table>

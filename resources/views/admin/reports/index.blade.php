@@ -148,6 +148,41 @@
             </div>
         </div>
 
+        <!-- ALu Report -->
+        <div class="col-md-6 col-lg-4 mb-3">
+            <div class="card report-card h-100">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-capsules"></i> ALu Report
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text text-muted">
+                        Monthly antimalarial treatment drugs (ALu / Artesunate) dispensing
+                    </p>
+                </div>
+                <div class="card-footer bg-light">
+                    <form method="GET" action="{{ route('admin.reports.alu-monthly') }}" class="form-inline">
+                        <select name="month" class="form-control form-control-sm mr-2" required>
+                            <option value="">Select Month</option>
+                            @for ($m = 1; $m <= 12; $m++)
+                                <option value="{{ $m }}" {{ $m == date('n') ? 'selected' : '' }}>
+                                    {{ \Carbon\Carbon::createFromDate(date('Y'), $m, 1)->format('F') }}
+                                </option>
+                            @endfor
+                        </select>
+                        <input type="hidden" name="year" value="{{ date('Y') }}">
+                        <button type="submit" class="btn btn-sm btn-danger">
+                            <i class="fas fa-eye"></i> View
+                        </button>
+                        <button type="submit" name="pdf" value="1" class="btn btn-sm btn-outline-danger">
+                            <i class="fas fa-file-pdf"></i> PDF
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
         <!-- Tracer Medicines Report -->
         <div class="col-md-6 col-lg-4 mb-3">
             <div class="card report-card h-100">

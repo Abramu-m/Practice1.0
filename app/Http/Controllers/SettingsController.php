@@ -95,4 +95,28 @@ class SettingsController extends Controller
 
         return redirect()->route('settings.reports.malaria-vipimo')->with('success', 'Malaria Vipimo report configuration saved.');
     }
+
+    public function aluReportSettings()
+    {
+        $medications = \App\Models\Medication::orderBy('generic_name')
+            ->get(['id', 'generic_name', 'brand_name', 'strength']);
+
+        $config = [
+            'alu_1x6_medication_id' => SystemSetting::get('alu_1x6_medication_id'),
+            'alu_2x6_medication_id' => SystemSetting::get('alu_2x6_medication_id'),
+            'alu_3x6_medication_id' => SystemSetting::get('alu_3x6_medication_id'),
+            'alu_4x6_medication_id' => SystemSetting::get('alu_4x6_medication_id'),
+        ];
+
+        return view('settings.reports.alu_monthly', compact('medications', 'config'));
+    }
+
+    public function updateAluReportSettings(Request $request)
+    {
+        foreach (['alu_1x6_medication_id', 'alu_2x6_medication_id', 'alu_3x6_medication_id', 'alu_4x6_medication_id'] as $key) {
+            SystemSetting::set($key, $request->input($key, ''));
+        }
+
+        return redirect()->route('settings.reports.alu-monthly')->with('success', 'ALu report configuration saved.');
+    }
 }

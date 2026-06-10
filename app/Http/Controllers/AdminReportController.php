@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\MalariaVipimoReportService;
+use App\Services\MalariaWeeklySurveillanceReportService;
 use App\Services\IdSRReportService;
 use App\Services\STDSTIReportService;
 use App\Services\MedicineReportService;
@@ -14,6 +15,7 @@ use App\Services\LabClinicalChemistryReportService;
 use App\Services\LabMicrobiologyReportService;
 use App\Services\LabSerologyReportService;
 use App\Services\LabParasitologyReportService;
+use App\Services\AluReportService;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -21,6 +23,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 class AdminReportController extends Controller
 {
     protected $malariaVipimoService;
+    protected $malariaWeeklySurveillanceService;
     protected $idsrService;
     protected $stiService;
     protected $medicineService;
@@ -32,9 +35,11 @@ class AdminReportController extends Controller
     protected $labMicrobiologyService;
     protected $labSerologyService;
     protected $labParasitologyService;
+    protected $aluReportService;
 
     public function __construct(
         MalariaVipimoReportService $malariaVipimoService,
+        MalariaWeeklySurveillanceReportService $malariaWeeklySurveillanceService,
         IdSRReportService $idsrService,
         STDSTIReportService $stiService,
         MedicineReportService $medicineService,
@@ -45,9 +50,11 @@ class AdminReportController extends Controller
         LabClinicalChemistryReportService $labClinicalChemistryService,
         LabMicrobiologyReportService $labMicrobiologyService,
         LabSerologyReportService $labSerologyService,
-        LabParasitologyReportService $labParasitologyService
+        LabParasitologyReportService $labParasitologyService,
+        AluReportService $aluReportService
     ) {
         $this->malariaVipimoService  = $malariaVipimoService;
+        $this->malariaWeeklySurveillanceService = $malariaWeeklySurveillanceService;
         $this->idsrService = $idsrService;
         $this->stiService = $stiService;
         $this->medicineService = $medicineService;
@@ -59,6 +66,7 @@ class AdminReportController extends Controller
         $this->labMicrobiologyService = $labMicrobiologyService;
         $this->labSerologyService = $labSerologyService;
         $this->labParasitologyService = $labParasitologyService;
+        $this->aluReportService = $aluReportService;
     }
 
     /**
@@ -91,6 +99,27 @@ class AdminReportController extends Controller
     }
 
     /**
+     * Weekly malaria surveillance report
+     */
+    public function malariaWeeklySurveillance(Request $request)
+    {
+        $year = (int) ($request->input('year') ?? date('Y'));
+        $week = (int) ($request->input('week') ?? date('W'));
+
+        $this->malariaWeeklySurveillanceService->setWeeklyDates($year, $week);
+        $data = $this->malariaWeeklySurveillanceService->buildReport();
+
+        $data['year'] = $year;
+        $data['week'] = $week;
+
+        if ($request->has('pdf')) {
+            return $this->downloadPdf('malaria-weekly-surveillance', $data);
+        }
+
+        return view('admin.reports.malaria-weekly-surveillance', $data);
+    }
+
+    /**
      * STD/STI monthly report
      */
     public function stdStiMonthly(Request $request)
@@ -113,7 +142,7 @@ class AdminReportController extends Controller
     }
 
     /**
-     * Medicines monthly consumption report
+     * Medicines monthly dispensing report (Taarifa ya Mwezi ya Kutolea Dawa)
      */
     public function medicinesMonthly(Request $request)
     {
@@ -128,10 +157,36 @@ class AdminReportController extends Controller
         $data['month_name'] = Carbon::createFromDate($year, $month, 1)->format('F');
 
         if ($request->has('pdf')) {
-            return $this->downloadPdf('medicines-monthly', $data);
+            $html = view('admin.reports.pdfs.medicines-monthly', $data)->render();
+            $pdf  = Pdf::loadHTML($html)->setPaper('a4', 'portrait');
+            return $pdf->download('medicines-monthly-' . $year . '-' . str_pad($month, 2, '0', STR_PAD_LEFT) . '.pdf');
         }
 
         return view('admin.reports.medicines-monthly', $data);
+    }
+
+    /**
+     * ALu report (Taarifa ya Mwezi ya Dawa za Matibabu ya Malaria)
+     */
+    public function aluMonthly(Request $request)
+    {
+        $year = (int) ($request->input('year') ?? date('Y'));
+        $month = (int) ($request->input('month') ?? date('n'));
+
+        $this->aluReportService->setMonthlyDates($year, $month);
+        $data = $this->aluReportService->buildReport();
+
+        $data['year'] = $year;
+        $data['month'] = $month;
+        $data['month_name'] = Carbon::createFromDate($year, $month, 1)->format('F');
+
+        if ($request->has('pdf')) {
+            $html = view('admin.reports.pdfs.alu-monthly', $data)->render();
+            $pdf  = Pdf::loadHTML($html)->setPaper('a4', 'portrait');
+            return $pdf->download('alu-monthly-' . $year . '-' . str_pad($month, 2, '0', STR_PAD_LEFT) . '.pdf');
+        }
+
+        return view('admin.reports.alu-monthly', $data);
     }
 
     /**

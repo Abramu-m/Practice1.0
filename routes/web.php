@@ -78,6 +78,8 @@ Route::middleware('auth')->group(function () {
     Route::put('/settings/report-config', [App\Http\Controllers\SettingsController::class, 'updateReportConfig'])->name('settings.report-config.update');
     Route::get('/settings/reports/malaria-vipimo', [App\Http\Controllers\SettingsController::class, 'malariaVipimoSettings'])->name('settings.reports.malaria-vipimo');
     Route::put('/settings/reports/malaria-vipimo', [App\Http\Controllers\SettingsController::class, 'updateMalariaVipimoSettings'])->name('settings.reports.malaria-vipimo.update');
+    Route::get('/settings/reports/alu-monthly', [App\Http\Controllers\SettingsController::class, 'aluReportSettings'])->name('settings.reports.alu-monthly');
+    Route::put('/settings/reports/alu-monthly', [App\Http\Controllers\SettingsController::class, 'updateAluReportSettings'])->name('settings.reports.alu-monthly.update');
 
     Route::get('/facility-setup-required', function () {
         return view('facility.setup-required');
@@ -203,6 +205,9 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsAdmin::class, 'facil
         Route::get('/idsr-weekly', [AdminReportController::class, 'idsrWeekly'])
             ->name('idsr-weekly');
 
+        Route::get('/malaria-weekly-surveillance', [AdminReportController::class, 'malariaWeeklySurveillance'])
+            ->name('malaria-weekly-surveillance');
+
         // On-Demand Reports
         Route::get('/low-stock-medicines', [AdminReportController::class, 'lowStockMedicines'])
             ->name('low-stock-medicines');
@@ -232,6 +237,9 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsAdmin::class, 'facil
 
         Route::get('/lab-parasitology', [AdminReportController::class, 'labParasitology'])
             ->name('lab-parasitology');
+
+        Route::get('/alu-monthly', [AdminReportController::class, 'aluMonthly'])
+            ->name('alu-monthly');
     });
 
     // Lab Report Setup
@@ -264,6 +272,12 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsAdmin::class, 'facil
         ->name('admin.lab-settings.microbiology.index');
     Route::put('/admin/lab-settings/microbiology', [\App\Http\Controllers\MicrobiologyReportSetupController::class, 'update'])
         ->name('admin.lab-settings.microbiology.update');
+
+    // Pharmacy & Inventory Report Setup
+    Route::get('/admin/pharmacy-settings/medicine-dispensing', [\App\Http\Controllers\MedicineDispensingReportSetupController::class, 'index'])
+        ->name('admin.pharmacy-settings.medicine-dispensing.index');
+    Route::put('/admin/pharmacy-settings/medicine-dispensing', [\App\Http\Controllers\MedicineDispensingReportSetupController::class, 'update'])
+        ->name('admin.pharmacy-settings.medicine-dispensing.update');
 
 });
 

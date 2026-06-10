@@ -2,119 +2,73 @@
 
 namespace App\Services;
 
+use App\Models\MedicineDispensingReportRow;
 use Illuminate\Support\Facades\DB;
 
 class MedicineReportService extends BaseReportService
 {
     /**
-     * Build medicines monthly consumption report
+     * Build the Monthly Drug Dispensing Report (Taarifa ya Mwezi ya Kutolea Dawa),
+     * matching the official MoH form: per-drug quantities dispensed, split by
+     * patient age group (<5, 5-59, 60+).
      */
     public function buildReport()
     {
         $baseData = $this->getBaseReportData();
 
-        // Get prescription dispensals in date range
-        $prescriptions = DB::table('prescriptions as pr')
-            ->join('consultations as c', 'c.id', '=', 'pr.consultation_id')
-            ->join('patient_visits as pv', 'pv.id', '=', 'c.visit_id')
-            ->join('medications as m', 'm.id', '=', 'pr.medication_id')
-            ->leftJoin('store_categories as sc', 'sc.id', '=', 'm.category_id')
-            ->whereBetween('pv.visit_date', [$this->startDate, $this->endDate])
-            ->whereNotNull('pr.dispensed_at')
-            ->select(
-                'm.id',
-                DB::raw("COALESCE(m.brand_name, m.generic_name) as name"),
-                DB::raw("COALESCE(sc.description, 'Uncategorized') as category"),
-                DB::raw('SUM(pr.quantity_dispensed) as quantity_dispensed')
-            )
-            ->groupBy('m.id', 'm.brand_name', 'm.generic_name', 'sc.description')
-            ->orderBy('quantity_dispensed', 'DESC')
-            ->get();
+        $rows = MedicineDispensingReportRow::orderBy('sort_order')->get();
+        $medicationIds = $rows->pluck('medication_id')->filter()->unique()->values();
 
-        // Get investigation consumables in date range
-        $investigations = DB::table('investigations as inv')
-            ->join('patient_visits as pv', 'pv.id', '=', 'inv.visit_id')
-            ->join('medical_services as ms', 'ms.id', '=', 'inv.medical_service_id')
-            ->whereBetween('pv.visit_date', [$this->startDate, $this->endDate])
-            ->whereNull('inv.cancelled_at')
-            ->select(
-                'ms.name as service_name',
-                DB::raw('COUNT(*) as count')
-            )
-            ->groupBy('ms.name')
-            ->orderBy('count', 'DESC')
-            ->get();
+        $totals = [];
 
-        // Get tracer medicines (essential medicines subset)
-        $tracerMedicines = $this->getTracerMedicines($prescriptions);
+        if ($medicationIds->isNotEmpty()) {
+            $results = DB::table('prescriptions as pr')
+                ->join('patient_visits as pv', 'pv.id', '=', 'pr.visit_id')
+                ->join('patients as p', 'p.id', '=', 'pv.patient')
+                ->whereIn('pr.medication_id', $medicationIds)
+                ->whereNotNull('pr.dispensed_at')
+                ->whereNotNull('p.date_of_birth')
+                ->whereBetween('pr.dispensed_at', [$this->startDate, $this->endDate])
+                ->select(
+                    'pr.medication_id',
+                    DB::raw('TIMESTAMPDIFF(YEAR, p.date_of_birth, pr.dispensed_at) as age_years'),
+                    DB::raw('SUM(pr.quantity_dispensed) as qty')
+                )
+                ->groupBy('pr.medication_id', 'age_years')
+                ->get();
+
+            foreach ($results as $result) {
+                $ageGroup = $result->age_years < 5 ? 'under_5' : ($result->age_years < 60 ? '5_to_59' : '60_plus');
+                $totals[$result->medication_id][$ageGroup] = ($totals[$result->medication_id][$ageGroup] ?? 0) + (int) $result->qty;
+            }
+        }
+
+        $dispensingRows = $rows->map(function ($row) use ($totals) {
+            $medTotals = $totals[$row->medication_id] ?? null;
+
+            $under5 = $medTotals['under_5'] ?? 0;
+            $midAge = $medTotals['5_to_59'] ?? 0;
+            $elder  = $medTotals['60_plus'] ?? 0;
+
+            return [
+                'row_key'        => $row->row_key,
+                'row_no'         => $row->row_no,
+                'row_no_rowspan' => $row->row_no_rowspan,
+                'drug_label'     => $row->drug_label,
+                'drug_rowspan'   => $row->drug_rowspan,
+                'unit_label'     => $row->unit_label,
+                'under_5'        => $row->medication_id ? $under5 : null,
+                '5_to_59'        => $row->medication_id ? $midAge : null,
+                '60_plus'        => $row->medication_id ? $elder : null,
+                'total'          => $row->medication_id ? ($under5 + $midAge + $elder) : null,
+            ];
+        })->values()->toArray();
 
         return array_merge($baseData, [
-            'report_type' => 'medicines_monthly',
-            'title' => 'Medicines Monthly Consumption Report',
-            'medications' => [
-                'total_dispensed' => $prescriptions->sum('quantity_dispensed'),
-                'unique_medications' => $prescriptions->count(),
-                'by_medication' => $prescriptions->map(function ($med) {
-                    return [
-                        'name' => $med->name,
-                        'category' => $med->category,
-                        'quantity_dispensed' => $med->quantity_dispensed,
-                    ];
-                })->toArray(),
-                'by_category' => $this->groupMedicationsByCategory($prescriptions),
-            ],
-            'investigations' => [
-                'total_conducted' => $investigations->sum('count'),
-                'by_type' => $investigations->map(function ($inv) {
-                    return [
-                        'name' => $inv->service_name,
-                        'count' => $inv->count,
-                    ];
-                })->toArray(),
-            ],
-            'tracer_medicines' => [
-                'total' => $tracerMedicines['total'],
-                'items' => $tracerMedicines['items'],
-            ],
+            'report_type'     => 'medicines_monthly',
+            'title'           => 'Taarifa ya Mwezi ya Kutolea Dawa',
+            'dispensing_rows' => $dispensingRows,
         ]);
-    }
-
-    /**
-     * Get tracer medicines dispensed during the report period (used by monthly report)
-     */
-    private function getTracerMedicines($allMedicines = null)
-    {
-        $tracerIds = \App\Models\Medication::where('is_tracer', true)->pluck('id')->toArray();
-
-        if (empty($tracerIds)) {
-            return ['total' => 0, 'items' => []];
-        }
-
-        if (!$allMedicines) {
-            $allMedicines = DB::table('prescriptions as pr')
-                ->join('consultations as c', 'c.id', '=', 'pr.consultation_id')
-                ->join('patient_visits as pv', 'pv.id', '=', 'c.visit_id')
-                ->join('medications as m', 'm.id', '=', 'pr.medication_id')
-                ->whereBetween('pv.visit_date', [$this->startDate, $this->endDate])
-                ->whereNotNull('pr.dispensed_at')
-                ->select(
-                    'm.id',
-                    DB::raw("COALESCE(m.brand_name, m.generic_name) as name"),
-                    DB::raw('SUM(pr.quantity_dispensed) as quantity_dispensed')
-                )
-                ->groupBy('m.id', 'm.brand_name', 'm.generic_name')
-                ->get();
-        }
-
-        $tracerMedicines = collect($allMedicines)->filter(fn($med) => in_array($med->id, $tracerIds));
-
-        return [
-            'total' => $tracerMedicines->sum('quantity_dispensed'),
-            'items' => $tracerMedicines->map(fn($med) => [
-                'name'               => $med->name,
-                'quantity_dispensed' => $med->quantity_dispensed,
-            ])->toArray(),
-        ];
     }
 
     /**
@@ -153,23 +107,6 @@ class MedicineReportService extends BaseReportService
                 'unavailable_count' => $unavailableCount,
             ],
         ]);
-    }
-
-    /**
-     * Group medications by category
-     */
-    private function groupMedicationsByCategory(\Illuminate\Support\Collection $medications)
-    {
-        return $medications->groupBy('category')
-            ->map(function ($group, $category) {
-                return [
-                    'category' => $category,
-                    'total_quantity' => $group->sum('quantity_dispensed'),
-                    'unique_items' => $group->count(),
-                ];
-            })
-            ->values()
-            ->toArray();
     }
 
     /**
