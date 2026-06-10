@@ -2,95 +2,86 @@
 
 namespace App\Services;
 
-use App\Models\IdSRCategory;
+use App\Models\IdsrDiagnosis;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class IdSRReportService extends BaseReportService
 {
-    /**
-     * Build IDSR weekly report
-     */
-    public function buildReport()
+    public function buildReport(): array
     {
-        $baseData = $this->getBaseReportData();
+        $diagnoses = IdsrDiagnosis::orderBy('id')->pluck('name', 'id')->all();
 
-        // Get active IDSR categories
-        $categories = IdSRCategory::active()->get();
+        $empty = [
+            'u5_m' => 0, 'u5_f' => 0, 'u5_t' => 0,
+            '5p_m' => 0, '5p_f' => 0, '5p_t' => 0,
+            'tot_m' => 0, 'tot_f' => 0, 'tot_t' => 0,
+        ];
 
-        $diseaseData = [];
+        $weeklyCases = $this->queryCases($this->startDate, $this->endDate);
+        $ytdCases    = $this->queryCases($this->startDate->copy()->startOfYear(), $this->endDate);
 
-        foreach ($categories as $category) {
-            $icdCodes = $category->getIcdCodesArray();
-
-            // Get consultations with IDSR category diagnoses
-            $consultations = DB::table('icd_diagnoses as id')
-                ->join('consultations as c', 'c.id', '=', 'id.consultation_id')
-                ->join('patient_visits as pv', 'pv.id', '=', 'c.visit_id')
-                ->join('patients as p', 'p.id', '=', 'pv.patient')
-                ->whereBetween('pv.visit_date', [$this->startDate, $this->endDate])
-                ->where(function ($query) use ($icdCodes) {
-                    if (!empty($icdCodes)) {
-                        $query->whereIn('id.icd_code', $icdCodes);
-                    } else {
-                        // Fallback: search by MTUHA category name
-                        $query->whereRaw('1 = 0');
-                    }
-                })
-                ->select('pv.id', 'p.gender', 'p.date_of_birth', 'pv.visit_date')
-                ->distinct()
-                ->get();
-
-            // Aggregate by age and gender
-            $aggregation = [];
-            foreach ($consultations as $record) {
-                $gender = strtolower($record->gender);
-                $genderKey = in_array($gender, ['male', 'm', '1']) ? 'male' : 'female';
-
-                $ageGroup = \App\Models\AgeGroup::findByDateOfBirth($record->date_of_birth);
-                if (!$ageGroup) {
-                    continue;
-                }
-
-                $groupLabel = $ageGroup->label;
-
-                if (!isset($aggregation[$groupLabel])) {
-                    $aggregation[$groupLabel] = [
-                        'male' => 0,
-                        'female' => 0,
-                        'total' => 0,
-                    ];
-                }
-
-                $aggregation[$groupLabel][$genderKey]++;
-                $aggregation[$groupLabel]['total']++;
-            }
-
-            $diseaseData[$category->name] = [
-                'total_cases' => count($consultations),
-                'by_age_gender' => $this->buildAgeGenderMatrix($aggregation),
-                'totals' => $this->aggregationHelper::calculateTotals($aggregation),
+        $diseases = [];
+        foreach ($diagnoses as $id => $name) {
+            $diseases[$id] = [
+                'name'              => $name,
+                'weekly_cases'      => $weeklyCases[$id] ?? $empty,
+                'weekly_deaths'     => $empty,
+                'cumulative_cases'  => $this->asThreeCols($ytdCases[$id] ?? $empty),
+                'cumulative_deaths' => ['m' => null, 'f' => null, 't' => null],
             ];
         }
 
-        return array_merge($baseData, [
-            'report_type' => 'idsr_weekly',
-            'title' => 'IDSR Weekly Disease Report',
+        return array_merge($this->getBaseReportData(), [
             'week_info' => $this->getWeekInfo(),
-            'diseases' => $diseaseData,
+            'diseases'  => $diseases,
         ]);
     }
 
-    /**
-     * Get week information
-     */
-    private function getWeekInfo()
+    private function queryCases(Carbon $start, Carbon $end): array
     {
-        $weekNumber = $this->startDate->weekOfYear;
-        return [
-            'week_number' => $weekNumber,
-            'start_date' => $this->startDate->format('Y-m-d'),
-            'end_date' => $this->endDate->format('Y-m-d'),
-            'formatted' => "Week {$weekNumber} ({$this->startDate->format('d M')} - {$this->endDate->format('d M Y')})",
-        ];
+        $rows = DB::table('idsr_icd_mapping as m')
+            ->join('icd_diagnoses as d',   'd.icd_code',  '=', 'm.icd_code')
+            ->join('consultations as c',   'c.id',        '=', 'd.consultation_id')
+            ->join('patient_visits as pv', 'pv.id',       '=', 'c.visit_id')
+            ->join('patients as p',        'p.id',        '=', 'pv.patient')
+            ->whereBetween('pv.visit_date', [$start, $end])
+            ->whereNotNull('p.date_of_birth')
+            ->selectRaw("
+                m.idsr_diagnosis_id,
+                IF(DATEDIFF(pv.visit_date, p.date_of_birth) < 1825, 'u5', '5p') AS age_bucket,
+                p.gender,
+                COUNT(DISTINCT pv.id) AS cnt
+            ")
+            ->groupBy('m.idsr_diagnosis_id', 'age_bucket', 'p.gender')
+            ->get();
+
+        $result = [];
+        foreach ($rows as $row) {
+            $id  = $row->idsr_diagnosis_id;
+            $ab  = $row->age_bucket;
+            $g   = strtolower($row->gender) === 'male' ? 'm' : 'f';
+            $cnt = (int) $row->cnt;
+
+            if (!isset($result[$id])) {
+                $result[$id] = [
+                    'u5_m' => 0, 'u5_f' => 0, 'u5_t' => 0,
+                    '5p_m' => 0, '5p_f' => 0, '5p_t' => 0,
+                    'tot_m' => 0, 'tot_f' => 0, 'tot_t' => 0,
+                ];
+            }
+
+            $result[$id]["{$ab}_{$g}"] += $cnt;
+            $result[$id]["{$ab}_t"]    += $cnt;
+            $result[$id]["tot_{$g}"]   += $cnt;
+            $result[$id]['tot_t']      += $cnt;
+        }
+
+        return $result;
+    }
+
+    private function asThreeCols(array $data): array
+    {
+        return ['m' => $data['tot_m'], 'f' => $data['tot_f'], 't' => $data['tot_t']];
     }
 }

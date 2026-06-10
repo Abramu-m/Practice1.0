@@ -17,7 +17,6 @@ class DatabaseSeeder extends Seeder
             FacilitySeeder::class,
             MtuhaDiagnosesSeeder::class,
             AgeGroupSeeder::class,
-            IdsrCategorySeeder::class,
             ResultTemplateSeeder::class,
             // Icd10Seeder::class, // enable if you want ICD-10 seeded here
         ]);

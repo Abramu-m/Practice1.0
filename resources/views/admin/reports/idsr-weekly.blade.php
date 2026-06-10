@@ -1,43 +1,66 @@
 @extends('layouts.app_main_layout')
 
-@section('page_title', 'IDSR Weekly Report')
+@section('page_title', 'IDSR Weekly Report — Form 3B')
+
+@section('styles')
+<style>
+    .idsr-table th, .idsr-table td {
+        font-size: 0.72rem;
+        padding: 3px 5px;
+        vertical-align: middle;
+        text-align: center;
+    }
+    .idsr-table td:nth-child(2) { text-align: left; }
+    .idsr-table thead th { background: #1a3a5c; color: #fff; border-color: #0d2233; }
+    .idsr-table thead tr:nth-child(2) th { background: #1f5c99; }
+    .idsr-table thead tr:nth-child(3) th { background: #2878c8; }
+    .group-header { background: #dee2e6 !important; color: #212529 !important; font-weight: 600; }
+
+    @media print {
+        .app-header, .app-sidebar, .app-footer, .no-print { display: none !important; }
+        .app-wrapper, .app-main, .app-content, .container-fluid {
+            margin: 0 !important; padding: 0 !important;
+            width: 100% !important; background: #fff !important;
+        }
+        @page { margin: 8mm 10mm; size: A4 landscape; }
+        .idsr-table th, .idsr-table td { font-size: 7pt; padding: 2px 3px; }
+    }
+</style>
+@endsection
 
 @section('main_content')
 <div class="container-fluid">
-    <div class="row mb-4">
-        <div class="col-md-12">
-            <h1 class="page-title">
-                <i class="fas fa-microscope"></i> IDSR Weekly Disease Report
-            </h1>
-            <p class="text-muted">
-                {{ $facility['name'] ?? 'Facility' }} |
-                {{ $week_info['formatted'] ?? '' }}
-            </p>
-        </div>
-    </div>
 
-    <!-- Report Filters & Controls -->
-    <div class="row mb-3">
-        <div class="col-md-12">
+    {{-- Toolbar --}}
+    <div class="row mb-3 no-print">
+        <div class="col-12">
             <div class="card">
-                <div class="card-body">
-                    <form method="GET" action="{{ route('admin.reports.idsr-weekly') }}" class="form-inline">
-                        <label class="mr-2">Select Week:</label>
-                        <select name="week" class="form-control form-control-sm mr-2" required>
+                <div class="card-body py-2">
+                    <form method="GET" action="{{ route('admin.reports.idsr-weekly') }}" class="d-flex align-items-center gap-2 flex-wrap">
+                        <label class="mb-0 fw-semibold me-1">Week:</label>
+                        <select name="week" class="form-select form-select-sm" style="width:90px" required>
                             @for ($w = 1; $w <= 53; $w++)
-                                <option value="{{ $w }}" {{ $w == $week ? 'selected' : '' }}>
-                                    Week {{ $w }}
-                                </option>
+                                <option value="{{ $w }}" @selected($w == $week)>{{ $w }}</option>
                             @endfor
                         </select>
-                        <input type="hidden" name="year" value="{{ $year }}">
-                        <button type="submit" class="btn btn-sm btn-primary mr-2">
+
+                        <label class="mb-0 fw-semibold ms-2 me-1">Year:</label>
+                        <select name="year" class="form-select form-select-sm" style="width:90px">
+                            @for ($y = date('Y') - 2; $y <= date('Y') + 1; $y++)
+                                <option value="{{ $y }}" @selected($y == $year)>{{ $y }}</option>
+                            @endfor
+                        </select>
+
+                        <button type="submit" class="btn btn-sm btn-primary ms-2">
                             <i class="fas fa-search"></i> Filter
+                        </button>
+                        <button type="button" class="btn btn-sm btn-secondary" onclick="window.print()">
+                            <i class="fas fa-print"></i> Print
                         </button>
                         <button type="submit" name="pdf" value="1" class="btn btn-sm btn-danger">
                             <i class="fas fa-file-pdf"></i> Download PDF
                         </button>
-                        <a href="{{ route('admin.reports.index') }}" class="btn btn-sm btn-secondary ml-2">
+                        <a href="{{ route('admin.reports.index') }}" class="btn btn-sm btn-outline-secondary">
                             <i class="fas fa-arrow-left"></i> Back
                         </a>
                     </form>
@@ -46,98 +69,116 @@
         </div>
     </div>
 
-    <!-- Diseases Report -->
-    <div class="row">
-        <div class="col-md-12">
-            @forelse ($diseases as $disease_name => $disease_data)
-                <div class="card mb-3">
-                    <div class="card-header bg-info text-white">
-                        <h6 class="mb-0">{{ $disease_name }}</h6>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-sm table-bordered table-striped">
-                                <thead class="bg-light">
-                                    <tr>
-                                        <th>Age Group</th>
-                                        <th class="text-center">Male</th>
-                                        <th class="text-center">Female</th>
-                                        <th class="text-center">Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($disease_data['by_age_gender'] as $row)
-                                        <tr>
-                                            <td>{{ $row['age_group'] }}</td>
-                                            <td class="text-center">{{ $row['male'] }}</td>
-                                            <td class="text-center">{{ $row['female'] }}</td>
-                                            <td class="text-center"><strong>{{ $row['total'] }}</strong></td>
-                                        </tr>
-                                    @endforeach
-                                    <tr class="table-active">
-                                        <td><strong>Total Cases</strong></td>
-                                        <td class="text-center"><strong>{{ $disease_data['totals']['male'] }}</strong></td>
-                                        <td class="text-center"><strong>{{ $disease_data['totals']['female'] }}</strong></td>
-                                        <td class="text-center"><strong>{{ $disease_data['totals']['total'] }}</strong></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            @empty
-                <div class="alert alert-info" role="alert">
-                    <i class="fas fa-info-circle"></i> No disease cases reported for this week.
-                </div>
-            @endforelse
-
-            <!-- Summary Card -->
-            <div class="row mt-4">
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-body">
-                            <h6 class="card-title">Report Information</h6>
-                            <p class="mb-1"><strong>Facility:</strong> {{ $facility['name'] ?? 'N/A' }}</p>
-                            <p class="mb-1"><strong>Region:</strong> {{ $facility['region'] ?? 'N/A' }}</p>
-                            <p class="mb-1"><strong>District:</strong> {{ $facility['district'] ?? 'N/A' }}</p>
-                            <p class="mb-0"><strong>Generated:</strong> {{ $generated_at->format('d M Y H:i') }}</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-body">
-                            <h6 class="card-title">Week Details</h6>
-                            <p class="mb-1"><strong>Week Number:</strong> {{ $week_info['week_number'] }}</p>
-                            <p class="mb-1"><strong>Start Date:</strong> {{ $week_info['start_date'] }}</p>
-                            <p class="mb-1"><strong>End Date:</strong> {{ $week_info['end_date'] }}</p>
-                            <p class="mb-0"><strong>Total Diseases:</strong> {{ count($diseases) }}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    {{-- Form header --}}
+    <div class="text-center mb-2">
+        <h6 class="mb-0 fw-bold text-uppercase">FORM 3 B: WEEKLY REPORTED CASES / DEATHS AT FACILITY LEVELS</h6>
+        <small class="text-muted">Integrated Disease Surveillance and Response (IDSR)</small>
+    </div>
+    <div class="row mb-2">
+        <div class="col-md-8 mx-auto">
+            <table class="table table-sm table-bordered mb-0" style="font-size:0.78rem">
+                <tr>
+                    <td class="fw-semibold" style="width:18%">Region:</td>
+                    <td>{{ $facility['region'] ?? '—' }}</td>
+                    <td class="fw-semibold" style="width:18%">District:</td>
+                    <td>{{ $facility['district'] ?? '—' }}</td>
+                </tr>
+                <tr>
+                    <td class="fw-semibold">Facility:</td>
+                    <td>{{ $facility['name'] ?? '—' }}</td>
+                    <td class="fw-semibold">Week No. / Year:</td>
+                    <td>{{ $week_info['week_number'] }} / {{ $year }}</td>
+                </tr>
+                <tr>
+                    <td class="fw-semibold">Week Dates:</td>
+                    <td colspan="3">
+                        {{ \Carbon\Carbon::parse($week_info['start_date'])->format('d M Y') }}
+                        &nbsp;—&nbsp;
+                        {{ \Carbon\Carbon::parse($week_info['end_date'])->format('d M Y') }}
+                    </td>
+                </tr>
+            </table>
         </div>
     </div>
+
+    {{-- Main report table --}}
+    <div class="table-responsive">
+        <table class="table table-bordered table-sm idsr-table mb-1">
+            <thead>
+                {{-- Level 1 --}}
+                <tr>
+                    <th rowspan="3" style="width:26px">S/No</th>
+                    <th rowspan="3" style="width:220px;text-align:left">Disease / Condition</th>
+                    <th colspan="9">CASES THIS WEEK</th>
+                    <th colspan="9">DEATHS THIS WEEK</th>
+                    <th colspan="6">CUMULATIVE (Jan 1 – Week {{ $week_info['week_number'] }})</th>
+                </tr>
+                {{-- Level 2 --}}
+                <tr>
+                    <th colspan="3">&lt;5 yrs</th>
+                    <th colspan="3">5+ yrs</th>
+                    <th colspan="3">Total</th>
+                    <th colspan="3">&lt;5 yrs</th>
+                    <th colspan="3">5+ yrs</th>
+                    <th colspan="3">Total</th>
+                    <th colspan="3">Cases</th>
+                    <th colspan="3">Deaths</th>
+                </tr>
+                {{-- Level 3 --}}
+                <tr>
+                    <th>M</th><th>F</th><th>T</th>
+                    <th>M</th><th>F</th><th>T</th>
+                    <th>M</th><th>F</th><th>T</th>
+                    <th>M</th><th>F</th><th>T</th>
+                    <th>M</th><th>F</th><th>T</th>
+                    <th>M</th><th>F</th><th>T</th>
+                    <th>M</th><th>F</th><th>T</th>
+                    <th>M</th><th>F</th><th>T</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($diseases as $id => $d)
+                @php
+                    $wc = $d['weekly_cases'];
+                    $cc = $d['cumulative_cases'];
+                @endphp
+                <tr>
+                    <td>{{ $loop->iteration }}</td>
+                    <td style="text-align:left">{{ $d['name'] }}</td>
+                    {{-- Cases this week: <5 --}}
+                    <td>{{ $wc['u5_m'] ?: '' }}</td>
+                    <td>{{ $wc['u5_f'] ?: '' }}</td>
+                    <td>{{ $wc['u5_t'] ?: '' }}</td>
+                    {{-- Cases this week: 5+ --}}
+                    <td>{{ $wc['5p_m'] ?: '' }}</td>
+                    <td>{{ $wc['5p_f'] ?: '' }}</td>
+                    <td>{{ $wc['5p_t'] ?: '' }}</td>
+                    {{-- Cases this week: Total --}}
+                    <td>{{ $wc['tot_m'] ?: '' }}</td>
+                    <td>{{ $wc['tot_f'] ?: '' }}</td>
+                    <td>{{ $wc['tot_t'] ?: '' }}</td>
+                    {{-- Deaths this week --}}
+                    <td>—</td><td>—</td><td>—</td>
+                    <td>—</td><td>—</td><td>—</td>
+                    <td>—</td><td>—</td><td>—</td>
+                    {{-- Cumulative cases --}}
+                    <td>{{ $cc['m'] ?: '' }}</td>
+                    <td>{{ $cc['f'] ?: '' }}</td>
+                    <td>{{ $cc['t'] ?: '' }}</td>
+                    {{-- Cumulative deaths --}}
+                    <td>—</td><td>—</td><td>—</td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+
+    <p class="text-muted" style="font-size:0.72rem" id="death-note">
+        <em>Note: Death columns show — because in-facility death outcome tracking is not yet enabled in this system.</em>
+    </p>
+    <p class="text-muted" style="font-size:0.72rem">
+        Generated: {{ $generated_at->format('d M Y H:i') }} &nbsp;|&nbsp; {{ $facility['name'] ?? '' }}
+    </p>
+
 </div>
-
-<style>
-.page-title {
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 0.5rem;
-}
-
-.table-responsive {
-    border-radius: 4px;
-}
-
-.table thead th {
-    border-bottom: 2px solid #dee2e6;
-    font-weight: 600;
-}
-
-.table-active {
-    background-color: #f8f9fa !important;
-}
-</style>
 @endsection
