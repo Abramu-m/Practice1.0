@@ -15,7 +15,7 @@ class BackfillLegacyFinancialTransactions extends Command
      */
     protected $signature = 'finance:backfill-legacy-transactions
         {--dry-run : Report counts and totals without inserting any records}
-        {--only= : Comma-separated sources to process (visits,investigations,prescriptions). Default: all}
+        {--only= : Comma-separated sources to process (visits,investigations,prescriptions,cash_sales). Default: all}
         {--chunk=2000 : Number of rows to process per chunk}';
 
     /**
@@ -44,7 +44,7 @@ class BackfillLegacyFinancialTransactions extends Command
         $dryRun = (bool) $this->option('dry-run');
         $chunkSize = (int) $this->option('chunk');
 
-        $available = ['visits', 'investigations', 'prescriptions'];
+        $available = ['visits', 'investigations', 'prescriptions', 'cash_sales'];
         $only = $this->option('only')
             ? array_map('trim', explode(',', $this->option('only')))
             : $available;
@@ -72,6 +72,10 @@ class BackfillLegacyFinancialTransactions extends Command
             $results['prescription'] = $this->processPrescriptions($dryRun, $chunkSize, $now);
         }
 
+        if (in_array('cash_sales', $only, true)) {
+            $results['medication_cash_sale'] = $this->processCashSales($dryRun, $chunkSize, $now);
+        }
+
         $this->newLine();
         $this->table(
             ['Source', $dryRun ? 'Would create' : 'Created', 'Total Amount (Tsh)'],
@@ -91,7 +95,7 @@ class BackfillLegacyFinancialTransactions extends Command
     protected function loadExistingTransactions(): void
     {
         DB::table('financial_transactions')
-            ->whereIn('source_type', ['consultation', 'investigation', 'prescription'])
+            ->whereIn('source_type', ['consultation', 'investigation', 'prescription', 'medication_cash_sale'])
             ->select('source_type', 'source_id')
             ->get()
             ->each(function ($row) {
@@ -364,6 +368,77 @@ class BackfillLegacyFinancialTransactions extends Command
             }, 'pr.id', 'id');
 
         $this->info("Prescriptions -> prescription: {$count} transaction(s)" . ($dryRun ? ' (dry run)' : ' created') . ', total Tsh ' . number_format($amount, 2));
+
+        return ['count' => $count, 'amount' => $amount];
+    }
+
+    /**
+     * @return array{count: int, amount: float}
+     */
+    protected function processCashSales(bool $dryRun, int $chunkSize, Carbon $now): array
+    {
+        $count = 0;
+        $amount = 0.0;
+        $chunks = 0;
+
+        DB::table('medication_cash_sales')
+            ->select(['id', 'sale_number', 'final_amount', 'amount_paid', 'payment_method', 'paid_at', 'paid_by', 'created_by', 'created_at'])
+            ->where('is_paid', 1)
+            ->where('final_amount', '>', 0)
+            ->chunkById($chunkSize, function ($sales) use (&$count, &$amount, &$chunks, $now, $dryRun) {
+                $rows = [];
+
+                foreach ($sales as $sale) {
+                    if (isset($this->existing["medication_cash_sale:{$sale->id}"])) {
+                        continue;
+                    }
+
+                    $count++;
+                    $amount += (float) $sale->final_amount;
+
+                    if ($dryRun) {
+                        continue;
+                    }
+
+                    $transactionDate = Carbon::parse($sale->paid_at ?? $sale->created_at);
+
+                    $rows[] = [
+                        'transaction_number' => $this->nextTransactionNumber($transactionDate),
+                        'transaction_date' => $transactionDate,
+                        'transaction_type' => 'income',
+                        'category' => 'medication',
+                        'subcategory' => 'cash_sales',
+                        'amount' => $sale->final_amount,
+                        'description' => "Cash sale payment - {$sale->sale_number}",
+                        'source_type' => 'medication_cash_sale',
+                        'source_id' => $sale->id,
+                        'patient_id' => null,
+                        'visit_id' => null,
+                        'payment_method' => $sale->payment_method ?? 'cash',
+                        'payment_reference' => null,
+                        'insurance_covered_amount' => 0,
+                        'patient_paid_amount' => $sale->amount_paid ?? $sale->final_amount,
+                        'status' => 'completed',
+                        'created_by' => $sale->paid_by ?? $sale->created_by,
+                        'approved_by' => null,
+                        'approved_at' => null,
+                        'notes' => 'Backfilled from legacy migration (medcom1_0 OTC cash sales)',
+                        'created_at' => $now,
+                        'updated_at' => $now,
+                    ];
+                }
+
+                if (! $dryRun && ! empty($rows)) {
+                    DB::table('financial_transactions')->insert($rows);
+                }
+
+                $chunks++;
+                if ($chunks % 5 === 0) {
+                    $this->info("  cash sales: processed {$chunks} chunks...");
+                }
+            });
+
+        $this->info("Cash sales -> medication_cash_sale: {$count} transaction(s)" . ($dryRun ? ' (dry run)' : ' created') . ', total Tsh ' . number_format($amount, 2));
 
         return ['count' => $count, 'amount' => $amount];
     }
