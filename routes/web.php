@@ -250,6 +250,11 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsAdmin::class, 'facil
     Route::put('/admin/lab-settings/clinical-chemistry', [\App\Http\Controllers\ClinicalChemistryReportSetupController::class, 'update'])
         ->name('admin.lab-settings.clinical-chemistry.update');
 
+    Route::get('/admin/lab-settings/serology', [\App\Http\Controllers\SerologyReportSetupController::class, 'index'])
+        ->name('admin.lab-settings.serology.index');
+    Route::put('/admin/lab-settings/serology', [\App\Http\Controllers\SerologyReportSetupController::class, 'update'])
+        ->name('admin.lab-settings.serology.update');
+
 });
 
 // ================================
