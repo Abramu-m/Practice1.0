@@ -83,6 +83,7 @@
                 $isQualitative = in_array($templateCode, ['qualitative_lab', 'mrdt_malaria']) && isset($result->form_data['parameters']);
                 $isNarrative = $templateCode === 'narrative_lab';
                 $isCd4 = $templateCode === 'cd4';
+                $isGeneral = $templateCode === 'general';
             @endphp
             @if($isNarrative)
                 {{-- Narrative / free-text result --}}
@@ -376,6 +377,14 @@
                         'existingData'  => $result->form_data,
                         'investigation' => $result->investigation,
                         'visit'         => $result->investigation->visit,
+                        'isReadOnly'    => true,
+                    ])
+                </div>
+            @elseif($isGeneral)
+                <div class="p-3">
+                    @include('lab.result_templates.general', [
+                        'existingData'  => $result->form_data,
+                        'investigation' => $result->investigation,
                         'isReadOnly'    => true,
                     ])
                 </div>

@@ -67,8 +67,11 @@
                 @endif
                 
                 {{-- Result Template Section --}}
+                @php
+                    $savedTemplateCode = optional($investigation->templateResults->first())->metadata['template_code'] ?? null;
+                @endphp
                 <input type="hidden" name="selected_template_code" id="selected_template_code"
-                       value="{{ $investigation->medicalService->resultTemplate->code ?? '' }}">
+                       value="{{ $investigation->medicalService->resultTemplate->code ?? $savedTemplateCode ?? '' }}">
 
                 @if(!$investigation->medicalService->resultTemplate)
                 <div class="alert alert-warning d-flex align-items-center gap-3 mb-3" id="template_selector_card">
@@ -80,7 +83,7 @@
                             <select id="manual_template_select" class="form-select form-select-sm" style="width:auto; min-width:240px">
                                 <option value="">— Choose a template —</option>
                                 @foreach($availableTemplates as $t)
-                                    <option value="{{ $t->code }}">{{ $t->name }}</option>
+                                    <option value="{{ $t->code }}" {{ $savedTemplateCode === $t->code ? 'selected' : '' }}>{{ $t->name }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -161,6 +164,10 @@ document.addEventListener('DOMContentLoaded', function() {
         manualSelect.addEventListener('change', function() {
             if (this.value) loadResultTemplate(this.value);
         });
+        // A template was used previously for this investigation — auto-load it
+        if (manualSelect.value) {
+            setTimeout(function() { loadResultTemplate(manualSelect.value); }, 500);
+        }
     } else {
         // Template pre-assigned — auto-load
         setTimeout(loadResultTemplate, 500);

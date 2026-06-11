@@ -288,6 +288,7 @@ Route::get('/result-template/{templateName}', function($templateName) {
             // CD4
             'cd4'                => 'lab.result_templates.cd4',
             // General / catch-all
+            'general'            => 'lab.result_templates.general',
             'general_lab'        => 'lab.result_templates.general',
             'chemistry'          => 'lab.result_templates.general',
             'imaging'            => 'lab.result_templates.general',
