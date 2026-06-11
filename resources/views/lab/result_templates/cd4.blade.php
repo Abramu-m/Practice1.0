@@ -230,8 +230,10 @@
                 <tr>
                     <td>CD4+ T-Cell Count</td>
                     <td>
-                        <input type="number" name="cd4_count" min="0" max="3000" placeholder="—" style="width: 70px;">
-                        &nbsp;cells/μL
+                        <input type="text" name="cd4_count" id="cd4_count" placeholder="—" style="width: 70px;">
+                        &nbsp;cells/μL<br>
+                        <label><input type="radio" name="cd4_advanced_result" value="below_200"> &lt; 200</label>
+                        <label><input type="radio" name="cd4_advanced_result" value="above_200"> &ge; 200</label>
                     </td>
                     <td style="font-size: 8px; color: #555;">500–1200 cells/μL (adults)</td>
                 </tr>
@@ -271,6 +273,7 @@
                     <td colspan="2">
                         <select name="test_method">
                             <option value="">— Select —</option>
+                            <option value="cd4_advanced_disease" selected>CD4 Advanced Disease Test</option>
                             <option value="flow_cytometry">Flow Cytometry</option>
                             <option value="facs_count">FACS Count</option>
                             <option value="cyflow">CyFlow</option>
@@ -293,8 +296,7 @@
                     </td>
                     <td>
                         <label><input type="radio" name="hiv_category" value="severe"> Severe suppression (&lt; 200)</label><br>
-                        <label><input type="radio" name="hiv_category" value="aids"> AIDS-defining (&lt; 100)</label><br>
-                        <label><input type="radio" name="hiv_category" value="unknown"> Unknown HIV status</label>
+                        <label><input type="radio" name="hiv_category" value="aids"> AIDS-defining (&lt; 100)</label>
                     </td>
                 </tr>
             </table>
@@ -326,16 +328,6 @@
                 <td>
                     <strong>Reviewed by:</strong>
                     <input type="text" name="reviewed_by" style="width: 130px;">
-                </td>
-            </tr>
-            <tr style="margin-top: 2px;">
-                <td>
-                    <label><input type="checkbox" name="qa_controls[]" value="positive_control"> +ve Control</label>&nbsp;
-                    <label><input type="checkbox" name="qa_controls[]" value="negative_control"> −ve Control</label>&nbsp;
-                    <label><input type="checkbox" name="qa_controls[]" value="calibration"> Calibrated</label>
-                </td>
-                <td>
-                    <label><input type="checkbox" name="result_verified" value="yes"> Results verified &amp; approved</label>
                 </td>
             </tr>
         </table>
@@ -376,5 +368,18 @@
         r.addEventListener('change', sync);
     });
     sync();
+})();
+
+(function () {
+    var cd4CountInput = document.getElementById('cd4_count');
+    if (!cd4CountInput) return;
+
+    var values = { below_200: '<200', above_200: '≥200' };
+
+    document.querySelectorAll('input[name="cd4_advanced_result"]').forEach(function (r) {
+        r.addEventListener('change', function () {
+            cd4CountInput.value = values[r.value] || '';
+        });
+    });
 })();
 </script>
