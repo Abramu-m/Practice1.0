@@ -850,6 +850,8 @@ class LabController extends Controller
                 'investigation.medicalService',
                 'investigation.doctor.user',
                 'investigation.consultation.visit',
+                'investigation.visit.patientInfo',
+                'investigation.visit.doctorInfo',
                 'reportedBy',
                 'verifiedBy'
             ])->findOrFail($resultId);
