@@ -26,13 +26,30 @@
     background: transparent; padding: 0; height: 14px; outline: none; width: 100%;
     -webkit-appearance: none; appearance: none;
 }
-.cd4-form input[type="radio"],
 .cd4-form input[type="checkbox"] {
     -webkit-appearance: auto !important; appearance: auto !important;
     display: inline-block !important; width: auto !important; height: auto !important;
     min-height: unset !important; border: none !important; border-bottom: none !important;
     padding: 0 !important; box-shadow: none !important; background: transparent !important;
     margin: 0 2px; transform: scale(0.85); vertical-align: middle; cursor: pointer;
+}
+/* Custom-drawn radio so the checked dot stays solid/visible even when disabled (read-only view) */
+.cd4-form input[type="radio"] {
+    -webkit-appearance: none !important; appearance: none !important;
+    display: inline-block !important; width: 9px !important; height: 9px !important;
+    min-height: unset !important; border-radius: 50%;
+    border: 1px solid #555 !important; padding: 0 !important;
+    box-shadow: none !important; background: #fff !important;
+    margin: 0 3px 0 1px; vertical-align: middle; cursor: pointer;
+}
+.cd4-form input[type="radio"]:checked {
+    background: #0d6efd !important; border-color: #0d6efd !important;
+}
+.cd4-form input[type="radio"]:disabled {
+    cursor: default; opacity: 1 !important;
+}
+.cd4-form input[type="radio"]:disabled:checked {
+    background: #000 !important; border-color: #000 !important;
 }
 .cd4-form label { cursor: pointer; }
 .cd4-form .pre-filled {
