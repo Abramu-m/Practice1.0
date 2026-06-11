@@ -375,7 +375,8 @@ document.addEventListener('DOMContentLoaded', function() {
             fetch('{{ route("consultation_fees.get_fee") }}?' + new URLSearchParams({
                 doctor_id: doctorId,
                 patient_category_id: categoryId,
-                visit_type_id: visitTypeId
+                visit_type_id: visitTypeId,
+                patient_id: $('#patient').val() || ''
             }))
             .then(response => response.json())
             .then(data => {
@@ -395,7 +396,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else {
                     currentFee = null;
                     currentFeeDescription = null;
-                    consultationFeeDisplay.value = 'No fee structure found';
+                    consultationFeeDisplay.value = data.reason || 'No fee structure found';
                     consultationFeeDisplay.className = 'form-control text-warning';
                 }
             })

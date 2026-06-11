@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\ConsultationFee;
 use App\Models\Doctor;
+use App\Models\NhifTariff;
+use App\Models\Patient;
 use App\Models\PatientCategory;
 use App\Models\VisitType;
 use Illuminate\Http\Request;
@@ -197,6 +199,12 @@ class ConsultationFeeController extends Controller
      */
     public function getFee(Request $request)
     {
+        $category = PatientCategory::find($request->patient_category_id);
+
+        if ($category && $category->tariffs_table === 'nhif_tariffs') {
+            return response()->json($this->getNhifTariffFee($request));
+        }
+
         $fee = ConsultationFee::getFee(
             $request->doctor_id,
             $request->patient_category_id,
@@ -206,7 +214,53 @@ class ConsultationFeeController extends Controller
         return response()->json([
             'cash_amount' => $fee ? $fee->cash_amount : null,
             'covered_amount' => $fee ? $fee->covered_amount : null,
-            'description' => $fee ? $fee->description : null
+            'description' => $fee ? $fee->description : null,
+            'reason' => $fee ? null : 'No consultation fee configured for this doctor / category / visit type combination.',
         ]);
+    }
+
+    /**
+     * Resolve the consultation fee for an NHIF visit from nhif_tariffs, matching
+     * the doctor's designation (item_code) and the patient's NHIF scheme.
+     */
+    private function getNhifTariffFee(Request $request): array
+    {
+        $empty = ['cash_amount' => null, 'covered_amount' => null, 'description' => null];
+
+        $doctor = Doctor::find($request->doctor_id);
+        if (!$doctor) {
+            return $empty + ['reason' => 'Selected doctor was not found.'];
+        }
+
+        if (!$doctor->designation) {
+            return $empty + ['reason' => "Doctor '{$doctor->doctor_id}' has no designation set, so the NHIF tariff item code cannot be determined."];
+        }
+
+        $patient = Patient::find($request->patient_id);
+        if (!$patient) {
+            return $empty + ['reason' => 'Patient was not found, so the NHIF scheme cannot be determined.'];
+        }
+
+        $schemeId = $patient->nhifMember?->scheme_id ?? $patient->SchemeID;
+        if (!$schemeId) {
+            return $empty + ['reason' => 'Patient has no NHIF scheme on file (missing on both nhif_members and patient record).'];
+        }
+
+        $tariff = NhifTariff::where('item_code', $doctor->designation)
+            ->forScheme($schemeId)
+            ->forFacility(config('nhif.facility_code'))
+            ->nonRestricted()
+            ->first();
+
+        if (!$tariff) {
+            return $empty + ['reason' => "No NHIF tariff found for designation '{$doctor->designation}' under scheme {$schemeId}. Check that nhif_tariffs has been synced for this facility."];
+        }
+
+        return [
+            'cash_amount' => 0,
+            'covered_amount' => $tariff->unit_price,
+            'description' => $tariff->item_name,
+            'reason' => null,
+        ];
     }
 }

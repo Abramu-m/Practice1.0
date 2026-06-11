@@ -344,7 +344,11 @@ class PatientVisitController extends Controller
         $patientVisit->consulted_at    = $patientVisit->consulted_at    ? $patientVisit->consulted_at->format('Y-m-d')    : null;
         $patientVisit->resulted_at     = $patientVisit->resulted_at     ? $patientVisit->resulted_at->format('Y-m-d')     : null;
 
-        return view('patient_visits.edit', compact('patientVisit', 'patients', 'patientCategories', 'doctors', 'visitTypes', 'selectedPatient', 'selectedDoctor', 'selectedCategory', 'selectedVisitType'));
+        // Flag set when the visit was just created from a successful NHIF authorization,
+        // so the view locks the authorization-derived fields (patient/category/date/auth no).
+        $fromNhif = $request->boolean('from_nhif');
+
+        return view('patient_visits.edit', compact('patientVisit', 'patients', 'patientCategories', 'doctors', 'visitTypes', 'selectedPatient', 'selectedDoctor', 'selectedCategory', 'selectedVisitType', 'fromNhif'));
     }
 
     /**
@@ -589,6 +593,20 @@ class PatientVisitController extends Controller
         }
 
         $patientVisit->update($updateData);
+
+        // Ensure a consultation exists whenever a non-Lab visit has a doctor and none exists yet.
+        // This covers a doctor added after creation (e.g. visits auto-created from an NHIF
+        // authorization, which start with no doctor). Idempotent via the exists() guard.
+        if (!$isNewLabOnly && $request->doctor
+            && !\App\Models\Consultation::where('visit_id', $patientVisit->id)->exists()) {
+            \App\Models\Consultation::create([
+                'patient_id'        => $patientVisit->patient,
+                'doctor_id'         => $request->doctor,
+                'visit_id'          => $patientVisit->id,
+                'consultation_date' => now(),
+                'status'            => 'active',
+            ]);
+        }
 
         if ($isAjax) {
             return response()->json(['success' => true, 'message' => 'Patient visit updated successfully.']);

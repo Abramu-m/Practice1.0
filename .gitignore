@@ -24,6 +24,7 @@
 /storage/pail
 /storage/composer-home
 /vendor
+/docs/legacy
 Homestead.json
 Homestead.yaml
 Thumbs.db

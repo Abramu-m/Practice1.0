@@ -25,7 +25,13 @@ class DesignationController extends Controller
         // Pagination (10 per page)
         $designations = $query->orderBy('created_at', 'desc')->paginate(10);
 
-        return view('designations.index', compact('designations'));
+        $nhifItemCodes = \App\Models\NhifTariff::forFacility(config('nhif.facility_code'))
+            ->nonRestricted()
+            ->pluck('item_code')
+            ->unique()
+            ->all();
+
+        return view('designations.index', compact('designations', 'nhifItemCodes'));
     }
 
     /**

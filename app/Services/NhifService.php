@@ -457,29 +457,30 @@ class NhifService
     public function authorizeCard(string $cardNumber, int $visitTypeId = 1, string $referralNumber = '', string $remarks = 'authorization')
     {
         try {
-            $url = $this->config['url']['authorize'][$this->mode] ?? ($this->config['url']['authorize'] ?? null);
-            if (! $url) {
+            $baseUrl = $this->config['url']['authorize'][$this->mode] ?? ($this->config['url']['authorize'] ?? null);
+            if (! $baseUrl) {
                 Log::error('NHIF authorize URL not configured');
                 return [ 'success' => false, 'message' => 'Authorize URL not configured' ];
             }
 
-            $authHeader = $this->getAuthHeader();
-
-            $payload = [
+            // AuthorizeCard is a GET endpoint with query-string params (matches the
+            // working legacy integration), not a POST with a JSON body.
+            $url = $baseUrl . '?' . http_build_query([
                 'CardNo' => $cardNumber,
                 'VisitTypeID' => $visitTypeId,
                 'ReferralNo' => $referralNumber ?? '',
                 'Remarks' => $remarks ?? '',
-            ];
+            ]);
+
+            $authHeader = $this->getAuthHeader();
 
             $response = Http::timeout($this->config['timeout'])
                 ->withHeaders([
                     'Authorization' => $authHeader,
-                    'Accept' => 'application/json',
                     'Content-Type' => 'application/json; charset=utf-8',
                 ])
                 ->retry($this->config['retry_attempts'] ?? 2, 100)
-                ->post($url, $payload);
+                ->get($url);
 
             if ($response->successful()) {
                 return [ 'success' => true, 'data' => $response->json() ];

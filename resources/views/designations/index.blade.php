@@ -26,6 +26,7 @@
                                 <th>ID</th>
                                 <th>Code</th>
                                 <th>Description</th>
+                                <th>NHIF Tariff</th>
                                 <th>Created At</th>
                                 <th>Actions</th>
                             </tr>
@@ -36,6 +37,15 @@
                                     <td>{{ $designation->id }}</td>
                                     <td>{{ $designation->designation_code }}</td>
                                     <td>{{ $designation->description ?? 'N/A' }}</td>
+                                    <td>
+                                        @if(in_array($designation->designation_code, $nhifItemCodes))
+                                            <span class="badge bg-success">Linked</span>
+                                        @else
+                                            <span class="badge bg-warning text-dark" title="No matching nhif_tariffs.item_code for this facility — consultation fee lookup will return 'No NHIF tariff found' for doctors with this designation.">
+                                                No NHIF tariff
+                                            </span>
+                                        @endif
+                                    </td>
                                     <td>{{ $designation->created_at->format('Y-m-d H:i') }}</td>
                                     <td>
                                         <a href="{{ route('designations.show', $designation) }}" class="btn btn-info btn-sm">View</a>

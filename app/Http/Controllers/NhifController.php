@@ -720,11 +720,42 @@ class NhifController extends Controller
                 ]
             );
 
+            // On a successful authorization, create the patient visit straight away
+            // (with the authorization-derived values) and then send the operator to the
+            // edit page to complete the remaining fields (doctor, visit type, amounts).
+            $patientId = $request->patient_id;                                 // hidden field posted by the modal
+            $authNo    = $nhifData['AuthorizationNo'] ?? $nhifMember->authorization_no;
+
+            $patient = $patientId ? Patient::find($patientId) : null;
+            $visit   = $patient ? $patient->active_visit : null;              // respect one-active-visit rule
+
+            if ($patient && ! $visit) {
+                $visit = PatientVisit::create([
+                    'patient'          => $patient->id,
+                    'visit_category'   => 2,                                   // NHIF (designated)
+                    'visit_type'       => 1,                                   // default: First Visit (editable on next page)
+                    'visit_date'       => now()->toDateString(),
+                    'authorization_no' => $authNo,
+                    'amount_cash'      => 0,
+                    'amount_covered'   => 0,
+                    'created_by'       => Auth::id(),
+                    'created_on'       => now()->toDateString(),
+                    'visit_status'     => 0,                                   // Waiting
+                    'post_status'      => 0,
+                    'vital_status'     => 0,
+                ]);
+            }
+
+            $redirectUrl = $visit
+                ? route('patient_visits.edit', ['patient_visit' => $visit->id, 'from_nhif' => 1])
+                : null;
+
             return response()->json([
                 'success' => true,
-                'message' => 'Authorization result received',
+                'message' => $visit ? 'Authorized — opening visit for completion' : 'Authorization result received',
                 'data' => $nhifData,
                 'nhif_member' => $nhifMember,
+                'redirect_url' => $redirectUrl,
             ], 200);
 
         } catch (\Exception $e) {

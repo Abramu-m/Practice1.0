@@ -346,7 +346,8 @@ $(document).ready(function() {
         if (doctorId && categoryId && visitTypeId) {
             $('#vm_fee_display').val('Loading...');
             $.get('{{ route("consultation_fees.get_fee") }}', {
-                doctor_id: doctorId, patient_category_id: categoryId, visit_type_id: visitTypeId
+                doctor_id: doctorId, patient_category_id: categoryId, visit_type_id: visitTypeId,
+                patient_id: $('#vm_patient_value').val()
             }).done(function(data) {
                 if (data.cash_amount || data.covered_amount) {
                     var cash    = parseFloat(data.cash_amount)    || 0;
@@ -356,7 +357,7 @@ $(document).ready(function() {
                     $('#vm_amount_cash').val(cash.toFixed(2));
                     $('#vm_amount_covered').val(covered.toFixed(2));
                 } else {
-                    $('#vm_fee_display').val('No fee structure found')
+                    $('#vm_fee_display').val(data.reason || 'No fee structure found')
                         .removeClass('text-success fw-bold').addClass('text-warning');
                 }
             }).fail(function() {
