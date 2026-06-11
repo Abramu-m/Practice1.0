@@ -30,12 +30,25 @@
 .cd4-form input[type="checkbox"] { margin: 0 2px; transform: scale(0.85); vertical-align: middle; cursor: pointer; }
 .cd4-form label { cursor: pointer; }
 .cd4-form .pre-filled {
-    font-weight: bold; font-style: italic; color: #cc0000;
+    font-weight: bold; font-style: italic; color: #000;
     border-bottom: 1px solid #000; display: inline-block; min-width: 60px; line-height: 13px;
 }
 .cd4-form .sig-line { border-bottom: 1px solid #000; display: inline-block; width: 100px; height: 13px; }
 .cd4-form .section-label { font-style: italic; font-weight: bold; font-size: 9px; margin: 5px 0 2px; }
 .cd4-form .bordered { border: 1px solid #000; padding: 3px 5px; }
+
+/* ── Screen-only: larger, more readable ── */
+@media screen {
+    .cd4-form { font-size: 13px !important; padding: 20px 24px !important; }
+    .cd4-form .grid td { padding: 3px 6px !important; }
+    .cd4-form .data-table td, .cd4-form .data-table th { font-size: 12px !important; padding: 4px 6px !important; }
+    .cd4-form input[type="text"], .cd4-form input[type="date"],
+    .cd4-form input[type="time"], .cd4-form input[type="number"] { font-size: 12px !important; height: 20px !important; }
+    .cd4-form select { font-size: 12px !important; height: 20px !important; }
+    .cd4-form .pre-filled { font-size: 13px !important; line-height: 20px !important; }
+    .cd4-form .section-label { font-size: 13px !important; }
+    .cd4-form input[type="radio"], .cd4-form input[type="checkbox"] { transform: scale(1.1); }
+}
 
 @media print {
     .cd4-form { padding: 6px 10px; }
@@ -144,11 +157,11 @@
             </td>
             <td style="width: 33%;">
                 <strong>Date Received:</strong>
-                <input type="date" name="date_received" value="{{ now()->format('Y-m-d') }}" style="width: 97px;">
+                <input type="date" name="date_received" style="width: 97px;">
             </td>
             <td style="width: 34%;">
                 <strong>Date Analyzed:</strong>
-                <input type="date" name="date_analyzed" value="{{ now()->format('Y-m-d') }}" style="width: 97px;">
+                <input type="date" name="date_analyzed" style="width: 97px;">
             </td>
         </tr>
     </table>
@@ -166,8 +179,10 @@
             <tr>
                 <td>CD4+ T-Cell Count</td>
                 <td>
-                    <input type="number" name="cd4_count" min="0" max="3000" placeholder="—" style="width: 70px;">
-                    &nbsp;cells/μL
+                    <input type="text" name="cd4_count" id="cd4_count" placeholder="—" style="width: 70px;">
+                    &nbsp;cells/μL<br>
+                    <label><input type="radio" name="cd4_advanced_result" value="below_200"> &lt; 200</label>
+                    <label><input type="radio" name="cd4_advanced_result" value="above_200"> &ge; 200</label>
                 </td>
                 <td style="font-size: 8px; color: #555;">500–1200 cells/μL (adults)</td>
             </tr>
@@ -207,6 +222,7 @@
                 <td colspan="2">
                     <select name="test_method">
                         <option value="">— Select —</option>
+                        <option value="cd4_advanced_disease" selected>CD4 Advanced Disease Test</option>
                         <option value="flow_cytometry">Flow Cytometry</option>
                         <option value="facs_count">FACS Count</option>
                         <option value="cyflow">CyFlow</option>
@@ -229,8 +245,7 @@
                 </td>
                 <td>
                     <label><input type="radio" name="hiv_category" value="severe"> Severe suppression (&lt; 200)</label><br>
-                    <label><input type="radio" name="hiv_category" value="aids"> AIDS-defining (&lt; 100)</label><br>
-                    <label><input type="radio" name="hiv_category" value="unknown"> Unknown HIV status</label>
+                    <label><input type="radio" name="hiv_category" value="aids"> AIDS-defining (&lt; 100)</label>
                 </td>
             </tr>
         </table>
@@ -243,7 +258,7 @@
                   style="width:100%; font-size:9px; border:1px solid #000; font-family:Arial,sans-serif; padding:2px; margin-top:2px;"></textarea>
     </div>
 
-    {{-- QA + Personnel --}}
+    {{-- Personnel --}}
     <table class="grid" style="margin-bottom: 3px;">
         <tr>
             <td style="width: 50%;">
@@ -253,16 +268,6 @@
             <td>
                 <strong>Reviewed by:</strong>
                 <input type="text" name="reviewed_by" style="width: 130px;">
-            </td>
-        </tr>
-        <tr style="margin-top: 2px;">
-            <td>
-                <label><input type="checkbox" name="qa_controls[]" value="positive_control"> +ve Control</label>&nbsp;
-                <label><input type="checkbox" name="qa_controls[]" value="negative_control"> −ve Control</label>&nbsp;
-                <label><input type="checkbox" name="qa_controls[]" value="calibration"> Calibrated</label>
-            </td>
-            <td>
-                <label><input type="checkbox" name="result_verified" value="yes"> Results verified &amp; approved</label>
             </td>
         </tr>
     </table>
@@ -299,5 +304,18 @@
         r.addEventListener('change', sync);
     });
     sync();
+})();
+
+(function () {
+    var cd4CountInput = document.getElementById('cd4_count');
+    if (!cd4CountInput) return;
+
+    var values = { below_200: '<200', above_200: '≥200' };
+
+    document.querySelectorAll('input[name="cd4_advanced_result"]').forEach(function (r) {
+        r.addEventListener('change', function () {
+            cd4CountInput.value = values[r.value] || '';
+        });
+    });
 })();
 </script>
