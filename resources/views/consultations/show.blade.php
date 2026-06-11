@@ -1465,7 +1465,7 @@
                                         $tc = $result->template_result->metadata['template_code'] ?? null;
                                         if (!$tc) $tc = $tplNameMap[$result->template_result->template_name ?? ''] ?? ($result->template_result->template_name ?? '');
                                         $result->_tplCode = $tc;
-                                        if (in_array($tc, ['legacy', 'narrative_lab', 'urinalysis', 'full_blood_picture', 'blood_count', 'genxpert_tb', 'zn_stain_tb', 'blood_grouping', 'pbs_microfilaria', 'pbs_malaria', 'pbs_rbc_morphology', 'psa_semiquantitative', 'gram_stain'])) $complexResults->push($result);
+                                        if (in_array($tc, ['legacy', 'narrative_lab', 'urinalysis', 'full_blood_picture', 'blood_count', 'genxpert_tb', 'zn_stain_tb', 'blood_grouping', 'pbs_microfilaria', 'pbs_malaria', 'pbs_rbc_morphology', 'psa_semiquantitative', 'gram_stain', 'cd4'])) $complexResults->push($result);
                                         else $simpleResults->push($result);
                                     }
                                 @endphp
