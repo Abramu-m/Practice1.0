@@ -30,3 +30,6 @@ Thumbs.db
 
 # Large local migration dumps
 /docs/migrate/local/*.sql
+
+# Added by ggshield
+.cache_ggshield
