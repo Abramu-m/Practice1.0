@@ -107,6 +107,18 @@
                                placeholder="MoH Health Facility Registry code">
                         <small class="text-muted">Official MoH Health Facility Registry identifier (separate from the NHIF facility code).</small>
                     </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">In Charge</label>
+                        <select name="in_charge" class="form-select">
+                            <option value="">— None —</option>
+                            @foreach($users as $user)
+                                <option value="{{ $user->id }}" @selected(old('in_charge', $facility->in_charge) == $user->id)>
+                                    {{ $user->name }} ({{ ucfirst(str_replace('_', ' ', $user->role)) }})
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
 
                 <div class="mt-4">

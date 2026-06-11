@@ -139,7 +139,7 @@
     <table width="100%" cellpadding="3" cellspacing="0" style="font-size:11px; margin-top:18px;">
         <tr>
             <td style="white-space:nowrap; width:1%;">Jina la Mtayarishaji wa Taarifa</td>
-            <td style="border-bottom:1px solid #000;"></td>
+            <td style="border-bottom:1px solid #000;">{{ auth()->user()?->name }}</td>
             <td style="white-space:nowrap; width:1%; padding-left:10px;">Chao.</td>
             <td style="border-bottom:1px solid #000;"></td>
         </tr>
@@ -148,7 +148,7 @@
             <td style="white-space:nowrap; width:1%;">Wadhifa</td>
             <td style="border-bottom:1px solid #000;"></td>
             <td style="white-space:nowrap; width:1%; padding-left:10px;">Imepitiwa na</td>
-            <td style="border-bottom:1px solid #000;"></td>
+            <td style="border-bottom:1px solid #000;">{{ $facility?->inCharge?->name }}</td>
         </tr>
         <tr><td colspan="4" style="height:5px;"></td></tr>
         <tr>

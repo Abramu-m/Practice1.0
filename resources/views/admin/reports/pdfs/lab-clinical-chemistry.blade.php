@@ -107,7 +107,7 @@
     <table class="footer-table" style="margin-top:14px">
         <tr>
             <td style="width:50%">
-                Jina la Mtayarishaji wa Ripoti: <span class="dot-line">&nbsp;</span>
+                Jina la Mtayarishaji wa Ripoti: <span class="dot-line">{{ auth()->user()?->name }}</span>
             </td>
             <td>
                 Cheo: <span class="dot-line">&nbsp;</span>
@@ -123,7 +123,7 @@
                 Tarehe ya kuandaa: <span class="dot-line">&nbsp;</span>
             </td>
             <td>
-                Imepitwa na: <span class="dot-line">&nbsp;</span>
+                Imepitwa na: <span class="dot-line">{{ $facility?->inCharge?->name }}</span>
             </td>
         </tr>
         <tr>

@@ -20,7 +20,16 @@ class Facility extends Model
         'nhif_facility_code',
         'hfr_code',
         'logo',
+        'in_charge',
     ];
+
+    /**
+     * The user currently in charge of the facility.
+     */
+    public function inCharge()
+    {
+        return $this->belongsTo(User::class, 'in_charge');
+    }
 
     /**
      * Always return the single facility record, or a default stub if none exists.

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Facility;
 use App\Models\MedicalService;
 use App\Models\SystemSetting;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -13,6 +14,9 @@ class SettingsController extends Controller
     public function index()
     {
         $facility = Facility::current();
+
+        // Staff list for the "In Charge" dropdown
+        $users = User::orderBy('first_name')->get();
 
         // Lab services for report config dropdowns
         $labServices = MedicalService::whereHas('serviceCategory', fn($q) => $q->where('name', 'Laboratory'))
@@ -24,7 +28,7 @@ class SettingsController extends Controller
             'malaria_bs_service_id'   => SystemSetting::get('malaria_bs_service_id'),
         ];
 
-        return view('settings.index', compact('facility', 'labServices', 'reportConfig'));
+        return view('settings.index', compact('facility', 'users', 'labServices', 'reportConfig'));
     }
 
     public function updateFacility(Request $request)
@@ -42,6 +46,7 @@ class SettingsController extends Controller
             'email'              => 'nullable|email|max:255',
             'nhif_facility_code' => 'nullable|string|max:50',
             'hfr_code'           => 'nullable|string|max:50',
+            'in_charge'          => 'nullable|exists:users,id',
         ]);
 
         $facility = Facility::first();
