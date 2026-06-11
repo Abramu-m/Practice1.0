@@ -62,6 +62,11 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    // Signature management
+    Route::get('/profile/signature', [ProfileController::class, 'editSignature'])->name('profile.signature.edit');
+    Route::post('/profile/signature', [ProfileController::class, 'updateSignature'])->name('profile.signature.update');
+    Route::delete('/profile/signature', [ProfileController::class, 'destroySignature'])->name('profile.signature.destroy');
+
     // Verification notice
     Route::get('/verification/notice', function () {
         return view('verification.notice');

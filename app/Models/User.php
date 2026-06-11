@@ -28,6 +28,7 @@ class User extends Authenticatable
         'gender',
         'address',
         'profile_picture',
+        'signature',
         'role',
         'is_admin',
         'is_super',

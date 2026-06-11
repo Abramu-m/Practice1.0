@@ -339,6 +339,9 @@
                   <a href="{{ route('profile.edit') }}" class="btn btn-default btn-flat">
                     <i class="bi bi-person-gear me-1"></i>Profile
                   </a>
+                  <a href="{{ route('profile.signature.edit') }}" class="btn btn-default btn-flat">
+                    <i class="bi bi-pen me-1"></i>My Signature
+                  </a>
                   <form method="POST" action="{{ route('logout') }}" style="display: inline;">
                     @csrf
                     <button type="submit" class="btn btn-default btn-flat float-end" onclick="return confirm('Are you sure you want to logout?')">

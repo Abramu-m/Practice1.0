@@ -114,12 +114,12 @@
                 Tarehe ya kuandaa: <span class="dot-line">&nbsp;</span>
             </td>
             <td>
-                Imepitwa na: <span class="dot-line">{{ $facility?->inCharge?->name }}</span>
+                Imepitwa na: <span class="dot-line">{{ $facility['in_charge_name'] ?? '' }}</span>
             </td>
         </tr>
         <tr>
             <td>
-                Namba ya Simu ya Kituo: <span class="dot-line">&nbsp;</span>
+                Namba ya Simu ya Kituo: <span class="dot-line">{{ $facility['phone'] ?? '' }}</span>
             </td>
             <td>
                 Taarifa imepokelewa wilayani tarehe: <span class="dot-line" style="min-width:70px">&nbsp;</span>

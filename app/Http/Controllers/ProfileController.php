@@ -7,6 +7,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class ProfileController extends Controller
@@ -43,6 +45,67 @@ class ProfileController extends Controller
         $user->save();
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
+    }
+
+    /**
+     * Display the user's signature management page.
+     */
+    public function editSignature(Request $request): View
+    {
+        return view('profile.signature', [
+            'user' => $request->user(),
+        ]);
+    }
+
+    /**
+     * Save a drawn or uploaded signature for the user.
+     */
+    public function updateSignature(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'signature_data' => 'nullable|string',
+            'signature_file' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
+        $user = $request->user();
+
+        if ($user->signature) {
+            Storage::disk('public')->delete($user->signature);
+        }
+
+        if ($request->filled('signature_data')) {
+            $data = $request->input('signature_data');
+            $data = Str::after($data, ',');
+            $path = 'signatures/user_' . $user->id . '.png';
+            Storage::disk('public')->put($path, base64_decode($data));
+            $user->signature = $path;
+        } elseif ($request->hasFile('signature_file')) {
+            $extension = $request->file('signature_file')->getClientOriginalExtension();
+            $path = $request->file('signature_file')->storeAs('signatures', 'user_' . $user->id . '.' . $extension, 'public');
+            $user->signature = $path;
+        } else {
+            $user->signature = null;
+        }
+
+        $user->save();
+
+        return Redirect::route('profile.signature.edit')->with('status', 'signature-updated');
+    }
+
+    /**
+     * Remove the user's stored signature.
+     */
+    public function destroySignature(Request $request): RedirectResponse
+    {
+        $user = $request->user();
+
+        if ($user->signature) {
+            Storage::disk('public')->delete($user->signature);
+            $user->signature = null;
+            $user->save();
+        }
+
+        return Redirect::route('profile.signature.edit')->with('status', 'signature-removed');
     }
 
     /**

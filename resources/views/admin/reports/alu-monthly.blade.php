@@ -161,16 +161,23 @@
                     <table class="table table-borderless table-sm mt-4" style="font-size: 0.95rem;">
                         <tr>
                             <td style="width: 60%;">Jina la Mtayarishaji wa Taarifa: {{ auth()->user()?->name }}..................................................................</td>
-                            <td>Kada......................................</td>
+                            <td>Kada: {{ ucwords(str_replace('_', ' ', auth()->user()->role ?? '')) }}......................................</td>
                         </tr>
                         <tr>
-                            <td colspan="2">Saini............................................................................</td>
+                            <td colspan="2">
+                                Saini:
+                                @if(auth()->user()->signature)
+                                    <img src="{{ asset('storage/' . auth()->user()->signature) }}" style="height:40px;">
+                                @else
+                                    ............................................................................
+                                @endif
+                            </td>
                         </tr>
                         <tr>
-                            <td colspan="2">Imepitiwa na: {{ $facility?->inCharge?->name }}........................................................................, ...................................................................................................</td>
+                            <td colspan="2">Imepitiwa na: {{ $facility['in_charge_name'] ?? '' }}........................................................................, ...................................................................................................</td>
                         </tr>
                         <tr>
-                            <td colspan="2">Namba ya simu ya kituo........................</td>
+                            <td colspan="2">Namba ya simu ya kituo: {{ $facility['phone'] ?? '' }}........................</td>
                         </tr>
                         <tr>
                             <td colspan="2">Tarehe ya kupokelewa Wilayani/Kutumwa kwenye mfumo:....../......./...........</td>

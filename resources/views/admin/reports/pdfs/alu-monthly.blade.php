@@ -155,22 +155,26 @@
         <td style="white-space:nowrap; width:1%; border:none;">Jina la Mtayarishaji wa Taarifa</td>
         <td style="border-bottom:1px solid #000; border-top:none; border-left:none; border-right:none;">{{ auth()->user()?->name }}</td>
         <td style="white-space:nowrap; width:1%; border:none; padding-left:12px;">Kada</td>
-        <td style="border-bottom:1px solid #000; border-top:none; border-left:none; border-right:none;"></td>
+        <td style="border-bottom:1px solid #000; border-top:none; border-left:none; border-right:none;">{{ ucwords(str_replace('_', ' ', auth()->user()->role ?? '')) }}</td>
     </tr>
     <tr><td colspan="4" style="height:5px; border:none;"></td></tr>
     <tr>
         <td style="white-space:nowrap; border:none;">Saini</td>
-        <td colspan="3" style="border-bottom:1px solid #000; border-top:none; border-left:none; border-right:none;"></td>
+        <td colspan="3" style="border-bottom:1px solid #000; border-top:none; border-left:none; border-right:none;">
+            @if(auth()->user()->signature && (function_exists('imagecreatefromjpeg') || function_exists('imagecreatefrompng')))
+                <img src="{{ public_path('storage/' . auth()->user()->signature) }}" style="height:35px;">
+            @endif
+        </td>
     </tr>
     <tr><td colspan="4" style="height:5px; border:none;"></td></tr>
     <tr>
         <td style="white-space:nowrap; border:none;">Imepitiwa na</td>
-        <td colspan="3" style="border-bottom:1px solid #000; border-top:none; border-left:none; border-right:none;">{{ $facility?->inCharge?->name }}</td>
+        <td colspan="3" style="border-bottom:1px solid #000; border-top:none; border-left:none; border-right:none;">{{ $facility['in_charge_name'] ?? '' }}</td>
     </tr>
     <tr><td colspan="4" style="height:5px; border:none;"></td></tr>
     <tr>
         <td style="white-space:nowrap; border:none;">Namba ya simu ya kituo</td>
-        <td colspan="3" style="border-bottom:1px solid #000; border-top:none; border-left:none; border-right:none;"></td>
+        <td colspan="3" style="border-bottom:1px solid #000; border-top:none; border-left:none; border-right:none;">{{ $facility['phone'] ?? '' }}</td>
     </tr>
     <tr><td colspan="4" style="height:5px; border:none;"></td></tr>
     <tr>

@@ -59,12 +59,13 @@ abstract class BaseReportService
     {
         $f = \App\Models\Facility::current();
         return [
-            'name'     => $f->name,
-            'region'   => $f->region,
-            'district' => $f->district,
-            'address'  => $f->address,
-            'phone'    => $f->phone,
-            'email'    => $f->email,
+            'name'           => $f->name,
+            'region'         => $f->region,
+            'district'       => $f->district,
+            'address'        => $f->address,
+            'phone'          => $f->phone,
+            'email'          => $f->email,
+            'in_charge_name' => $f->inCharge?->name,
         ];
     }
 
