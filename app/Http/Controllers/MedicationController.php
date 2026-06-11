@@ -305,6 +305,16 @@ class MedicationController extends Controller
 
         $medications = $query->take(10)->get();
 
+        $patientCategoryId = $request->input('patient_category_id');
+
+        if ($patientCategoryId) {
+            $medications->each(function ($medication) use ($patientCategoryId) {
+                $pricing = $medication->pricing((int) $patientCategoryId);
+                $medication->cash_amount = $pricing['cash_amount'] ?? $medication->selling_price;
+                $medication->insurance_covered_amount = $pricing['insurance_covered_amount'] ?? 0;
+            });
+        }
+
         return response()->json($medications);
     }
 

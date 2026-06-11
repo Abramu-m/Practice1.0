@@ -74,7 +74,7 @@ class PrescriptionController extends Controller
                 $visitCategory = $prescription->consultation->visit->visit_category;
 
                 // Get the pricing for the medication based on the visit category
-                $pricing = $prescription->medication->getPriceForCategory($visitCategory);
+                $pricing = $prescription->medication->pricing($visitCategory);
 
                 // Set cash and insurance amounts based on pricing
                 $cash_amount = $pricing['cash_amount'] * $request->quantity;

@@ -1236,70 +1236,7 @@
                             </h5>
                             
                             <div id="prescriptions-list">
-                                @if($prescriptions->count() > 0)
-                                    <div class="table-responsive mb-3">
-                                        <table class="table table-sm table-striped">
-                                            <thead class="table-light">
-                                                <tr>
-                                                    <th>Medicine</th>
-                                                    <th>Dosage</th>
-                                                    <th>Frequency</th>
-                                                    <th>Duration</th>
-                                                    <th>Qty</th>
-                                                    <th>Cash</th>
-                                                    <th>Insurance</th>
-                                                    <th>Route</th>
-                                                    <th>Status</th>
-                                                    <th>Action</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach($prescriptions as $prescription)
-                                                <tr>
-                                                    <td>
-                                                        <strong>{{ $prescription->medication->generic_name ?? $prescription->medication->name ?? 'N/A' }}</strong>
-                                                        @if($prescription->medication && $prescription->medication->brand_name)
-                                                            <br><small class="text-muted">{{ $prescription->medication->brand_name }}</small>
-                                                        @endif
-                                                    </td>
-                                                    <td>{{ $prescription->dosage }}</td>
-                                                    <td>{{ $prescription->frequency->frequency_name ?? 'N/A' }}</td>
-                                                    <td>{{ $prescription->duration_days ?? $prescription->duration }} days</td>
-                                                    <td>{{ $prescription->quantity }}</td>
-                                                    <td>Tsh {{ number_format($prescription->cash_amount ?? 0, 2) }}</td>
-                                                    <td class="fw-bold text-success">Tsh {{ number_format($prescription->insurance_covered_amount ?? 0, 2) }}</td>
-                                                    <td>{{ $prescription->administrationRoute->route_name ?? 'PO' }}</td>
-                                                    <td>
-                                                        <span class="badge bg-{{ 
-                                                            $prescription->status === 'dispensed' ? 'success' : 
-                                                            ($prescription->status === 'prescribed' ? 'primary' : 'secondary') 
-                                                        }}">
-                                                            {{ ucfirst($prescription->status) }}
-                                                        </span>
-                                                    </td>
-                                                    <td>
-                                                        @if(!$prescription->is_paid)
-                                                        <div class="btn-group" role="group">
-                                                            <button type="button" class="btn btn-sm btn-outline-info" 
-                                                                    onclick="updatePrescriptionStatus({{ $prescription->id }})"
-                                                                    title="Update Status">
-                                                                <i class="fas fa-edit"></i>
-                                                            </button>
-                                                            <button type="button" class="btn btn-sm btn-outline-danger" 
-                                                                    onclick="deletePrescription({{ $prescription->id }})">
-                                                                <i class="fas fa-trash"></i>
-                                                            </button>
-                                                        </div>
-                                                        @endif
-                                                    </td>
-                                                </tr>
-                                                @endforeach
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                @else
-                                    <p class="text-muted mb-3">No prescriptions added yet.</p>
-                                @endif
+                                @include('consultations.partials.prescriptions', ['prescriptions' => $prescriptions])
                             </div>
                             
                             <!-- Prescription Button - Opens Reusable Modal -->
@@ -1671,15 +1608,6 @@
     </div>
 </div>
 
-<!-- Edit Prescription Modal -->
-<div class="modal fade" id="editPrescriptionModal" tabindex="-1" role="dialog" aria-labelledby="editPrescriptionModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content" id="editPrescriptionModalContent">
-            <!-- Modal content will be loaded here -->
-        </div>
-    </div>
-</div>
-
 <!-- Lab Investigation Modal Component -->
 @include('partials.lab_investigation_modal')
 
@@ -1778,25 +1706,6 @@
             error: function(xhr) {
                 console.error('Failed to load investigations:', xhr);
                 toastr.error('Failed to refresh investigations list');
-            }
-        });
-    };
-    
-    // Load prescriptions table - called after saving prescriptions from modal
-    window.loadPrescriptions = function() {
-        $.ajax({
-            url: `/consultations/${window.consultationId}/prescriptions-partial`,
-            method: 'GET',
-            success: function(response) {
-                if (response.success) {
-                    $('#prescriptions-list').html(response.html);
-                } else {
-                    toastr.error('Failed to load prescriptions');
-                }
-            },
-            error: function(xhr) {
-                console.error('Failed to load prescriptions:', xhr);
-                toastr.error('Failed to refresh prescriptions list');
             }
         });
     };

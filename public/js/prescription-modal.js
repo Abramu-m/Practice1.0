@@ -74,11 +74,11 @@ function loadExistingPrescriptions(id, context = 'visit') {
     `);
     $('#modal_prescriptions_count').text('0');
     
-    // Determine URL based on context - pass forModal=true to get compact view
-    const url = context === 'consultation' 
-        ? `/consultations/${id}/prescriptions-partial?forModal=true`
-        : `/consultations/${id}/prescriptions-partial?forModal=true`;
-    
+    // Determine URL based on context
+    const url = context === 'consultation'
+        ? `/consultations/${id}/prescriptions-partial`
+        : `/consultations/${id}/prescriptions-partial`;
+
     // Make AJAX call to get prescriptions
     $.ajax({
         url: url,
@@ -108,6 +108,32 @@ function loadExistingPrescriptions(id, context = 'visit') {
 
 // Make loadExistingPrescriptions globally accessible
 window.loadExistingPrescriptions = loadExistingPrescriptions;
+
+/**
+ * Refresh the consultation Treatment tab prescriptions table, if present on the page.
+ * No-op on pages without that table (e.g. patient_visits index).
+ */
+window.loadPrescriptions = function loadPrescriptions() {
+    if (!$('#prescriptions-list').length || !window.consultationId) {
+        return;
+    }
+
+    $.ajax({
+        url: `/consultations/${window.consultationId}/prescriptions-partial`,
+        method: 'GET',
+        success: function(response) {
+            if (response.success) {
+                $('#prescriptions-list').html(response.html);
+            } else {
+                toastr.error('Failed to load prescriptions');
+            }
+        },
+        error: function(xhr) {
+            console.error('Failed to load prescriptions:', xhr);
+            toastr.error('Failed to refresh prescriptions list');
+        }
+    });
+};
 
 /**
  * Initialize medication search functionality
@@ -153,13 +179,14 @@ function initializeMedicationSearch() {
  * @param {string} query - Search query
  */
 function searchMedications(query) {
-    
+
     $.ajax({
         url: '/medications/api/list',
         method: 'GET',
-        data: { 
-            search: query, 
-            limit: 10 
+        data: {
+            search: query,
+            limit: 10,
+            patient_category_id: $('#modal_prescription_patient_category_id').val()
         },
         success: function(response) {
             
@@ -196,11 +223,17 @@ function showMedicationSuggestions(medications) {
         const displayName = medication.generic_name || medication.name || 'Unknown';
         const brandName = medication.brand_name ? `<br><small class="text-muted">${medication.brand_name}</small>` : '';
         const strength = medication.strength ? `<small class="text-info"> - ${medication.strength}</small>` : '';
-        
+
+        const price = medication.cash_amount ?? medication.selling_price;
+        const priceBadge = (price !== null && price !== undefined)
+            ? `<span class="badge bg-success-subtle text-success fw-bold float-end">${parseFloat(price).toLocaleString('sw-TZ', {style: 'currency', currency: 'TZS'})}</span>`
+            : '';
+
         html += `
-            <button type="button" class="list-group-item list-group-item-action medication-suggestion-item" 
+            <button type="button" class="list-group-item list-group-item-action medication-suggestion-item"
                     data-medication-id="${medication.id}"
                     data-medication-name="${displayName}">
+                ${priceBadge}
                 <strong>${displayName}</strong>${strength}${brandName}
             </button>
         `;
@@ -537,11 +570,21 @@ window.updatePrescriptionStatus = function updatePrescriptionStatus(prescription
     
     // Clear any previous modal content
     $('#editPrescriptionModalContent').html('<div class="p-4 text-center"><i class="fas fa-spinner fa-spin"></i> Loading...</div>');
-    
+
     // Show modal immediately
-    const modal = new bootstrap.Modal(document.getElementById('editPrescriptionModal'));
+    const editModalEl = document.getElementById('editPrescriptionModal');
+    const modal = new bootstrap.Modal(editModalEl);
     modal.show();
-    
+
+    // If stacked on top of the prescription modal, lift this modal's backdrop above it
+    editModalEl.addEventListener('shown.bs.modal', function onShown() {
+        const backdrops = document.querySelectorAll('.modal-backdrop');
+        if (backdrops.length > 0) {
+            backdrops[backdrops.length - 1].style.zIndex = '1060';
+        }
+        editModalEl.removeEventListener('shown.bs.modal', onShown);
+    });
+
     // Load prescription edit form via AJAX
     $.ajax({
         url: `/prescriptions/${prescriptionId}/edit`,
@@ -640,9 +683,15 @@ function submitPrescriptionUpdate() {
             const modal = bootstrap.Modal.getInstance(document.getElementById('editPrescriptionModal'));
             modal.hide();
             
-            // Refresh prescriptions list if function exists
+            // Refresh the main page prescriptions table if present
             if (typeof window.loadPrescriptions === 'function') {
                 window.loadPrescriptions();
+            }
+
+            // Refresh the prescription modal's list if it's open
+            const modalConsultationId = $('#modal_prescription_consultation_id').val();
+            if (modalConsultationId) {
+                loadExistingPrescriptions(modalConsultationId, window.prescriptionModalContext.mode);
             }
         },
         error: function(xhr) {

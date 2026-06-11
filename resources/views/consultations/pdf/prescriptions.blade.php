@@ -33,5 +33,5 @@
 </table>
 
 <div class="mt-3">
-    @includeIf('consultations.partials.prescriptions', ['prescriptions' => $prescriptions])
+    @includeIf('consultations.partials.prescriptions', ['prescriptions' => $prescriptions, 'showActions' => false])
 </div>

@@ -1274,11 +1274,7 @@ class ConsultationController extends Controller
         
         $prescriptions = $consultation->prescriptions;
 
-        // Check if this is for modal (compact view) or page (full table view)
-        $forModal = request()->query('forModal', false);
-        $viewPath = $forModal ? 'partials.prescriptions_list' : 'consultations.partials.prescriptions';
-        
-        $html = view($viewPath, compact('prescriptions'))->render();
+        $html = view('consultations.partials.prescriptions', compact('prescriptions'))->render();
 
         return response()->json([
             'success' => true, 

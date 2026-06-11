@@ -11,6 +11,10 @@
                     <th>Cash</th>
                     <th>Insurance</th>
                     <th>Route</th>
+                    <th>Status</th>
+                    @if($showActions ?? true)
+                        <th>Action</th>
+                    @endif
                 </tr>
             </thead>
             <tbody>
@@ -34,6 +38,31 @@
                     <td>Tsh {{ number_format($prescription->cash_amount ?? 0, 2) }}</td>
                     <td class="fw-bold text-success">Tsh {{ number_format($prescription->insurance_covered_amount ?? 0, 2) }}</td>
                     <td>{{ $prescription->administrationRoute->route_name ?? 'PO' }}</td>
+                    <td>
+                        <span class="badge bg-{{
+                            $prescription->status === 'dispensed' ? 'success' :
+                            ($prescription->status === 'prescribed' ? 'primary' : 'secondary')
+                        }}">
+                            {{ ucfirst($prescription->status) }}
+                        </span>
+                    </td>
+                    @if($showActions ?? true)
+                        <td>
+                            @if(!$prescription->is_paid)
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-sm btn-outline-info"
+                                        onclick="updatePrescriptionStatus({{ $prescription->id }})"
+                                        title="Update Status">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-danger"
+                                        onclick="deletePrescription({{ $prescription->id }})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                            @endif
+                        </td>
+                    @endif
                 </tr>
                 @endforeach
             </tbody>
@@ -48,6 +77,7 @@
                     <th colspan="2" class="fw-bold text-primary">
                         Tsh {{ number_format($prescriptions->sum('insurance_covered_amount'), 2) }}
                     </th>
+                    <th colspan="{{ ($showActions ?? true) ? 2 : 1 }}"></th>
                 </tr>
             </tfoot>
         </table>
