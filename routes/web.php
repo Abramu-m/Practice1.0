@@ -85,6 +85,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/help', function () {
         return view('help.index');
     })->name('help.index');
+
+    Route::post('/nav-view/{view}', [App\Http\Controllers\NavViewController::class, 'switch'])
+        ->whereIn('view', ['role', 'admin'])
+        ->name('nav_view.switch');
 });
 
 // ================================

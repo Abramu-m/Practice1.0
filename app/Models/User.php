@@ -73,7 +73,17 @@ class User extends Authenticatable
     {
         return $this->role === $role;
     }
-    
+
+    /**
+     * Scope a query to only users with admin or super-admin privileges.
+     */
+    public function scopeAdmins($query)
+    {
+        return $query->where(function ($q) {
+            $q->where('is_admin', true)->orWhere('is_super', true);
+        });
+    }
+
     /**
      * Get the doctor profile associated with the user.
      */
@@ -154,6 +164,24 @@ class User extends Authenticatable
     public function isRadiologist()
     {
         return $this->role === 'radiologist';
+    }
+
+    /**
+     * Get the role-specific nav partial for an admin's underlying functional
+     * role (e.g. doctor, nurse), or null if they have no functional role.
+     */
+    public function getFunctionalNavRole(): ?string
+    {
+        return match(true) {
+            $this->isReceptionist() => 'receptionist',
+            $this->isDoctor() => 'doctor',
+            $this->isCashier() => 'receptionist',
+            $this->isLabTechnician() => 'lab_technician',
+            $this->isPharmacist() => 'pharmacist',
+            $this->isNurse() => 'nurse',
+            $this->isRadiologist() => 'radiologist',
+            default => null,
+        };
     }
 
     /**

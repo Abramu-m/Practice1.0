@@ -292,6 +292,22 @@
                   </div>
                 </li>
                 <!--end::User Image-->
+                @if($currentUser->isAdmin() && $currentUser->getFunctionalNavRole())
+                  <li><div class="dropdown-divider"></div></li>
+                  <li>
+                    <form method="POST" action="{{ route('nav_view.switch', session('nav_view', 'role') === 'admin' ? 'role' : 'admin') }}">
+                      @csrf
+                      <button type="submit" class="dropdown-item">
+                        <i class="bi bi-arrow-left-right me-1"></i>
+                        @if(session('nav_view', 'role') === 'admin')
+                          Switch to {{ ucwords(str_replace('_', ' ', $currentUser->role)) }} View
+                        @else
+                          Switch to Admin View
+                        @endif
+                      </button>
+                    </form>
+                  </li>
+                @endif
                 <!--begin::Menu Body-->
                 {{-- <li class="user-body">
                   <!--begin::Row-->
@@ -384,7 +400,14 @@
               data-accordion="false"
             >
               <!-- Role based aside Menu -->
-              @if(auth()->check() && (auth()->user()->isAdmin() || auth()->user()->isSuperAdmin()))
+              @php
+                $navUser = auth()->user();
+                $navFunctionalRole = $navUser?->getFunctionalNavRole();
+                $navView = session('nav_view', 'role');
+              @endphp
+              @if(auth()->check() && $navUser->isAdmin() && $navFunctionalRole && $navView !== 'admin')
+                @include('layouts.role_specific.' . $navFunctionalRole)
+              @elseif(auth()->check() && (auth()->user()->isAdmin() || auth()->user()->isSuperAdmin()))
                 @include('layouts.role_specific.admin')
               @elseif(auth()->check() && auth()->user()->isReceptionist())
                 @include('layouts.role_specific.receptionist')

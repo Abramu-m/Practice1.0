@@ -64,6 +64,7 @@ class UserController extends Controller
             'profile_picture' => 'nullable|image|max:2048',
             'role' => 'required|in:user,admin,doctor,nurse,receptionist,cashier,pharmacist,lab_technician,radiologist,super_admin',
             'is_active' => 'boolean',
+            'is_admin' => 'boolean',
         ]);
 
         $user = User::create([
@@ -78,6 +79,7 @@ class UserController extends Controller
             'address' => $request->address,
             'profile_picture' => $request->hasFile('profile_picture') ? $request->file('profile_picture')->store('profile_pictures', 'public') : null,
             'role' => $request->role,
+            'is_admin' => $request->boolean('is_admin'),
             'is_active' => $request->boolean('is_active', true),
             'is_verified' => false, // New users require admin verification
             'password' => Hash::make($request->password)
@@ -86,7 +88,7 @@ class UserController extends Controller
         event(new Registered($user));
         
         // Notify admins about new user registration
-        $admins = User::whereIn('role', ['admin', 'super_admin'])->get();
+        $admins = User::admins()->get();
         Notification::send($admins, new NewUserRegistered($user));
 
         // Log the user in automatically after registration
@@ -113,6 +115,7 @@ class UserController extends Controller
             'profile_picture' => 'nullable|image|max:2048',
             'role' => 'required|in:user,admin,doctor,nurse,receptionist,cashier,pharmacist,lab_technician,radiologist,super_admin',
             'is_active' => 'boolean',
+            'is_admin' => 'boolean',
             'password' => ['nullable', 'string', 'min:8', 'confirmed', Password::defaults()],
         ]);
 
@@ -125,7 +128,8 @@ class UserController extends Controller
             $user->password = Hash::make($request->password);
         }
 
-        $user->fill($request->except(['password', 'profile_picture']));
+        $user->fill($request->except(['password', 'profile_picture', 'is_admin']));
+        $user->is_admin = $request->boolean('is_admin');
         $user->save();
         
         return redirect()->route('users.index')->with('success', 'User updated successfully');
@@ -144,7 +148,7 @@ class UserController extends Controller
     public function pendingVerification()
     {
         $users = User::where('is_verified', false)
-                    ->where('role', '!=', 'super_admin')
+                    ->where('is_super', false)
                     ->paginate(10);
         
         return view('users.pending-verification', compact('users'));
@@ -181,7 +185,7 @@ class UserController extends Controller
         }
 
         // Don't allow unverifying super admins
-        if ($user->role === 'super_admin') {
+        if ($user->is_super) {
             return redirect()->back()->with('error', 'Cannot unverify super admin.');
         }
 
@@ -206,7 +210,7 @@ class UserController extends Controller
 
         $updated = User::whereIn('id', $userIds)
                       ->where('is_verified', false)
-                      ->where('role', '!=', 'super_admin')
+                      ->where('is_super', false)
                       ->update([
                           'is_verified' => true,
                           'verified_at' => now()
@@ -270,7 +274,7 @@ class UserController extends Controller
 
             // Optionally notify other admins that admin triggered this
             if ($request->boolean('cc_admins')) {
-                $admins = User::whereIn('role', ['admin', 'super_admin'])->where('id', '!=', $admin->id)->get();
+                $admins = User::admins()->where('id', '!=', $admin->id)->get();
                 if ($admins->isNotEmpty()) {
                     \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\AdminTriggeredPasswordReset($admin, $user->email));
                 }
@@ -322,7 +326,7 @@ class UserController extends Controller
 
         // Optionally notify other admins
         if ($request->boolean('cc_admins')) {
-            $admins = User::whereIn('role', ['admin', 'super_admin'])->where('id', '!=', $admin->id)->get();
+            $admins = User::admins()->where('id', '!=', $admin->id)->get();
             if ($admins->isNotEmpty()) {
                 try {
                     Notification::send($admins, new \App\Notifications\AdminTriggeredPasswordReset($admin, $user->email));

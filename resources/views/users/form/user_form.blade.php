@@ -92,7 +92,6 @@
                 <select name="role" class="form-control">
                     <option value="">Select Role</option>
                     <option value="user" {{ (old('role', $user->role ?? '') == 'user') ? 'selected' : '' }}>User</option>
-                    <option value="admin" {{ (old('role', $user->role ?? '') == 'admin') ? 'selected' : '' }}>Admin</option>
                     <option value="doctor" {{ (old('role', $user->role ?? '') == 'doctor') ? 'selected' : '' }}>Doctor</option>
                     <option value="nurse" {{ (old('role', $user->role ?? '') == 'nurse') ? 'selected' : '' }}>Nurse</option>
                     <option value="receptionist" {{ (old('role', $user->role ?? '') == 'receptionist') ? 'selected' : '' }}>Receptionist</option>
@@ -100,7 +99,9 @@
                     <option value="pharmacist" {{ (old('role', $user->role ?? '') == 'pharmacist') ? 'selected' : '' }}>Pharmacist</option>
                     <option value="lab_technician" {{ (old('role', $user->role ?? '') == 'lab_technician') ? 'selected' : '' }}>Lab Technician</option>
                     <option value="radiologist" {{ (old('role', $user->role ?? '') == 'radiologist') ? 'selected' : '' }}>Radiologist</option>
-                    <option value="super_admin" {{ (old('role', $user->role ?? '') == 'super_admin') ? 'selected' : '' }}>Super Admin</option>
+                    @if(isset($user) && in_array($user->role, ['admin', 'super_admin']))
+                        <option value="{{ $user->role }}" selected>{{ $user->role === 'super_admin' ? 'Super Admin (legacy)' : 'Admin (legacy)' }}</option>
+                    @endif
                 </select>
             </div>
         </div>
@@ -120,6 +121,17 @@
                 @if(isset($user) && $user->profile_picture)
                     <img src="{{ asset('storage/' . $user->profile_picture) }}" alt="Profile Picture" class="img-thumbnail mt-2" width="100">
                 @endif
+            </div>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-sm-4">
+            <div class="form-check mt-2">
+                <input type="checkbox" name="is_admin" value="1" class="form-check-input" id="is_admin_check"
+                    {{ old('is_admin', $user->is_admin ?? false) ? 'checked' : '' }}>
+                <label class="form-check-label" for="is_admin_check">
+                    Admin Access <small class="text-muted">(full admin navigation &amp; settings)</small>
+                </label>
             </div>
         </div>
     </div>
