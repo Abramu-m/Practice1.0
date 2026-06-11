@@ -106,6 +106,13 @@
 }
 </style>
 
+@php
+    $formData = $existingData ?? [];
+    $isReadOnly = $isReadOnly ?? false;
+    $ro = $isReadOnly ? 'readonly' : '';
+    $dis = $isReadOnly ? 'disabled' : '';
+@endphp
+
 <div class="cd4-form" id="cd4-request-form" data-printable="true">
 
     {{-- ===== HEADER ===== --}}
@@ -129,7 +136,7 @@
             </td>
             <td style="width: 30%;">
                 <strong>CTC No:</strong>
-                <input type="text" name="ctc_number" value="{{ $visit->patientInfo->ctc_number ?? '' }}" style="width: 90px;">
+                <input type="text" name="ctc_number" value="{{ $formData['ctc_number'] ?? ($visit->patientInfo->ctc_number ?? '') }}" style="width: 90px;" {{ $ro }}>
             </td>
         </tr>
         <tr>
@@ -165,30 +172,33 @@
     {{-- ===== INDICATION FOR CD4 ===== --}}
     <div class="bordered" style="margin-bottom: 5px;">
         <div style="font-weight: bold; margin-bottom: 3px;">Indication for CD4:</div>
+        @php
+            $cd4Indication = $formData['cd4_indication'] ?? '';
+        @endphp
         <table class="grid">
             <tr>
                 <td style="width: 50%;">
-                    <label><input type="radio" name="cd4_indication" value="reactive_bioline_unigold"> Reactive Bioline and Unigold tests</label>
+                    <label><input type="radio" name="cd4_indication" value="reactive_bioline_unigold" {{ $cd4Indication === 'reactive_bioline_unigold' ? 'checked' : '' }} {{ $dis }}> Reactive Bioline and Unigold tests</label>
                 </td>
                 <td>
-                    <label><input type="radio" name="cd4_indication" value="art_6_months_routine"> ART 6 months routine test</label>
+                    <label><input type="radio" name="cd4_indication" value="art_6_months_routine" {{ $cd4Indication === 'art_6_months_routine' ? 'checked' : '' }} {{ $dis }}> ART 6 months routine test</label>
                 </td>
             </tr>
             <tr>
                 <td>
-                    <label><input type="radio" name="cd4_indication" value="unknown_but_needed"> Unknown but needed CD4 test</label>
+                    <label><input type="radio" name="cd4_indication" value="unknown_but_needed" {{ $cd4Indication === 'unknown_but_needed' ? 'checked' : '' }} {{ $dis }}> Unknown but needed CD4 test</label>
                 </td>
                 <td>
-                    <label><input type="radio" name="cd4_indication" value="bad_condition"> Bad condition of the patient</label>
+                    <label><input type="radio" name="cd4_indication" value="bad_condition" {{ $cd4Indication === 'bad_condition' ? 'checked' : '' }} {{ $dis }}> Bad condition of the patient</label>
                 </td>
             </tr>
             <tr>
                 <td colspan="2">
                     <label>
-                        <input type="radio" name="cd4_indication" value="others" id="cd4_indication_others">
+                        <input type="radio" name="cd4_indication" value="others" id="cd4_indication_others" {{ $cd4Indication === 'others' ? 'checked' : '' }} {{ $dis }}>
                         Others, specify:
                     </label>
-                    <input type="text" name="cd4_indication_other" id="cd4_indication_other" style="width: 200px;" disabled>
+                    <input type="text" name="cd4_indication_other" id="cd4_indication_other" value="{{ $formData['cd4_indication_other'] ?? '' }}" style="width: 200px;" {{ ($isReadOnly || $cd4Indication !== 'others') ? 'disabled' : '' }}>
                 </td>
             </tr>
         </table>
@@ -204,15 +214,15 @@
             <tr>
                 <td style="width: 33%;">
                     <strong>Lab Serial No:</strong>
-                    <input type="text" name="lab_serial_no" style="width: 90px;">
+                    <input type="text" name="lab_serial_no" value="{{ $formData['lab_serial_no'] ?? '' }}" style="width: 90px;" {{ $ro }}>
                 </td>
                 <td style="width: 33%;">
                     <strong>Date Received:</strong>
-                    <input type="date" name="date_received" value="{{ now()->format('Y-m-d') }}" style="width: 97px;">
+                    <input type="date" name="date_received" value="{{ $formData['date_received'] ?? now()->format('Y-m-d') }}" style="width: 97px;" {{ $ro }}>
                 </td>
                 <td style="width: 34%;">
                     <strong>Date Analyzed:</strong>
-                    <input type="date" name="date_analyzed" value="{{ now()->format('Y-m-d') }}" style="width: 97px;">
+                    <input type="date" name="date_analyzed" value="{{ $formData['date_analyzed'] ?? now()->format('Y-m-d') }}" style="width: 97px;" {{ $ro }}>
                 </td>
             </tr>
         </table>
@@ -227,20 +237,24 @@
                 </tr>
             </thead>
             <tbody>
+                @php
+                    $cd4AdvancedResult = $formData['cd4_advanced_result'] ?? '';
+                    $selectedMethod = $formData['test_method'] ?? 'cd4_advanced_disease';
+                @endphp
                 <tr>
                     <td>CD4+ T-Cell Count</td>
                     <td>
-                        <input type="text" name="cd4_count" id="cd4_count" placeholder="—" style="width: 70px;">
+                        <input type="text" name="cd4_count" id="cd4_count" value="{{ $formData['cd4_count'] ?? '' }}" placeholder="—" style="width: 70px;" {{ $ro }}>
                         &nbsp;cells/μL<br>
-                        <label><input type="radio" name="cd4_advanced_result" value="below_200"> &lt; 200</label>
-                        <label><input type="radio" name="cd4_advanced_result" value="above_200"> &ge; 200</label>
+                        <label><input type="radio" name="cd4_advanced_result" value="below_200" {{ $cd4AdvancedResult === 'below_200' ? 'checked' : '' }} {{ $dis }}> &lt; 200</label>
+                        <label><input type="radio" name="cd4_advanced_result" value="above_200" {{ $cd4AdvancedResult === 'above_200' ? 'checked' : '' }} {{ $dis }}> &ge; 200</label>
                     </td>
                     <td style="font-size: 8px; color: #555;">500–1200 cells/μL (adults)</td>
                 </tr>
                 <tr>
                     <td>CD4 Percentage</td>
                     <td>
-                        <input type="number" name="cd4_percentage" min="0" max="100" step="0.1" placeholder="—" style="width: 55px;">
+                        <input type="number" name="cd4_percentage" min="0" max="100" step="0.1" value="{{ $formData['cd4_percentage'] ?? '' }}" placeholder="—" style="width: 55px;" {{ $ro }}>
                         &nbsp;%
                     </td>
                     <td style="font-size: 8px; color: #555;">30–60%</td>
@@ -248,7 +262,7 @@
                 <tr>
                     <td>Total Lymphocyte Count</td>
                     <td>
-                        <input type="number" name="total_lymphocytes" min="0" placeholder="—" style="width: 70px;">
+                        <input type="number" name="total_lymphocytes" min="0" value="{{ $formData['total_lymphocytes'] ?? '' }}" placeholder="—" style="width: 70px;" {{ $ro }}>
                         &nbsp;cells/μL
                     </td>
                     <td></td>
@@ -256,7 +270,7 @@
                 <tr>
                     <td>CD8+ T-Cell Count</td>
                     <td>
-                        <input type="number" name="cd8_count" min="0" placeholder="—" style="width: 70px;">
+                        <input type="number" name="cd8_count" min="0" value="{{ $formData['cd8_count'] ?? '' }}" placeholder="—" style="width: 70px;" {{ $ro }}>
                         &nbsp;cells/μL
                     </td>
                     <td></td>
@@ -264,20 +278,20 @@
                 <tr>
                     <td>CD4/CD8 Ratio</td>
                     <td>
-                        <input type="number" name="cd4_cd8_ratio" min="0" step="0.01" placeholder="—" style="width: 55px;">
+                        <input type="number" name="cd4_cd8_ratio" min="0" step="0.01" value="{{ $formData['cd4_cd8_ratio'] ?? '' }}" placeholder="—" style="width: 55px;" {{ $ro }}>
                     </td>
                     <td style="font-size: 8px; color: #555;">Normal: 1.0–2.5</td>
                 </tr>
                 <tr>
                     <td>Test Method</td>
                     <td colspan="2">
-                        <select name="test_method">
-                            <option value="">— Select —</option>
-                            <option value="cd4_advanced_disease" selected>CD4 Advanced Disease Test</option>
-                            <option value="flow_cytometry">Flow Cytometry</option>
-                            <option value="facs_count">FACS Count</option>
-                            <option value="cyflow">CyFlow</option>
-                            <option value="other">Other</option>
+                        <select name="test_method" {{ $dis }}>
+                            <option value="" {{ $selectedMethod === '' ? 'selected' : '' }}>— Select —</option>
+                            <option value="cd4_advanced_disease" {{ $selectedMethod === 'cd4_advanced_disease' ? 'selected' : '' }}>CD4 Advanced Disease Test</option>
+                            <option value="flow_cytometry" {{ $selectedMethod === 'flow_cytometry' ? 'selected' : '' }}>Flow Cytometry</option>
+                            <option value="facs_count" {{ $selectedMethod === 'facs_count' ? 'selected' : '' }}>FACS Count</option>
+                            <option value="cyflow" {{ $selectedMethod === 'cyflow' ? 'selected' : '' }}>CyFlow</option>
+                            <option value="other" {{ $selectedMethod === 'other' ? 'selected' : '' }}>Other</option>
                         </select>
                     </td>
                 </tr>
@@ -285,18 +299,21 @@
         </table>
 
         {{-- HIV Category --}}
+        @php
+            $hivCategory = $formData['hiv_category'] ?? '';
+        @endphp
         <div class="bordered" style="margin-bottom: 4px;">
             <strong>HIV Immunological Category:</strong>
             <table class="grid" style="margin-top: 2px;">
                 <tr>
                     <td style="width: 50%;">
-                        <label><input type="radio" name="hiv_category" value="normal"> Normal immunity (CD4 &gt; 500)</label><br>
-                        <label><input type="radio" name="hiv_category" value="mild"> Mild suppression (350–500)</label><br>
-                        <label><input type="radio" name="hiv_category" value="moderate"> Moderate suppression (200–349)</label>
+                        <label><input type="radio" name="hiv_category" value="normal" {{ $hivCategory === 'normal' ? 'checked' : '' }} {{ $dis }}> Normal immunity (CD4 &gt; 500)</label><br>
+                        <label><input type="radio" name="hiv_category" value="mild" {{ $hivCategory === 'mild' ? 'checked' : '' }} {{ $dis }}> Mild suppression (350–500)</label><br>
+                        <label><input type="radio" name="hiv_category" value="moderate" {{ $hivCategory === 'moderate' ? 'checked' : '' }} {{ $dis }}> Moderate suppression (200–349)</label>
                     </td>
                     <td>
-                        <label><input type="radio" name="hiv_category" value="severe"> Severe suppression (&lt; 200)</label><br>
-                        <label><input type="radio" name="hiv_category" value="aids"> AIDS-defining (&lt; 100)</label>
+                        <label><input type="radio" name="hiv_category" value="severe" {{ $hivCategory === 'severe' ? 'checked' : '' }} {{ $dis }}> Severe suppression (&lt; 200)</label><br>
+                        <label><input type="radio" name="hiv_category" value="aids" {{ $hivCategory === 'aids' ? 'checked' : '' }} {{ $dis }}> AIDS-defining (&lt; 100)</label>
                     </td>
                 </tr>
             </table>
@@ -306,7 +323,7 @@
         <div style="margin-bottom: 4px;">
             <strong>Clinical Significance / Comments:</strong><br>
             <textarea name="clinical_significance" rows="2"
-                      style="width:100%; font-size:9px; border:1px solid #000; font-family:Arial,sans-serif; padding:2px; margin-top:2px;"></textarea>
+                      style="width:100%; font-size:9px; border:1px solid #000; font-family:Arial,sans-serif; padding:2px; margin-top:2px;" {{ $ro }}>{{ $formData['clinical_significance'] ?? '' }}</textarea>
         </div>
 
         {{-- QA + Personnel --}}
@@ -323,11 +340,11 @@
             <tr>
                 <td style="width: 50%;">
                     <strong>Examined by:</strong>
-                    <input type="text" name="technician" value="{{ $resultedName }}" style="width: 140px;">
+                    <input type="text" name="technician" value="{{ $formData['technician'] ?? $resultedName }}" style="width: 140px;" {{ $ro }}>
                 </td>
                 <td>
                     <strong>Reviewed by:</strong>
-                    <input type="text" name="reviewed_by" style="width: 130px;">
+                    <input type="text" name="reviewed_by" value="{{ $formData['reviewed_by'] ?? '' }}" style="width: 130px;" {{ $ro }}>
                 </td>
             </tr>
         </table>
@@ -353,6 +370,7 @@
 
 </div>
 
+@if(!$isReadOnly)
 <script>
 (function () {
     var othersRadio = document.getElementById('cd4_indication_others');
@@ -383,3 +401,4 @@
     });
 })();
 </script>
+@endif

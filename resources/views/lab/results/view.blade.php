@@ -82,6 +82,7 @@
                 $isSimpleTemplate = in_array($templateCode, ['simple', 'simple_lab', 'single_numeric_lab', 'qualitative_lab', 'mrdt_malaria', 'urinalysis', 'full_blood_picture', 'blood_count', 'genxpert_tb', 'zn_stain_tb', 'blood_grouping', 'pbs_microfilaria', 'pbs_malaria', 'pbs_rbc_morphology', 'psa_semiquantitative', 'gram_stain']) && isset($result->form_data['parameters']);
                 $isQualitative = in_array($templateCode, ['qualitative_lab', 'mrdt_malaria']) && isset($result->form_data['parameters']);
                 $isNarrative = $templateCode === 'narrative_lab';
+                $isCd4 = $templateCode === 'cd4';
             @endphp
             @if($isNarrative)
                 {{-- Narrative / free-text result --}}
@@ -369,6 +370,15 @@
                     </div>
                 @endif
 
+            @elseif($isCd4)
+                <div class="p-3">
+                    @include('lab.result_templates.cd4', [
+                        'existingData'  => $result->form_data,
+                        'investigation' => $result->investigation,
+                        'visit'         => $result->investigation->visit,
+                        'isReadOnly'    => true,
+                    ])
+                </div>
             @else
                 {{-- Generic result display --}}
                 <div class="p-4">
