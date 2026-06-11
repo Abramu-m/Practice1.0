@@ -125,9 +125,23 @@
 
 @php
     $formData = $existingData ?? [];
+    $orderingFormData = $orderingFormData ?? [];
     $isReadOnly = $isReadOnly ?? false;
     $ro = $isReadOnly ? 'readonly' : '';
     $dis = $isReadOnly ? 'disabled' : '';
+
+    // Use investigation ordered_at for date/time (more accurate than visit created_at)
+    $requestedAt = $investigation->ordered_at ?? $investigation->created_at ?? now();
+
+    // Compute age from date_of_birth (Patient model has no age accessor)
+    $patientDob = $visit->patientInfo->date_of_birth ?? null;
+    $patientAge = '';
+    if ($patientDob) {
+        try {
+            $d = \Carbon\Carbon::parse($patientDob)->diff(\Carbon\Carbon::now());
+            $patientAge = $d->y . 'y ' . $d->m . 'm ' . $d->d . 'd';
+        } catch (\Exception $e) {}
+    }
 @endphp
 
 <div class="cd4-form" id="cd4-request-form" data-printable="true">
@@ -145,15 +159,15 @@
         <tr>
             <td style="width: 40%;">
                 <strong>Date of request:</strong>
-                <span class="pre-filled">{{ \Carbon\Carbon::parse($visit->created_at ?? now())->format('d/m/Y') }}</span>
+                <span class="pre-filled">{{ \Carbon\Carbon::parse($requestedAt)->format('d/m/Y') }}</span>
             </td>
             <td style="width: 30%;">
                 <strong>Time:</strong>
-                <span class="pre-filled">{{ \Carbon\Carbon::parse($visit->created_at ?? now())->format('H:i') }}</span>
+                <span class="pre-filled">{{ \Carbon\Carbon::parse($requestedAt)->format('H:i') }}</span>
             </td>
             <td style="width: 30%;">
                 <strong>CTC No:</strong>
-                <input type="text" name="ctc_number" value="{{ $formData['ctc_number'] ?? ($visit->patientInfo->ctc_number ?? '') }}" style="width: 90px;" {{ $ro }}>
+                <input type="text" name="ctc_number" value="{{ $formData['ctc_number'] ?? ($orderingFormData['ctc_number'] ?? ($visit->patientInfo->card_number ?? '')) }}" style="width: 90px;" {{ $ro }}>
             </td>
         </tr>
         <tr>
@@ -169,11 +183,11 @@
         <tr>
             <td>
                 <strong>Age:</strong>
-                <span class="pre-filled" style="min-width: 80px;">{{ $visit->patientInfo->age ?? '' }}</span>
+                <span class="pre-filled" style="min-width: 80px;">{{ $patientAge }}</span>
             </td>
             <td colspan="2">
                 <strong>Address:</strong>
-                <span class="pre-filled" style="min-width: 140px;">{{ $visit->patientInfo->address ?? '' }}</span>
+                <span class="pre-filled" style="min-width: 140px;">{{ $visit->patientInfo->residence ?? '' }}</span>
             </td>
         </tr>
         <tr>
@@ -190,7 +204,7 @@
     <div class="bordered" style="margin-bottom: 5px;">
         <div style="font-weight: bold; margin-bottom: 3px;">Indication for CD4:</div>
         @php
-            $cd4Indication = $formData['cd4_indication'] ?? '';
+            $cd4Indication = $formData['cd4_indication'] ?? $orderingFormData['cd4_indication'] ?? '';
         @endphp
         <table class="grid">
             <tr>
@@ -215,7 +229,7 @@
                         <input type="radio" name="cd4_indication" value="others" id="cd4_indication_others" {{ $cd4Indication === 'others' ? 'checked' : '' }} {{ $dis }}>
                         Others, specify:
                     </label>
-                    <input type="text" name="cd4_indication_other" id="cd4_indication_other" value="{{ $formData['cd4_indication_other'] ?? '' }}" style="width: 200px;" {{ ($isReadOnly || $cd4Indication !== 'others') ? 'disabled' : '' }}>
+                    <input type="text" name="cd4_indication_other" id="cd4_indication_other" value="{{ $formData['cd4_indication_other'] ?? $orderingFormData['cd4_indication_other'] ?? '' }}" style="width: 200px;" {{ ($isReadOnly || $cd4Indication !== 'others') ? 'disabled' : '' }}>
                 </td>
             </tr>
         </table>

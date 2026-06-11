@@ -79,7 +79,7 @@
             </td>
             <td style="width: 30%;">
                 <strong>CTC No:</strong>
-                <input type="text" name="ctc_number" value="{{ $visit->patientInfo->ctc_number ?? '' }}" style="width: 90px;">
+                <input type="text" name="ctc_number" value="{{ $visit->patientInfo->card_number ?? '' }}" style="width: 90px;">
             </td>
         </tr>
         <tr>
