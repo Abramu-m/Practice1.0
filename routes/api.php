@@ -291,8 +291,7 @@ Route::get('/result-template/{templateName}', function($templateName) {
             'general'            => 'lab.result_templates.general',
             'general_lab'        => 'lab.result_templates.general',
             'chemistry'          => 'lab.result_templates.general',
-            'imaging'            => 'lab.result_templates.general',
-            'vital_observations' => 'lab.result_templates.general',
+            'vital_observations' => 'lab.result_templates.vital_observations',
             'complex_form'       => 'lab.result_templates.general',
             'default'            => 'lab.result_templates.general',
             // Specific templates

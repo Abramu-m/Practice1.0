@@ -489,6 +489,18 @@
                 </a>
             </div>
 
+        @elseif($tplCode === 'vital_observations')
+            @include('lab.result_templates.vital_observations', [
+                'existingData'  => $result->form_data,
+                'investigation' => $result->investigation,
+                'isReadOnly'    => true,
+            ])
+            <div class="mt-2 text-end">
+                <a href="{{ route('lab.template-results.view', $result->id) }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                    <i class="fas fa-expand-alt me-1"></i> View Full Form
+                </a>
+            </div>
+
         @else
             {{-- Generic complex result display --}}
             <div class="row">

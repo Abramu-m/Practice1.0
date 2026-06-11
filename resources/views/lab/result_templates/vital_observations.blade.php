@@ -1,361 +1,322 @@
-@if(isset($investigation) && $investigation && $investigation->id)
+{{-- Vital Signs & Observations Result Template --}}
 @php
-    // Get existing form data for prefilling
     $formData = $existingData ?? [];
-    $isReadOnly = isset($existingData['_result_status']) && $existingData['_result_status'] === 'final';
+    $isReadOnly = $isReadOnly ?? (($formData['_result_status'] ?? null) === 'final');
+    $editMode = $editMode ?? false;
+    $ro = $isReadOnly ? 'readonly' : '';
+    $dis = $isReadOnly ? 'disabled' : '';
+
+    $observationTime = isset($formData['observation_time'])
+        ? \Carbon\Carbon::parse($formData['observation_time'])->format('Y-m-d\TH:i')
+        : now()->format('Y-m-d\TH:i');
+    $observerName = $formData['observer_name'] ?? (auth()->user()->name ?? '');
+
+    $switchTemplates = \App\Models\ResultTemplate::where('is_active', true)
+        ->where('code', '!=', 'vital_observations')
+        ->orderBy('sort_order')
+        ->orderBy('name')
+        ->get(['code', 'name']);
 @endphp
 
-@if($isReadOnly)
-    <div class="alert alert-info">
-        <i class="fas fa-info-circle"></i>
-        <strong>Final Results - Read Only:</strong> This report has been finalized and cannot be modified.
-    </div>
-@endif
+<div class="result-template-container" style="background-color:#fff;padding:15px;border-radius:5px;">
 
-<form action="{{ route('procedures.store-result', $investigation->id) }}" method="POST" class="procedure-form">
-    @csrf
-    <input type="hidden" name="result_type" value="{{ $investigation->medicalService->resultTemplate->code }}">
-    <input type="hidden" name="investigation_id" value="{{ $investigation->id }}">
+    <h6 class="text-primary mb-3">
+        <i class="fas fa-heartbeat"></i>
+        {{ $investigation->medicalService->name ?? 'Vital Signs & Observations' }} — Result
+        @if($editMode)
+            <small class="text-muted">
+                - {{ ($formData['_result_status'] ?? '') === 'draft' ? 'Editing Draft' : 'Editing Saved Result' }}
+            </small>
+        @endif
+    </h6>
 
+    {{-- Primary Vital Signs --}}
+    <h6 class="text-secondary mb-2">Primary Vital Signs</h6>
     <div class="row">
-        <div class="col-md-12 mb-3">
-            <div id="save-indicator" class="float-end"></div>
-            <h6 class="text-primary mb-3">
-                <i class="fas fa-heartbeat"></i>
-                Vital Signs & Physical Observations
-                @if($editMode)
-                    <small class="text-muted">
-                        - {{ $existingData['_result_status'] === 'draft' ? 'Editing Draft' : 'Editing Preliminary Results' }}
-                    </small>
-                @endif
-            </h6>
-            <div class="alert alert-info">
-                <i class="fas fa-info-circle"></i>
-                <strong>Bedrest Monitoring:</strong> Record vital signs and observations for patient monitoring during hospital stay.
-            </div>
-        </div>
-    </div>
-
-    <!-- Vital Signs -->
-    <div class="row">
-        <div class="col-md-12 mb-4">
-            <h6 class="text-secondary mb-3">Primary Vital Signs</h6>
-            <div class="row">
-                <div class="col-md-3 mb-3">
-                    <div class="form-floating">
-                        <input type="text" name="systolic_bp" class="form-control" step="1" min="50" max="300"
-                               value="{{ $formData['systolic_bp'] ?? '' }}" {{ $isReadOnly ? 'readonly' : '' }}>
-                        <label>Systolic BP (mmHg)</label>
-                    </div>
-                    <small class="normal-range">Normal: 90-140 mmHg</small>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <div class="form-floating">
-                        <input type="text" name="diastolic_bp" class="form-control" step="1" min="30" max="200"
-                               value="{{ $formData['diastolic_bp'] ?? '' }}" {{ $isReadOnly ? 'readonly' : '' }}>
-                        <label>Diastolic BP (mmHg)</label>
-                    </div>
-                    <small class="normal-range">Normal: 60-90 mmHg</small>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <div class="form-floating">
-                        <input type="text" name="heart_rate" class="form-control" step="1" min="30" max="250"
-                               value="{{ $formData['heart_rate'] ?? '' }}" {{ $isReadOnly ? 'readonly' : '' }}>
-                        <label>Heart Rate (bpm)</label>
-                    </div>
-                    <small class="normal-range">Normal: 60-100 bpm</small>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <div class="form-floating">
-                        <input type="text" name="respiratory_rate" class="form-control" step="1" min="5" max="50"
-                               value="{{ $formData['respiratory_rate'] ?? '' }}" {{ $isReadOnly ? 'readonly' : '' }}>
-                        <label>Respiratory Rate (/min)</label>
-                    </div>
-                    <small class="normal-range">Normal: 12-20 /min</small>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Temperature & Oxygen -->
-    <div class="row">
-        <div class="col-md-12 mb-4">
-            <h6 class="text-secondary mb-3">Temperature & Oxygenation</h6>
-            <div class="row">
-                <div class="col-md-3 mb-3">
-                    <div class="form-floating">
-                        <input type="text" name="temperature" class="form-control" step="0.1" min="30" max="45"
-                               value="{{ $formData['temperature'] ?? '' }}" {{ $isReadOnly ? 'readonly' : '' }}>
-                        <label>Temperature (°C)</label>
-                    </div>
-                    <small class="normal-range">Normal: 36.1-37.2°C</small>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <div class="form-floating">
-                        <select name="temperature_site" class="form-select" {{ $isReadOnly ? 'disabled' : '' }}>
-                            <option value="oral" {{ ($formData['temperature_site'] ?? 'oral') === 'oral' ? 'selected' : '' }}>Oral</option>
-                            <option value="axillary" {{ ($formData['temperature_site'] ?? '') === 'axillary' ? 'selected' : '' }}>Axillary</option>
-                            <option value="rectal" {{ ($formData['temperature_site'] ?? '') === 'rectal' ? 'selected' : '' }}>Rectal</option>
-                            <option value="tympanic" {{ ($formData['temperature_site'] ?? '') === 'tympanic' ? 'selected' : '' }}>Tympanic</option>
-                            <option value="temporal" {{ ($formData['temperature_site'] ?? '') === 'temporal' ? 'selected' : '' }}>Temporal</option>
-                        </select>
-                        <label>Temperature Site</label>
-                    </div>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <div class="form-floating">
-                        <input type="text" name="oxygen_saturation" class="form-control" step="1" min="70" max="100"
-                               value="{{ $formData['oxygen_saturation'] ?? '' }}" {{ $isReadOnly ? 'readonly' : '' }}>
-                        <label>Oxygen Saturation (%)</label>
-                    </div>
-                    <small class="normal-range">Normal: ≥95%</small>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <div class="form-floating">
-                        <select name="oxygen_delivery" class="form-select" {{ $isReadOnly ? 'disabled' : '' }}>
-                            <option value="room_air" {{ ($formData['oxygen_delivery'] ?? 'room_air') === 'room_air' ? 'selected' : '' }}>Room Air</option>
-                            <option value="nasal_cannula" {{ ($formData['oxygen_delivery'] ?? '') === 'nasal_cannula' ? 'selected' : '' }}>Nasal Cannula</option>
-                            <option value="face_mask" {{ ($formData['oxygen_delivery'] ?? '') === 'face_mask' ? 'selected' : '' }}>Face Mask</option>
-                            <option value="non_rebreather" {{ ($formData['oxygen_delivery'] ?? '') === 'non_rebreather' ? 'selected' : '' }}>Non-Rebreather</option>
-                            <option value="ventilator" {{ ($formData['oxygen_delivery'] ?? '') === 'ventilator' ? 'selected' : '' }}>Ventilator</option>
-                        </select>
-                        <label>Oxygen Delivery</label>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Physical Measurements -->
-    <div class="row">
-        <div class="col-md-12 mb-4">
-            <h6 class="text-secondary mb-3">Physical Measurements</h6>
-            <div class="row">
-                <div class="col-md-3 mb-3">
-                    <div class="form-floating">
-                        <input type="text" name="weight" id="weight" class="form-control" step="0.1" 
-                               value="{{ $formData['weight'] ?? '' }}" {{ $isReadOnly ? 'readonly' : '' }}
-                               onchange="calculateBMI()">
-                        <label>Weight (kg)</label>
-                    </div>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <div class="form-floating">
-                        <input type="text" name="height" id="height" class="form-control" step="0.1" 
-                               value="{{ $formData['height'] ?? '' }}" {{ $isReadOnly ? 'readonly' : '' }}
-                               onchange="calculateBMI()">
-                        <label>Height (cm)</label>
-                    </div>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <div class="form-floating">
-                        <input type="text" name="bmi" id="bmi" class="form-control" step="0.1" readonly
-                               value="{{ $formData['bmi'] ?? '' }}">
-                        <label>BMI (kg/m²)</label>
-                    </div>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <div class="form-floating">
-                        <input type="text" name="bmi_category" id="bmi_category" class="form-control" readonly
-                               value="{{ $formData['bmi_category'] ?? '' }}">
-                        <label>BMI Category</label>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Pain Assessment -->
-    <div class="row">
-        <div class="col-md-12 mb-4">
-            <h6 class="text-secondary mb-3">Pain & Comfort Assessment</h6>
-            <div class="row">
-                <div class="col-md-4 mb-3">
-                    <div class="form-floating">
-                        <select name="pain_scale" class="form-select" {{ $isReadOnly ? 'disabled' : '' }}>
-                            <option value="">No Pain</option>
-                            <option value="1" {{ ($formData['pain_scale'] ?? '') === '1' ? 'selected' : '' }}>1 - Mild</option>
-                            <option value="2" {{ ($formData['pain_scale'] ?? '') === '2' ? 'selected' : '' }}>2 - Mild</option>
-                            <option value="3" {{ ($formData['pain_scale'] ?? '') === '3' ? 'selected' : '' }}>3 - Moderate</option>
-                            <option value="4" {{ ($formData['pain_scale'] ?? '') === '4' ? 'selected' : '' }}>4 - Moderate</option>
-                            <option value="5" {{ ($formData['pain_scale'] ?? '') === '5' ? 'selected' : '' }}>5 - Moderate</option>
-                            <option value="6" {{ ($formData['pain_scale'] ?? '') === '6' ? 'selected' : '' }}>6 - Severe</option>
-                            <option value="7" {{ ($formData['pain_scale'] ?? '') === '7' ? 'selected' : '' }}>7 - Severe</option>
-                            <option value="8" {{ ($formData['pain_scale'] ?? '') === '8' ? 'selected' : '' }}>8 - Very Severe</option>
-                            <option value="9" {{ ($formData['pain_scale'] ?? '') === '9' ? 'selected' : '' }}>9 - Very Severe</option>
-                            <option value="10" {{ ($formData['pain_scale'] ?? '') === '10' ? 'selected' : '' }}>10 - Worst Possible</option>
-                        </select>
-                        <label>Pain Scale (0-10)</label>
-                    </div>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <div class="form-floating">
-                        <input type="text" name="pain_location" class="form-control" 
-                               placeholder="e.g., Chest, Abdomen, Back"
-                               value="{{ $formData['pain_location'] ?? '' }}" {{ $isReadOnly ? 'readonly' : '' }}>
-                        <label>Pain Location</label>
-                    </div>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <div class="form-floating">
-                        <select name="pain_character" class="form-select" {{ $isReadOnly ? 'disabled' : '' }}>
-                            <option value="">Select Character</option>
-                            <option value="sharp" {{ ($formData['pain_character'] ?? '') === 'sharp' ? 'selected' : '' }}>Sharp</option>
-                            <option value="dull" {{ ($formData['pain_character'] ?? '') === 'dull' ? 'selected' : '' }}>Dull</option>
-                            <option value="burning" {{ ($formData['pain_character'] ?? '') === 'burning' ? 'selected' : '' }}>Burning</option>
-                            <option value="cramping" {{ ($formData['pain_character'] ?? '') === 'cramping' ? 'selected' : '' }}>Cramping</option>
-                            <option value="throbbing" {{ ($formData['pain_character'] ?? '') === 'throbbing' ? 'selected' : '' }}>Throbbing</option>
-                            <option value="stabbing" {{ ($formData['pain_character'] ?? '') === 'stabbing' ? 'selected' : '' }}>Stabbing</option>
-                        </select>
-                        <label>Pain Character</label>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Neurological Assessment -->
-    <div class="row">
-        <div class="col-md-12 mb-4">
-            <h6 class="text-secondary mb-3">Neurological Status</h6>
-            <div class="row">
-                <div class="col-md-4 mb-3">
-                    <div class="form-floating">
-                        <select name="consciousness_level" class="form-select">
-                            <option value="alert">Alert & Oriented</option>
-                            <option value="drowsy">Drowsy</option>
-                            <option value="confused">Confused</option>
-                            <option value="unresponsive">Unresponsive</option>
-                        </select>
-                        <label>Level of Consciousness</label>
-                    </div>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <div class="form-floating">
-                        <select name="pupils_reaction" class="form-select">
-                            <option value="equal_reactive">Equal & Reactive</option>
-                            <option value="equal_sluggish">Equal & Sluggish</option>
-                            <option value="unequal">Unequal</option>
-                            <option value="fixed">Fixed</option>
-                        </select>
-                        <label>Pupil Reaction</label>
-                    </div>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <div class="form-floating">
-                        <select name="motor_response" class="form-select">
-                            <option value="normal">Normal Movement</option>
-                            <option value="weakness">Weakness</option>
-                            <option value="paralysis">Paralysis</option>
-                            <option value="not_assessed">Not Assessed</option>
-                        </select>
-                        <label>Motor Response</label>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Observation Notes -->
-    <div class="row">
-        <div class="col-md-12 mb-3">
+        <div class="col-md-3 mb-3">
             <div class="form-floating">
-                <textarea name="nursing_notes" class="form-control" style="min-height: 100px;" 
-                          placeholder="General appearance, behavior, comfort level, any concerns"
-                          {{ $isReadOnly ? 'readonly' : '' }}>{{ $formData['nursing_notes'] ?? '' }}</textarea>
-                <label>Nursing Observations</label>
+                <input type="text" name="systolic_bp" class="form-control"
+                       value="{{ $formData['systolic_bp'] ?? '' }}" {{ $ro }}>
+                <label>Systolic BP (mmHg)</label>
+            </div>
+            <small class="text-muted">Normal: 90-140 mmHg</small>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="form-floating">
+                <input type="text" name="diastolic_bp" class="form-control"
+                       value="{{ $formData['diastolic_bp'] ?? '' }}" {{ $ro }}>
+                <label>Diastolic BP (mmHg)</label>
+            </div>
+            <small class="text-muted">Normal: 60-90 mmHg</small>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="form-floating">
+                <input type="text" name="heart_rate" class="form-control"
+                       value="{{ $formData['heart_rate'] ?? '' }}" {{ $ro }}>
+                <label>Heart Rate (bpm)</label>
+            </div>
+            <small class="text-muted">Normal: 60-100 bpm</small>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="form-floating">
+                <input type="text" name="respiratory_rate" class="form-control"
+                       value="{{ $formData['respiratory_rate'] ?? '' }}" {{ $ro }}>
+                <label>Respiratory Rate (/min)</label>
+            </div>
+            <small class="text-muted">Normal: 12-20 /min</small>
+        </div>
+    </div>
+
+    {{-- Temperature & Oxygenation --}}
+    <h6 class="text-secondary mb-2">Temperature & Oxygenation</h6>
+    <div class="row">
+        <div class="col-md-3 mb-3">
+            <div class="form-floating">
+                <input type="text" name="temperature" class="form-control"
+                       value="{{ $formData['temperature'] ?? '' }}" {{ $ro }}>
+                <label>Temperature (°C)</label>
+            </div>
+            <small class="text-muted">Normal: 36.1-37.2°C</small>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="form-floating">
+                <select name="temperature_site" class="form-select" {{ $dis }}>
+                    @php $tempSite = $formData['temperature_site'] ?? 'oral'; @endphp
+                    <option value="oral" {{ $tempSite === 'oral' ? 'selected' : '' }}>Oral</option>
+                    <option value="axillary" {{ $tempSite === 'axillary' ? 'selected' : '' }}>Axillary</option>
+                    <option value="rectal" {{ $tempSite === 'rectal' ? 'selected' : '' }}>Rectal</option>
+                    <option value="tympanic" {{ $tempSite === 'tympanic' ? 'selected' : '' }}>Tympanic</option>
+                    <option value="temporal" {{ $tempSite === 'temporal' ? 'selected' : '' }}>Temporal</option>
+                </select>
+                <label>Temperature Site</label>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="form-floating">
+                <input type="text" name="oxygen_saturation" class="form-control"
+                       value="{{ $formData['oxygen_saturation'] ?? '' }}" {{ $ro }}>
+                <label>Oxygen Saturation (%)</label>
+            </div>
+            <small class="text-muted">Normal: ≥95%</small>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="form-floating">
+                <select name="oxygen_delivery" class="form-select" {{ $dis }}>
+                    @php $o2Delivery = $formData['oxygen_delivery'] ?? 'room_air'; @endphp
+                    <option value="room_air" {{ $o2Delivery === 'room_air' ? 'selected' : '' }}>Room Air</option>
+                    <option value="nasal_cannula" {{ $o2Delivery === 'nasal_cannula' ? 'selected' : '' }}>Nasal Cannula</option>
+                    <option value="face_mask" {{ $o2Delivery === 'face_mask' ? 'selected' : '' }}>Face Mask</option>
+                    <option value="non_rebreather" {{ $o2Delivery === 'non_rebreather' ? 'selected' : '' }}>Non-Rebreather</option>
+                    <option value="ventilator" {{ $o2Delivery === 'ventilator' ? 'selected' : '' }}>Ventilator</option>
+                </select>
+                <label>Oxygen Delivery</label>
             </div>
         </div>
     </div>
 
-    <!-- Observation Time -->
+    {{-- Physical Measurements --}}
+    <h6 class="text-secondary mb-2">Physical Measurements</h6>
     <div class="row">
-        <div class="col-md-6 mb-3">
+        <div class="col-md-3 mb-3">
             <div class="form-floating">
-                <input type="datetime-local" name="observation_time" class="form-control" 
-                       value="{{ isset($formData['observation_time']) ? \Carbon\Carbon::parse($formData['observation_time'])->format('Y-m-d\TH:i') : now()->format('Y-m-d\TH:i') }}" 
-                       {{ $isReadOnly ? 'readonly' : '' }} required>
-                <label>Observation Time <span class="text-danger">*</span></label>
+                <input type="text" name="weight" id="vo_weight" class="form-control"
+                       value="{{ $formData['weight'] ?? '' }}" {{ $ro }} onchange="vitalObsCalculateBMI()">
+                <label>Weight (kg)</label>
             </div>
         </div>
-        <div class="col-md-6 mb-3">
+        <div class="col-md-3 mb-3">
             <div class="form-floating">
-                <input type="text" name="observer_name" class="form-control" 
-                       value="{{ $formData['observer_name'] ?? auth()->user()->name ?? '' }}" 
-                       {{ $isReadOnly ? 'readonly' : '' }} required>
-                <label>Observer Name <span class="text-danger">*</span></label>
+                <input type="text" name="height" id="vo_height" class="form-control"
+                       value="{{ $formData['height'] ?? '' }}" {{ $ro }} onchange="vitalObsCalculateBMI()">
+                <label>Height (cm)</label>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="form-floating">
+                <input type="text" name="bmi" id="vo_bmi" class="form-control" readonly
+                       value="{{ $formData['bmi'] ?? '' }}">
+                <label>BMI (kg/m²)</label>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="form-floating">
+                <input type="text" name="bmi_category" id="vo_bmi_category" class="form-control" readonly
+                       value="{{ $formData['bmi_category'] ?? '' }}">
+                <label>BMI Category</label>
             </div>
         </div>
     </div>
 
-    <!-- Action Buttons -->
+    {{-- Pain & Comfort Assessment --}}
+    <h6 class="text-secondary mb-2">Pain & Comfort Assessment</h6>
     <div class="row">
-        <div class="col-md-12">
-            <div class="d-flex justify-content-between">
-                <div>
-                    <a href="{{ route('procedures.index') }}" class="btn btn-outline-secondary">
-                        <i class="fas fa-arrow-left"></i> Back to List
-                    </a>
-                    @if($editMode && isset($existingData['_result_id']))
-                        <a href="{{ route('procedures.view-results', $investigation) }}" class="btn btn-outline-info ms-2" target="_blank">
-                            <i class="fas fa-file-pdf"></i> View Current Report
-                        </a>
-                    @endif
+        <div class="col-md-4 mb-3">
+            <div class="form-floating">
+                <select name="pain_scale" class="form-select" {{ $dis }}>
+                    @php $painScale = $formData['pain_scale'] ?? ''; @endphp
+                    <option value="" {{ $painScale === '' ? 'selected' : '' }}>No Pain</option>
+                    @for($i = 1; $i <= 10; $i++)
+                        <option value="{{ $i }}" {{ $painScale == $i ? 'selected' : '' }}>{{ $i }}</option>
+                    @endfor
+                </select>
+                <label>Pain Scale (0-10)</label>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="form-floating">
+                <input type="text" name="pain_location" class="form-control"
+                       placeholder="e.g., Chest, Abdomen, Back"
+                       value="{{ $formData['pain_location'] ?? '' }}" {{ $ro }}>
+                <label>Pain Location</label>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="form-floating">
+                <select name="pain_character" class="form-select" {{ $dis }}>
+                    @php $painCharacter = $formData['pain_character'] ?? ''; @endphp
+                    <option value="" {{ $painCharacter === '' ? 'selected' : '' }}>Select Character</option>
+                    <option value="sharp" {{ $painCharacter === 'sharp' ? 'selected' : '' }}>Sharp</option>
+                    <option value="dull" {{ $painCharacter === 'dull' ? 'selected' : '' }}>Dull</option>
+                    <option value="burning" {{ $painCharacter === 'burning' ? 'selected' : '' }}>Burning</option>
+                    <option value="cramping" {{ $painCharacter === 'cramping' ? 'selected' : '' }}>Cramping</option>
+                    <option value="throbbing" {{ $painCharacter === 'throbbing' ? 'selected' : '' }}>Throbbing</option>
+                    <option value="stabbing" {{ $painCharacter === 'stabbing' ? 'selected' : '' }}>Stabbing</option>
+                </select>
+                <label>Pain Character</label>
+            </div>
+        </div>
+    </div>
+
+    {{-- Neurological Status --}}
+    <h6 class="text-secondary mb-2">Neurological Status</h6>
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <div class="form-floating">
+                <select name="consciousness_level" class="form-select" {{ $dis }}>
+                    @php $consciousness = $formData['consciousness_level'] ?? 'alert'; @endphp
+                    <option value="alert" {{ $consciousness === 'alert' ? 'selected' : '' }}>Alert & Oriented</option>
+                    <option value="drowsy" {{ $consciousness === 'drowsy' ? 'selected' : '' }}>Drowsy</option>
+                    <option value="confused" {{ $consciousness === 'confused' ? 'selected' : '' }}>Confused</option>
+                    <option value="unresponsive" {{ $consciousness === 'unresponsive' ? 'selected' : '' }}>Unresponsive</option>
+                </select>
+                <label>Level of Consciousness</label>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="form-floating">
+                <select name="pupils_reaction" class="form-select" {{ $dis }}>
+                    @php $pupils = $formData['pupils_reaction'] ?? 'equal_reactive'; @endphp
+                    <option value="equal_reactive" {{ $pupils === 'equal_reactive' ? 'selected' : '' }}>Equal & Reactive</option>
+                    <option value="equal_sluggish" {{ $pupils === 'equal_sluggish' ? 'selected' : '' }}>Equal & Sluggish</option>
+                    <option value="unequal" {{ $pupils === 'unequal' ? 'selected' : '' }}>Unequal</option>
+                    <option value="fixed" {{ $pupils === 'fixed' ? 'selected' : '' }}>Fixed</option>
+                </select>
+                <label>Pupil Reaction</label>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="form-floating">
+                <select name="motor_response" class="form-select" {{ $dis }}>
+                    @php $motorResponse = $formData['motor_response'] ?? 'normal'; @endphp
+                    <option value="normal" {{ $motorResponse === 'normal' ? 'selected' : '' }}>Normal Movement</option>
+                    <option value="weakness" {{ $motorResponse === 'weakness' ? 'selected' : '' }}>Weakness</option>
+                    <option value="paralysis" {{ $motorResponse === 'paralysis' ? 'selected' : '' }}>Paralysis</option>
+                    <option value="not_assessed" {{ $motorResponse === 'not_assessed' ? 'selected' : '' }}>Not Assessed</option>
+                </select>
+                <label>Motor Response</label>
+            </div>
+        </div>
+    </div>
+
+    {{-- Nursing Observations --}}
+    <div class="mb-3">
+        <label class="form-label fw-semibold">Nursing Observations</label>
+        <textarea name="nursing_notes" class="form-control" rows="3"
+                  placeholder="General appearance, behavior, comfort level, any concerns" {{ $ro }}>{{ $formData['nursing_notes'] ?? '' }}</textarea>
+    </div>
+
+    {{-- Recording Details --}}
+    <div class="card mt-3">
+        <div class="card-header bg-light">
+            <h6 class="mb-0"><i class="fas fa-check-circle"></i> Recording Details</h6>
+        </div>
+        <div class="card-body">
+            <div class="row g-2 align-items-center">
+                <div class="col-md-6 d-flex align-items-center gap-2">
+                    <label class="form-label mb-0 text-nowrap"><strong>Observation Time:</strong></label>
+                    <input type="datetime-local" class="form-control form-control-sm" name="observation_time"
+                           value="{{ $observationTime }}" {{ $ro }}
+                           style="{{ $isReadOnly ? 'background:#f0f0f0;pointer-events:none;cursor:not-allowed;' : '' }}">
                 </div>
-                @if(!$isReadOnly)
-                    <div>
-                        @if($editMode)
-                            <!-- Edit mode buttons -->
-                            @if($existingData['_result_status'] === 'draft')
-                                <button type="submit" name="action" value="draft" class="btn btn-outline-primary">
-                                    <i class="fas fa-save"></i> Update Draft
-                                </button>
-                                <button type="submit" name="action" value="preliminary" class="btn btn-warning">
-                                    <i class="fas fa-clock"></i> Save as Preliminary
-                                </button>
-                                <button type="submit" name="action" value="final" class="btn btn-success">
-                                    <i class="fas fa-lock"></i> Finalize Results
-                                </button>
-                            @elseif($existingData['_result_status'] === 'preliminary')
-                                <button type="submit" name="action" value="preliminary" class="btn btn-warning">
-                                    <i class="fas fa-save"></i> Update Preliminary
-                                </button>
-                                <button type="submit" name="action" value="final" class="btn btn-success">
-                                    <i class="fas fa-lock"></i> Finalize Results
-                                </button>
-                            @endif
-                        @else
-                            <!-- New result mode buttons -->
-                            <button type="submit" name="action" value="draft" class="btn btn-outline-primary">
-                                <i class="fas fa-save"></i> Save as Draft
-                            </button>
-                            <button type="submit" name="action" value="preliminary" class="btn btn-warning">
-                                <i class="fas fa-clock"></i> Submit as Preliminary
-                            </button>
-                            <button type="submit" name="action" value="final" class="btn btn-success">
-                                <i class="fas fa-check-circle"></i> Submit Final Results
-                            </button>
-                        @endif
-                    </div>
-                @else
-                    <div>
-                        <span class="badge bg-success fs-6">
-                            <i class="fas fa-lock"></i> Results Finalized
-                        </span>
-                        @if(isset($existingData['_updated_at']))
-                            <small class="text-muted ms-2">
-                                Finalized: {{ \Carbon\Carbon::parse($existingData['_updated_at'])->format('M d, Y H:i') }}
-                            </small>
-                        @endif
-                    </div>
-                @endif
+                <div class="col-md-6 d-flex align-items-center gap-2">
+                    <label class="form-label mb-0 text-nowrap"><strong>Recorded By:</strong></label>
+                    <input type="text" class="form-control form-control-sm" name="observer_name"
+                           value="{{ $observerName }}" readonly
+                           style="background:#f0f0f0;pointer-events:none;cursor:not-allowed;">
+                </div>
             </div>
         </div>
     </div>
-</form>
-@else
-    <div class="alert alert-danger">
-        <i class="fas fa-exclamation-triangle"></i>
-        Error: Investigation not found. Please return to the procedures list and try again.
+
+    @if(!$isReadOnly)
+    {{-- Switch to a different result template --}}
+    <div class="card mt-3 border-dashed">
+        <div class="card-body py-2">
+            <div class="row g-2 align-items-center">
+                <div class="col-md-6 d-flex align-items-center gap-2">
+                    <label class="form-label mb-0 text-nowrap">
+                        <i class="fas fa-exchange-alt text-muted"></i> Need a different result form?
+                    </label>
+                    <select id="vital_observations_template_switch" class="form-select form-select-sm" style="width:auto; min-width:220px">
+                        <option value="">— Switch template —</option>
+                        @foreach($switchTemplates as $t)
+                            <option value="{{ $t->code }}">{{ $t->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+        </div>
     </div>
-@endif
+
+    <script>
+        (function() {
+            var switcher = document.getElementById('vital_observations_template_switch');
+            if (switcher) {
+                switcher.addEventListener('change', function() {
+                    if (this.value && typeof loadResultTemplate === 'function') {
+                        loadResultTemplate(this.value);
+                    }
+                });
+            }
+        })();
+    </script>
+    @endif
+
+</div>
+
+<script>
+    function vitalObsCalculateBMI() {
+        var weightInput = document.getElementById('vo_weight');
+        var heightInput = document.getElementById('vo_height');
+        var bmiInput = document.getElementById('vo_bmi');
+        var bmiCategoryInput = document.getElementById('vo_bmi_category');
+        if (!weightInput || !heightInput || !bmiInput || !bmiCategoryInput) return;
+
+        var weight = parseFloat(weightInput.value) || 0;
+        var height = parseFloat(heightInput.value) || 0;
+
+        if (weight > 0 && height > 0) {
+            var heightInMeters = height / 100;
+            var bmi = weight / (heightInMeters * heightInMeters);
+            bmiInput.value = bmi.toFixed(1);
+
+            var category;
+            if (bmi < 18.5) category = 'Underweight';
+            else if (bmi < 25) category = 'Normal weight';
+            else if (bmi < 30) category = 'Overweight';
+            else category = 'Obesity';
+
+            bmiCategoryInput.value = category;
+        }
+    }
+</script>

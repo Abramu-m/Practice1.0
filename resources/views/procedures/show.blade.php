@@ -348,26 +348,6 @@ function addDynamicField(containerId, fieldName) {
     container.appendChild(newField);
 }
 
-function calculateBMI() {
-    const weight = parseFloat(document.getElementById('weight').value) || 0;
-    const height = parseFloat(document.getElementById('height').value) || 0;
-    
-    if (weight > 0 && height > 0) {
-        const heightInMeters = height / 100;
-        const bmi = weight / (heightInMeters * heightInMeters);
-        document.getElementById('bmi').value = bmi.toFixed(1);
-        
-        // BMI Category
-        let category = '';
-        if (bmi < 18.5) category = 'Underweight';
-        else if (bmi < 25) category = 'Normal weight';
-        else if (bmi < 30) category = 'Overweight';
-        else category = 'Obesity';
-        
-        document.getElementById('bmi_category').value = category;
-    }
-}
-
 // Auto-save functionality removed to prevent CSRF token conflicts
 // Users can manually save drafts using the Save as Draft button
 

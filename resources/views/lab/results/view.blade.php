@@ -84,6 +84,7 @@
                 $isNarrative = $templateCode === 'narrative_lab';
                 $isCd4 = $templateCode === 'cd4';
                 $isGeneral = $templateCode === 'general';
+                $isVitalObservations = $templateCode === 'vital_observations';
             @endphp
             @if($isNarrative)
                 {{-- Narrative / free-text result --}}
@@ -383,6 +384,14 @@
             @elseif($isGeneral)
                 <div class="p-3">
                     @include('lab.result_templates.general', [
+                        'existingData'  => $result->form_data,
+                        'investigation' => $result->investigation,
+                        'isReadOnly'    => true,
+                    ])
+                </div>
+            @elseif($isVitalObservations)
+                <div class="p-3">
+                    @include('lab.result_templates.vital_observations', [
                         'existingData'  => $result->form_data,
                         'investigation' => $result->investigation,
                         'isReadOnly'    => true,
