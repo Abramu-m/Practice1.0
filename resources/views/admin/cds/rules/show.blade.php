@@ -285,20 +285,6 @@
                         </div>
                     </div>
 
-                    @if($rule->effective_from)
-                        <div class="mb-3">
-                            <small class="text-uppercase text-muted fw-bold">Effective From</small>
-                            <div>{{ $rule->effective_from->format('M j, Y g:i A') }}</div>
-                        </div>
-                    @endif
-
-                    @if($rule->effective_until)
-                        <div class="mb-3">
-                            <small class="text-uppercase text-muted fw-bold">Effective Until</small>
-                            <div>{{ $rule->effective_until->format('M j, Y g:i A') }}</div>
-                        </div>
-                    @endif
-
                     <hr>
 
                     <div class="mb-3">

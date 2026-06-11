@@ -29,7 +29,7 @@ class CdsRuleCache
     public function clearRuleCache(): void
     {
         // Clear all rule type caches
-        $ruleTypes = ['allergy', 'duplicate', 'dose_range', 'formulary', 'interactions'];
+        $ruleTypes = ['allergy', 'duplicate', 'dose_range', 'renal_dose', 'formulary', 'interactions', 'lab_critical'];
         
         foreach ($ruleTypes as $ruleType) {
             $this->clearRuleTypeCache($ruleType);
@@ -43,7 +43,7 @@ class CdsRuleCache
 
     public function warmupCache(): void
     {
-        $ruleTypes = ['allergy', 'duplicate', 'dose_range', 'formulary', 'interactions'];
+        $ruleTypes = ['allergy', 'duplicate', 'dose_range', 'renal_dose', 'formulary', 'interactions', 'lab_critical'];
         
         foreach ($ruleTypes as $ruleType) {
             $this->getActiveRulesByType($ruleType);

@@ -11,6 +11,8 @@ use App\Models\ServiceCategory;
 use App\Models\Patient;
 use App\Models\Doctor;
 use App\Models\ResultTemplate;
+use App\Events\LabResultRecorded;
+use App\Services\CDS\ResultParameterCatalog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -328,6 +330,20 @@ class LabController extends Controller
                 }
             }
 
+            // Row-based templates (full_blood_picture, urinalysis, single_numeric_lab) submit
+            // parameters[i][parameter_name|value|unit|normal_range|status|remarks]
+            if ($request->has('parameters')) {
+                $templateData['parameters'] = $request->input('parameters');
+            }
+
+            // Direct-field templates (e.g. vital_observations) submit one input per parameter key
+            $parameterCatalog = app(ResultParameterCatalog::class);
+            foreach ($parameterCatalog->definitionsForTemplateCode($templateCode) as $definition) {
+                if ($request->has($definition['key']) && !array_key_exists($definition['key'], $templateData)) {
+                    $templateData[$definition['key']] = $request->input($definition['key']);
+                }
+            }
+
             // Store the template-based result (update if one already exists for this investigation)
             $result = InvestigationTemplateResult::updateOrCreate(
                 ['investigation_id' => $investigation->id],
@@ -360,6 +376,24 @@ class LabController extends Controller
             ]);
 
             DB::commit();
+
+            if ($request->action !== 'draft') {
+                $normalizedParameters = $parameterCatalog->normalize($templateCode, $templateData, $investigation->medicalService);
+
+                event(new LabResultRecorded(
+                    $investigation->patient_id,
+                    $investigation->visit_id ?? ($investigation->consultation->visit->id ?? null),
+                    $investigation->id,
+                    ['parameters' => $normalizedParameters],
+                    [
+                        'medical_service_id' => $investigation->medical_service_id,
+                        'medical_service_name' => $investigation->medicalService->name ?? null,
+                        'unit' => $investigation->medicalService->unit ?? null,
+                        'min_value' => $investigation->medicalService->min_value ?? null,
+                        'max_value' => $investigation->medicalService->max_value ?? null,
+                    ]
+                ));
+            }
 
             $message = match($request->action) {
                 'draft' => 'Results saved as draft successfully',

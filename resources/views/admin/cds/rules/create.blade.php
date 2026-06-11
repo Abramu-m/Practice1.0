@@ -55,11 +55,11 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="rule_type_id">Rule Type <span class="text-danger">*</span></label>
-                                    <select class="form-control @error('rule_type_id') is-invalid @enderror" 
+                                    <select class="form-control @error('rule_type_id') is-invalid @enderror"
                                             id="rule_type_id" name="rule_type_id" required>
                                         <option value="">Select Rule Type</option>
                                         @foreach($ruleTypes as $type)
-                                            <option value="{{ $type->id }}" {{ old('rule_type_id') == $type->id ? 'selected' : '' }}>
+                                            <option value="{{ $type->id }}" data-rule-type-name="{{ $type->name }}" {{ old('rule_type_id') == $type->id ? 'selected' : '' }}>
                                                 {{ $type->display_name }} ({{ $type->category->name }})
                                             </option>
                                         @endforeach
@@ -82,11 +82,12 @@
                 </div>
 
                 <!-- Rule Conditions -->
-                <div class="card mt-3">
+                <div class="card mt-3" id="generic-conditions-section">
                     <div class="card-header">
                         <h5 class="card-title mb-0">🎯 Rule Conditions</h5>
                     </div>
                     <div class="card-body">
+                        <p class="text-muted small">These are the checks evaluated automatically. If all conditions match, the rule fires.</p>
                         <div id="conditions-container">
                             <div class="condition-group" data-index="0">
                                 <div class="row">
@@ -102,18 +103,33 @@
                                             <option value="allergy_history">Allergy History</option>
                                         </select>
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-2">
                                         <label>Operator</label>
                                         <select class="form-control" name="conditions[0][operator]">
                                             <option value="equals">Equals</option>
+                                            <option value="not_equals">Not Equals</option>
                                             <option value="contains">Contains</option>
+                                            <option value="not_contains">Not Contains</option>
                                             <option value="greater_than">Greater Than</option>
                                             <option value="less_than">Less Than</option>
-                                            <option value="between">Between</option>
+                                            <option value="greater_equal">Greater or Equal</option>
+                                            <option value="less_equal">Less or Equal</option>
                                             <option value="in">In List</option>
+                                            <option value="not_in">Not In List</option>
                                         </select>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-2">
+                                        <label>Value Type</label>
+                                        <select class="form-control" name="conditions[0][value_type]">
+                                            <option value="string">String</option>
+                                            <option value="integer">Integer</option>
+                                            <option value="float">Float</option>
+                                            <option value="boolean">Boolean</option>
+                                            <option value="array">Array</option>
+                                            <option value="json">JSON</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
                                         <label>Value</label>
                                         <input type="text" class="form-control" name="conditions[0][value]" placeholder="Enter value">
                                     </div>
@@ -126,45 +142,93 @@
                                 <hr class="my-3">
                             </div>
                         </div>
-                        
+
                         <button type="button" class="btn btn-outline-primary btn-sm" id="add-condition">
                             <i class="fas fa-plus"></i> Add Condition
                         </button>
                     </div>
                 </div>
 
-                <!-- Rule Parameters -->
-                <div class="card mt-3">
+                <!-- Lab Critical Value Builder -->
+                <div class="card mt-3" id="lab-critical-section" style="display:none;">
                     <div class="card-header">
-                        <h5 class="card-title mb-0">⚙️ Rule Parameters</h5>
+                        <h5 class="card-title mb-0">🧪 Lab Critical Value</h5>
                     </div>
                     <div class="card-body">
-                        <div id="parameters-container">
-                            <div class="parameter-group" data-index="0">
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <label>Parameter Name</label>
-                                        <input type="text" class="form-control" name="parameters[0][name]" placeholder="e.g., max_dose">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label>Value</label>
-                                        <input type="text" class="form-control" name="parameters[0][value]" placeholder="Parameter value">
-                                    </div>
-                                    <div class="col-md-2 align-self-end">
-                                        <button type="button" class="btn btn-outline-danger btn-sm remove-parameter" disabled>
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </div>
+                        <p class="text-muted small">Pick the lab test and the result parameter to monitor. The rule fires when that parameter crosses the threshold for this exact test.</p>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label>Lab Test</label>
+                                    <select class="form-control" id="lab_test_picker"></select>
+                                    <input type="hidden" name="lab_medical_service_id" id="lab_medical_service_id">
                                 </div>
-                                <hr class="my-3">
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label>Parameter</label>
+                                    <select class="form-control" name="lab_parameter_key" id="lab_parameter_key" disabled>
+                                        <option value="">Select a lab test first</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
-                        
-                        <button type="button" class="btn btn-outline-primary btn-sm" id="add-parameter">
-                            <i class="fas fa-plus"></i> Add Parameter
-                        </button>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label>Operator</label>
+                                    <select class="form-control" name="lab_operator" id="lab_operator">
+                                        <option value="less_than">Less than (&lt;)</option>
+                                        <option value="less_equal">Less than or equal (&le;)</option>
+                                        <option value="greater_than">Greater than (&gt;)</option>
+                                        <option value="greater_equal">Greater than or equal (&ge;)</option>
+                                        <option value="equals">Equals (=)</option>
+                                        <option value="not_equals">Not equals (&ne;)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label>Threshold</label>
+                                    <input type="number" step="any" class="form-control" name="lab_threshold" id="lab_threshold" placeholder="e.g., 7">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label>Unit</label>
+                                    <input type="text" class="form-control" id="lab_parameter_unit" readonly placeholder="—">
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
+
+                <!-- Alert Content -->
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">💬 Alert Content (shown to clinician)</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted small">This is the message and recommendation the clinician will see when this rule fires. It is <strong>not</strong> evaluated &mdash; see Conditions above for what triggers the alert.</p>
+                        <div class="mb-3">
+                            <label for="alert_message">Alert Message</label>
+                            <textarea class="form-control @error('alert_message') is-invalid @enderror"
+                                      id="alert_message" name="alert_message" rows="2">{{ old('alert_message') }}</textarea>
+                            @error('alert_message')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="mb-3">
+                            <label for="recommendation">Recommendation / Clinical Guidance</label>
+                            <textarea class="form-control @error('recommendation') is-invalid @enderror"
+                                      id="recommendation" name="recommendation" rows="3">{{ old('recommendation') }}</textarea>
+                            @error('recommendation')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
             <!-- Settings Sidebar -->
@@ -198,35 +262,11 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="message">Alert Message</label>
-                            <textarea class="form-control @error('message') is-invalid @enderror" 
-                                      id="message" name="message" rows="3">{{ old('message') }}</textarea>
-                            <small class="form-text text-muted">Message to display when rule is triggered</small>
-                            @error('message')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="mb-3">
                             <div class="custom-control custom-switch">
-                                <input type="checkbox" class="custom-control-input" id="is_active" name="is_active" 
+                                <input type="checkbox" class="custom-control-input" id="is_active" name="is_active"
                                        {{ old('is_active', true) ? 'checked' : '' }}>
                                 <label class="custom-control-label" for="is_active">Active</label>
                             </div>
-                        </div>
-
-                        <hr>
-
-                        <div class="mb-3">
-                            <label for="effective_from">Effective From</label>
-                            <input type="datetime-local" class="form-control" id="effective_from" name="effective_from" 
-                                   value="{{ old('effective_from') }}">
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="effective_until">Effective Until</label>
-                            <input type="datetime-local" class="form-control" id="effective_until" name="effective_until" 
-                                   value="{{ old('effective_until') }}">
                         </div>
                     </div>
                 </div>
@@ -256,7 +296,6 @@
 @push('scripts')
 <script>
 let conditionIndex = 1;
-let parameterIndex = 1;
 
 $(document).ready(function() {
     // Update category display when rule type changes
@@ -266,6 +305,70 @@ $(document).ready(function() {
         const categoryMatch = text.match(/\(([^)]+)\)$/);
         const category = categoryMatch ? categoryMatch[1] : '';
         $('#category_display').val(category);
+    });
+
+    // Show the Lab Critical Value builder instead of the generic conditions
+    // builder when "Lab Critical Value" is selected as the rule type.
+    function toggleRuleTypeSections() {
+        const ruleTypeName = $('#rule_type_id').find('option:selected').data('rule-type-name');
+        if (ruleTypeName === 'lab_critical') {
+            $('#generic-conditions-section').hide();
+            $('#lab-critical-section').show();
+        } else {
+            $('#generic-conditions-section').show();
+            $('#lab-critical-section').hide();
+        }
+    }
+    $('#rule_type_id').on('change', toggleRuleTypeSections);
+    toggleRuleTypeSections();
+
+    // Lab Test picker (Select2 AJAX, reuses /api/medical-services/search)
+    $('#lab_test_picker').select2({
+        placeholder: 'Search lab test…',
+        minimumInputLength: 2,
+        ajax: {
+            url: '/api/medical-services/search',
+            dataType: 'json',
+            data: params => ({ query: params.term, lab_only: true, limit: 20 }),
+            processResults: res => ({
+                results: (res.data || []).map(s => ({ id: s.id, text: s.name }))
+            })
+        }
+    });
+
+    // When a lab test is picked, lock its medical_service_id and load the
+    // constrained parameter list for that test's result template.
+    $('#lab_test_picker').on('change', function() {
+        const serviceId = $(this).val();
+        const $paramSelect = $('#lab_parameter_key');
+        $('#lab_medical_service_id').val(serviceId || '');
+        $('#lab_parameter_unit').val('');
+
+        if (!serviceId) {
+            $paramSelect.html('<option value="">Select a lab test first</option>').prop('disabled', true);
+            return;
+        }
+
+        $paramSelect.html('<option value="">Loading…</option>').prop('disabled', true);
+
+        $.getJSON('{{ route('admin.cds.rules.lab-parameters') }}', { medical_service_id: serviceId })
+            .done(function(response) {
+                const params = response.parameters || [];
+                if (params.length === 0) {
+                    $paramSelect.html('<option value="">No parameters available for this test</option>');
+                    return;
+                }
+                let options = '<option value="">Select Parameter</option>';
+                params.forEach(p => {
+                    options += `<option value="${p.key}" data-unit="${p.unit ?? ''}">${p.label}${p.unit ? ' (' + p.unit + ')' : ''}</option>`;
+                });
+                $paramSelect.html(options).prop('disabled', false);
+            });
+    });
+
+    // Reflect the selected parameter's unit next to the threshold input
+    $('#lab_parameter_key').on('change', function() {
+        $('#lab_parameter_unit').val($(this).find('option:selected').data('unit') || '');
     });
 
     // Add condition
@@ -285,18 +388,33 @@ $(document).ready(function() {
                             <option value="allergy_history">Allergy History</option>
                         </select>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <label>Operator</label>
                         <select class="form-control" name="conditions[${conditionIndex}][operator]">
                             <option value="equals">Equals</option>
+                            <option value="not_equals">Not Equals</option>
                             <option value="contains">Contains</option>
+                            <option value="not_contains">Not Contains</option>
                             <option value="greater_than">Greater Than</option>
                             <option value="less_than">Less Than</option>
-                            <option value="between">Between</option>
+                            <option value="greater_equal">Greater or Equal</option>
+                            <option value="less_equal">Less or Equal</option>
                             <option value="in">In List</option>
+                            <option value="not_in">Not In List</option>
                         </select>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-2">
+                        <label>Value Type</label>
+                        <select class="form-control" name="conditions[${conditionIndex}][value_type]">
+                            <option value="string">String</option>
+                            <option value="integer">Integer</option>
+                            <option value="float">Float</option>
+                            <option value="boolean">Boolean</option>
+                            <option value="array">Array</option>
+                            <option value="json">JSON</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
                         <label>Value</label>
                         <input type="text" class="form-control" name="conditions[${conditionIndex}][value]" placeholder="Enter value">
                     </div>
@@ -308,37 +426,10 @@ $(document).ready(function() {
                 </div>
                 <hr class="my-3">
             </div>`;
-        
+
         $('#conditions-container').append(conditionHtml);
         updateRemoveButtons();
         conditionIndex++;
-    });
-
-    // Add parameter
-    $('#add-parameter').click(function() {
-        const parameterHtml = `
-            <div class="parameter-group" data-index="${parameterIndex}">
-                <div class="row">
-                    <div class="col-md-4">
-                        <label>Parameter Name</label>
-                        <input type="text" class="form-control" name="parameters[${parameterIndex}][name]" placeholder="e.g., max_dose">
-                    </div>
-                    <div class="col-md-6">
-                        <label>Value</label>
-                        <input type="text" class="form-control" name="parameters[${parameterIndex}][value]" placeholder="Parameter value">
-                    </div>
-                    <div class="col-md-2 align-self-end">
-                        <button type="button" class="btn btn-outline-danger btn-sm remove-parameter">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </div>
-                <hr class="my-3">
-            </div>`;
-        
-        $('#parameters-container').append(parameterHtml);
-        updateRemoveButtons();
-        parameterIndex++;
     });
 
     // Remove condition
@@ -347,15 +438,8 @@ $(document).ready(function() {
         updateRemoveButtons();
     });
 
-    // Remove parameter
-    $(document).on('click', '.remove-parameter', function() {
-        $(this).closest('.parameter-group').remove();
-        updateRemoveButtons();
-    });
-
     function updateRemoveButtons() {
         $('.remove-condition').prop('disabled', $('.condition-group').length <= 1);
-        $('.remove-parameter').prop('disabled', $('.parameter-group').length <= 1);
     }
 });
 

@@ -6,6 +6,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Event;
 use App\Listeners\DispatchCdsChecks;
 use App\Events\MedicationPrescribed;
+use App\Events\LabResultRecorded;
 
 class CdsServiceProvider extends ServiceProvider
 {
@@ -19,6 +20,11 @@ class CdsServiceProvider extends ServiceProvider
         // Register event listeners for CDS
         Event::listen(
             MedicationPrescribed::class,
+            [DispatchCdsChecks::class, 'handle']
+        );
+
+        Event::listen(
+            LabResultRecorded::class,
             [DispatchCdsChecks::class, 'handle']
         );
     }

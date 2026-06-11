@@ -943,6 +943,10 @@ Route::middleware(['auth', 'verified', 'facility_setup'])->prefix('admin/cds')->
     Route::post('/test-patients/{patient}', [App\Http\Controllers\Admin\CdsTestPatientsController::class, 'update'])
         ->name('test-patients.update');
 
+    // Lab Critical Value rule builder: parameter list for a picked medical service
+    Route::get('/rules/lab-parameters', [App\Http\Controllers\Admin\CdsRuleController::class, 'labParameters'])
+        ->name('rules.lab-parameters');
+
     // CDS Rules Management
     Route::resource('rules', App\Http\Controllers\Admin\CdsRuleController::class);
     

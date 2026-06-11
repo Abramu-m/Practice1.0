@@ -6,12 +6,15 @@ use App\Http\Controllers\Controller;
 use App\Models\CdsRule;
 use App\Models\CdsRuleType;
 use App\Models\CdsRuleCategory;
+use App\Models\CdsRuleCondition;
+use App\Models\CdsRuleParameter;
 use App\Models\CdsDosageLimit;
 use App\Models\Patient;
 use App\Models\Medication;
 use App\Models\VitalSigns;
 use App\Services\CDS\Calculators\EgfrCalculator;
 use App\Services\CDS\CdsRuleCache;
+use App\Services\CDS\ResultParameterCatalog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -102,18 +105,20 @@ class CdsRuleController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'rule_type_id' => 'required|exists:cds_rule_types,id',
-            'name' => 'required|string|max:200',
-            'description' => 'nullable|string',
-            'priority' => 'required|integer|between:1,10',
-            'severity' => 'required|in:info,warning,critical',
-            'is_active' => 'boolean',
-        ]);
+        $validated = $request->validate($this->ruleValidationRules());
 
         $validated['is_active'] = $request->has('is_active');
 
-        $rule = CdsRule::create($validated);
+        $rule = CdsRule::create([
+            'rule_type_id' => $validated['rule_type_id'],
+            'name' => $validated['name'],
+            'description' => $validated['description'] ?? null,
+            'priority' => $validated['priority'],
+            'severity' => $validated['severity'],
+            'is_active' => $validated['is_active'],
+        ]);
+
+        $this->persistConditionsAndParameters($rule, $request);
 
         // Clear cache for this rule type
         $ruleType = $rule->ruleType;
@@ -122,6 +127,132 @@ class CdsRuleController extends Controller
         return redirect()
             ->route('admin.cds.rules.index')
             ->with('success', 'CDS Rule created successfully');
+    }
+
+    /**
+     * Shared validation rules for store()/update().
+     */
+    private function ruleValidationRules(bool $requireRuleType = true): array
+    {
+        return [
+            'rule_type_id' => ($requireRuleType ? 'required' : 'nullable') . '|exists:cds_rule_types,id',
+            'name' => 'required|string|max:200',
+            'description' => 'nullable|string',
+            'priority' => 'required|integer|between:1,10',
+            'severity' => 'required|in:info,warning,critical',
+            'is_active' => 'boolean',
+            'alert_message' => 'nullable|string',
+            'recommendation' => 'nullable|string',
+            'conditions' => 'nullable|array',
+            'conditions.*.field' => 'nullable|string|max:100',
+            'conditions.*.operator' => 'nullable|in:equals,not_equals,contains,not_contains,greater_than,less_than,greater_equal,less_equal,in,not_in,regex',
+            'conditions.*.value' => 'nullable|string',
+            'conditions.*.value_type' => 'nullable|in:string,integer,float,boolean,array,json',
+            'lab_medical_service_id' => 'nullable|integer|exists:medical_services,id',
+            'lab_parameter_key' => 'nullable|string|max:100',
+            'lab_operator' => 'nullable|in:equals,not_equals,greater_than,less_than,greater_equal,less_equal',
+            'lab_threshold' => 'nullable|numeric',
+        ];
+    }
+
+    /**
+     * Persist conditions/parameters/alert-content for a rule, full-replace style.
+     * For "lab_critical" rules, conditions are built from the locked lab picker
+     * fields instead of the generic conditions[] array.
+     */
+    private function persistConditionsAndParameters(CdsRule $rule, Request $request): void
+    {
+        $rule->conditions()->delete();
+        $rule->parameters()->delete();
+
+        if ($rule->ruleType->name === 'lab_critical') {
+            $this->persistLabCriticalConditions($rule, $request);
+        } else {
+            foreach ($request->input('conditions', []) as $index => $condition) {
+                if (empty($condition['field']) || empty($condition['operator'])) {
+                    continue;
+                }
+
+                CdsRuleCondition::create([
+                    'rule_id' => $rule->id,
+                    'field_name' => $condition['field'],
+                    'operator' => $condition['operator'],
+                    'value' => $condition['value'] ?? '',
+                    'value_type' => $condition['value_type'] ?? 'string',
+                    'logical_operator' => $condition['logical_operator'] ?? 'AND',
+                    'sort_order' => $index,
+                    'is_active' => true,
+                ]);
+            }
+        }
+
+        foreach (['alert_message', 'recommendation'] as $reserved) {
+            $value = $request->input($reserved);
+            if ($value !== null && $value !== '') {
+                CdsRuleParameter::create([
+                    'rule_id' => $rule->id,
+                    'parameter_name' => $reserved,
+                    'parameter_value' => $value,
+                    'parameter_type' => 'general',
+                ]);
+            }
+        }
+    }
+
+    /**
+     * Build the two locked conditions for a "Lab Critical Value" rule:
+     * (1) investigation.medical_service_id equals <picked test>
+     * (2) result.parameters.<picked parameter> <operator> <threshold>
+     */
+    private function persistLabCriticalConditions(CdsRule $rule, Request $request): void
+    {
+        $serviceId = $request->input('lab_medical_service_id');
+        $parameterKey = $request->input('lab_parameter_key');
+        $operator = $request->input('lab_operator');
+        $threshold = $request->input('lab_threshold');
+
+        if (!$serviceId || !$parameterKey || !$operator || $threshold === null || $threshold === '') {
+            return;
+        }
+
+        CdsRuleCondition::create([
+            'rule_id' => $rule->id,
+            'field_name' => 'investigation.medical_service_id',
+            'operator' => 'equals',
+            'value' => $serviceId,
+            'value_type' => 'integer',
+            'logical_operator' => 'AND',
+            'sort_order' => 0,
+            'is_active' => true,
+        ]);
+
+        CdsRuleCondition::create([
+            'rule_id' => $rule->id,
+            'field_name' => "result.parameters.{$parameterKey}",
+            'operator' => $operator,
+            'value' => $threshold,
+            'value_type' => 'float',
+            'logical_operator' => 'AND',
+            'sort_order' => 1,
+            'is_active' => true,
+        ]);
+    }
+
+    /**
+     * Returns the constrained {key, label, unit} parameter list for a medical
+     * service's result template, used by the Lab Critical builder's parameter picker.
+     */
+    public function labParameters(Request $request)
+    {
+        $request->validate([
+            'medical_service_id' => 'required|integer|exists:medical_services,id',
+        ]);
+
+        $catalog = app(ResultParameterCatalog::class);
+
+        return response()->json([
+            'parameters' => $catalog->forMedicalService((int) $request->input('medical_service_id')),
+        ]);
     }
 
     public function show(CdsRule $rule)
@@ -133,25 +264,59 @@ class CdsRuleController extends Controller
 
     public function edit(CdsRule $rule)
     {
-        $rule->load(['ruleType.category']);
+        $rule->load(['ruleType.category', 'conditions', 'parameters']);
         $ruleTypes = CdsRuleType::with('category')->active()->get();
-        
-        return view('admin.cds.rules.edit', compact('rule', 'ruleTypes'));
+
+        $labCritical = null;
+        if ($rule->ruleType->name === 'lab_critical') {
+            $serviceCondition = $rule->conditions->firstWhere('field_name', 'investigation.medical_service_id');
+            $paramCondition = $rule->conditions->first(
+                fn($c) => str_starts_with($c->field_name, 'result.parameters.')
+            );
+
+            if ($serviceCondition) {
+                $service = \App\Models\MedicalService::find($serviceCondition->value);
+
+                $labCritical = [
+                    'medical_service_id' => $serviceCondition->value,
+                    'medical_service_name' => $service->name ?? '',
+                    'parameter_key' => $paramCondition
+                        ? str_replace('result.parameters.', '', $paramCondition->field_name)
+                        : null,
+                    'operator' => $paramCondition->operator ?? 'less_than',
+                    'threshold' => $paramCondition?->getTypedValue(),
+                    'parameters' => $service
+                        ? app(ResultParameterCatalog::class)->forMedicalService($service->id)
+                        : [],
+                ];
+            }
+        }
+
+        $conditionsForDisplay = old('conditions', $rule->conditions->map(fn($c) => [
+            'field' => $c->field_name,
+            'operator' => $c->operator,
+            'value' => $c->value,
+            'value_type' => $c->value_type,
+        ])->toArray());
+
+        return view('admin.cds.rules.edit', compact('rule', 'ruleTypes', 'labCritical', 'conditionsForDisplay'));
     }
 
     public function update(Request $request, CdsRule $rule)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:200',
-            'description' => 'nullable|string',
-            'priority' => 'required|integer|between:1,10',
-            'severity' => 'required|in:info,warning,critical',
-            'is_active' => 'boolean',
-        ]);
+        $validated = $request->validate($this->ruleValidationRules(false));
 
         $validated['is_active'] = $request->has('is_active');
 
-        $rule->update($validated);
+        $rule->update([
+            'name' => $validated['name'],
+            'description' => $validated['description'] ?? null,
+            'priority' => $validated['priority'],
+            'severity' => $validated['severity'],
+            'is_active' => $validated['is_active'],
+        ]);
+
+        $this->persistConditionsAndParameters($rule, $request);
 
         // Clear cache for this rule type
         $this->ruleCache->clearRuleTypeCache($rule->ruleType->name);

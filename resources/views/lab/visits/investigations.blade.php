@@ -36,6 +36,9 @@
         </div>
     </div>
 
+    <!-- CDS Alerts -->
+    <x-cds.drawer :alerts="app(\App\Services\CDS\CdsAlertService::class)->forVisit($visit->id)" />
+
     <!-- Navigation -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
@@ -297,6 +300,39 @@
 
 @section('scripts')
 <script>
+function ackCdsAlert(alertId, action) {
+    const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    fetch(`/cds-alerts/${alertId}/ack`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': token },
+        body: JSON.stringify({ action })
+    }).then(r => r.json()).then((res) => {
+        if (res.success) {
+            try { toastr.success('Alert ' + action + 'ed successfully'); } catch (e) {}
+            const alertElement = document.querySelector(`[data-alert-id="${alertId}"]`);
+            if (alertElement) alertElement.remove();
+        }
+    });
+}
+
+function ackCdsAlertWithReason(alertId, action) {
+    const reason = prompt('Provide override reason (optional):');
+    if (reason === null) return; // User cancelled
+
+    const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    fetch(`/cds-alerts/${alertId}/ack`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': token },
+        body: JSON.stringify({ action, reason })
+    }).then(r => r.json()).then((res) => {
+        if (res.success) {
+            try { toastr.success('Override recorded successfully'); } catch (e) {}
+            const alertElement = document.querySelector(`[data-alert-id="${alertId}"]`);
+            if (alertElement) alertElement.remove();
+        }
+    });
+}
+
 function updateInvestigationStatus(investigationId, status) {
     // Set modal values
     document.getElementById('investigation_id').value = investigationId;

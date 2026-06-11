@@ -10,13 +10,51 @@ use App\Models\Prescription;
 use App\Models\Investigation;
 use App\Models\VitalSigns;
 use App\Models\PatientVisit;
-use App\Models\Medication;
-use App\Models\MedicalService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class CdsTestPatientsSeeder extends Seeder
 {
+    /**
+     * Medication IDs in this installation's formulary, keyed by a descriptive
+     * slug. Looked up by exact generic_name match against medications table
+     * (generic_name includes the dosage, e.g. "Amlodipine 5 mg") so the bare
+     * class names used previously (e.g. "Amlodipine") never matched.
+     *
+     *   id=11  Amlodipine 5 mg
+     *   id=20  Acetylsalicylic acid 75 mg (ASA 75/Aspirin junior)
+     *   id=22  Atenolol 25 mg            (substitute: Bisoprolol not in formulary)
+     *   id=31  Calcium Carbonate 420 mg
+     *   id=45  Cotrimoxazole 480 mg (Trimethoprim 80 mg, Sulphamethoxazole 400 mg)
+     *   id=48  Diclofenac 50 mg
+     *   id=66  Furosemide (Frusemide) 40 mg
+     *   id=78  Ibuprofen 200 mg
+     *   id=105 Metformin 500 mg
+     *   id=112 Naproxen 500 mg
+     *   id=125 Penicillin 250 mg (Pen V) (substitute: Benzyl Penicillin not in formulary)
+     *   id=151 Tramadol 50 mg
+     *   id=256 Salbutamol inhaler
+     *   id=534 Artemether + Lumefantrine (ALU) 18 tabs
+     *   id=757 Amoxicillin Dispersible Tablets 250 mg
+     */
+    private const MED = [
+        'amlodipine'   => 11,
+        'aspirin'      => 20,
+        'atenolol'     => 22,
+        'calcium_carb' => 31,
+        'cotrimoxazole'=> 45,
+        'diclofenac'   => 48,
+        'furosemide'   => 66,
+        'ibuprofen'    => 78,
+        'metformin'    => 105,
+        'naproxen'     => 112,
+        'penicillin'   => 125,
+        'tramadol'     => 151,
+        'salbutamol'   => 256,
+        'artemether_lumefantrine' => 534,
+        'amoxicillin'  => 757,
+    ];
+
     /**
      * Seed three CDS test patients:
      *  1. Child  – 10 yrs, penicillin allergy
@@ -35,12 +73,6 @@ class CdsTestPatientsSeeder extends Seeder
 
     private function doSeed(): void
     {
-        // Pre-load medication IDs keyed by generic_name for quick lookup.
-        // Falls back to null (substance_name still stored as text) if not found.
-        $medMap = Medication::pluck('id', 'generic_name');
-
-        /** Helper: look up medication_id by generic_name */
-        $medId = fn(string $name): ?int => $medMap->get($name) ? (int) $medMap->get($name) : null;
 
         // ------------------------------------------------------------------ //
         // Patient 1 – Child (10 years old)
@@ -68,7 +100,7 @@ class CdsTestPatientsSeeder extends Seeder
         Allergy::updateOrCreate(
             ['patient_id' => $child->id, 'substance_name' => 'Benzyl Penicillin'],
             [
-                'medication_id' => $medId('Benzyl Penicillin'),
+                'medication_id' => self::MED['penicillin'],
                 'reaction'    => 'Anaphylaxis – severe breathing difficulty and urticaria',
                 'severity'    => 'severe',
                 'is_active'   => true,
@@ -78,7 +110,7 @@ class CdsTestPatientsSeeder extends Seeder
         Allergy::updateOrCreate(
             ['patient_id' => $child->id, 'substance_name' => 'Amoxicillin'],
             [
-                'medication_id' => $medId('Amoxicillin'),
+                'medication_id' => self::MED['amoxicillin'],
                 'reaction'    => 'Rash and facial swelling (cross-reactive with penicillin)',
                 'severity'    => 'moderate',
                 'is_active'   => true,
@@ -115,11 +147,11 @@ class CdsTestPatientsSeeder extends Seeder
         ]);
 
         // Active prescriptions – used to trigger duplicate-therapy CDS alerts
-        $this->seedPrescriptions($child->id, $medId, [
+        $this->seedPrescriptions($child->id, [
             // Salbutamol inhaler (ongoing asthma relief)
-            ['name' => 'Salbutamol',                        'dosage' => '100 mcg',  'instructions' => '2 puffs PRN, max 4×/day'],
+            ['med' => self::MED['salbutamol'], 'dosage' => '100 mcg', 'instructions' => '2 puffs PRN, max 4×/day'],
             // Artemether/Lumefantrine for current malaria (18-tab pack for a 10-yr-old)
-            ['name' => 'Artemether / Lumefantrine 18 tabs', 'dosage' => '20/120 mg', 'instructions' => 'BD × 3 days'],
+            ['med' => self::MED['artemether_lumefantrine'], 'dosage' => '20/120 mg', 'instructions' => 'BD × 3 days'],
         ]);
 
         // ------------------------------------------------------------------ //
@@ -148,7 +180,7 @@ class CdsTestPatientsSeeder extends Seeder
         Allergy::updateOrCreate(
             ['patient_id' => $adult->id, 'substance_name' => 'Cotrimoxazole'],
             [
-                'medication_id' => $medId('Cotrimoxazole'),
+                'medication_id' => self::MED['cotrimoxazole'],
                 'reaction'    => 'Stevens-Johnson Syndrome',
                 'severity'    => 'severe',
                 'is_active'   => true,
@@ -158,7 +190,7 @@ class CdsTestPatientsSeeder extends Seeder
         Allergy::updateOrCreate(
             ['patient_id' => $adult->id, 'substance_name' => 'Aspirin'],
             [
-                'medication_id' => $medId('Aspirin'),
+                'medication_id' => self::MED['aspirin'],
                 'reaction'    => 'Bronchospasm and nasal polyps',
                 'severity'    => 'moderate',
                 'is_active'   => true,
@@ -168,7 +200,7 @@ class CdsTestPatientsSeeder extends Seeder
         Allergy::updateOrCreate(
             ['patient_id' => $adult->id, 'substance_name' => 'Ibuprofen'],
             [
-                'medication_id' => $medId('Ibuprofen'),
+                'medication_id' => self::MED['ibuprofen'],
                 'reaction'    => 'Urticaria and angioedema',
                 'severity'    => 'moderate',
                 'is_active'   => true,
@@ -207,11 +239,11 @@ class CdsTestPatientsSeeder extends Seeder
         ]);
 
         // Active prescriptions – used to trigger duplicate-therapy CDS alerts
-        $this->seedPrescriptions($adult->id, $medId, [
+        $this->seedPrescriptions($adult->id, [
             // Hypertension management
-            ['name' => 'Amlodipine',   'dosage' => '5 mg',   'instructions' => 'OD'],
+            ['med' => self::MED['amlodipine'], 'dosage' => '5 mg', 'instructions' => 'OD'],
             // Diabetes management
-            ['name' => 'Metformin',    'dosage' => '500 mg', 'instructions' => 'BD with food'],
+            ['med' => self::MED['metformin'], 'dosage' => '500 mg', 'instructions' => 'BD with food'],
         ]);
 
         // ------------------------------------------------------------------ //
@@ -242,7 +274,7 @@ class CdsTestPatientsSeeder extends Seeder
         Allergy::updateOrCreate(
             ['patient_id' => $elderly->id, 'substance_name' => 'Metformin'],
             [
-                'medication_id' => $medId('Metformin'),
+                'medication_id' => self::MED['metformin'],
                 'reaction'    => 'Lactic acidosis risk – contraindicated in CKD',
                 'severity'    => 'severe',
                 'is_active'   => true,
@@ -253,7 +285,7 @@ class CdsTestPatientsSeeder extends Seeder
         Allergy::updateOrCreate(
             ['patient_id' => $elderly->id, 'substance_name' => 'Diclofenac'],
             [
-                'medication_id' => $medId('Diclofenac'),
+                'medication_id' => self::MED['diclofenac'],
                 'reaction'    => 'Acute kidney injury on chronic kidney disease',
                 'severity'    => 'severe',
                 'is_active'   => true,
@@ -263,7 +295,7 @@ class CdsTestPatientsSeeder extends Seeder
         Allergy::updateOrCreate(
             ['patient_id' => $elderly->id, 'substance_name' => 'Naproxen'],
             [
-                'medication_id' => $medId('Naproxen'),
+                'medication_id' => self::MED['naproxen'],
                 'reaction'    => 'Acute kidney injury on chronic kidney disease',
                 'severity'    => 'severe',
                 'is_active'   => true,
@@ -273,7 +305,7 @@ class CdsTestPatientsSeeder extends Seeder
         Allergy::updateOrCreate(
             ['patient_id' => $elderly->id, 'substance_name' => 'Ibuprofen'],
             [
-                'medication_id' => $medId('Ibuprofen'),
+                'medication_id' => self::MED['ibuprofen'],
                 'reaction'    => 'Acute kidney injury on chronic kidney disease',
                 'severity'    => 'severe',
                 'is_active'   => true,
@@ -284,7 +316,7 @@ class CdsTestPatientsSeeder extends Seeder
         Allergy::updateOrCreate(
             ['patient_id' => $elderly->id, 'substance_name' => 'Tramadol'],
             [
-                'medication_id' => $medId('Tramadol'),
+                'medication_id' => self::MED['tramadol'],
                 'reaction'    => 'Respiratory depression – opioid accumulation in renal failure',
                 'severity'    => 'severe',
                 'is_active'   => true,
@@ -327,15 +359,16 @@ class CdsTestPatientsSeeder extends Seeder
         ]);
 
         // Active prescriptions – used to trigger duplicate-therapy CDS alerts
-        $this->seedPrescriptions($elderly->id, $medId, [
+        $this->seedPrescriptions($elderly->id, [
             // Heart failure + hypertension
-            ['name' => 'Amlodipine',   'dosage' => '5 mg',    'instructions' => 'OD'],
-            ['name' => 'Furosemide',   'dosage' => '40 mg',   'instructions' => 'OD morning'],
-            ['name' => 'Bisoprolol',   'dosage' => '2.5 mg',  'instructions' => 'OD'],
+            ['med' => self::MED['amlodipine'], 'dosage' => '5 mg', 'instructions' => 'OD'],
+            ['med' => self::MED['furosemide'], 'dosage' => '40 mg', 'instructions' => 'OD morning'],
+            // Bisoprolol not in formulary; Atenolol 25 mg used as the beta-blocker substitute
+            ['med' => self::MED['atenolol'], 'dosage' => '25 mg', 'instructions' => 'OD'],
             // Antiplatelet
-            ['name' => 'Aspirin',      'dosage' => '75 mg',   'instructions' => 'OD with food'],
+            ['med' => self::MED['aspirin'], 'dosage' => '75 mg', 'instructions' => 'OD with food'],
             // CKD / anaemia support
-            ['name' => 'Calcium carbonate', 'dosage' => '500 mg', 'instructions' => 'TDS with meals'],
+            ['med' => self::MED['calcium_carb'], 'dosage' => '420 mg', 'instructions' => 'TDS with meals'],
         ]);
 
         $this->command->info('CDS Test Patients seeded successfully.');
@@ -361,16 +394,10 @@ class CdsTestPatientsSeeder extends Seeder
      * Upsert active prescriptions for a test patient.
      * Uses DB::table to bypass financial NOT NULL columns irrelevant to CDS testing.
      */
-    private function seedPrescriptions(int $patientId, callable $medId, array $drugs): void
+    private function seedPrescriptions(int $patientId, array $drugs): void
     {
         foreach ($drugs as $drug) {
-            $mid = $medId($drug['name']);
-
-            // Skip if medication not found in this installation's formulary
-            if ($mid === null) {
-                $this->command->warn("  Skipping prescription: '{$drug['name']}' not found in medications table.");
-                continue;
-            }
+            $mid = $drug['med'];
 
             // Delete any previous test-seeded prescription for this patient+medication
             // (leave real ones untouched by scoping to doctor_id = 0)
@@ -391,8 +418,8 @@ class CdsTestPatientsSeeder extends Seeder
                 'duration_days'         => 30,
                 'instructions'          => $drug['instructions'] ?? '',
                 'status'                => 'prescribed',
-                'unit_price'            => 0,
-                'total_price'           => 0,
+                'insurance_covered_amount'            => 0,
+                'cash_amount'           => 0,
                 'quantity'              => 1,
                 'quantity_dispensed'    => 0,
                 'is_paid'               => 0,
@@ -419,8 +446,8 @@ class CdsTestPatientsSeeder extends Seeder
                     'medical_service_id' => 0,
                     'notes'              => $test['name'],
                     'status'             => 'resulted',
-                    'unit_price'         => 0,
-                    'total_price'        => 0,
+                    'insurance_covered_amount'         => 0,
+                    'cash_amount'        => 0,
                     'quantity'           => 1,
                     'clinical_data' => json_encode([
                         'test_name' => $test['name'],
