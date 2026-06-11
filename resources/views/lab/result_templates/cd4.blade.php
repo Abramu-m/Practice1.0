@@ -167,7 +167,7 @@
             </td>
             <td style="width: 30%;">
                 <strong>CTC No:</strong>
-                <input type="text" name="ctc_number" value="{{ $formData['ctc_number'] ?? ($orderingFormData['ctc_number'] ?? ($visit->patientInfo->card_number ?? '')) }}" style="width: 90px;" {{ $ro }}>
+                <input type="text" name="ctc_number" value="{{ $formData['ctc_number'] ?? ($orderingFormData['ctc_number'] ?? '') }}" style="width: 90px;" {{ $ro }}>
             </td>
         </tr>
         <tr>
