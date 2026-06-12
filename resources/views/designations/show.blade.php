@@ -62,7 +62,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse($doctors as $doctor)
+                                @foreach($doctors as $doctor)
                                     <tr>
                                         <td>{{ $doctor->user->name ?? 'N/A' }}</td>
                                         <td>{{ $doctor->user->email ?? 'N/A' }}</td>
@@ -81,11 +81,7 @@
                                             </a>
                                         </td>
                                     </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="6" class="text-center">No doctors with this designation.</td>
-                                    </tr>
-                                @endforelse
+                                @endforeach
                             </tbody>
                         </table>
                     </div>
@@ -104,7 +100,10 @@ $(document).ready(function () {
         pageLength: 25,
         columnDefs: [
             { orderable: false, targets: [-1] }
-        ]
+        ],
+        language: {
+            emptyTable: "No doctors with this designation."
+        }
     });
 });
 </script>
