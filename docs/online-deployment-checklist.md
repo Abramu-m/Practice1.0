@@ -23,7 +23,7 @@ Logs: `storage/logs/webhook-*.log` (channel `webhook`).
 
 ## 2. NOT automated — action required
 
-### 2.1 Frontend assets (Phase 6.1 vendoring) — DONE, verify on first deploy
+### 2.1 Frontend assets (Phase 6.1 vendoring) — DONE, verified working
 
 `public/webhook.php` now runs `npm install` and `npm run build` (which runs
 `resources/build/copy-vendor.mjs` then `vite build`) right after `composer install`.
@@ -32,13 +32,16 @@ artifacts, so this step must succeed for `@vite()` and the Phase 6.1 vendored CS
 (jQuery, Bootstrap, DataTables, Select2, ApexCharts, Toastr, Font Awesome, Bootstrap
 Icons, OverlayScrollbars, Alpine, Chart.js, moment/daterangepicker) to load.
 
-**Caveat**: PHP-FPM's `exec()` environment on Bluehost may not have `node`/`npm` on
-`PATH` (same issue hit on `practice.local`'s webhook). After the first deploy, check
-`storage/logs/webhook-*.log` for the "Install Node Dependencies" / "Build Frontend
-Assets" steps. If they fail with "command not found", SSH in, run `which node` /
-`which npm` (or find the venv from Bluehost's "Setup Node.js App"), and set
-`$nodePathPrefix` near the top of `public/webhook.php` to that bin directory
-(e.g. `/home2/yyfcolmy/nodevenv/public_html/Practice1.0/20/bin:`).
+PHP-FPM's `exec()` environment on Bluehost has no `node`/`npm` on `PATH` (confirmed:
+"sh: line 1: npm: command not found", exit 127). Fixed in commit `50f2938`:
+`public/webhook.php` discovers `npm` at deploy time (`$npmSetup` shell snippet) by
+trying `command -v npm`, then globbing cPanel Node.js Selector venvs
+(`~/nodevenv/*/*/bin/npm`, `~/nodevenv/*/*/*/bin/npm`), EasyApache Node
+(`/opt/cpanel/ea-nodejs*/bin/npm`), and nvm (`~/.nvm/versions/node/*/bin/npm`), then
+prepends the resolved bin dir to `PATH`. Verified 2026-06-12: `/vendor/jquery.min.js`,
+`/vendor/bootstrap.bundle.min.js`, `/vendor/dataTables.min.js`,
+`/vendor/dataTables.bootstrap5.min.js`, and `/build/manifest.json` all return 200 with
+real built content on janet-healthcare.com.
 
 ### 2.2 `php artisan storage:link` — DONE
 
