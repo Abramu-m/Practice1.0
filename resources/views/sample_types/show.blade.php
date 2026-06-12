@@ -256,25 +256,25 @@
     </div>
 @endsection
 
-@push('styles')
+@section('styles')
 <style>
     .card {
         margin-bottom: 1rem;
     }
-    
+
     .table th {
         background-color: #f8f9fa;
         font-weight: 600;
     }
-    
+
     .badge {
         font-size: 0.75em;
     }
-    
+
     code {
         background-color: #f8f9fa;
         padding: 2px 6px;
         border-radius: 3px;
     }
 </style>
-@endpush
+@endsection

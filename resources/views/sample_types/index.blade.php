@@ -195,8 +195,6 @@
     </div>
 @endsection
 
-@endsection
-
 @section('scripts')
 <script>
 $(document).ready(function() {
@@ -219,18 +217,18 @@ $(document).ready(function() {
 </script>
 @endsection
 
-@push('styles')
+@section('styles')
 <style>
     .table th {
         font-weight: 600;
     }
-    
+
     .btn-group-sm .btn {
         padding: 0.25rem 0.5rem;
     }
-    
+
     .badge {
         font-size: 0.75em;
     }
 </style>
-@endpush
+@endsection
