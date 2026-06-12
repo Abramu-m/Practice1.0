@@ -341,13 +341,13 @@ window.savePrescriptionFromModal = function savePrescriptionFromModal() {
                     window.loadPrescriptions();
                 }
                 
-                // Update CDS drawer if provided
-                if (response.cds_drawer_html !== undefined && context === 'consultation') {
+                // Update CDS drawer if provided (no-op on pages without #cds-alerts-body)
+                if (response.cds_drawer_html !== undefined) {
                     updateCDSDrawer(response);
                 }
 
                 // Show CDS interstitial modal if new alerts were triggered
-                if (context === 'consultation' && response.cds_alerts && response.cds_alerts.length > 0) {
+                if (response.cds_alerts && response.cds_alerts.length > 0) {
                     showCdsAlertInterstitial(response.cds_alerts, visitId);
                 }
                 
