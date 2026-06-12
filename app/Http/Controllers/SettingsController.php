@@ -8,6 +8,7 @@ use App\Models\SystemSetting;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class SettingsController extends Controller
 {
@@ -47,14 +48,23 @@ class SettingsController extends Controller
             'nhif_facility_code' => 'nullable|string|max:50',
             'hfr_code'           => 'nullable|string|max:50',
             'in_charge'          => 'nullable|exists:users,id',
+            'logo'               => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        $facility = Facility::first();
-        if ($facility) {
-            $facility->update($data);
-        } else {
-            Facility::create($data);
+        $facility = Facility::current();
+
+        if ($request->boolean('remove_logo') && $facility->logo) {
+            Storage::disk('public')->delete($facility->logo);
+            $data['logo'] = null;
+        } elseif ($request->hasFile('logo')) {
+            if ($facility->logo) {
+                Storage::disk('public')->delete($facility->logo);
+            }
+            $data['logo'] = $request->file('logo')->store('facility_logos', 'public');
         }
+
+        $facility->fill($data);
+        $facility->save();
 
         return redirect()->route('settings.index')->with('success', 'Facility details updated successfully.');
     }

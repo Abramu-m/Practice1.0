@@ -27,7 +27,7 @@
             <h5 class="card-title mb-0"><i class="fas fa-hospital me-2"></i>Facility Details</h5>
         </div>
         <div class="card-body">
-            <form method="POST" action="{{ route('settings.facility.update') }}">
+            <form method="POST" action="{{ route('settings.facility.update') }}" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
 
@@ -43,6 +43,24 @@
                         <label class="form-label fw-semibold">Slogan</label>
                         <input type="text" name="slogan" class="form-control"
                                value="{{ old('slogan', $facility->slogan) }}">
+                    </div>
+
+                    <div class="col-md-12">
+                        <label class="form-label fw-semibold">Facility Logo</label>
+                        @if($facility->logo)
+                            <div class="mb-2">
+                                <img src="{{ asset('storage/' . $facility->logo) }}" alt="Current Facility Logo" class="img-thumbnail" width="100">
+                            </div>
+                        @endif
+                        <input type="file" name="logo" class="form-control @error('logo') is-invalid @enderror" accept="image/*">
+                        @error('logo') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        <small class="text-muted">Recommended: square PNG or JPG, max 2MB. Used in the sidebar branding.</small>
+                        @if($facility->logo)
+                            <div class="form-check mt-2">
+                                <input type="checkbox" name="remove_logo" value="1" class="form-check-input" id="remove_logo">
+                                <label class="form-check-label" for="remove_logo">Remove current logo</label>
+                            </div>
+                        @endif
                     </div>
 
                     <div class="col-md-6">

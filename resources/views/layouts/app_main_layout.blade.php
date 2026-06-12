@@ -362,7 +362,7 @@
           <a href="{{ url('dashboard')}}" class="brand-link">
             <!--begin::Brand Image-->
             <img
-              src="{{ asset('images/logo.png') }}"
+              src="{{ $facility?->logo ? asset('storage/' . $facility->logo) : asset('images/logo.png') }}"
               alt="Facility Logo"
               class="brand-image opacity-75 shadow"
             />
