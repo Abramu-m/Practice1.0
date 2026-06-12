@@ -293,7 +293,6 @@
 @endsection
 
 @section('extra_footer_content')
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Daily Trends Chart

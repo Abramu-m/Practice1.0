@@ -1,3 +1,15 @@
+/* Vendored third-party CSS (formerly CDN-loaded in app_main_layout.blade.php) */
+@import '@fontsource/source-sans-3/index.css';
+@import 'overlayscrollbars/styles/overlayscrollbars.css';
+@import 'bootstrap-icons/font/bootstrap-icons.min.css';
+@import '@fortawesome/fontawesome-free/css/all.min.css';
+@import 'apexcharts/dist/apexcharts.css';
+@import 'select2/dist/css/select2.min.css';
+@import 'toastr/build/toastr.min.css';
+@import 'datatables.net-bs5/css/dataTables.bootstrap5.min.css';
+@import 'datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css';
+@import 'daterangepicker/daterangepicker.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

@@ -55,6 +55,14 @@ password and NHIF account password have been rotated** (2026-06-08). This item i
 | API security / secrets | **PARTIAL** | Uses Laravel `Http` client and `.env`/encrypted settings correctly. Committed-secret leak addressed in Phase 0. Fixed 30s timeout; `retry_attempts=3` configured but unused except in `authorizeCard`. |
 | AuthZ | PARTIAL | Laravel Breeze + custom role flags + verification middleware work; `spatie/laravel-permission` installed but **not used**. No 2FA, no auth audit log. |
 
+### 5. Offline / Local-First Operation
+| Item | Status | Notes |
+|---|---|---|
+| Local data layer | **READY** | MySQL only (`config/database.php`, no SQLite fallback active); session/cache/queue all use the `database` driver (`config/session.php`, `config/cache.php`, `config/queue.php`, `QUEUE_CONNECTION=database`) — no Redis/Memcached. File storage is local disk (`FILESYSTEM_DISK=local`; S3 configured but unused). Mail is `MAIL_MAILER=log`. Core clinical workflows (registration, consultation, prescriptions, dispensing, billing — `PatientController.php:141-273`, `ConsultationController.php:38-100`, `PrescriptionController.php:34-97`, `PharmacistController.php`, `CashierController.php:14-150`) make zero network calls. |
+| NHIF sync isolation | **PARTIAL** | `syncTariffs`/`submitClaim`/`submitBatch` (`NhifController.php:780,809,854-858`) already dispatch queued, retried jobs (Phase 1, DONE) — never block. `verifyMember` (L516), `getCardDetails` (L633), `authorize` (L687) call `NhifService` synchronously and will block/timeout if offline — acceptable since these are explicit, user-initiated NHIF actions, not core workflow blockers. Future UX nicety: clearer "NHIF unreachable" messaging on timeout. |
+| Frontend asset dependency | **DONE (Phase 6.1)** | All ~20 CDN-hosted CSS/JS assets (fonts, Bootstrap, jQuery, Select2, DataTables, ApexCharts, Chart.js, OverlayScrollbars, Bootstrap Icons, Font Awesome, Toastr, moment, daterangepicker, Alpine) are now self-hosted via npm/Vite — zero `cdn.jsdelivr.net`/`cdnjs.cloudflare.com`/`code.jquery.com` requests on `/patient_visits`, `/financial/dashboard`, etc. Interactive libraries are copied from `node_modules/*/dist` to `public/vendor/*.min.js` by `resources/build/copy-vendor.mjs` (run via `npm run build`/`dev`) and loaded as classic, render-blocking `<script>` tags in `<head>` BEFORE `@vite()` — see Phase 6.1 below for why. AdminLTE's own CSS/JS (`dist/css/adminlte.css`, `dist/js/adminlte.js`, bundles Bootstrap) remains local as before. A basic PWA service worker (`public/sw.js`, `/offline` route, `public/manifest.json`) still exists as a secondary cache layer. Residual: `medications/consumption/analytics.blade.php` still loads moment.js/daterangepicker from CDN (separate from the vendored set, not yet migrated). |
+| Backup/DR to remote site | **MISSING** | No bidirectional sync exists between `practice.local` and `janet-healthcare.com` (same facility, two access points). See Phase 6.2. |
+
 ---
 
 ## Overall status
@@ -89,3 +97,50 @@ password and NHIF account password have been rotated** (2026-06-08). This item i
   NIDA format validation (uniqueness already enforced — `PatientController.php:156,311`); activate
   Spatie / 2FA. ~~HFR facility code~~ — **done** (`facilities.hfr_code`, 2026-06-08).
 - **GePG:** deferred — only if the facility collects official government fees.
+- **Phase 6 — Offline/local-first hardening:**
+  - **6.1 Vendor CDN assets locally — DONE (2026-06-11/12):** all ~20 CDN-hosted CSS/JS includes
+    in `resources/views/layouts/app_main_layout.blade.php` (fonts, Bootstrap, jQuery, Select2,
+    DataTables, ApexCharts, Chart.js, OverlayScrollbars, Bootstrap Icons, Font Awesome, Toastr),
+    plus per-page Chart.js CDN includes (`financial/dashboard`, `nhif/reports`, `store/dashboard`,
+    `medications/stock/ledger/stock-summary`, `medications/consumption/analytics`), replaced with
+    npm packages bundled via the existing Vite pipeline (`resources/css/app.css` `@import`s the
+    vendored CSS; `resources/js/app.js` and `resources/build/copy-vendor.mjs` handle the JS — see
+    bugs below). Closes the offline-blocking gap in the core EMR.
+    - **Bugs encountered & fixed during implementation:**
+      1. **App-wide `$ is not a function` regression.** The first pass bundled jQuery/Bootstrap/
+         Select2/DataTables/Toastr/moment/daterangepicker/Chart.js/ApexCharts/OverlayScrollbars/
+         Alpine into `resources/js/app.js` and assigned them to `window.*` there, loaded via
+         `@vite()`. But `@vite()` emits a `type="module"` script — like `defer`, it executes
+         *after* the HTML is parsed, i.e. **after** the many inline `$(document).ready(...)`
+         page scripts (this doc's own mandated DataTables-init pattern) that run synchronously
+         during parsing. Result: `$`/`jQuery`/`bootstrap` were `undefined` on nearly every page
+         (`Uncaught TypeError: $ is not a function`), not just `/patient_visits`.
+         **Fix:** added `resources/build/copy-vendor.mjs`, which copies the pre-built UMD/IIFE
+         "dist" bundles of these libraries from `node_modules/*/dist` into `public/vendor/`
+         (wired into `npm run build` / `npm run dev`). `app_main_layout.blade.php` loads these as
+         14 classic, render-blocking `<script src="...">` tags in `<head>`, **before**
+         `@vite()`. `resources/js/app.js` is now just `import './bootstrap'` — the vendored
+         libraries are no longer ESM imports.
+      2. **500 error: "Too few arguments to function `Illuminate\Foundation\Vite::__invoke()`,
+         0 passed... at least 1 expected".** A code-comment in `app_main_layout.blade.php`
+         describing fix #1 contained the literal text `@vite` (no parentheses) inside an HTML
+         `<!-- comment -->`. Blade's directive parser matches `@vite` regardless of HTML-comment
+         context and rewrote it to a zero-argument `Vite::__invoke()` call. **Fix:** reworded the
+         comment to avoid the bare `@vite` token, then `php artisan view:clear`.
+    - Verified (curl, authenticated): `/patient_visits` and `/financial/dashboard` render 200,
+      script order is vendor globals → `@vite` module → deferred page scripts → inline
+      `$(document).ready(...)` blocks, and zero CDN `<script>`/`<link>` tags remain.
+    - **Residual, out of scope:** `medications/consumption/analytics.blade.php` still loads
+      moment.js + daterangepicker from CDN (separate libraries from the vendored set). That same
+      view's `@push('styles')` is silently dropped — the layout only has `@stack('scripts')`, not
+      `@stack('styles')` (pre-existing bug, see this doc's print-page `@section('styles')`
+      guidance) — flagged, not fixed.
+  - **6.2 Bidirectional sync between practice.local and janet-healthcare.com (DESIGN ONLY —
+    future phase, same facility/dataset):** the two deployments represent the same facility's
+    data and must converge — changes made offline propagate online once connectivity returns, and
+    vice versa. Needs its own design pass covering: UUID/identity strategy for key clinical tables
+    (patients, patient_visits, prescriptions, etc.) so independently-created rows never collide;
+    an outbox/change-log per syncable table; a connectivity-aware scheduled sync job exchanging
+    change-logs via an HMAC-authenticated endpoint (mirroring the existing
+    `public/webhook-deploy.php` HMAC pattern); and conflict resolution (start with last-write-wins
+    by `updated_at` + a `sync_conflicts` review log). Multi-week effort — not started.

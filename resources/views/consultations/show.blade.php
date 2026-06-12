@@ -1627,16 +1627,16 @@
 
 @section('scripts')
 <!-- Consultation Module Scripts -->
-<script src="{{ asset('js/consultation/change-tracking.js') }}"></script>
-<script src="{{ asset('js/consultation/form-saves.js') }}"></script>
-<script src="{{ asset('js/consultation/examinations.js') }}"></script>
-<script src="{{ asset('js/consultation/icd10.js') }}"></script>
-<script src="{{ asset('js/lab-investigation-modal.js') }}"></script>
-<script src="{{ asset('js/prescription-modal.js') }}"></script>
-<script src="{{ asset('js/medical-history-modal.js') }}"></script>
-<script src="{{ asset('js/vitals-modal.js') }}"></script>
-<script src="{{ asset('js/systemic-examination-modal.js') }}"></script>
-<script src="{{ asset('js/consultation/app.js') }}"></script>
+<script src="{{ asset('js/consultation/change-tracking.js') }}" defer></script>
+<script src="{{ asset('js/consultation/form-saves.js') }}" defer></script>
+<script src="{{ asset('js/consultation/examinations.js') }}" defer></script>
+<script src="{{ asset('js/consultation/icd10.js') }}" defer></script>
+<script src="{{ asset('js/lab-investigation-modal.js') }}" defer></script>
+<script src="{{ asset('js/prescription-modal.js') }}" defer></script>
+<script src="{{ asset('js/medical-history-modal.js') }}" defer></script>
+<script src="{{ asset('js/vitals-modal.js') }}" defer></script>
+<script src="{{ asset('js/systemic-examination-modal.js') }}" defer></script>
+<script src="{{ asset('js/consultation/app.js') }}" defer></script>
 <script>
     // Set global consultation ID for use in modules
     window.consultationId = {{ $consultation->id }};

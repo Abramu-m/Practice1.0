@@ -390,7 +390,6 @@
 @endsection
 
 @section('scripts')
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 function showBatchDetails(medicationId) {
     const modal = new bootstrap.Modal(document.getElementById('batchDetailsModal'));

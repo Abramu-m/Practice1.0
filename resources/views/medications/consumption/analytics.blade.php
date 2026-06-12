@@ -2,9 +2,7 @@
 
 @section('page_title', 'Consumption Analytics')
 
-@push('styles')
-<link href="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" rel="stylesheet">
+@section('styles')
 <style>
     .analytics-card { 
         transition: transform 0.2s;
@@ -52,7 +50,7 @@
         font-weight: 500;
     }
 </style>
-@endpush
+@endsection
 
 @section('main_content')
 <div class="content-wrapper">
@@ -415,9 +413,6 @@
 @endsection
 
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/moment/moment.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 <script>
 $(document).ready(function() {
     // Initialize date range picker

@@ -11,45 +11,9 @@
     <meta name="author" content="Abramu Mibaraka" />
     <meta name="csrf-token" content="{{ csrf_token() }}" />
     <!--end::Primary Meta Tags-->
-    <!--begin::Fonts-->
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/@fontsource/source-sans-3@5.0.12/index.css"
-      integrity="sha256-tXJfXfp6Ewt1ilPzLDtQnJV4hclT9XuaZUKyUvmyr+Q="
-      crossorigin="anonymous"
-    />
-    <!--end::Fonts-->
-    <!--begin::Third Party Plugin(OverlayScrollbars)-->
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.10.1/styles/overlayscrollbars.min.css"
-      integrity="sha256-tZHrRjVqNSRyWg2wbppGnT833E/Ys0DHWGwT04GiqQg="
-      crossorigin="anonymous"
-    />
-    <!--end::Third Party Plugin(OverlayScrollbars)-->
-    <!--begin::Third Party Plugin(Bootstrap Icons)-->
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
-      integrity="sha256-9kPW/n5nn53j4WMRYAxe9c1rCY96Oogo/MKSVdKzPmI="
-      crossorigin="anonymous"
-    />
-    <!--end::Third Party Plugin(Bootstrap Icons)-->
-    <!--begin::Font Awesome-->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
-          integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" 
-          crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <!--end::Font Awesome-->
     <!--begin::Required Plugin(AdminLTE)-->
     <link rel="stylesheet" href="{{ asset('dist/css/adminlte.css') }}" />
     <!--end::Required Plugin(AdminLTE)-->
-    <!-- apexcharts -->
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/apexcharts@3.37.1/dist/apexcharts.css"
-      integrity="sha256-4MX+61mt9NVvvuPjUWdUdyfZfxSB1/Rf9WtqRHgG5S0="
-      crossorigin="anonymous"
-    />
 
     <!--start::PWA plugin-->
     <link rel="manifest" href="{{ asset('manifest.json') }}">
@@ -61,13 +25,31 @@
     <link rel="apple-touch-icon" href="{{ asset('icons/icon-192x192.png') }}">
     <!--end::PWA plugin-->
     
+    <!--begin::Vendor JS (classic, render-blocking - must run BEFORE the Vite
+    bundle's deferred module so window.jQuery/$/bootstrap/etc. exist for
+    inline page scripts that execute during HTML parsing)-->
+    <script src="{{ asset('vendor/jquery.min.js') }}"></script>
+    <script src="{{ asset('vendor/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('vendor/moment.min.js') }}"></script>
+    <script src="{{ asset('vendor/daterangepicker.js') }}"></script>
+    <script src="{{ asset('vendor/select2.min.js') }}"></script>
+    <script src="{{ asset('vendor/dataTables.min.js') }}"></script>
+    <script src="{{ asset('vendor/dataTables.bootstrap5.min.js') }}"></script>
+    <script src="{{ asset('vendor/dataTables.responsive.min.js') }}"></script>
+    <script src="{{ asset('vendor/responsive.bootstrap5.min.js') }}"></script>
+    <script src="{{ asset('vendor/toastr.min.js') }}"></script>
+    <script src="{{ asset('vendor/chart.umd.min.js') }}"></script>
+    <script src="{{ asset('vendor/apexcharts.min.js') }}"></script>
+    <script src="{{ asset('vendor/overlayscrollbars.browser.es5.min.js') }}"></script>
+    <script src="{{ asset('vendor/alpine.min.js') }}" defer></script>
+    <!--end::Vendor JS-->
+
     <!-- Include custom CSS -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
   <!-- Page-specific styles from views -->
   @yield('styles')
 
-  <!-- Select2 CSS (global) - provides searchable dropdowns across the app -->
-  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+  <!-- Select2 customization (global) - provides searchable dropdowns across the app -->
   <style>
     /* Make Select2 match Bootstrap's native select appearance */
     .select2-container--default .select2-selection--single {
@@ -516,26 +498,8 @@
     </div>
     <!--end::App Wrapper-->
     <!--begin::Script-->
-    <!--begin::Third Party Plugin(OverlayScrollbars)-->
-    <script
-      src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.10.1/browser/overlayscrollbars.browser.es6.min.js"
-      integrity="sha256-dghWARbRe2eLlIJ56wNB+b760ywulqK3DzZYEpsg2fQ="
-      crossorigin="anonymous"
-    ></script>
-    <!--end::Third Party Plugin(OverlayScrollbars)--><!--begin::Required Plugin(popperjs for Bootstrap 5)-->
-    <script
-      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
-      integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
-      crossorigin="anonymous"
-    ></script>
-    <!--end::Required Plugin(popperjs for Bootstrap 5)--><!--begin::Required Plugin(Bootstrap 5)-->
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
-      integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
-      crossorigin="anonymous"
-    ></script>
-    <!--end::Required Plugin(Bootstrap 5)--><!--begin::Required Plugin(AdminLTE)-->
-    <script src="{{ asset('dist/js/adminlte.js') }}"></script>
+    <!--begin::Required Plugin(AdminLTE)-->
+    <script src="{{ asset('dist/js/adminlte.js') }}" defer></script>
     <!--end::Required Plugin(AdminLTE)--><!--begin::OverlayScrollbars Configure-->
     <script>
       const SELECTOR_SIDEBAR_WRAPPER = '.sidebar-wrapper';
@@ -567,39 +531,17 @@
       });
     </script>
     <!--end::OverlayScrollbars Configure-->
-    <!-- OPTIONAL SCRIPTS -->
-    <!-- apexcharts -->
-    <script
-      src="https://cdn.jsdelivr.net/npm/apexcharts@3.37.1/dist/apexcharts.min.js"
-      integrity="sha256-+vh8GkaU7C9/wbSLIcwq82tQ2wTf44aOHA8HlBMwRI8="
-      crossorigin="anonymous"
-    ></script>
     <!--end::Script-->
-    
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    <!-- Select2 JS (must come after jQuery). Note: some individual views already include Select2 themselves
-      so this global include may result in duplicate loads; consider removing per-view includes if you want a single centralized include. -->
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <!-- Select2: focus the search field when a dropdown opens -->
     <script>
-    $(document).on('select2:open', function() {
-        document.querySelector('.select2-container--open .select2-search__field')?.focus();
+    document.addEventListener('DOMContentLoaded', function() {
+        $(document).on('select2:open', function() {
+            document.querySelector('.select2-container--open .select2-search__field')?.focus();
+        });
     });
     </script>
 
-    <!-- Toastr for notifications -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-    
-    <!-- DataTables (Bootstrap 5 styling) -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/2.0.0/css/dataTables.bootstrap5.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/3.0.0/css/responsive.bootstrap5.min.css">
-    <script src="https://cdn.datatables.net/2.0.0/js/dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/2.0.0/js/dataTables.bootstrap5.min.js"></script>
-    <script src="https://cdn.datatables.net/responsive/3.0.0/js/dataTables.responsive.min.js"></script>
-    <script src="https://cdn.datatables.net/responsive/3.0.0/js/responsive.bootstrap5.min.js"></script>
-    
     <!-- Page-specific scripts -->
     @yield('scripts')
     @stack('scripts')

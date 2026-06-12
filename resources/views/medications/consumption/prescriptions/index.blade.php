@@ -2,9 +2,7 @@
 
 @section('page_title', 'Prescription Consumption Tracking')
 
-@push('styles')
-<link href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap4.min.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" rel="stylesheet">
+@section('styles')
 <style>
     .stats-card { 
         transition: transform 0.2s;
@@ -16,15 +14,6 @@
         background: #f8f9fa;
         border: 1px solid #dee2e6;
     }
-    .prescription-status {
-        font-size: 0.875rem;
-        padding: 0.25rem 0.5rem;
-        border-radius: 0.25rem;
-    }
-    .status-pending { background-color: #fff3cd; color: #856404; }
-    .status-partially_dispensed { background-color: #d1ecf1; color: #0c5460; }
-    .status-dispensed { background-color: #d4edda; color: #155724; }
-    .status-cancelled { background-color: #f8d7da; color: #721c24; }
     .medication-badge {
         background-color: #e9ecef;
         color: #495057;
@@ -35,7 +24,7 @@
         display: inline-block;
     }
 </style>
-@endpush
+@endsection
 
 @section('main_content')
 <div class="content-wrapper">
@@ -153,7 +142,7 @@
                             <select class="form-control" id="doctor" name="doctor">
                                 <option value="all">All Doctors</option>
                                 @foreach($recentDoctors as $recentDoctor)
-                                    <option value="{{ $recentDoctor->id }}" {{ $doctor == $recentDoctor->id ? 'selected' : '' }}>
+                                    <option value="{{ $recentDoctor->doctor_id }}" {{ $doctor == $recentDoctor->doctor_id ? 'selected' : '' }}>
                                         Dr. {{ $recentDoctor->name }}
                                     </option>
                                 @endforeach
@@ -215,34 +204,23 @@
                                                         @endif
                                                     </td>
                                                     <td>
-                                                        @if($prescription->consultation && $prescription->consultation->doctor)
-                                                            Dr. {{ $prescription->consultation->doctor->name }}
+                                                        @if($prescription->doctorInfo)
+                                                            Dr. {{ $prescription->doctorInfo->name }}
                                                         @else
                                                             <span class="text-muted">Unknown Doctor</span>
                                                         @endif
                                                     </td>
                                                     <td>
-                                                        @if($prescription->prescriptionItems->count() > 0)
-                                                            @foreach($prescription->prescriptionItems->take(3) as $item)
-                                                                <span class="medication-badge">
-                                                                    {{ $item->medication->name ?? 'Unknown' }}
-                                                                    @if($item->quantity_dispensed > 0)
-                                                                        ({{ $item->quantity_dispensed }}/{{ $item->quantity }})
-                                                                    @endif
-                                                                </span>
-                                                            @endforeach
-                                                            @if($prescription->prescriptionItems->count() > 3)
-                                                                <span class="badge bg-light">
-                                                                    +{{ $prescription->prescriptionItems->count() - 3 }} more
-                                                                </span>
+                                                        <span class="medication-badge">
+                                                            {{ $prescription->medication->name ?? 'Unknown' }}
+                                                            @if($prescription->quantity_dispensed > 0)
+                                                                ({{ $prescription->quantity_dispensed }}/{{ $prescription->quantity }})
                                                             @endif
-                                                        @else
-                                                            <span class="text-muted">No medications</span>
-                                                        @endif
+                                                        </span>
                                                     </td>
                                                     <td>
-                                                        <span class="prescription-status status-{{ $prescription->status }}">
-                                                            {{ ucfirst(str_replace('_', ' ', $prescription->status)) }}
+                                                        <span class="badge {{ $prescription->status_badge_class }}">
+                                                            {{ $prescription->status_label }}
                                                         </span>
                                                     </td>
                                                     <td>
@@ -250,18 +228,14 @@
                                                         <small class="text-muted">{{ $prescription->created_at->format('g:i A') }}</small>
                                                     </td>
                                                     <td>
-                                                        <div class="btn-group btn-group-sm">
-                                                            <a href="{{ route('medications.consumption.prescription.show', $prescription->id) }}" 
-                                                               class="btn btn-outline-primary">
+                                                        @if($prescription->consultation && $prescription->consultation->visit_id)
+                                                            <a href="{{ route('pharmacist.prescriptions.show', $prescription->consultation->visit_id) }}"
+                                                               class="btn btn-outline-primary btn-sm">
                                                                 <i class="fas fa-eye"></i>
                                                             </a>
-                                                            @if($prescription->status === 'pending' || $prescription->status === 'partially_dispensed')
-                                                                <a href="{{ route('medications.consumption.prescription.dispense', $prescription->id) }}" 
-                                                                   class="btn btn-outline-success">
-                                                                    <i class="fas fa-prescription-bottle"></i>
-                                                                </a>
-                                                            @endif
-                                                        </div>
+                                                        @else
+                                                            <span class="text-muted">&mdash;</span>
+                                                        @endif
                                                     </td>
                                                 </tr>
                                             @endforeach
@@ -343,8 +317,6 @@
 @endsection
 
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/moment/moment.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 <script>
 $(document).ready(function() {
     // Initialize date range picker
