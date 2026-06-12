@@ -71,6 +71,7 @@ class PatientCategoryController extends Controller
             'is_active' => 'boolean',
             'code' => 'nullable|string|max:30|unique:patient_categories,code',
             'tariffs_table' => ['nullable', 'string', Rule::in($this->tariffTables())],
+            'copay_policy' => 'required|in:charge_patient,insurance_only',
         ]);
 
         $patientCategory = new PatientCategory();
@@ -82,6 +83,7 @@ class PatientCategoryController extends Controller
         $patientCategory->tariffs_table = $request->type === 'insurance'
             ? ($request->filled('tariffs_table') ? $request->tariffs_table : null)
             : null;
+        $patientCategory->copay_policy = $request->copay_policy;
         $patientCategory->created_by = Auth::id();
         $patientCategory->save();
 
@@ -123,6 +125,7 @@ class PatientCategoryController extends Controller
             'is_active' => 'boolean',
             'code' => 'nullable|string|max:30|unique:patient_categories,code,' . $patientCategory->id,
             'tariffs_table' => ['nullable', 'string', Rule::in($allowedTables)],
+            'copay_policy' => 'required|in:charge_patient,insurance_only',
         ]);
 
         $patientCategory->description = $request->description;
@@ -133,6 +136,7 @@ class PatientCategoryController extends Controller
         $patientCategory->tariffs_table = $request->type === 'insurance'
             ? ($request->filled('tariffs_table') ? $request->tariffs_table : null)
             : null;
+        $patientCategory->copay_policy = $request->copay_policy;
         $patientCategory->created_by = Auth::id();
         $patientCategory->save();
 

@@ -43,6 +43,20 @@
                     </td>
                 </tr>
                 <tr>
+                    <th>Excess Pricing Policy:</th>
+                    <td>
+                        @if($patientCategory->type === 'insurance')
+                            @if($patientCategory->copay_policy === 'insurance_only')
+                                <span class="badge bg-warning text-black">Insurance covered amount only</span>
+                            @else
+                                <span class="badge bg-secondary text-black">Co-payment</span>
+                            @endif
+                        @else
+                            <span class="text-muted">— (cash category)</span>
+                        @endif
+                    </td>
+                </tr>
+                <tr>
                     <th>Status:</th>
                     <td>
                         @if($patientCategory->is_active)

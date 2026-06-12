@@ -1655,6 +1655,7 @@ CREATE TABLE `patient_categories` (
   `code` varchar(255) DEFAULT NULL,
   `type` enum('cash','insurance') NOT NULL DEFAULT 'cash',
   `tariffs_table` varchar(255) DEFAULT NULL,
+  `copay_policy` enum('charge_patient','insurance_only') NOT NULL DEFAULT 'charge_patient',
   `is_active` tinyint(1) NOT NULL DEFAULT 1,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -2312,7 +2313,6 @@ CREATE TABLE `store_stock_movements` (
   `store_location_id` bigint(20) unsigned NOT NULL,
   `from_location_id` bigint(20) unsigned DEFAULT NULL,
   `to_location_id` bigint(20) unsigned DEFAULT NULL,
-  `batch_id` bigint(20) unsigned DEFAULT NULL,
   `movement_type` enum('in','out','transfer','adjustment','waste') NOT NULL DEFAULT 'in',
   `transaction_type` enum('purchase','dispensing','requisition','transfer','adjustment','waste','return','consumption','disposal') NOT NULL,
   `reference_number` varchar(255) DEFAULT NULL,
@@ -2330,14 +2330,12 @@ CREATE TABLE `store_stock_movements` (
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `store_stock_movements_store_location_id_foreign` (`store_location_id`),
-  KEY `store_stock_movements_batch_id_foreign` (`batch_id`),
   KEY `store_stock_movements_created_by_foreign` (`created_by`),
   KEY `idx_stock_movements_item_location` (`item_type`,`item_id`,`store_location_id`),
   KEY `store_stock_movements_movement_type_transaction_type_index` (`movement_type`,`transaction_type`),
   KEY `store_stock_movements_reference_number_reference_id_index` (`reference_number`,`reference_id`),
   KEY `store_stock_movements_from_location_id_foreign` (`from_location_id`),
   KEY `store_stock_movements_to_location_id_foreign` (`to_location_id`),
-  CONSTRAINT `store_stock_movements_batch_id_foreign` FOREIGN KEY (`batch_id`) REFERENCES `store_stock_batches` (`id`) ON DELETE SET NULL,
   CONSTRAINT `store_stock_movements_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   CONSTRAINT `store_stock_movements_from_location_id_foreign` FOREIGN KEY (`from_location_id`) REFERENCES `store_locations` (`id`) ON DELETE SET NULL,
   CONSTRAINT `store_stock_movements_store_location_id_foreign` FOREIGN KEY (`store_location_id`) REFERENCES `store_locations` (`id`) ON DELETE CASCADE,
@@ -2894,3 +2892,5 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (265,'2026_06_12_15
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (266,'2026_06_12_150001_create_sync_outbox_table',144);
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (267,'2026_06_12_150002_create_sync_state_table',144);
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (268,'2026_06_12_150003_create_sync_conflicts_table',144);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (269,'2026_06_12_120000_drop_batch_id_from_store_stock_movements_table',145);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (270,'2026_06_12_160000_add_copay_policy_to_patient_categories_table',146);

@@ -14,6 +14,7 @@ class PatientCategory extends Model
         'code',
         'type',
         'tariffs_table',
+        'copay_policy',
         'is_active',
         'created_by'
     ];

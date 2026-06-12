@@ -76,6 +76,12 @@ class PricingService
         // STEP 4: calculate split, ensuring we never return negative cash amounts
         $cash = max(0, $sellingPrice - $insurancePrice);
 
+        // If the patient category absorbs any excess over the insurance tariff,
+        // drop the co-payment and charge the insurance-covered amount only.
+        if ($cash > 0 && $map->patientCategory->copay_policy === 'insurance_only') {
+            $cash = 0;
+        }
+
         return [
             'item_name' => $itemName,
             'item_code' => $itemCode,

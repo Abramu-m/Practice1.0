@@ -43,6 +43,7 @@
                         <th>Description</th>
                         <th>Type</th>
                         <th>Tariffs Table</th>
+                        <th>Co-payment Policy</th>
                         <th>Status</th>
                         <th>Created By</th>
                         <th>Created At</th>
@@ -71,6 +72,17 @@
                             @endif
                         </td>
                         <td>
+                            @if($category->type === 'insurance')
+                                @if($category->copay_policy === 'insurance_only')
+                                    <span class="badge bg-warning text-black">Insurance covered amount only</span>
+                                @else
+                                    <span class="badge bg-secondary text-black">Co-payment</span>
+                                @endif
+                            @else
+                                <span class="text-muted">—</span>
+                            @endif
+                        </td>
+                        <td>
                             @if($category->is_active)
                                 <span class="badge bg-success text-black">Active</span>
                             @else
@@ -90,7 +102,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="8" class="text-center">No patient categories found.</td>
+                        <td colspan="9" class="text-center">No patient categories found.</td>
                     </tr>
                     @endforelse
                 </tbody>

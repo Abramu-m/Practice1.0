@@ -60,6 +60,19 @@
                 </div>
 
                 <div class="mb-3">
+                    <label for="copay_policy">Excess Pricing Policy</label>
+                    <select name="copay_policy" class="form-select">
+                        <option value="charge_patient" {{ old('copay_policy', 'charge_patient') == 'charge_patient' ? 'selected' : '' }}>Charge patient the difference (co-payment)</option>
+                        <option value="insurance_only" {{ old('copay_policy') == 'insurance_only' ? 'selected' : '' }}>Insurance covered amount only (write off the difference)</option>
+                    </select>
+                    <small class="form-text text-muted">
+                        Insurance only. When the selling price is higher than the insurance-covered tariff price,
+                        choose whether the patient is billed a co-payment for the difference, or the facility
+                        absorbs it and charges the insurer the covered amount only.
+                    </small>
+                </div>
+
+                <div class="mb-3">
                     <div class="form-check">
                         <input type="checkbox" name="is_active" class="form-check-input" value="1" {{ old('is_active', true) ? 'checked' : '' }}>
                         <label class="form-check-label">Active</label>
