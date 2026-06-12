@@ -43,9 +43,71 @@
                     </div>
                 </div>
             </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h4>Doctors with this Designation</h4>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table id="designation-doctors-table" class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Doctor</th>
+                                    <th>Email</th>
+                                    <th>Specialization</th>
+                                    <th>MCT Number</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($doctors as $doctor)
+                                    <tr>
+                                        <td>{{ $doctor->user->name ?? 'N/A' }}</td>
+                                        <td>{{ $doctor->user->email ?? 'N/A' }}</td>
+                                        <td>{{ $doctor->specialization ?? 'N/A' }}</td>
+                                        <td>{{ $doctor->mct_number ?? 'N/A' }}</td>
+                                        <td>
+                                            @if($doctor->status == 1)
+                                                <span class="badge bg-success text-black">Active</span>
+                                            @else
+                                                <span class="badge bg-danger text-black">Inactive</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            <a href="{{ route('doctors.show', $doctor->doctor_id) }}" class="btn btn-sm btn-info" title="View Doctor">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="6" class="text-center">No doctors with this designation.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+$(document).ready(function () {
+    $('#designation-doctors-table').DataTable({
+        responsive: true,
+        pageLength: 25,
+        columnDefs: [
+            { orderable: false, targets: [-1] }
+        ]
+    });
+});
+</script>
 @endsection
 
 @section('extra_footer_content')

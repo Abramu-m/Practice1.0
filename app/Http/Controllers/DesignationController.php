@@ -64,7 +64,9 @@ class DesignationController extends Controller
      */
     public function show(Designation $designation)
     {
-        return view('designations.show', compact('designation'));
+        $doctors = $designation->doctors()->with('user')->get();
+
+        return view('designations.show', compact('designation', 'doctors'));
     }
 
     /**
