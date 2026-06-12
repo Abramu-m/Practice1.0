@@ -364,7 +364,10 @@
           <a href="{{ url('dashboard')}}" class="brand-link">
             <!--begin::Brand Image-->
             <img
-              src="{{ $facility?->logo ? asset('storage/' . $facility->logo) : asset('images/logo.png') }}"
+              {{-- $facility is shared globally as a Facility model, but some report views locally
+                   override it with a plain array (facility info for the printed header) which
+                   shadows the shared value for this layout too — guard against that here. --}}
+              src="{{ ($facility instanceof \App\Models\Facility && $facility->logo) ? asset('storage/' . $facility->logo) : asset('images/logo.png') }}"
               alt="Facility Logo"
               class="brand-image opacity-75 shadow"
             />
