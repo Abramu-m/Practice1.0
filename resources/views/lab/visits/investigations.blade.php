@@ -76,7 +76,7 @@
         <div class="card-body">
             @if($investigations->count() > 0)
                 <div class="table-responsive">
-                    <table class="table table-hover">
+                    <table id="investigationsTable" class="table table-hover">
                         <thead class="table-light">
                             <tr>
                                 <th>Investigation</th>
@@ -254,6 +254,76 @@
                         </tbody>
                     </table>
                 </div>
+
+                <!-- Hidden consumables templates, injected into the status modal per investigation -->
+                @foreach($investigations as $investigation)
+                    <div id="consumables-template-{{ $investigation->id }}" class="d-none">
+                        @php
+                            $consumables = $investigation->medicalService->activeConsumableRequirements ?? collect();
+                        @endphp
+                        <label class="form-label">Required Consumables</label>
+                        @if($consumables->count() > 0)
+                            @php
+                                $consumableStock = $stockChecks[$investigation->id] ?? collect();
+                            @endphp
+                            <div class="table-responsive">
+                                <table class="table table-sm table-bordered mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Consumable</th>
+                                            <th>Qty Required</th>
+                                            <th>Available</th>
+                                            <th>Type</th>
+                                            <th>Stock</th>
+                                            <th>Notes</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($consumables as $consumable)
+                                            @php
+                                                $stockInfo = $consumableStock->get($consumable->medication_id);
+                                            @endphp
+                                            <tr>
+                                                <td>
+                                                    {{ $consumable->medication->generic_name ?? 'N/A' }}
+                                                    @if($consumable->medication->brand_name ?? null)
+                                                        <br><small class="text-muted">{{ $consumable->medication->brand_name }}</small>
+                                                    @endif
+                                                </td>
+                                                <td>{{ $consumable->quantity_required }}</td>
+                                                <td>{{ $stockInfo['available_quantity'] ?? 'N/A' }}</td>
+                                                <td>
+                                                    <span class="badge {{ $consumable->is_optional ? 'bg-warning text-dark' : 'bg-primary' }}">
+                                                        {{ $consumable->is_optional ? 'Optional' : 'Required' }}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    @if(!$stockInfo)
+                                                        <span class="badge bg-secondary">Unknown</span>
+                                                    @elseif($stockInfo['is_available'])
+                                                        <span class="badge bg-success">Sufficient</span>
+                                                    @elseif($consumable->is_optional)
+                                                        <span class="badge bg-warning text-dark">Low Stock (Optional)</span>
+                                                    @else
+                                                        <span class="badge bg-danger">Insufficient</span>
+                                                    @endif
+                                                </td>
+                                                <td>{{ $consumable->notes ?? '-' }}</td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                            <small class="text-muted">
+                                Stock checked at: {{ $consumableStock->first()['stock_location'] ?? 'N/A' }}
+                            </small>
+                        @else
+                            <div class="alert alert-info mb-0">
+                                <i class="fas fa-info-circle me-2"></i>No consumables defined for this investigation.
+                            </div>
+                        @endif
+                    </div>
+                @endforeach
             @else
                 <div class="text-center py-5">
                     <i class="fas fa-vial text-muted fa-3x mb-3"></i>
@@ -267,7 +337,7 @@
 
 <!-- Status Update Modal -->
 <div class="modal fade" id="statusUpdateModal" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Update Investigation Status</h5>
@@ -277,15 +347,12 @@
                 <div class="modal-body">
                     <input type="hidden" id="investigation_id" name="investigation_id">
                     <input type="hidden" id="new_status" name="status">
-                    
-                    <div class="mb-3">
-                        <label class="form-label">Status</label>
-                        <input type="text" id="status_display" class="form-control" readonly>
-                    </div>
-                    
+
+                    <div class="mb-3" id="modalConsumablesContainer"></div>
+
                     <div class="mb-3">
                         <label class="form-label">Notes (Optional)</label>
-                        <textarea name="notes" class="form-control" rows="3" 
+                        <textarea name="notes" class="form-control" rows="3"
                                   placeholder="Add any notes about this status change..."></textarea>
                     </div>
                 </div>
@@ -300,6 +367,18 @@
 
 @section('scripts')
 <script>
+$(document).ready(function () {
+    if ($('#investigationsTable').length) {
+        $('#investigationsTable').DataTable({
+            responsive: true,
+            pageLength: 25,
+            columnDefs: [
+                { orderable: false, targets: [-1] }
+            ]
+        });
+    }
+});
+
 function ackCdsAlert(alertId, action) {
     const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     fetch(`/cds-alerts/${alertId}/ack`, {
@@ -337,8 +416,11 @@ function updateInvestigationStatus(investigationId, status) {
     // Set modal values
     document.getElementById('investigation_id').value = investigationId;
     document.getElementById('new_status').value = status;
-    document.getElementById('status_display').value = status.charAt(0).toUpperCase() + status.slice(1);
-    
+
+    // Populate consumables info for this investigation
+    const template = document.getElementById('consumables-template-' + investigationId);
+    document.getElementById('modalConsumablesContainer').innerHTML = template ? template.innerHTML : '';
+
     // Show modal
     const modal = new bootstrap.Modal(document.getElementById('statusUpdateModal'));
     modal.show();

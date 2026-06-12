@@ -201,6 +201,7 @@ class LabController extends Controller
             'patientInfo', 
             'doctorInfo.user',
             'consultation.investigations.medicalService.serviceCategory',
+            'consultation.investigations.medicalService.activeConsumableRequirements.medication',
             'consultation.investigations.doctor.user',
             'consultation.investigations.results',
             'consultation.investigations.orderedBy',
@@ -225,7 +226,14 @@ class LabController extends Controller
             })->sortByDesc('ordered_at');
         }
 
-        return view('lab.visits.investigations', compact('visit', 'investigations'));
+        // Build per-investigation consumable stock availability, keyed by medication_id
+        $stockChecks = [];
+        foreach ($investigations as $investigation) {
+            $stockChecks[$investigation->id] = collect($this->checkStockAvailability($investigation)['details'])
+                ->keyBy('medication_id');
+        }
+
+        return view('lab.visits.investigations', compact('visit', 'investigations', 'stockChecks'));
     }
 
     /**
@@ -553,15 +561,28 @@ class LabController extends Controller
     private function checkStockAvailability($investigation)
     {
         $medicalService = $investigation->medicalService;
-        
+
+        $consumables = \App\Models\InvestigationConsumable::where('medical_service_id', $medicalService->id)
+            ->where('is_active', true)
+            ->with('medication')
+            ->get();
+
+        // Nothing to check - don't block the investigation over stock it doesn't need
+        if ($consumables->isEmpty()) {
+            return [
+                'can_proceed' => true,
+                'details' => []
+            ];
+        }
+
         // Get the appropriate location type based on service category
         $locationType = $this->getLocationTypeFromServiceCategory($investigation);
-        
+
         // Get the location for stock checking
         $location = \App\Models\StoreLocation::where('type', $locationType)
             ->where('is_active', true)
             ->first();
-            
+
         if (!$location) {
             // If no appropriate location found, return cannot proceed
             return [
@@ -578,11 +599,6 @@ class LabController extends Controller
                 ]
             ];
         }
-        
-        $consumables = \App\Models\InvestigationConsumable::where('medical_service_id', $medicalService->id)
-            ->where('is_active', true)
-            ->with('medication')
-            ->get();
 
         $stockDetails = [];
         $canProceed = true;
@@ -602,6 +618,7 @@ class LabController extends Controller
             }
 
             $stockDetails[] = [
+                'medication_id' => $consumable->medication_id,
                 'medication_name' => $consumable->medication->generic_name,
                 'required_quantity' => $consumable->quantity_required,
                 'available_quantity' => $totalStock,

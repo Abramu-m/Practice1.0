@@ -9,10 +9,10 @@
   </a>
 </li>
 <li class="nav-item">
-  <a href="{{ route('procedures.index') }}" class="nav-link nav-header {{ nav_active_class(['procedures.*']) }}">
+  <a href="{{ route('lab.visits.index') }}" class="nav-link nav-header {{ nav_active_class(['lab.visits.*']) }}">
     <i class="nav-icon bi bi-clipboard-check-fill text-primary"></i>
     <p>
-      Procedures
+      Visit Investigations
     </p>
   </a>
 </li>

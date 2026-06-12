@@ -1,5 +1,33 @@
 @extends('layouts.app_main_layout')
 
+@section('styles')
+<style>
+    .small-box.small-box-sm {
+        margin-bottom: 0;
+    }
+    .small-box.small-box-sm > .inner {
+        padding: 8px 12px;
+    }
+    .small-box.small-box-sm h3,
+    .small-box.small-box-sm p {
+        display: inline;
+        margin: 0;
+    }
+    .small-box.small-box-sm h3 {
+        font-size: 1.5rem;
+        margin-right: 6px;
+    }
+    .small-box.small-box-sm p {
+        font-size: .85rem;
+    }
+    .small-box.small-box-sm .icon {
+        font-size: 2rem;
+        top: 8px;
+        right: 10px;
+    }
+</style>
+@endsection
+
 @section('main_content')
 <div class="container-fluid">
     <div class="row">
@@ -16,9 +44,9 @@
 
                 <div class="card-body">
                     <!-- Summary Cards -->
-                    <div class="row mb-4">
+                    <div class="row mb-3 g-2">
                         <div class="col-lg-3 col-6">
-                            <div class="small-box bg-info">
+                            <div class="small-box small-box-sm bg-info">
                                 <div class="inner">
                                     <h3>{{ $stats['total_locations'] ?? 0 }}</h3>
                                     <p>Total Locations</p>
@@ -29,7 +57,7 @@
                             </div>
                         </div>
                         <div class="col-lg-3 col-6">
-                            <div class="small-box bg-success">
+                            <div class="small-box small-box-sm bg-success">
                                 <div class="inner">
                                     <h3>{{ $stats['total_medications'] ?? 0 }}</h3>
                                     <p>Unique Medications</p>
@@ -40,7 +68,7 @@
                             </div>
                         </div>
                         <div class="col-lg-3 col-6">
-                            <div class="small-box bg-warning">
+                            <div class="small-box small-box-sm bg-warning">
                                 <div class="inner">
                                     <h3>{{ $stats['expiring_soon'] ?? 0 }}</h3>
                                     <p>Expiring Soon</p>
@@ -51,7 +79,7 @@
                             </div>
                         </div>
                         <div class="col-lg-3 col-6">
-                            <div class="small-box bg-danger">
+                            <div class="small-box small-box-sm bg-danger">
                                 <div class="inner">
                                     <h3>{{ $stats['out_of_stock'] ?? 0 }}</h3>
                                     <p>Out of Stock</p>
@@ -77,7 +105,7 @@
                                 </select>
                             </div>
                             <div class="col-md-3">
-                                <select name="medication_id" class="form-control">
+                                <select name="medication_id" id="medication_id" class="form-control select2-medication">
                                     <option value="">All Medications</option>
                                     @foreach($medications as $medication)
                                         <option value="{{ $medication->id }}" {{ request('medication_id') == $medication->id ? 'selected' : '' }}>
@@ -327,6 +355,14 @@
 </div>
 
 <script>
+$(document).ready(function () {
+    $('.select2-medication').select2({
+        placeholder: 'All Medications',
+        allowClear: true,
+        width: '100%'
+    });
+});
+
 function showMovementModal(stockId, medicationName, availableQuantity) {
     document.getElementById('movement_stock_id').value = stockId;
     document.getElementById('movement_medication_name').textContent = medicationName;
