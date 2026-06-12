@@ -317,16 +317,18 @@
                 </li> --}}
                 <!--end::Menu Body-->
                 <!--begin::Menu Footer-->
-                <li class="user-footer">
-                  <a href="{{ route('profile.edit') }}" class="btn btn-default btn-flat">
-                    <i class="bi bi-person-gear me-1"></i>Profile
-                  </a>
-                  <a href="{{ route('profile.signature.edit') }}" class="btn btn-default btn-flat">
-                    <i class="bi bi-pen me-1"></i>My Signature
-                  </a>
-                  <form method="POST" action="{{ route('logout') }}" style="display: inline;">
+                <li class="user-footer d-flex flex-column align-items-center">
+                  <div class="d-flex justify-content-between w-100 gap-2">
+                    <a href="{{ route('profile.edit') }}" class="btn btn-default btn-flat border flex-fill">
+                      <i class="bi bi-person-gear me-1"></i>Profile
+                    </a>
+                    <a href="{{ route('profile.signature.edit') }}" class="btn btn-default btn-flat border flex-fill">
+                      <i class="bi bi-pen me-1"></i>My Signature
+                    </a>
+                  </div>
+                  <form method="POST" action="{{ route('logout') }}" class="mt-3 mb-1">
                     @csrf
-                    <button type="submit" class="btn btn-default btn-flat float-end" onclick="return confirm('Are you sure you want to logout?')">
+                    <button type="submit" class="btn btn-danger btn-flat" onclick="return confirm('Are you sure you want to logout?')">
                       <i class="bi bi-box-arrow-right me-1"></i>Sign out
                     </button>
                   </form>
