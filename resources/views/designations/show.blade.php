@@ -31,16 +31,6 @@
                         <div class="col-md-3"><strong>Description:</strong></div>
                         <div class="col-md-9">{{ $designation->description ?? 'N/A' }}</div>
                     </div>
-                    
-                    <div class="row mb-3">
-                        <div class="col-md-3"><strong>Created At:</strong></div>
-                        <div class="col-md-9">{{ $designation->created_at->format('Y-m-d H:i:s') }}</div>
-                    </div>
-                    
-                    <div class="row mb-3">
-                        <div class="col-md-3"><strong>Updated At:</strong></div>
-                        <div class="col-md-9">{{ $designation->updated_at->format('Y-m-d H:i:s') }}</div>
-                    </div>
                 </div>
             </div>
 
