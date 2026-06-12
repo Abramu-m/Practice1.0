@@ -73,8 +73,8 @@ Route::middleware('auth')->group(function () {
     })->name('custom.verification.notice');
 });
 
-// Simple authenticated pages: Settings and Help
-Route::middleware('auth')->group(function () {
+// Settings - admins only
+Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsAdmin::class])->group(function () {
     Route::get('/settings', [App\Http\Controllers\SettingsController::class, 'index'])->name('settings.index');
     Route::put('/settings/facility', [App\Http\Controllers\SettingsController::class, 'updateFacility'])->name('settings.facility.update');
     Route::put('/settings/report-config', [App\Http\Controllers\SettingsController::class, 'updateReportConfig'])->name('settings.report-config.update');
@@ -82,7 +82,10 @@ Route::middleware('auth')->group(function () {
     Route::put('/settings/reports/malaria-vipimo', [App\Http\Controllers\SettingsController::class, 'updateMalariaVipimoSettings'])->name('settings.reports.malaria-vipimo.update');
     Route::get('/settings/reports/alu-monthly', [App\Http\Controllers\SettingsController::class, 'aluReportSettings'])->name('settings.reports.alu-monthly');
     Route::put('/settings/reports/alu-monthly', [App\Http\Controllers\SettingsController::class, 'updateAluReportSettings'])->name('settings.reports.alu-monthly.update');
+});
 
+// Simple authenticated pages: Help, facility setup, nav view
+Route::middleware('auth')->group(function () {
     Route::get('/facility-setup-required', function () {
         return view('facility.setup-required');
     })->name('facility.setup-required');

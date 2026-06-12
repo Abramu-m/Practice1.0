@@ -424,13 +424,15 @@
               </li>
               @endif
               <!--end::Role based aside Menu-->
-              <!-- Settings - Available to all authenticated users -->
+              <!-- Settings - Admins only -->
+              @if(auth()->check() && $navUser->isAdmin())
               <li class="nav-item">
                 <a href="{{ url('/settings') }}" class="nav-link">
                   <i class="nav-icon bi bi-gear"></i>
                   <p>Settings</p>
                 </a>
               </li>
+              @endif
               <!-- Help - Available to all authenticated users -->
               <li class="nav-item">
                 <a href="{{ url('/help') }}" class="nav-link" target="_blank" rel="noopener">
