@@ -12,3 +12,9 @@ Artisan::command('inspire', function () {
 
 Schedule::job(new SyncNhifTariffsJob(config('nhif.facility_code')))->dailyAt('02:00');
 Schedule::job(new PollNhifClaimStatusJob())->dailyAt('06:00');
+
+// Phase 6.2 — bidirectional sync (practice.local <-> janet-healthcare.com).
+Schedule::command('sync:run')
+    ->everyFiveMinutes()
+    ->withoutOverlapping()
+    ->when(fn () => config('sync.enabled'));

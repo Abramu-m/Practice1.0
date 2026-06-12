@@ -3,11 +3,20 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ClinicalController;
+use App\Http\Controllers\Api\SyncController;
 use App\Http\Controllers\Icd10Controller;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
+
+// Phase 6.2 — bidirectional sync (practice.local <-> janet-healthcare.com).
+// HMAC-authenticated machine-to-machine endpoints, no CSRF (api middleware group).
+Route::prefix('sync')->group(function () {
+    Route::get('/ping', fn () => response()->json(['ok' => true]));
+    Route::post('/receive', [SyncController::class, 'receive'])->name('sync.receive');
+    Route::get('/changes', [SyncController::class, 'changes'])->name('sync.changes');
+});
 
 // Medical Services Search (public access for frontend)
 Route::get('/medical-services/search', [ClinicalController::class, 'searchMedicalServices']);
