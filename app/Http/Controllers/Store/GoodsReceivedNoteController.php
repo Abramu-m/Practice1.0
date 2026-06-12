@@ -459,7 +459,6 @@ class GoodsReceivedNoteController extends Controller
                 'item_type' => 'medication',
                 'item_id' => $grnItem->item_id,
                 'store_location_id' => 1, // Main store location
-                'batch_id' => null, // We'll set this if you have a batches table
                 'movement_type' => 'in',
                 'transaction_type' => 'purchase',
                 'reference_number' => $grn->grn_number,

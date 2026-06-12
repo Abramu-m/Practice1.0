@@ -16,7 +16,6 @@ class StoreStockMovement extends Model
         'store_location_id',
         'from_location_id',
         'to_location_id',
-        'batch_id',
         'movement_type', // 'in', 'out', 'transfer', 'adjustment', 'waste'
         'transaction_type', // 'purchase', 'dispensing', 'requisition', 'transfer', 'adjustment', 'waste', 'return', 'consumption', 'disposal'
         'reference_number',

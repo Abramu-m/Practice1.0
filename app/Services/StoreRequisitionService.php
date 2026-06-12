@@ -233,7 +233,6 @@ class StoreRequisitionService
             'item_type' => 'medication',
             'item_id' => $data['medication_id'],
             'store_location_id' => $data['to_location_id'],
-            'batch_id' => null, // We'll set this if you have a batches table
             'movement_type' => $data['movement_type'],
             'transaction_type' => $data['transaction_type'],
             'reference_number' => $data['reference_number'],

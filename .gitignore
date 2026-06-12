@@ -48,5 +48,8 @@ Thumbs.db
 # Large local migration dumps
 /docs/migrate/local/*.sql
 
+# Generated setup-data export (contains password hashes & encrypted NHIF credentials)
+/docs/migrate/8.setup_data.sql
+
 # Added by ggshield
 .cache_ggshield
