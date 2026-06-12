@@ -124,12 +124,24 @@ $gitCommand =
     ' && git reset --hard FETCH_HEAD 2>&1';
 $phpPath = '/usr/local/bin/php'; // Bluehost PHP path, adjust if needed
 
+// Phase 6.1 — npm/Vite build needs node+npm on PATH, but PHP-FPM's exec() environment
+// usually has none. If "Install Node Dependencies" / "Build Frontend Assets" below fail
+// with "command not found" in storage/logs/webhook-*.log, SSH in and run `which node` /
+// `which npm` (or find the venv created by Bluehost's "Setup Node.js App"), then prepend
+// that bin directory here, e.g. '/home2/yyfcolmy/nodevenv/public_html/Practice1.0/20/bin:'.
+$nodePathPrefix = '';
+
 $commands = [
     'cd ' . PROJECT_PATH . ' && HOME=' . PROJECT_PATH . '/storage/composer-home COMPOSER_HOME=' . PROJECT_PATH . '/storage/composer-home /opt/cpanel/composer/bin/composer install --no-dev --optimize-autoloader --ignore-platform-reqs 2>&1',
+    // Phase 6.1 — vendor CDN assets locally (resources/build/copy-vendor.mjs + vite build)
+    'cd ' . PROJECT_PATH . ' && PATH=' . $nodePathPrefix . '$PATH npm install 2>&1',
+    'cd ' . PROJECT_PATH . ' && PATH=' . $nodePathPrefix . '$PATH npm run build 2>&1',
     $phpPath . ' ' . PROJECT_PATH . '/artisan config:clear 2>&1',
     $phpPath . ' ' . PROJECT_PATH . '/artisan cache:clear 2>&1',
     $phpPath . ' ' . PROJECT_PATH . '/artisan route:clear 2>&1',
     $phpPath . ' ' . PROJECT_PATH . '/artisan view:clear 2>&1',
+    // Idempotent — needed for Storage::disk('public') (profile signatures, receipts)
+    $phpPath . ' ' . PROJECT_PATH . '/artisan storage:link 2>&1',
     $phpPath . ' ' . PROJECT_PATH . '/artisan config:cache 2>&1',
     $phpPath . ' ' . PROJECT_PATH . '/artisan route:cache 2>&1',
     $phpPath . ' ' . PROJECT_PATH . '/artisan view:cache 2>&1',
@@ -270,6 +282,9 @@ foreach ($commands as $command) {
     // Extract command name for cleaner display
     $commandName = 'Unknown';
     if (strpos($command, 'composer install') !== false) $commandName = 'Install Dependencies';
+    elseif (strpos($command, 'npm install') !== false) $commandName = 'Install Node Dependencies';
+    elseif (strpos($command, 'npm run build') !== false) $commandName = 'Build Frontend Assets';
+    elseif (strpos($command, 'storage:link') !== false) $commandName = 'Link Storage';
     elseif (strpos($command, 'config:clear') !== false) $commandName = 'Clear Config Cache';
     elseif (strpos($command, 'cache:clear') !== false) $commandName = 'Clear App Cache';
     elseif (strpos($command, 'route:clear') !== false) $commandName = 'Clear Route Cache';

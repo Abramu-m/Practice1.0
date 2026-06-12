@@ -61,7 +61,7 @@ password and NHIF account password have been rotated** (2026-06-08). This item i
 | Local data layer | **READY** | MySQL only (`config/database.php`, no SQLite fallback active); session/cache/queue all use the `database` driver (`config/session.php`, `config/cache.php`, `config/queue.php`, `QUEUE_CONNECTION=database`) — no Redis/Memcached. File storage is local disk (`FILESYSTEM_DISK=local`; S3 configured but unused). Mail is `MAIL_MAILER=log`. Core clinical workflows (registration, consultation, prescriptions, dispensing, billing — `PatientController.php:141-273`, `ConsultationController.php:38-100`, `PrescriptionController.php:34-97`, `PharmacistController.php`, `CashierController.php:14-150`) make zero network calls. |
 | NHIF sync isolation | **PARTIAL** | `syncTariffs`/`submitClaim`/`submitBatch` (`NhifController.php:780,809,854-858`) already dispatch queued, retried jobs (Phase 1, DONE) — never block. `verifyMember` (L516), `getCardDetails` (L633), `authorize` (L687) call `NhifService` synchronously and will block/timeout if offline — acceptable since these are explicit, user-initiated NHIF actions, not core workflow blockers. Future UX nicety: clearer "NHIF unreachable" messaging on timeout. |
 | Frontend asset dependency | **DONE (Phase 6.1)** | All ~20 CDN-hosted CSS/JS assets (fonts, Bootstrap, jQuery, Select2, DataTables, ApexCharts, Chart.js, OverlayScrollbars, Bootstrap Icons, Font Awesome, Toastr, moment, daterangepicker, Alpine) are now self-hosted via npm/Vite — zero `cdn.jsdelivr.net`/`cdnjs.cloudflare.com`/`code.jquery.com` requests on `/patient_visits`, `/financial/dashboard`, etc. Interactive libraries are copied from `node_modules/*/dist` to `public/vendor/*.min.js` by `resources/build/copy-vendor.mjs` (run via `npm run build`/`dev`) and loaded as classic, render-blocking `<script>` tags in `<head>` BEFORE `@vite()` — see Phase 6.1 below for why. AdminLTE's own CSS/JS (`dist/css/adminlte.css`, `dist/js/adminlte.js`, bundles Bootstrap) remains local as before. A basic PWA service worker (`public/sw.js`, `/offline` route, `public/manifest.json`) still exists as a secondary cache layer. Residual: `medications/consumption/analytics.blade.php` still loads moment.js/daterangepicker from CDN (separate from the vendored set, not yet migrated). |
-| Backup/DR to remote site | **MISSING** | No bidirectional sync exists between `practice.local` and `janet-healthcare.com` (same facility, two access points). See Phase 6.2. |
+| Backup/DR to remote site | **PARTIAL (6.2b done, disabled by default)** | Bidirectional sync infrastructure is complete and the `Syncable` trait is applied to all 14 v1 models (`User`, `Patient`, `PatientVisit`, `Consultation`, `VitalSigns`, `Investigation`, `Prescription`, `Allergy`, `PastMedicalHistory`, `PatientReferral`, `FinancialTransaction`, `PaymentReceipt`, `MedicationCashSale`, `MedicationCashSaleItem`) — create/update/delete on these now write `sync_outbox` rows once `SYNC_ENABLED=true`. A `Sync → Conflicts` review page (`/admin/sync/conflicts`, System Management nav) lets an admin pick "Keep Local"/"Keep Incoming"/"Mark Merged" for rows in `sync_conflicts`. End-to-end convergence test (FK-uuid resolution on outbox writes, cross-table dependency-ordered apply of an incoming batch, conflict detection + both resolution paths) passed in tinker. Still off by default (`SYNC_ENABLED=false`) until both instances are configured — see Phase 6.2 and `docs/online-deployment-checklist.md`. |
 
 ---
 
@@ -135,12 +135,50 @@ password and NHIF account password have been rotated** (2026-06-08). This item i
       view's `@push('styles')` is silently dropped — the layout only has `@stack('scripts')`, not
       `@stack('styles')` (pre-existing bug, see this doc's print-page `@section('styles')`
       guidance) — flagged, not fixed.
-  - **6.2 Bidirectional sync between practice.local and janet-healthcare.com (DESIGN ONLY —
-    future phase, same facility/dataset):** the two deployments represent the same facility's
-    data and must converge — changes made offline propagate online once connectivity returns, and
-    vice versa. Needs its own design pass covering: UUID/identity strategy for key clinical tables
-    (patients, patient_visits, prescriptions, etc.) so independently-created rows never collide;
-    an outbox/change-log per syncable table; a connectivity-aware scheduled sync job exchanging
-    change-logs via an HMAC-authenticated endpoint (mirroring the existing
-    `public/webhook-deploy.php` HMAC pattern); and conflict resolution (start with last-write-wins
-    by `updated_at` + a `sync_conflicts` review log). Multi-week effort — not started.
+  - **6.2 Bidirectional sync between practice.local and janet-healthcare.com (same
+    facility/dataset):** full architecture in `docs/phase6.2-bidirectional-sync-design.md`.
+    - **6.2a Infrastructure — DONE (2026-06-12):** `uuid` identity column added to all 22
+      syncable/FK-target tables (`patients`, `patient_visits`, `consultations`, `vital_signs`,
+      `investigations`, `prescriptions`, `allergies`, `past_medical_history`,
+      `patient_referrals`, `financial_transactions`, `payment_receipts`,
+      `medication_cash_sales`/`*_items`, `users`, plus reference tables `visit_types`,
+      `medical_services`, `medications`, `patient_categories`, `administration_routes`,
+      `medication_frequencies`, `referral_hospitals`, `referral_departments`) and backfilled via
+      `php artisan sync:backfill-uuids`. New tables `sync_outbox`, `sync_state`,
+      `sync_conflicts`. `Syncable` trait + shared `SyncTrackingGuard`
+      (`app/Models/Concerns/`) ready to apply to models. `config/sync.php` declares the v1
+      table order, FK→uuid map, and conflict-check flags. `SyncApplier`
+      (`app/Services/Sync/`) implements FK-uuid resolution, dependency-ordered apply,
+      last-write-wins + `sync_conflicts`, with one deferred-FK retry pass — verified via
+      tinker (insert/update/conflict/defer all behave correctly). HMAC-authenticated
+      `GET /api/sync/ping`, `POST /api/sync/receive`, `GET /api/sync/changes` added to
+      `routes/api.php` (verified: missing/incorrect `X-Sync-Signature` → 403, correct
+      signature → applies and FK-resolves). `sync:run` command (push/pull, HMAC-signed,
+      no-ops cleanly when remote unreachable or `SYNC_ENABLED=false`) scheduled
+      `everyFiveMinutes()` in `routes/console.php`. New `.env` keys: `SYNC_ENABLED`,
+      `SYNC_SITE_ID`, `SYNC_REMOTE_SITE_ID`, `SYNC_REMOTE_URL`, `SYNC_SECRET` (all
+      unset/disabled by default).
+    - **6.2b Apply to v1 models + conflict UI — DONE (2026-06-12):** `Syncable` trait added
+      to all 14 v1 models (`User`, `Patient`, `PatientVisit`, `Consultation`, `VitalSigns`,
+      `Investigation`, `Prescription`, `Allergy`, `PastMedicalHistory`, `PatientReferral`,
+      `FinancialTransaction`, `PaymentReceipt`, `MedicationCashSale`,
+      `MedicationCashSaleItem`) — verified no boot-order issues even for models that
+      override `boot()`/`booted()`. New `SyncConflictController` +
+      `resources/views/admin/sync/conflicts/index.blade.php` (routes
+      `admin.sync.conflicts.index`/`.resolve`, DataTable, nav entry under System
+      Management) let an admin resolve `sync_conflicts` rows as kept_local/kept_incoming/
+      merged — `kept_incoming` applies the incoming payload to the local row by `uuid`.
+      End-to-end convergence test (via `Config::set('sync.enabled', true)` in tinker,
+      cleaned up afterward — no `.env` changes needed for the test): (1) a local
+      `Patient`/`Allergy` create wrote correctly FK-uuid-resolved `sync_outbox` rows;
+      (2) an incoming batch inserting a new patient + an allergy referencing that same
+      new patient (same batch) applied in dependency order with the allergy's
+      `patient_id` correctly remapped to the new local patient id; (3) an incoming
+      update older than a local edit (per `sync_state.last_pull_at`) correctly produced
+      `sync_conflicts` rows instead of overwriting; (4) both `kept_local` (no-op) and
+      `kept_incoming` (applies incoming payload) resolutions worked via
+      `SyncConflictController::resolve`. Still `SYNC_ENABLED=false` by default — see
+      `docs/online-deployment-checklist.md` for what's needed to turn sync on between
+      `practice.local` and `janet-healthcare.com`.
+    - **6.2c Extend to ledger/stock/cash tables — NOT STARTED:** deferred until 6.2b is
+      proven stable in production (§2 "deferred to v2").

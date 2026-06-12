@@ -579,12 +579,12 @@
               </li>
 
               <!-- System Settings -->
-              <li class="nav-item has-treeview {{ nav_menu_open_class(['medical_services.*', 'medical-service-insurance-map.*', 'service_categories.*', 'sample_types.*', 'lab.service-consumables.*', 'result-templates.*', 'form-templates.*', 'icd10.*', 'msd-codes.*', 'lab-codes.*', 'medications.index', 'medications.pricing', 'medications.tracer', 'medication-insurance-map.*', 'store-categories.*', 'administration-routes.*'], ['doctors', 'patient_categories', 'visit_types', 'designations', 'consultation_fees']) }}">
-                <a href="#" class="nav-link nav-header {{ nav_active_class(['medical_services.*', 'medical-service-insurance-map.*', 'service_categories.*', 'sample_types.*', 'lab.service-consumables.*', 'result-templates.*', 'form-templates.*', 'icd10.*', 'msd-codes.*', 'lab-codes.*', 'medications.index', 'medications.pricing', 'medications.tracer', 'medication-insurance-map.*', 'store-categories.*', 'administration-routes.*'], ['doctors', 'patient_categories', 'visit_types', 'designations', 'consultation_fees']) }}">
+              <li class="nav-item has-treeview {{ nav_menu_open_class(['medical_services.*', 'medical-service-insurance-map.*', 'service_categories.*', 'sample_types.*', 'lab.service-consumables.*', 'result-templates.*', 'form-templates.*', 'icd10.*', 'msd-codes.*', 'lab-codes.*', 'medications.index', 'medications.pricing', 'medications.tracer', 'medication-insurance-map.*', 'store-categories.*', 'administration-routes.*', 'admin.sync.conflicts.*'], ['doctors', 'patient_categories', 'visit_types', 'designations', 'consultation_fees']) }}">
+                <a href="#" class="nav-link nav-header {{ nav_active_class(['medical_services.*', 'medical-service-insurance-map.*', 'service_categories.*', 'sample_types.*', 'lab.service-consumables.*', 'result-templates.*', 'form-templates.*', 'icd10.*', 'msd-codes.*', 'lab-codes.*', 'medications.index', 'medications.pricing', 'medications.tracer', 'medication-insurance-map.*', 'store-categories.*', 'administration-routes.*', 'admin.sync.conflicts.*'], ['doctors', 'patient_categories', 'visit_types', 'designations', 'consultation_fees']) }}">
                   <i class="nav-icon bi bi-gear-fill text-secondary"></i>
                   <p class="text-bold">System Management<i class="nav-arrow bi bi-chevron-right"></i></p>
                 </a>
-                <ul class="nav nav-treeview" style="{{ nav_display_style(['medical_services.*', 'medical-service-insurance-map.*', 'service_categories.*', 'sample_types.*', 'lab.service-consumables.*', 'result-templates.*', 'form-templates.*', 'icd10.*', 'msd-codes.*', 'lab-codes.*', 'medications.index', 'medications.pricing', 'medications.tracer', 'medication-insurance-map.*', 'store-categories.*', 'administration-routes.*'], ['doctors', 'patient_categories', 'visit_types', 'designations', 'consultation_fees']) }}">
+                <ul class="nav nav-treeview" style="{{ nav_display_style(['medical_services.*', 'medical-service-insurance-map.*', 'service_categories.*', 'sample_types.*', 'lab.service-consumables.*', 'result-templates.*', 'form-templates.*', 'icd10.*', 'msd-codes.*', 'lab-codes.*', 'medications.index', 'medications.pricing', 'medications.tracer', 'medication-insurance-map.*', 'store-categories.*', 'administration-routes.*', 'admin.sync.conflicts.*'], ['doctors', 'patient_categories', 'visit_types', 'designations', 'consultation_fees']) }}">
                   <li class="nav-item has-treeview {{ nav_menu_open_class([], ['doctors', 'patient_categories', 'visit_types', 'designations', 'consultation_fees']) }}">
                     <a href="#" class="nav-link nav-sub-header {{ nav_active_class([], ['doctors', 'patient_categories', 'visit_types', 'designations', 'consultation_fees']) }}">
                       <i class="nav-icon bi bi-hospital text-info"></i>
@@ -790,6 +790,12 @@
                           </a>
                       </li>
                     </ul>
+                  </li>
+                  <li class="nav-item">
+                    <a href="{{ route('admin.sync.conflicts.index') }}" class="nav-link nav-sub-item {{ nav_active_class(['admin.sync.conflicts.*']) }}">
+                      <i class="nav-icon bi bi-arrow-repeat text-secondary"></i>
+                      <p>Sync Conflicts</p>
+                    </a>
                   </li>
                 </ul>
               </li>

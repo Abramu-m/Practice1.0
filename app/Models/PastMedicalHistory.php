@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\Syncable;
 use Illuminate\Database\Eloquent\Model;
 
 class PastMedicalHistory extends Model
 {
+    use Syncable;
+
     protected $table = 'past_medical_history';
-    
+
     protected $fillable = [
         'patient_id',
         'allergies',

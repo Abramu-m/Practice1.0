@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\Syncable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 
 class PaymentReceipt extends Model
 {
+    use Syncable;
+
     protected $fillable = [
         'receipt_number',
         'receipt_date',

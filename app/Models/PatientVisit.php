@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\Syncable;
 use Illuminate\Database\Eloquent\Model;
 
 class PatientVisit extends Model
 {
+    use Syncable;
+
     protected $fillable = [
         'patient',
         'visit_type',
@@ -90,7 +93,7 @@ class PatientVisit extends Model
         return [
             0 => 'Waiting',
             1 => 'In Treatment',
-            2 => 'Discharged'
+            2 => 'Treated'
         ];
     }
 

@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\Syncable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Consultation extends Model
 {
-    use HasFactory;
+    use HasFactory, Syncable;
 
     protected $table = 'consultations';
     protected $primaryKey = 'id';

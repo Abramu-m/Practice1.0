@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\Syncable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 
 class FinancialTransaction extends Model
 {
+    use Syncable;
+
     protected $fillable = [
         'transaction_number',
         'transaction_date',

@@ -901,6 +901,10 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsVerified::class, 'fa
     // Coding-standard libraries: MSD item codes, LOINC / SNOMED CT lab codes
     Route::get('/msd-codes', [App\Http\Controllers\MsdCodeController::class, 'index'])->name('msd-codes.index');
     Route::get('/lab-codes', [App\Http\Controllers\LabCodeController::class, 'index'])->name('lab-codes.index');
+
+    // Phase 6.2b — Sync conflicts review queue
+    Route::get('/admin/sync/conflicts', [App\Http\Controllers\Admin\SyncConflictController::class, 'index'])->name('admin.sync.conflicts.index');
+    Route::post('/admin/sync/conflicts/{id}/resolve', [App\Http\Controllers\Admin\SyncConflictController::class, 'resolve'])->name('admin.sync.conflicts.resolve');
 });
 
 // Medication API (auth required)
