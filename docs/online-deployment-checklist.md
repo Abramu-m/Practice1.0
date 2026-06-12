@@ -19,7 +19,16 @@ On every push to `master`, janet-healthcare.com's webhook automatically:
 - `artisan config:cache`, `route:cache`, `view:cache`
 - `artisan migrate --force`
 
-Logs: `storage/logs/webhook-*.log` (channel `webhook`).
+**Multi-site (2026-06-12):** the same single GitHub webhook call now also
+deploys `brigita-clinic.com` (`/home2/yyfcolmy/brigita`, its own `.env`/DB —
+separate facility/tenant) via the same pipeline, run independently — a
+failure on one site doesn't skip the other. No second GitHub webhook/secret
+is needed.
+
+Logs: `storage/logs/webhook-*.log` (channel `webhook`), running on
+janet-healthcare.com's instance. Each site's steps are prefixed
+`[janet-healthcare.com]` / `[brigita-clinic.com]` so they can be grepped
+separately even though brigita's deploy is driven from janet's log file.
 
 ## 2. NOT automated — action required
 
