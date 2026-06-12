@@ -143,11 +143,19 @@ WHERE NOT EXISTS (
     SELECT 1 FROM yyfcolmy_brigita_practice.store_suppliers t WHERE t.id = src.sp_id
 );
 
+-- Skip rows whose supplier_id has no matching store_suppliers row (historical
+-- GRNs referencing suppliers no longer present in either DB) rather than
+-- failing the whole import on the FK constraint.
 INSERT INTO yyfcolmy_brigita_practice.`goods_received_notes` (`id`, `grn_number`, `grn_date`, `supplier_id`, `invoice_number`, `invoice_date`, `delivery_note_number`, `delivery_date`, `total_amount`, `discount_amount`, `tax_amount`, `net_amount`, `status`, `notes`, `received_by`, `received_at`)
+SELECT NULL, src.grn_no, src.createdon, src.Supplier, src.invoice_no, src.createdon, NULL, NULL, src.amount, 0, 0, src.amount, 'posted', NULL, src.createdby, src.createdon
+FROM yyfcolmy_medcom.`grn_hd` src
+WHERE EXISTS (
+    SELECT 1 FROM yyfcolmy_brigita_practice.store_suppliers t WHERE t.id = src.Supplier
+);
 
-SELECT NULL, grn_no, createdon, Supplier, invoice_no, createdon, NULL, NULL, amount AS amt, 0, 0, amount AS net, 'posted', NULL, createdby, createdon
-FROM yyfcolmy_medcom.`grn_hd`;
-
+-- Skip rows whose item_id has no matching medications row, for the same reason.
+-- The INNER JOIN to goods_received_notes already excludes items belonging to
+-- GRN headers skipped above.
 INSERT INTO yyfcolmy_brigita_practice.goods_received_note_items (`id`, `grn_id`, `item_id`, `store_unit_id`, `dispensing_unit_id`, `conversion_factor`, `store_quantity`, `store_unit_cost`, `batch_number`, `manufacture_date`, `expiry_date`, `received_quantity`, `unit_cost`, `total_cost`, `discount_percentage`, `discount_amount`, `tax_percentage`, `tax_amount`, `net_amount`, `notes`, `created_at`, `updated_at`)
 SELECT dt.dt_id, grn.id, dt.material, 24, 26, dt.cfactor, dt.rqty, dt.pcost, dt.bnumber, NULL,
 CASE
@@ -159,7 +167,10 @@ CASE
 END, dt.tiqty, dt.uncost, dt.tpcost, NULL, NULL, NULL, NULL, dt.tpcost, NULL, dt.con, NOW()
 FROM yyfcolmy_medcom.grn_dt dt
 INNER JOIN yyfcolmy_brigita_practice.goods_received_notes grn
-ON CAST(grn.grn_number AS CHAR) = CAST(dt.grno AS CHAR);
+ON CAST(grn.grn_number AS CHAR) = CAST(dt.grno AS CHAR)
+WHERE EXISTS (
+    SELECT 1 FROM yyfcolmy_brigita_practice.medications m WHERE m.id = dt.material
+);
 
 INSERT INTO yyfcolmy_brigita_practice.icd_diagnoses
 (`id`, `consultation_id`, `icd_code`, `description`, `type`, `category`, `subcategory`, `added_by`, `created_at`, `updated_at`)
