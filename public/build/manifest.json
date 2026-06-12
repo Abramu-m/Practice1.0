@@ -1,0 +1,109 @@
+{
+  "node_modules/@fontsource/source-sans-3/files/source-sans-3-cyrillic-400-normal.woff": {
+    "file": "assets/source-sans-3-cyrillic-400-normal-CuPigu-F.woff",
+    "src": "node_modules/@fontsource/source-sans-3/files/source-sans-3-cyrillic-400-normal.woff"
+  },
+  "node_modules/@fontsource/source-sans-3/files/source-sans-3-cyrillic-400-normal.woff2": {
+    "file": "assets/source-sans-3-cyrillic-400-normal-DQZZUzLj.woff2",
+    "src": "node_modules/@fontsource/source-sans-3/files/source-sans-3-cyrillic-400-normal.woff2"
+  },
+  "node_modules/@fontsource/source-sans-3/files/source-sans-3-cyrillic-ext-400-normal.woff": {
+    "file": "assets/source-sans-3-cyrillic-ext-400-normal-CjnJrPL-.woff",
+    "src": "node_modules/@fontsource/source-sans-3/files/source-sans-3-cyrillic-ext-400-normal.woff"
+  },
+  "node_modules/@fontsource/source-sans-3/files/source-sans-3-cyrillic-ext-400-normal.woff2": {
+    "file": "assets/source-sans-3-cyrillic-ext-400-normal-CpeHaQI5.woff2",
+    "src": "node_modules/@fontsource/source-sans-3/files/source-sans-3-cyrillic-ext-400-normal.woff2"
+  },
+  "node_modules/@fontsource/source-sans-3/files/source-sans-3-greek-400-normal.woff": {
+    "file": "assets/source-sans-3-greek-400-normal-BCPs6d1u.woff",
+    "src": "node_modules/@fontsource/source-sans-3/files/source-sans-3-greek-400-normal.woff"
+  },
+  "node_modules/@fontsource/source-sans-3/files/source-sans-3-greek-400-normal.woff2": {
+    "file": "assets/source-sans-3-greek-400-normal-VSL0MHgR.woff2",
+    "src": "node_modules/@fontsource/source-sans-3/files/source-sans-3-greek-400-normal.woff2"
+  },
+  "node_modules/@fontsource/source-sans-3/files/source-sans-3-greek-ext-400-normal.woff": {
+    "file": "assets/source-sans-3-greek-ext-400-normal-ByJiDTVW.woff",
+    "src": "node_modules/@fontsource/source-sans-3/files/source-sans-3-greek-ext-400-normal.woff"
+  },
+  "node_modules/@fontsource/source-sans-3/files/source-sans-3-greek-ext-400-normal.woff2": {
+    "file": "assets/source-sans-3-greek-ext-400-normal-U_aoKcfY.woff2",
+    "src": "node_modules/@fontsource/source-sans-3/files/source-sans-3-greek-ext-400-normal.woff2"
+  },
+  "node_modules/@fontsource/source-sans-3/files/source-sans-3-latin-400-normal.woff": {
+    "file": "assets/source-sans-3-latin-400-normal-S5MsD0GB.woff",
+    "src": "node_modules/@fontsource/source-sans-3/files/source-sans-3-latin-400-normal.woff"
+  },
+  "node_modules/@fontsource/source-sans-3/files/source-sans-3-latin-400-normal.woff2": {
+    "file": "assets/source-sans-3-latin-400-normal-CWExqDl9.woff2",
+    "src": "node_modules/@fontsource/source-sans-3/files/source-sans-3-latin-400-normal.woff2"
+  },
+  "node_modules/@fontsource/source-sans-3/files/source-sans-3-latin-ext-400-normal.woff": {
+    "file": "assets/source-sans-3-latin-ext-400-normal-BHr_XUSu.woff",
+    "src": "node_modules/@fontsource/source-sans-3/files/source-sans-3-latin-ext-400-normal.woff"
+  },
+  "node_modules/@fontsource/source-sans-3/files/source-sans-3-latin-ext-400-normal.woff2": {
+    "file": "assets/source-sans-3-latin-ext-400-normal-BHBhJkff.woff2",
+    "src": "node_modules/@fontsource/source-sans-3/files/source-sans-3-latin-ext-400-normal.woff2"
+  },
+  "node_modules/@fontsource/source-sans-3/files/source-sans-3-vietnamese-400-normal.woff": {
+    "file": "assets/source-sans-3-vietnamese-400-normal-D4zEZP4J.woff",
+    "src": "node_modules/@fontsource/source-sans-3/files/source-sans-3-vietnamese-400-normal.woff"
+  },
+  "node_modules/@fontsource/source-sans-3/files/source-sans-3-vietnamese-400-normal.woff2": {
+    "file": "assets/source-sans-3-vietnamese-400-normal-DAxDNOwq.woff2",
+    "src": "node_modules/@fontsource/source-sans-3/files/source-sans-3-vietnamese-400-normal.woff2"
+  },
+  "node_modules/@fortawesome/fontawesome-free/webfonts/fa-brands-400.ttf": {
+    "file": "assets/fa-brands-400-D7HcTrzQ.ttf",
+    "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-brands-400.ttf"
+  },
+  "node_modules/@fortawesome/fontawesome-free/webfonts/fa-brands-400.woff2": {
+    "file": "assets/fa-brands-400-C-jaCRNI.woff2",
+    "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-brands-400.woff2"
+  },
+  "node_modules/@fortawesome/fontawesome-free/webfonts/fa-regular-400.ttf": {
+    "file": "assets/fa-regular-400-BSSd-Tma.ttf",
+    "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-regular-400.ttf"
+  },
+  "node_modules/@fortawesome/fontawesome-free/webfonts/fa-regular-400.woff2": {
+    "file": "assets/fa-regular-400-TCCU0xbi.woff2",
+    "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-regular-400.woff2"
+  },
+  "node_modules/@fortawesome/fontawesome-free/webfonts/fa-solid-900.ttf": {
+    "file": "assets/fa-solid-900-f4MajOib.ttf",
+    "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-solid-900.ttf"
+  },
+  "node_modules/@fortawesome/fontawesome-free/webfonts/fa-solid-900.woff2": {
+    "file": "assets/fa-solid-900-tLH6XCuf.woff2",
+    "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-solid-900.woff2"
+  },
+  "node_modules/@fortawesome/fontawesome-free/webfonts/fa-v4compatibility.ttf": {
+    "file": "assets/fa-v4compatibility-Ac5Ki1KR.ttf",
+    "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-v4compatibility.ttf"
+  },
+  "node_modules/@fortawesome/fontawesome-free/webfonts/fa-v4compatibility.woff2": {
+    "file": "assets/fa-v4compatibility-BajFMAgw.woff2",
+    "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-v4compatibility.woff2"
+  },
+  "node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff": {
+    "file": "assets/bootstrap-icons-BOrJxbIo.woff",
+    "src": "node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff"
+  },
+  "node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff2": {
+    "file": "assets/bootstrap-icons-BtvjY1KL.woff2",
+    "src": "node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff2"
+  },
+  "resources/css/app.css": {
+    "file": "assets/app-CizRsdh_.css",
+    "src": "resources/css/app.css",
+    "isEntry": true
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-DNxiirP_.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true
+  }
+}
