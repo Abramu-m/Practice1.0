@@ -132,6 +132,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Legacy Medcom Database Name
+    |--------------------------------------------------------------------------
+    |
+    | Name of the legacy Medcom schema on the same MySQL server, used by the
+    | medications:backfill-legacy-cash-sales command for cross-database
+    | queries (e.g. `{legacy_medcom_database}`.`pat_pharm`). Locally this is
+    | `medcom1_0`; on the online deployment it is `yyfcolmy_medcom`.
+    |
+    */
+
+    'legacy_medcom_database' => env('LEGACY_MEDCOM_DATABASE', 'medcom1_0'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Redis Databases
     |--------------------------------------------------------------------------
     |

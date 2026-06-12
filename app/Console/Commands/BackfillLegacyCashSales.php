@@ -51,7 +51,7 @@ class BackfillLegacyCashSales extends Command
         $this->loadExistingNotes();
         $this->loadYearSequences();
 
-        $rows = DB::table('medcom1_0.pat_pharm')
+        $rows = DB::table(config('database.legacy_medcom_database') . '.pat_pharm')
             ->where('visit_id', 0)
             ->whereNull('pat_id')
             ->orderBy('refname')
