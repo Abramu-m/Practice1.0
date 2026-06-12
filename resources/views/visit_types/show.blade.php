@@ -19,19 +19,43 @@
                 <div class="card-body">
                     <div class="row mb-3">
                         <div class="col-md-3"><strong>ID:</strong></div>
-                        <div class="col-md-9">{{ $visitType->visit_type_id }}</div>
+                        <div class="col-md-9">{{ $visitType->id }}</div>
                     </div>
-                    
+
                     <div class="row mb-3">
                         <div class="col-md-3"><strong>Description:</strong></div>
                         <div class="col-md-9">{{ $visitType->description }}</div>
                     </div>
-                    
+
+                    <div class="row mb-3">
+                        <div class="col-md-3"><strong>NHIF Visit Type Code:</strong></div>
+                        <div class="col-md-9">
+                            @if($visitType->nhif_visit_type_code)
+                                <span class="badge bg-primary">{{ $visitType->nhif_visit_type_code }}</span>
+                            @else
+                                <span class="text-muted">Not used for NHIF authorization</span>
+                            @endif
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-3"><strong>Allowed Patient Categories:</strong></div>
+                        <div class="col-md-9">
+                            @if($visitType->patientCategories->isEmpty())
+                                <span class="badge bg-secondary">All categories</span>
+                            @else
+                                @foreach($visitType->patientCategories as $category)
+                                    <span class="badge bg-info text-dark">{{ $category->description }}</span>
+                                @endforeach
+                            @endif
+                        </div>
+                    </div>
+
                     <div class="row mb-3">
                         <div class="col-md-3"><strong>Created At:</strong></div>
                         <div class="col-md-9">{{ $visitType->created_at->format('Y-m-d H:i:s') }}</div>
                     </div>
-                    
+
                     <div class="row mb-3">
                         <div class="col-md-3"><strong>Updated At:</strong></div>
                         <div class="col-md-9">{{ $visitType->updated_at->format('Y-m-d H:i:s') }}</div>

@@ -123,7 +123,8 @@
                                         @if($isWaiting)
                                             <option value="">Select Visit Type</option>
                                             @foreach($visitTypes as $visitType)
-                                                <option value="{{ $visitType->id }}" 
+                                                <option value="{{ $visitType->id }}"
+                                                    data-categories="{{ $visitType->patientCategories->pluck('id')->implode(',') }}"
                                                     {{ old('visit_type', $selectedVisitType->id ?? $patientVisit->visit_type) == $visitType->id ? 'selected' : '' }}>
                                                     {{ $visitType->description }}
                                                 </option>
@@ -303,20 +304,6 @@
                                     @enderror
                                 </div>
                             </div>
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="post_status">Post Status</label>
-                                    <select class="form-control @error('post_status') is-invalid @enderror" id="post_status" name="post_status">
-                                        <option value="0" {{ old('post_status', $patientVisit->post_status) == 0 ? 'selected' : '' }}>Not Posted</option>
-                                        <option value="1" {{ old('post_status', $patientVisit->post_status) == 1 ? 'selected' : '' }}>Posted</option>
-                                    </select>
-                                    @error('post_status')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
                         </div>
 
                         <div class="mb-3">
@@ -341,6 +328,7 @@
 @endsection
 
 @section('extra_footer_content')
+<script src="{{ asset('js/visit-type-category-filter.js') }}"></script>
 <script>
 // Calculate balance automatically and handle consultation fee lookup
 document.addEventListener('DOMContentLoaded', function() {
@@ -418,8 +406,11 @@ document.addEventListener('DOMContentLoaded', function() {
         cashAmount.addEventListener('input', calculateBalance);
         coveredAmount.addEventListener('input', calculateBalance);
     }
-    
+
     if (isWaiting && doctorSelect && visitCategorySelect && visitTypeSelect) {
+        // Filter visit types by the selected patient category
+        applyVisitTypeCategoryFilter(visitCategorySelect, visitTypeSelect);
+
         doctorSelect.addEventListener('change', lookupConsultationFee);
         visitCategorySelect.addEventListener('change', lookupConsultationFee);
         visitTypeSelect.addEventListener('change', lookupConsultationFee);

@@ -291,10 +291,9 @@
                     <div class="mb-3">
                         <label for="auth_visit_type" class="form-label">Visit Type</label>
                         <select id="auth_visit_type" name="visit_type_id" class="form-control">
-                            <option value="1">Normal Visit</option>
-                            <option value="2">Emergency</option>
-                            <option value="3">Referral</option>
-                            <option value="4">Follow up Visit</option>
+                            @foreach($nhifVisitTypes as $visitType)
+                                <option value="{{ $visitType->nhif_visit_type_code }}">{{ $visitType->description }}</option>
+                            @endforeach
                         </select>
                     </div>
 

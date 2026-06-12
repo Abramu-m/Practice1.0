@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Models\Patient;
 use App\Models\PatientCategory;
 use App\Models\NhifMember;
+use App\Models\VisitType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
@@ -278,7 +279,10 @@ class PatientController extends Controller
     public function show(Patient $patient)
     {
         $patient->load(['category', 'creator']);
-        return view('patients.show', compact('patient'));
+        $nhifVisitTypes = VisitType::whereNotNull('nhif_visit_type_code')
+            ->orderBy('nhif_visit_type_code')
+            ->get();
+        return view('patients.show', compact('patient', 'nhifVisitTypes'));
     }
 
     /**

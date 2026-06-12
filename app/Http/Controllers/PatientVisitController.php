@@ -150,7 +150,7 @@ class PatientVisitController extends Controller
         $dateTo            = now()->toDateString();
         $patientCategories = \App\Models\PatientCategory::all();
         $doctors           = \App\Models\Doctor::where('status', 1)->get();
-        $visitTypes        = \App\Models\VisitType::all();
+        $visitTypes        = \App\Models\VisitType::with('patientCategories:id')->get();
         return view('patient_visits.index', compact('selectedPatient', 'selectedDoctor', 'dateFrom', 'dateTo', 'patientCategories', 'doctors', 'visitTypes'));
     }
 
@@ -162,7 +162,7 @@ class PatientVisitController extends Controller
         // Get necessary data for the form (no longer loading all patients)
         $patientCategories = \App\Models\PatientCategory::all();
         $doctors = \App\Models\Doctor::where('status', 1)->get();
-        $visitTypes = \App\Models\VisitType::all();
+        $visitTypes = \App\Models\VisitType::with('patientCategories:id')->get();
         
         // If patient_id is provided, pre-select the patient
         $selectedPatient = null;
@@ -243,6 +243,15 @@ class PatientVisitController extends Controller
             $request->validate($rules);
         }
 
+        if ($visitType && $visitType->patientCategories->isNotEmpty()
+            && !$visitType->patientCategories->pluck('id')->contains((int) $request->visit_category)) {
+            $message = 'Selected visit type is not available for this patient category.';
+            if ($isAjax) {
+                return response()->json(['success' => false, 'errors' => ['visit_type' => [$message]]], 422);
+            }
+            return redirect()->back()->withInput()->withErrors(['visit_type' => $message]);
+        }
+
         $visitData = $request->all();
 
         if ($isLabOnly) {
@@ -318,7 +327,6 @@ class PatientVisitController extends Controller
                 'authorization_no' => $patientVisit->authorization_no,
                 'nhif_reference_no'=> $patientVisit->nhif_reference_no,
                 'folio_item_id'    => $patientVisit->folio_item_id,
-                'post_status'      => $patientVisit->post_status,
                 'visit_status'     => $patientVisit->visit_status,
                 'is_waiting'       => $patientVisit->visit_status == 0,
                 'is_in_treatment'  => $patientVisit->visit_status == 1,
@@ -329,7 +337,7 @@ class PatientVisitController extends Controller
         $patients          = \App\Models\Patient::where('status', 'active')->get();
         $patientCategories = \App\Models\PatientCategory::all();
         $doctors           = \App\Models\Doctor::where('status', 1)->get();
-        $visitTypes        = \App\Models\VisitType::all();
+        $visitTypes        = \App\Models\VisitType::with('patientCategories:id')->get();
 
         $selectedPatient  = \App\Models\Patient::find($patientVisit->patient);
         $selectedDoctor   = $patientVisit->doctor ? \App\Models\Doctor::with('user')->find($patientVisit->doctor) : null;
@@ -375,7 +383,6 @@ class PatientVisitController extends Controller
         
         // Base validation rules (removed status validations since they're managed automatically)
         $rules = [
-            'post_status' => 'required|in:0,1', // 0: Not Posted, 1: Posted
             'pitc_at' => 'nullable|date',
             'vitals_at' => 'nullable|date',
             'consulted_at' => 'nullable|date',
@@ -546,6 +553,15 @@ class PatientVisitController extends Controller
             }
         } else {
             $request->validate($rules);
+        }
+
+        if ($currentStatus == 0 && $newVisitType && $newVisitType->patientCategories->isNotEmpty()
+            && !$newVisitType->patientCategories->pluck('id')->contains((int) $request->visit_category)) {
+            $message = 'Selected visit type is not available for this patient category.';
+            if ($isAjax) {
+                return response()->json(['success' => false, 'errors' => ['visit_type' => [$message]]], 422);
+            }
+            return redirect()->back()->withInput()->withErrors(['visit_type' => $message]);
         }
 
         // Handle Lab Only visit type transitions

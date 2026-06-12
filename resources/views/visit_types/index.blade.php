@@ -25,6 +25,8 @@
                             <tr>
                                 <th>ID</th>
                                 <th>Description</th>
+                                <th>NHIF Code</th>
+                                <th>Patient Categories</th>
                                 <th>Created At</th>
                                 <th>Actions</th>
                             </tr>
@@ -34,6 +36,22 @@
                                 <tr>
                                     <td>{{ $visitType->id }}</td>
                                     <td>{{ $visitType->description }}</td>
+                                    <td>
+                                        @if($visitType->nhif_visit_type_code)
+                                            <span class="badge bg-primary">{{ $visitType->nhif_visit_type_code }}</span>
+                                        @else
+                                            <span class="text-muted">&mdash;</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if($visitType->patientCategories->isEmpty())
+                                            <span class="badge bg-secondary">All categories</span>
+                                        @else
+                                            @foreach($visitType->patientCategories as $category)
+                                                <span class="badge bg-info text-dark">{{ $category->description }}</span>
+                                            @endforeach
+                                        @endif
+                                    </td>
                                     <td>{{ $visitType->created_at->format('Y-m-d H:i') }}</td>
                                     <td>
                                         <a href="{{ route('visit_types.show', $visitType) }}" class="btn btn-info btn-sm">View</a>

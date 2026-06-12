@@ -32,5 +32,12 @@ class PatientCategory extends Model
         return $this->hasMany(Patient::class, 'patient_category');
     }
 
-
+    /**
+     * Visit types allowed for this patient category.
+     * A visit type with no categories assigned is available to all categories.
+     */
+    public function visitTypes()
+    {
+        return $this->belongsToMany(VisitType::class, 'patient_category_visit_type');
+    }
 }

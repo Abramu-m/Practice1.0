@@ -101,7 +101,7 @@
 
 {{-- Visit Create/Edit Modal --}}
 <div class="modal fade" id="visitModal" tabindex="-1" aria-labelledby="visitModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="visitModalLabel"><i class="fas fa-calendar-plus"></i> New Visit</h5>
@@ -164,7 +164,7 @@
                                 <select class="form-control" id="vm_visit_type" name="visit_type" required>
                                     <option value="">Select Visit Type</option>
                                     @foreach($visitTypes as $vt)
-                                        <option value="{{ $vt->id }}">{{ $vt->description }}</option>
+                                        <option value="{{ $vt->id }}" data-categories="{{ $vt->patientCategories->pluck('id')->implode(',') }}">{{ $vt->description }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -224,18 +224,6 @@
                             </div>
                         </div>
                     </div>
-                    {{-- Post status — edit only --}}
-                    <div class="row d-none" id="vm_post_status_wrap">
-                        <div class="col-md-4">
-                            <div class="mb-3">
-                                <label>Post Status</label>
-                                <select class="form-control" id="vm_post_status" name="post_status">
-                                    <option value="0">Not Posted</option>
-                                    <option value="1">Posted</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -251,6 +239,7 @@
 @endsection
 
 @section('scripts')
+<script src="{{ asset('js/visit-type-category-filter.js') }}"></script>
 <script>
 var visitsTable;
 var vmIsEdit   = false;
@@ -387,6 +376,9 @@ $(document).ready(function() {
         }
     }
 
+    // Filter visit types by the selected patient category
+    applyVisitTypeCategoryFilter(document.getElementById('vm_visit_category'), document.getElementById('vm_visit_type'));
+
     $('#vm_visit_type').on('change', vmCheckLabOnly);
     $('#vm_doctor, #vm_visit_category').on('change', vmLookupFee);
 
@@ -473,7 +465,6 @@ function vmResetForm() {
     $('#vm_covered_label').html('Covered Amount');
     $('#vm_cash_label').html('Cash Amount <span class="text-danger">*</span>');
     $('#vm_alert').addClass('d-none');
-    $('#vm_post_status_wrap').addClass('d-none');
     $('#vm_in_treatment_msg, #vm_discharged_msg').hide();
     $('#vm_visit_date, #vm_amount_cash, #vm_amount_covered, #vm_sic_no, #vm_authorization_no, #vm_nhif_reference_no')
         .prop('readonly', false);
@@ -517,7 +508,6 @@ function openEditVisitModal(visitId) {
     $('#vm_method').val('PUT');
     $('#vm_patient_select_wrap').addClass('d-none');
     $('#vm_patient_display_wrap').removeClass('d-none');
-    $('#vm_post_status_wrap').removeClass('d-none');
 
     $.ajax({
         url: '{{ url("patient_visits") }}/' + visitId + '/edit',
@@ -528,7 +518,9 @@ function openEditVisitModal(visitId) {
             $('#vm_patient_display').val(v.patient_name);
             $('#vm_patient_value').val(v.patient_id);
             $('#vm_visit_date').val(v.visit_date);
-            $('#vm_visit_category').val(v.visit_category);
+            // Set category first and re-apply the visit-type filter for it
+            // before selecting the visit type, so the option is enabled.
+            $('#vm_visit_category').val(v.visit_category).trigger('change');
             $('#vm_visit_type').val(v.visit_type);
             $('#vm_doctor').val(v.doctor);
             $('#vm_amount_cash').val(parseFloat(v.amount_cash || 0).toFixed(2));
@@ -536,7 +528,6 @@ function openEditVisitModal(visitId) {
             $('#vm_sic_no').val(v.sic_no || '');
             $('#vm_authorization_no').val(v.authorization_no || '');
             $('#vm_nhif_reference_no').val(v.nhif_reference_no || '');
-            $('#vm_post_status').val(v.post_status);
 
             if (v.is_lab_only) {
                 $('#vm_doctor_wrap').hide();
@@ -570,10 +561,10 @@ function openEditVisitModal(visitId) {
 </script>
 
 {{-- Lab Investigation Modal JavaScript --}}
-<script src="{{ asset('js/lab-investigation-modal.js') }}"></script>
+<script src="{{ asset('js/lab-investigation-modal.js') }}" defer></script>
 
 {{-- Prescription Modal JavaScript --}}
-<script src="{{ asset('js/prescription-modal.js') }}"></script>
+<script src="{{ asset('js/prescription-modal.js') }}" defer></script>
 @endsection
 
 @section('extra_footer_content')

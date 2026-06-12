@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PatientCategory;
 use App\Models\VisitType;
 use Illuminate\Http\Request;
 
@@ -12,7 +13,7 @@ class VisitTypeController extends Controller
      */
     public function index()
     {
-        $visitTypes = VisitType::all();
+        $visitTypes = VisitType::with('patientCategories')->get();
         return view('visit_types.index', compact('visitTypes'));
     }
 
@@ -21,7 +22,8 @@ class VisitTypeController extends Controller
      */
     public function create()
     {
-        return view('visit_types.create');
+        $patientCategories = PatientCategory::orderBy('description')->get();
+        return view('visit_types.create', compact('patientCategories'));
     }
 
     /**
@@ -31,9 +33,13 @@ class VisitTypeController extends Controller
     {
         $request->validate([
             'description' => 'required|string|max:255|unique:visit_types,description',
+            'nhif_visit_type_code' => 'nullable|integer|min:1|max:255',
+            'patient_categories' => 'nullable|array',
+            'patient_categories.*' => 'exists:patient_categories,id',
         ]);
 
-        VisitType::create($request->all());
+        $visitType = VisitType::create($request->only('description', 'nhif_visit_type_code'));
+        $visitType->patientCategories()->sync($request->input('patient_categories', []));
 
         return redirect()->route('visit_types.index')
                          ->with('success', 'Visit Type created successfully.');
@@ -44,6 +50,7 @@ class VisitTypeController extends Controller
      */
     public function show(VisitType $visitType)
     {
+        $visitType->load('patientCategories');
         return view('visit_types.show', compact('visitType'));
     }
 
@@ -52,7 +59,9 @@ class VisitTypeController extends Controller
      */
     public function edit(VisitType $visitType)
     {
-        return view('visit_types.edit', compact('visitType'));
+        $visitType->load('patientCategories');
+        $patientCategories = PatientCategory::orderBy('description')->get();
+        return view('visit_types.edit', compact('visitType', 'patientCategories'));
     }
 
     /**
@@ -62,9 +71,13 @@ class VisitTypeController extends Controller
     {
         $request->validate([
             'description' => 'required|string|max:255|unique:visit_types,description,' . $visitType->id,
+            'nhif_visit_type_code' => 'nullable|integer|min:1|max:255',
+            'patient_categories' => 'nullable|array',
+            'patient_categories.*' => 'exists:patient_categories,id',
         ]);
 
-        $visitType->update($request->all());
+        $visitType->update($request->only('description', 'nhif_visit_type_code'));
+        $visitType->patientCategories()->sync($request->input('patient_categories', []));
 
         return redirect()->route('visit_types.index')
                          ->with('success', 'Visit Type updated successfully.');
@@ -78,6 +91,6 @@ class VisitTypeController extends Controller
         $visitType->delete();
 
         return redirect()->route('visit_types.index')
-                         ->with('success', 'Visit Type deleted successfully.'); 
+                         ->with('success', 'Visit Type deleted successfully.');
     }
 }

@@ -80,7 +80,9 @@
                                     <select class="form-control @error('visit_type') is-invalid @enderror" id="visit_type" name="visit_type" required>
                                         <option value="">Select Visit Type</option>
                                         @foreach($visitTypes as $visitType)
-                                            <option value="{{ $visitType->id }}" {{ old('visit_type') == $visitType->id ? 'selected' : '' }}>
+                                            <option value="{{ $visitType->id }}"
+                                                data-categories="{{ $visitType->patientCategories->pluck('id')->implode(',') }}"
+                                                {{ old('visit_type') == $visitType->id ? 'selected' : '' }}>
                                                 {{ $visitType->description }}
                                             </option>
                                         @endforeach
@@ -212,6 +214,7 @@
 @section('scripts')
 <!-- Select2 assets are loaded globally in the layout; only keep initialization below -->
 
+<script src="{{ asset('js/visit-type-category-filter.js') }}"></script>
 <script>
 // Initialize Select2 for patient dropdown with AJAX
 $(document).ready(function() {
@@ -413,6 +416,9 @@ document.addEventListener('DOMContentLoaded', function() {
             currentFeeDescription = null;
         }
     }
+
+    // Filter visit types by the selected patient category
+    applyVisitTypeCategoryFilter(visitCategorySelect, visitTypeSelect);
 
     // Event listeners
     doctorSelect.addEventListener('change', lookupConsultationFee);
