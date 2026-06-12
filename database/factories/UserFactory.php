@@ -33,7 +33,7 @@ class UserFactory extends Factory
             'is_active' => $this->faker->boolean(90),
             'is_verified' => $this->faker->boolean(70),
             'is_admin' => $this->faker->boolean(30),
-            'is_super_admin' => $this->faker->boolean(10),
+            'is_super' => $this->faker->boolean(10),
             'password' => bcrypt('password'), // Or use Hash::make()
             'remember_token' => Str::random(10),
             'created_at' => now(),

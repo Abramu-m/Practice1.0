@@ -22,7 +22,7 @@
             </h3>
         </div>
 
-        <!-- Malaria Monthly Report -->
+        <!-- Malaria Monthly (Vipimo) Report -->
         <div class="col-md-6 col-lg-4 mb-3">
             <div class="card report-card h-100">
                 <div class="card-header bg-danger text-white">
@@ -32,11 +32,11 @@
                 </div>
                 <div class="card-body">
                     <p class="card-text text-muted">
-                        Clinical diagnoses and laboratory-confirmed malaria cases by age and gender
+                        Laboratory-confirmed malaria cases (mRDT/microscopy) by age group
                     </p>
                 </div>
                 <div class="card-footer bg-light">
-                    <form method="GET" action="{{ route('admin.reports.malaria-monthly') }}" class="form-inline">
+                    <form method="GET" action="{{ route('admin.reports.malaria-vipimo') }}" class="form-inline">
                         <select name="month" class="form-control form-control-sm mr-2" required>
                             <option value="">Select Month</option>
                             @for ($m = 1; $m <= 12; $m++)

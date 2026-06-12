@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Facility;
 use App\Models\NhifMember;
 use App\Models\User;
 use App\Services\NhifService;
@@ -12,9 +13,17 @@ class NhifAuthorizeTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        // Facility must be configured for CheckFacilitySetup middleware to allow access
+        Facility::create(['name' => 'Test Facility']);
+    }
+
     public function test_authorize_success_updates_member()
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['is_verified' => true]);
         $this->actingAs($user);
 
         $mock = \Mockery::mock(NhifService::class);
@@ -50,7 +59,7 @@ class NhifAuthorizeTest extends TestCase
 
     public function test_authorize_blocked_when_already_authorized_elsewhere_today()
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['is_verified' => true]);
         $this->actingAs($user);
 
         // Create an existing NHIF member authorized today at a different facility
@@ -75,7 +84,7 @@ class NhifAuthorizeTest extends TestCase
 
     public function test_authorize_allows_override_emergency()
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['is_verified' => true]);
         $this->actingAs($user);
 
         // Existing same-day authorization at another facility

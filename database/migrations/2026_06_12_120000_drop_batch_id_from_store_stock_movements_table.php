@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('store_stock_movements', function (Blueprint $table) {
-            $table->dropForeign('store_stock_movements_batch_id_foreign');
+            $table->dropForeign(['batch_id']);
             $table->dropColumn('batch_id');
         });
     }

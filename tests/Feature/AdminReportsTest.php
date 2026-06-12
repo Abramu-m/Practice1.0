@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Facility;
 use App\Models\User;
 use App\Models\Patient;
 use App\Models\PatientVisit;
@@ -21,6 +22,13 @@ class AdminReportsTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
+
+        // Facility must be configured for CheckFacilitySetup middleware to allow access
+        Facility::create([
+            'name' => 'Test Facility',
+            'region' => 'Geita',
+            'district' => 'Geita',
+        ]);
 
         // Create admin user
         $this->adminUser = User::factory()->create([
@@ -55,18 +63,18 @@ class AdminReportsTest extends TestCase
     }
 
     /**
-     * Test malaria monthly report is accessible
+     * Test malaria monthly (vipimo) report is accessible
      */
     public function test_admin_can_access_malaria_monthly_report()
     {
         $response = $this->actingAs($this->adminUser)
-            ->get(route('admin.reports.malaria-monthly', [
+            ->get(route('admin.reports.malaria-vipimo', [
                 'year' => 2026,
                 'month' => 6,
             ]));
 
         $response->assertStatus(200);
-        $response->assertViewIs('admin.reports.malaria-monthly');
+        $response->assertViewIs('admin.reports.malaria-vipimo');
     }
 
     /**
@@ -147,7 +155,7 @@ class AdminReportsTest extends TestCase
     public function test_malaria_report_contains_required_data()
     {
         $response = $this->actingAs($this->adminUser)
-            ->get(route('admin.reports.malaria-monthly', [
+            ->get(route('admin.reports.malaria-vipimo', [
                 'year' => 2026,
                 'month' => 6,
             ]));
@@ -155,8 +163,8 @@ class AdminReportsTest extends TestCase
         // Check that view has required variables
         $response->assertViewHas('facility');
         $response->assertViewHas('date_range');
-        $response->assertViewHas('clinical_cases');
-        $response->assertViewHas('laboratory_confirmed');
+        $response->assertViewHas('counts');
+        $response->assertViewHas('row_totals');
         $response->assertViewHas('month');
         $response->assertViewHas('year');
     }
@@ -167,7 +175,7 @@ class AdminReportsTest extends TestCase
     public function test_admin_can_export_report_as_pdf()
     {
         $response = $this->actingAs($this->adminUser)
-            ->get(route('admin.reports.malaria-monthly', [
+            ->get(route('admin.reports.malaria-vipimo', [
                 'year' => 2026,
                 'month' => 6,
                 'pdf' => 1,
@@ -183,7 +191,7 @@ class AdminReportsTest extends TestCase
     public function test_report_handles_invalid_dates_gracefully()
     {
         $response = $this->actingAs($this->adminUser)
-            ->get(route('admin.reports.malaria-monthly', [
+            ->get(route('admin.reports.malaria-vipimo', [
                 'year' => 2026,
                 'month' => 13, // Invalid month
             ]));
