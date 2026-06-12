@@ -132,6 +132,17 @@ INNER JOIN yyfcolmy_medcom.`acc_transaction_codes` AS src2
 ON src2.acctrcode_id = src1.actranc_code;
 
 
+-- Catch-up: goods_received_notes.supplier_id references store_suppliers(id) by
+-- the legacy medcom.supplier.sp_id. The local Section A export may lag behind
+-- yyfcolmy_medcom.supplier, so backfill any rows missing locally before the FK
+-- below is exercised (id alignment per 7.online_migration_categorization.md note 5).
+INSERT INTO yyfcolmy_brigita_practice.`store_suppliers` (`id`, `name`, `email`, `phone`, `address`, `city`, `country`, `postal_code`, `tax_number`, `license_number`, `credit_limit`, `credit_days`, `payment_terms`, `is_active`, `created_at`, `updated_at`)
+SELECT sp_id, sp_name, NULL, sp_contact, sp_location, NULL, 'Tanzania', NULL, NULL, NULL, 0, 0, NULL, sp_status, NOW(), NOW()
+FROM yyfcolmy_medcom.`supplier` src
+WHERE NOT EXISTS (
+    SELECT 1 FROM yyfcolmy_brigita_practice.store_suppliers t WHERE t.id = src.sp_id
+);
+
 INSERT INTO yyfcolmy_brigita_practice.`goods_received_notes` (`id`, `grn_number`, `grn_date`, `supplier_id`, `invoice_number`, `invoice_date`, `delivery_note_number`, `delivery_date`, `total_amount`, `discount_amount`, `tax_amount`, `net_amount`, `status`, `notes`, `received_by`, `received_at`)
 
 SELECT NULL, grn_no, createdon, Supplier, invoice_no, createdon, NULL, NULL, amount AS amt, 0, 0, amount AS net, 'posted', NULL, createdby, createdon

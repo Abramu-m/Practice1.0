@@ -33,7 +33,7 @@ TABLES=(
   serology_report_rows microbiology_report_rows parasitology_report_rows medicine_dispensing_report_rows
 )
 
-mysqldump -u"$DB_USER" --no-create-info --complete-insert "$DB_NAME" "${TABLES[@]}"
+mysqldump -u"$DB_USER" --no-create-info --skip-triggers --complete-insert --replace "$DB_NAME" "${TABLES[@]}"
 
 # stock_quantity is live inventory, not setup data — it gets repopulated from
 # Medcom-online via medication_ledger / store_locations_stock (Section B).
