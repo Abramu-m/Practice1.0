@@ -124,18 +124,24 @@ $gitCommand =
     ' && git reset --hard FETCH_HEAD 2>&1';
 $phpPath = '/usr/local/bin/php'; // Bluehost PHP path, adjust if needed
 
-// Phase 6.1 — npm/Vite build needs node+npm on PATH, but PHP-FPM's exec() environment
-// usually has none. If "Install Node Dependencies" / "Build Frontend Assets" below fail
-// with "command not found" in storage/logs/webhook-*.log, SSH in and run `which node` /
-// `which npm` (or find the venv created by Bluehost's "Setup Node.js App"), then prepend
-// that bin directory here, e.g. '/home2/yyfcolmy/nodevenv/public_html/Practice1.0/20/bin:'.
-$nodePathPrefix = '';
+// Phase 6.1 — npm/Vite build needs node+npm, but PHP-FPM's exec() environment has no
+// usable PATH (confirmed: "sh: line 1: npm: command not found", exit 127). Discover npm
+// at deploy time: try PATH first, then cPanel Node.js Selector (~/nodevenv/*/*/bin/npm),
+// EasyApache Node.js (/opt/cpanel/ea-nodejs*/bin/npm), and nvm (~/.nvm/versions/node/*/bin/npm).
+$homeDir = dirname(dirname(PROJECT_PATH)); // e.g. /home2/yyfcolmy
+$npmSetup = 'export HOME=' . escapeshellarg($homeDir) . '; '
+    . 'NPM_BIN=$(command -v npm 2>/dev/null); '
+    . 'if [ -z "$NPM_BIN" ]; then '
+    . 'for p in ' . $homeDir . '/nodevenv/*/*/bin/npm ' . $homeDir . '/nodevenv/*/*/*/bin/npm /opt/cpanel/ea-nodejs*/bin/npm ' . $homeDir . '/.nvm/versions/node/*/bin/npm; do '
+    . 'if [ -x "$p" ]; then NPM_BIN="$p"; break; fi; done; fi; '
+    . 'echo "npm resolved to: ${NPM_BIN:-not found}"; '
+    . 'if [ -n "$NPM_BIN" ]; then export PATH="$(dirname "$NPM_BIN"):$PATH"; fi; ';
 
 $commands = [
     'cd ' . PROJECT_PATH . ' && HOME=' . PROJECT_PATH . '/storage/composer-home COMPOSER_HOME=' . PROJECT_PATH . '/storage/composer-home /opt/cpanel/composer/bin/composer install --no-dev --optimize-autoloader --ignore-platform-reqs 2>&1',
     // Phase 6.1 — vendor CDN assets locally (resources/build/copy-vendor.mjs + vite build)
-    'cd ' . PROJECT_PATH . ' && PATH=' . $nodePathPrefix . '$PATH npm install 2>&1',
-    'cd ' . PROJECT_PATH . ' && PATH=' . $nodePathPrefix . '$PATH npm run build 2>&1',
+    'cd ' . PROJECT_PATH . ' && ' . $npmSetup . 'npm install 2>&1',
+    'cd ' . PROJECT_PATH . ' && ' . $npmSetup . 'npm run build 2>&1',
     $phpPath . ' ' . PROJECT_PATH . '/artisan config:clear 2>&1',
     $phpPath . ' ' . PROJECT_PATH . '/artisan cache:clear 2>&1',
     $phpPath . ' ' . PROJECT_PATH . '/artisan route:clear 2>&1',
