@@ -801,6 +801,7 @@
               </li>
 
               <!-- Clinical Decision Support (CDS) -->
+              @if(auth()->user()->isSuperAdmin())
               @php
                 $cdsMedSafetyOpen = request()->routeIs(
                     'admin.cds.medication-policies.*',
@@ -968,6 +969,7 @@
                   </li>
                 </ul>
               </li>
+              @endif
 
               <!-- Reports & Analytics -->
               <li class="nav-item has-treeview {{ nav_menu_open_class(['reports.mtuha.*', 'admin.reports.*']) }}">
