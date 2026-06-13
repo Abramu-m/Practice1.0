@@ -47,8 +47,9 @@
                     </td>
                     <td>
                         <div class="btn-group" role="group">
-                            <button type="button" class="btn btn-sm btn-outline-primary" 
-                                    onclick="viewInvestigation({{ $investigation->id }})"
+                            @php $latestResult = $investigation->templateResults->first() ?? null; @endphp
+                            <button type="button" class="btn btn-sm btn-outline-primary"
+                                    onclick="viewInvestigation({{ $investigation->id }}, {{ $latestResult ? $latestResult->id : 'null' }})"
                                     title="View Details">
                                 <i class="fas fa-eye"></i>
                             </button>

@@ -96,6 +96,9 @@
 {{-- Include Lab Investigation Modal Component --}}
 @include('partials.lab_investigation_modal')
 
+{{-- Include Complex Results Modal Component --}}
+@include('partials.complex_results_modal')
+
 {{-- Include Prescription Modal Component --}}
 @include('partials.prescription_modal')
 
@@ -563,6 +566,9 @@ function openEditVisitModal(visitId) {
 {{-- Lab Investigation Modal JavaScript --}}
 <script src="{{ asset('js/lab-investigation-modal.js') }}" defer></script>
 
+{{-- Complex Results Modal JavaScript --}}
+<script src="{{ asset('js/complex-results-modal.js') }}" defer></script>
+
 {{-- Prescription Modal JavaScript --}}
 <script src="{{ asset('js/prescription-modal.js') }}" defer></script>
 @endsection
@@ -570,6 +576,9 @@ function openEditVisitModal(visitId) {
 @section('extra_footer_content')
 {{-- Lab Investigation Modal Styles --}}
 <link rel="stylesheet" href="{{ asset('css/lab-investigation-modal.css') }}">
+
+{{-- Complex Results Modal Styles --}}
+<link rel="stylesheet" href="{{ asset('css/complex-results-modal.css') }}">
 
 {{-- Prescription Modal Styles --}}
 <link rel="stylesheet" href="{{ asset('css/prescription-modal.css') }}">

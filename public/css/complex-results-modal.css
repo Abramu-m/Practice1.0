@@ -1,0 +1,38 @@
+/**
+ * Complex Results Modal Styles
+ * Styles for the shared investigation results modal component
+ *
+ * Usage: <link rel="stylesheet" href="{{ asset('css/complex-results-modal.css') }}">
+ */
+
+#complexResultsModal .modal-dialog {
+    max-width: 1000px;
+}
+
+#complexResultsModal .card {
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+#complexResultsModal .table-responsive {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+#complexResultsModal .alert-primary {
+    background-color: #e7f3ff;
+    border-color: #b8daff;
+    color: #004085;
+}
+
+#complexResultsModal .alert-light {
+    background-color: #fefefe;
+    border-color: #f0f0f0;
+    color: #6c757d;
+}
+
+@media (max-width: 768px) {
+    #complexResultsModal .modal-dialog {
+        max-width: 95%;
+        margin: 0.5rem;
+    }
+}

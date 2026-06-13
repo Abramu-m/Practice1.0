@@ -20,6 +20,7 @@
 
 @section('styles')
 <link rel="stylesheet" href="{{ asset('css/lab-investigation-modal.css') }}">
+<link rel="stylesheet" href="{{ asset('css/complex-results-modal.css') }}">
 <link rel="stylesheet" href="{{ asset('css/prescription-modal.css') }}">
 <link rel="stylesheet" href="{{ asset('css/medical-history-modal.css') }}">
 <link rel="stylesheet" href="{{ asset('css/vitals-modal.css') }}">
@@ -1120,94 +1121,7 @@
                         </div>
                         <div class="card-body">
                             <div id="investigations-table-container">
-                                @if($investigations->count() > 0)
-                                    <div class="table-responsive">
-                                        <table class="table table-sm table-striped">
-                                            <thead class="table-light">
-                                                <tr>
-                                                    <th>Service</th>
-                                                    <th>Quantity</th>
-                                                    <th>Cash</th>
-                                                    <th>Covered</th>
-                                                    <th>Status</th>
-                                                    <th>Date</th>
-                                                    <th>Action</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach($investigations as $investigation)
-                                                <tr>
-                                                    <td>
-                                                        <strong>{{ $investigation->medicalService->name ?? 'N/A' }}</strong>
-                                                    </td>
-                                                    <td>{{ $investigation->quantity }}</td>
-                                                    <td>
-                                                        @if($investigation->cash_amount > 0)
-                                                            <span class="text-success">TSh {{ number_format($investigation->cash_amount, 2) }}</span>
-                                                        @else
-                                                            <span class="text-muted">Not set</span>
-                                                        @endif
-                                                    </td>
-                                                    <td>
-                                                        @if($investigation->insurance_covered_amount > 0)
-                                                            <strong class="text-primary">TSh {{ number_format($investigation->insurance_covered_amount, 2) }}</strong>
-                                                        @else
-                                                            <span class="text-muted">--</span>
-                                                        @endif
-                                                    </td>
-                                                    <td>
-                                                        <span class="badge bg-{{ 
-                                                            $investigation->status === 'completed' ? 'success' : 
-                                                            ($investigation->status === 'in_progress' ? 'warning' : 'secondary') 
-                                                        }}">
-                                                            {{ ucfirst(str_replace('_', ' ', $investigation->status)) }}
-                                                        </span>
-                                                    </td>
-                                                    <td>
-                                                        <small>{{ $investigation->created_at->format('d/m/Y H:i') }}</small>
-                                                    </td>
-                                                    <td>
-                                                        <button type="button" class="btn btn-sm btn-outline-primary" 
-                                                                onclick="viewInvestigation({{ $investigation->id }})">
-                                                            <i class="fas fa-eye"></i>
-                                                        </button>
-                                                        @if(!$investigation->is_paid)
-                                                            <button type="button" class="btn btn-sm btn-outline-danger" 
-                                                                    onclick="removeInvestigation({{ $investigation->id }})">
-                                                                <i class="fas fa-trash"></i>
-                                                            </button>
-                                                        @endif
-                                                    </td>
-                                                </tr>
-                                                @endforeach
-                                            </tbody>
-                                            @if($investigations->count() > 0)
-                                            <tfoot class="table-light">
-                                                <tr>
-                                                    <th colspan="3" class="text-end">Total Investigations Cost:</th>
-                                                    <th class="text-primary">
-                                                        Cash:
-                                                        @php
-                                                            $totalCash = $investigations->sum('cash_amount');
-                                                        @endphp
-                                                        TSh {{ number_format($totalCash, 2) }}
-                                                    </th>
-                                                    <th class="text-primary">
-                                                        Covered:
-                                                        @php
-                                                            $totalCovered = $investigations->sum('insurance_covered_amount');
-                                                        @endphp
-                                                        TSh {{ number_format($totalCovered, 2) }}
-                                                    </th>
-                                                    <th colspan="2"></th>
-                                                </tr>
-                                            </tfoot>
-                                            @endif
-                                        </table>
-                                    </div>
-                                @else
-                                    <p class="text-muted">No investigations ordered yet.</p>
-                                @endif
+                                @include('consultations.partials.investigations', ['investigations' => $investigations, 'consultation' => $consultation])
                             </div>
                             
                             <!-- Investigation Button - Opens Reusable Modal -->
@@ -1581,32 +1495,7 @@
     </div>
 </div>
 
-<!-- Complex Results Modal -->
-<div class="modal fade" id="complexResultsModal" tabindex="-1" role="dialog" aria-labelledby="complexResultsModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="complexResultsModalLabel">
-                    <i class="fas fa-chart-line"></i> Investigation Results
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body" id="complexResultsContent" style="max-height: 70vh; overflow-y: auto;">
-                <div class="d-flex justify-content-center">
-                    <div class="spinner-border" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <a href="#" id="printComplexResult" class="btn btn-primary">
-                    <i class="fas fa-print"></i> Print Results
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
+@include('partials.complex_results_modal')
 
 <!-- Lab Investigation Modal Component -->
 @include('partials.lab_investigation_modal')
@@ -1632,6 +1521,7 @@
 <script src="{{ asset('js/consultation/examinations.js') }}" defer></script>
 <script src="{{ asset('js/consultation/icd10.js') }}" defer></script>
 <script src="{{ asset('js/lab-investigation-modal.js') }}" defer></script>
+<script src="{{ asset('js/complex-results-modal.js') }}" defer></script>
 <script src="{{ asset('js/prescription-modal.js') }}" defer></script>
 <script src="{{ asset('js/medical-history-modal.js') }}" defer></script>
 <script src="{{ asset('js/vitals-modal.js') }}" defer></script>
@@ -1711,10 +1601,12 @@
     };
     
     // View investigation details
-    window.viewInvestigation = function(investigationId) {
-        // This function can be implemented to show investigation details/results in a modal
-        toastr.info('View investigation details - ID: ' + investigationId);
-        // TODO: Implement investigation details view
+    window.viewInvestigation = function(investigationId, templateResultId) {
+        if (templateResultId) {
+            viewComplexResult(investigationId, templateResultId);
+        } else {
+            toastr.info('No results available yet for this investigation.');
+        }
     };
     
     // Remove investigation
@@ -2356,53 +2248,6 @@
             console.error('markPaneSaved error', e);
         }
     }
-
-    // Function to view complex results in modal
-    function viewComplexResult(investigationId, templateResultId) {
-        
-        // Show the modal
-        const modal = new bootstrap.Modal(document.getElementById('complexResultsModal'));
-        modal.show();
-        
-        // Show loading state
-        const contentDiv = document.getElementById('complexResultsContent');
-        contentDiv.innerHTML = `
-            <div class="d-flex justify-content-center align-items-center" style="min-height: 200px;">
-                <div class="text-center">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
-                    <p class="mt-2 text-muted">Loading investigation results...</p>
-                </div>
-            </div>
-        `;
-        
-        // Update the print button link
-        document.getElementById('printComplexResult').href = `/lab/template-results/${templateResultId}`;
-        
-        // Fetch the result details
-        fetch(`/lab/template-results/${templateResultId}/modal`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Failed to fetch result details');
-                }
-                return response.text();
-            })
-            .then(html => {
-                contentDiv.innerHTML = html;
-            })
-            .catch(error => {
-                console.error('Error loading complex result:', error);
-                contentDiv.innerHTML = `
-                    <div class="alert alert-danger">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <strong>Error:</strong> Failed to load investigation results.
-                        <br><small class="text-muted">${error.message}</small>
-                    </div>
-                `;
-            });
-    }
-    
 
     // Save All helper: only call save handlers for panes that are active or marked unsaved.
     // If an active pane has required fields missing, abort and focus the first invalid field.
@@ -3174,11 +3019,6 @@ textarea.border-warning {
         margin: 0.5rem 0;
         padding: 1rem;
     }
-    
-    #complexResultsModal .modal-dialog {
-        max-width: 95%;
-        margin: 0.5rem;
-    }
 }
 
 /* Test Results Display Styling */
@@ -3197,32 +3037,6 @@ textarea.border-warning {
 .results-list .badge {
     font-size: 0.75rem;
     font-weight: 500;
-}
-
-/* Complex Results Modal Styling */
-#complexResultsModal .modal-dialog {
-    max-width: 1000px;
-}
-
-#complexResultsModal .card {
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-
-#complexResultsModal .table-responsive {
-    max-height: 400px;
-    overflow-y: auto;
-}
-
-#complexResultsModal .alert-primary {
-    background-color: #e7f3ff;
-    border-color: #b8daff;
-    color: #004085;
-}
-
-#complexResultsModal .alert-light {
-    background-color: #fefefe;
-    border-color: #f0f0f0;
-    color: #6c757d;
 }
 
 /* Patient Profile Sub-Tabs Styling */

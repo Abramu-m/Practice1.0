@@ -1223,7 +1223,11 @@ class ConsultationController extends Controller
                 ->with([
                     'medicalService.serviceCategory',
                     'patient',
-                    'doctor'
+                    'doctor',
+                    'templateResults' => function($query) {
+                        $query->with('reportedBy')
+                            ->orderBy('reported_at', 'desc');
+                    }
                 ])
                 ->orderBy('created_at', 'desc')
                 ->get();
