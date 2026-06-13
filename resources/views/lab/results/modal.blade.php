@@ -532,6 +532,21 @@
                 @endforeach
             </div>
         @endif
+
+        @if(!empty($result->form_data['images']))
+            <div class="mt-3">
+                <h6>Result Images</h6>
+                <div class="row g-3">
+                    @foreach($result->form_data['images'] as $imagePath)
+                        <div class="col-auto">
+                            <a href="{{ asset('storage/' . $imagePath) }}" target="_blank">
+                                <img src="{{ asset('storage/' . $imagePath) }}" alt="Result image" class="img-thumbnail" style="height:120px;width:auto;">
+                            </a>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        @endif
     </div>
 </div>
 

@@ -139,7 +139,7 @@
             <div class="col-6">
                 <strong>Requesting Clinician:</strong>
                 <div style="border-bottom: 1px solid #000; height: 15px; margin-top: 5px;">
-                    {{ optional(optional($visit->doctorInfo)->user)->name ?? auth()->user()->name ?? '' }}
+                    {{ auth()->user()->name ?? optional(optional($visit->doctorInfo)->user)->name ?? '' }}
                 </div>
             </div>
             <div class="col-6">
@@ -155,15 +155,11 @@
         <div class="row g-1">
             <div class="col-4">
                 <strong>Collection Date:</strong>
-                <div style="border-bottom: 1px solid #000; height: 15px; margin-top: 5px;">
-                    {{ date('d/m/Y') }}
-                </div>
+                <div style="border-bottom: 1px solid #000; height: 15px; margin-top: 5px;"></div>
             </div>
             <div class="col-4">
                 <strong>Collection Time:</strong>
-                <div style="border-bottom: 1px solid #000; height: 15px; margin-top: 5px;">
-                    {{ date('H:i') }}
-                </div>
+                <div style="border-bottom: 1px solid #000; height: 15px; margin-top: 5px;"></div>
             </div>
             <div class="col-4">
                 <strong>Collected by:</strong>
@@ -186,15 +182,21 @@
                 <input type="text" class="form-control form-control-sm" name="lab_serial_no"
                        placeholder="e.g., LAB-{{ date('Y') }}-001" style="margin-top: 3px;">
             </div>
+            @php
+                $dateReceived = isset($investigation) ? $investigation->collected_at : null;
+                $dateReported = isset($investigation) ? $investigation->resulted_at : null;
+            @endphp
             <div class="col-4">
                 <strong>Date Received:</strong>
-                <input type="datetime-local" class="form-control form-control-sm" name="date_received"
-                       value="{{ now()->format('Y-m-d\TH:i') }}" style="margin-top: 3px;">
+                <div style="border-bottom: 1px solid #000; height: 15px; margin-top: 5px;">
+                    {{ optional($dateReceived)->format('d/m/Y H:i') }}
+                </div>
             </div>
             <div class="col-4">
                 <strong>Date Reported:</strong>
-                <input type="datetime-local" class="form-control form-control-sm" name="date_reported"
-                       value="{{ now()->format('Y-m-d\TH:i') }}" style="margin-top: 3px;">
+                <div style="border-bottom: 1px solid #000; height: 15px; margin-top: 5px;">
+                    {{ optional($dateReported)->format('d/m/Y H:i') }}
+                </div>
             </div>
         </div>
 

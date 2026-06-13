@@ -17,6 +17,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -209,20 +210,39 @@ class LabController extends Controller
             'consultation.investigations.resultedBy'
         ])->findOrFail($visitId);
         
-        // Get lab investigations through consultation relationship
+        // Get lab investigations through consultation relationship, filtered by the
+        // current user's role so each role only sees the categories relevant to them.
+        $user = Auth::user();
+
         $investigations = collect();
         if ($visit->consultation && $visit->consultation->investigations) {
-            $investigations = $visit->consultation->investigations->filter(function($investigation) {
-                return $investigation->medicalService && 
-                       $investigation->medicalService->serviceCategory &&
-                       (
-                           str_contains(strtolower($investigation->medicalService->serviceCategory->name), 'lab') ||
-                           str_contains(strtolower($investigation->medicalService->serviceCategory->name), 'investigation') ||
-                           str_contains(strtolower($investigation->medicalService->serviceCategory->name), 'pathology') ||
-                           str_contains(strtolower($investigation->medicalService->serviceCategory->name), 'hematology') ||
-                           str_contains(strtolower($investigation->medicalService->serviceCategory->name), 'biochemistry') ||
-                           str_contains(strtolower($investigation->medicalService->serviceCategory->name), 'microbiology')
-                       );
+            $investigations = $visit->consultation->investigations->filter(function($investigation) use ($user) {
+                $categoryId = $investigation->medicalService->service_category_id ?? null;
+                if (!$investigation->medicalService || !$categoryId) {
+                    return false;
+                }
+
+                if ($user->isAdmin()) {
+                    return true;
+                }
+
+                if ($user->isRadiologist()) {
+                    return $categoryId === ServiceCategory::SPECIALIZED_INVESTIGATIONS;
+                }
+
+                if ($user->isLabTechnician()) {
+                    return $categoryId === ServiceCategory::LABORATORY;
+                }
+
+                if ($user->isDoctor()) {
+                    return in_array($categoryId, [ServiceCategory::PROCEDURE, ServiceCategory::SPECIALIZED_INVESTIGATIONS]);
+                }
+
+                return in_array($categoryId, [
+                    ServiceCategory::LABORATORY,
+                    ServiceCategory::PROCEDURE,
+                    ServiceCategory::SPECIALIZED_INVESTIGATIONS,
+                ]);
             })->sortByDesc('ordered_at');
         }
 
@@ -258,11 +278,15 @@ class LabController extends Controller
                 ->with('error', 'This investigation does not have a valid medical service or category.');
         }
         
-        // Check if the investigation is a medical service under a lab category
-        $isLabInvestigation = $investigation->medicalService->serviceCategory->name === 'Laboratory';
-        if (!$isLabInvestigation) {
+        // Results can be entered for Laboratory, Procedure and Specialized Investigations services
+        $resultableCategoryIds = [
+            ServiceCategory::LABORATORY,
+            ServiceCategory::PROCEDURE,
+            ServiceCategory::SPECIALIZED_INVESTIGATIONS,
+        ];
+        if (!in_array($investigation->medicalService->service_category_id, $resultableCategoryIds)) {
             return redirect()->route('lab.visits.index')
-                ->with('error', 'This investigation is not a laboratory test.');
+                ->with('error', 'This investigation does not support result entry.');
         }
 
         // Determine the type of result form needed
@@ -350,6 +374,29 @@ class LabController extends Controller
                 if ($request->has($definition['key']) && !array_key_exists($definition['key'], $templateData)) {
                     $templateData[$definition['key']] = $request->input($definition['key']);
                 }
+            }
+
+            // Result images (Procedure / Specialized Investigations only) — keep existing,
+            // drop any marked for removal, then append newly uploaded files.
+            $existingResult = InvestigationTemplateResult::where('investigation_id', $investigation->id)->first();
+            $images = $existingResult->form_data['images'] ?? [];
+
+            $removeImages = $request->input('remove_images', []);
+            if (!empty($removeImages)) {
+                foreach (array_intersect($images, $removeImages) as $path) {
+                    Storage::disk('public')->delete($path);
+                }
+                $images = array_values(array_diff($images, $removeImages));
+            }
+
+            if ($request->hasFile('images')) {
+                foreach ($request->file('images') as $image) {
+                    $images[] = $image->store('investigation_results', 'public');
+                }
+            }
+
+            if (!empty($images)) {
+                $templateData['images'] = $images;
             }
 
             // Store the template-based result (update if one already exists for this investigation)

@@ -9,6 +9,11 @@ class ServiceCategory extends Model
 {
     use HasFactory;
 
+    const LABORATORY = 1;
+    const PROCEDURE = 2;
+    const SPECIALIZED_INVESTIGATIONS = 3;
+    const OTHERS = 4;
+
     protected $table = 'service_categories'; // Better than 'service_types'
     protected $primaryKey = 'id';
     public $timestamps = true;

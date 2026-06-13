@@ -55,7 +55,7 @@
             </h5>
         </div>
         <div class="card-body">
-            <form action="{{ route('lab.results.store', $investigation->id) }}" method="POST" id="resultsForm">
+            <form action="{{ route('lab.results.store', $investigation->id) }}" method="POST" id="resultsForm" enctype="multipart/form-data">
                 @csrf
                 
                 {{-- Hidden fields for return navigation --}}
@@ -102,6 +102,35 @@
                         </div>
                     </div>
                 </div>
+
+                {{-- Result Images — Procedure / Specialized Investigations only --}}
+                @if($investigation->medicalService->service_category_id !== \App\Models\ServiceCategory::LABORATORY)
+                    @php
+                        $existingImages = optional($investigation->templateResults->first())->form_data['images'] ?? [];
+                    @endphp
+                    <div class="card mt-3">
+                        <div class="card-header">
+                            <h6 class="mb-0"><i class="fas fa-camera text-primary"></i> Result Images</h6>
+                        </div>
+                        <div class="card-body">
+                            @if(!empty($existingImages))
+                                <div class="row g-3 mb-3">
+                                    @foreach($existingImages as $imagePath)
+                                        <div class="col-auto text-center">
+                                            <img src="{{ asset('storage/' . $imagePath) }}" alt="Result image" class="img-thumbnail" style="height:120px;width:auto;">
+                                            <div class="form-check mt-1">
+                                                <input class="form-check-input" type="checkbox" name="remove_images[]" value="{{ $imagePath }}" id="remove_image_{{ $loop->index }}">
+                                                <label class="form-check-label small text-danger" for="remove_image_{{ $loop->index }}">Remove</label>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @endif
+                            <input type="file" class="form-control" name="images[]" multiple accept="image/*">
+                            <small class="text-muted">Attach photo(s) (e.g. wound, X-ray, ultrasound image) as part of the result.</small>
+                        </div>
+                    </div>
+                @endif
 
                 {{-- Action Buttons --}}
                 <div class="card mt-4">

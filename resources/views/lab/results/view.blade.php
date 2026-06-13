@@ -424,6 +424,26 @@
         </div>
     </div>
 
+    @if(!empty($result->form_data['images']))
+        <!-- Attached Images -->
+        <div class="card shadow-sm mt-3">
+            <div class="card-header bg-white border-bottom">
+                <h6 class="mb-0 text-dark"><i class="fas fa-camera text-primary me-2"></i> Result Images</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    @foreach($result->form_data['images'] as $imagePath)
+                        <div class="col-auto">
+                            <a href="{{ asset('storage/' . $imagePath) }}" target="_blank">
+                                <img src="{{ asset('storage/' . $imagePath) }}" alt="Result image" class="img-thumbnail" style="height:160px;width:auto;">
+                            </a>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+    @endif
+
     <!-- Action Buttons -->
     <div class="d-flex justify-content-between align-items-center mt-3 no-print">
         <div class="d-flex gap-2">
