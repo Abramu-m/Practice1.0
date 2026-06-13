@@ -100,6 +100,12 @@ class ConsultationController extends Controller
         $currentVisit = $allVisits->whereIn('visit_status', [0, 1])->sortByDesc('visit_date')->first();
         $currentVisitId = $currentVisit ? $currentVisit->id : $allVisits->first()->id;
 
+        // Previous visits older than 7 days are read-only: no new notes, diagnoses,
+        // investigations or prescriptions can be added against them.
+        $isReadOnly = $visit->id !== $currentVisitId
+            && $visit->visit_date
+            && \Carbon\Carbon::parse($visit->visit_date)->lt(now()->subDays(7));
+
         // Get latest vital signs
         $vitals = $consultation->vitals()->latest('id')->first();
 
@@ -201,7 +207,8 @@ class ConsultationController extends Controller
             'otherAllergiesSummary',
             'referralHospitals',
             'allVisits',
-            'currentVisitId'
+            'currentVisitId',
+            'isReadOnly'
         ));
     }
 
@@ -273,11 +280,52 @@ class ConsultationController extends Controller
     }
 
     /**
+     * A visit becomes read-only for new clinical entries once it is no longer the
+     * patient's current visit and its visit_date is more than 7 days old.
+     */
+    private function isVisitReadOnly(?PatientVisit $visit): bool
+    {
+        if (!$visit || !$visit->visit_date || \Carbon\Carbon::parse($visit->visit_date)->gte(now()->subDays(7))) {
+            return false;
+        }
+
+        $currentVisit = PatientVisit::where('patient', $visit->patient)
+            ->whereIn('visit_status', [0, 1])
+            ->orderByDesc('visit_date')
+            ->first();
+
+        $currentVisitId = $currentVisit
+            ? $currentVisit->id
+            : PatientVisit::where('patient', $visit->patient)->orderByDesc('visit_date')->value('id');
+
+        return $visit->id !== $currentVisitId;
+    }
+
+    /**
+     * Returns a 403 JSON response if the visit is read-only, or null if editing is allowed.
+     */
+    private function blockIfVisitReadOnly(?PatientVisit $visit)
+    {
+        if ($visit && $this->isVisitReadOnly($visit)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This visit is read-only because it is a previous visit older than 7 days. New information must be recorded against the current visit.'
+            ], 403);
+        }
+
+        return null;
+    }
+
+    /**
      * Update consultation details
      */
     public function update(Request $request, $consultationId)
     {
         $consultation = Consultation::findOrFail($consultationId);
+
+        if ($blocked = $this->blockIfVisitReadOnly($consultation->visit)) {
+            return $blocked;
+        }
 
         $request->validate([
             'history_of_present_illness' => 'nullable|string',
@@ -324,13 +372,17 @@ class ConsultationController extends Controller
      */
     public function updateDiagnosis(Request $request, $consultationId)
     {
+        $consultation = Consultation::findOrFail($consultationId);
+
+        if ($blocked = $this->blockIfVisitReadOnly($consultation->visit)) {
+            return $blocked;
+        }
+
         $request->validate([
             'provisional_diagnosis' => 'nullable|string',
             'final_diagnosis' => 'nullable|string',
         ]);
-        
-        $consultation = Consultation::findOrFail($consultationId);
-        
+
         $consultation->update([
             'provisional_diagnosis' => $request->provisional_diagnosis,
             'final_diagnosis' => $request->final_diagnosis,
@@ -562,6 +614,10 @@ class ConsultationController extends Controller
     {
         $consultation = Consultation::findOrFail($consultationId);
 
+        if ($blocked = $this->blockIfVisitReadOnly($consultation->visit)) {
+            return $blocked;
+        }
+
         $request->validate([
             'pulse_rate' => 'nullable|numeric|min:30|max:200',
             'temperature' => 'nullable|numeric|min:30|max:45',
@@ -637,6 +693,10 @@ class ConsultationController extends Controller
             ], 400);
         }
 
+        if ($blocked = $this->blockIfVisitReadOnly($visit)) {
+            return $blocked;
+        }
+
         $request->validate([
             'systolic_bp' => 'nullable|numeric|min:0|max:300',
             'diastolic_bp' => 'nullable|numeric|min:0|max:200',
@@ -703,6 +763,10 @@ class ConsultationController extends Controller
             ], 400);
         }
 
+        if ($blocked = $this->blockIfVisitReadOnly($visit)) {
+            return $blocked;
+        }
+
         // Update visit status to discharged
         $visit->update([
             'visit_status' => 2, // Discharged
@@ -745,7 +809,11 @@ class ConsultationController extends Controller
     public function storeExaminationByVisit(Request $request, $visitId)
     {
         $visit = PatientVisit::findOrFail($visitId);
-        
+
+        if ($blocked = $this->blockIfVisitReadOnly($visit)) {
+            return $blocked;
+        }
+
         // Get consultation for this visit
         $consultation = Consultation::where('visit_id', $visitId)->firstOrFail();
 
@@ -806,6 +874,10 @@ class ConsultationController extends Controller
                 'success' => false,
                 'message' => 'Visit not found for this consultation.'
             ], 400);
+        }
+
+        if ($blocked = $this->blockIfVisitReadOnly($visit)) {
+            return $blocked;
         }
 
         $request->validate([
@@ -869,6 +941,10 @@ class ConsultationController extends Controller
     {
         $examination = SystemicExamination::findOrFail($examinationId);
 
+        if ($blocked = $this->blockIfVisitReadOnly($examination->visit)) {
+            return $blocked;
+        }
+
         $request->validate([
             'examination_type' => 'required|string',
             'general_findings' => 'nullable|string',
@@ -911,6 +987,10 @@ class ConsultationController extends Controller
     public function deleteExamination(Request $request, $examinationId)
     {
         $examination = SystemicExamination::findOrFail($examinationId);
+
+        if ($blocked = $this->blockIfVisitReadOnly($examination->visit)) {
+            return $blocked;
+        }
 
         // Soft delete if model uses soft deletes, otherwise perform delete
         try {
@@ -959,9 +1039,13 @@ class ConsultationController extends Controller
         // If not found, return error - we should always have a consultation ID for prescriptions
         if (!$consultation) {
             return response()->json([
-                'success' => false, 
+                'success' => false,
                 'message' => 'Consultation with ID ' . $consultationId . ' not found'
                 ], 404);
+        }
+
+        if ($blocked = $this->blockIfVisitReadOnly($consultation->visit)) {
+            return $blocked;
         }
 
         $request->validate([
@@ -1171,8 +1255,12 @@ class ConsultationController extends Controller
      */
     public function updatePrescriptionStatus(Request $request, $prescriptionId)
     {
-        $prescription = Prescription::findOrFail($prescriptionId);
-        
+        $prescription = Prescription::with('consultation.visit')->findOrFail($prescriptionId);
+
+        if ($blocked = $this->blockIfVisitReadOnly($prescription->consultation->visit ?? null)) {
+            return $blocked;
+        }
+
         $request->validate([
             'status' => 'required|in:' . implode(',', [
                 Prescription::STATUS_DRAFT,
@@ -1198,8 +1286,12 @@ class ConsultationController extends Controller
      */
     public function deletePrescription($prescriptionId)
     {
-        $prescription = Prescription::findOrFail($prescriptionId);
-        
+        $prescription = Prescription::with('consultation.visit')->findOrFail($prescriptionId);
+
+        if ($blocked = $this->blockIfVisitReadOnly($prescription->consultation->visit ?? null)) {
+            return $blocked;
+        }
+
         // Check if prescription can be deleted
         if ($prescription->status === Prescription::STATUS_DISPENSED) {
             return response()->json([
@@ -1262,9 +1354,11 @@ class ConsultationController extends Controller
                     $inv->pricing = $inv->medicalService
                         ->pricing($patientCategoryId);
                 });
-            
+
+            $isReadOnly = $this->isVisitReadOnly($consultation->visit);
+
             // Render just the investigations part
-            $html = view('consultations.partials.investigations', compact('investigations', 'consultation'))->render();
+            $html = view('consultations.partials.investigations', compact('investigations', 'consultation', 'isReadOnly'))->render();
             
             return response()->json([
                 'success' => true,
@@ -1289,10 +1383,10 @@ class ConsultationController extends Controller
      * Get prescriptions partial view for AJAX update
      */
     public function getPrescriptionsPartial($consultationId)
-    {   
+    {
         // Try to find by consultation ID first
-        $consultation = Consultation::with(['prescriptions.medication', 'prescriptions.frequency', 'prescriptions.administrationRoute'])->find($consultationId);
-        
+        $consultation = Consultation::with(['prescriptions.medication', 'prescriptions.frequency', 'prescriptions.administrationRoute', 'visit'])->find($consultationId);
+
         // If not found, return error
         if (!$consultation) {
             return response()->json([
@@ -1301,10 +1395,11 @@ class ConsultationController extends Controller
                 'error' => 'No consultation found with ID ' . $consultationId
             ], 404);
         }
-        
-        $prescriptions = $consultation->prescriptions;
 
-        $html = view('consultations.partials.prescriptions', compact('prescriptions'))->render();
+        $prescriptions = $consultation->prescriptions;
+        $showActions = !$this->isVisitReadOnly($consultation->visit);
+
+        $html = view('consultations.partials.prescriptions', compact('prescriptions', 'showActions'))->render();
 
         return response()->json([
             'success' => true, 
@@ -1319,10 +1414,11 @@ class ConsultationController extends Controller
      */
     public function getPrescriptionsPartialHtml($consultationId)
     {
-        $consultation = Consultation::with(['prescriptions.medication', 'prescriptions.frequency', 'prescriptions.administrationRoute'])->findOrFail($consultationId);
+        $consultation = Consultation::with(['prescriptions.medication', 'prescriptions.frequency', 'prescriptions.administrationRoute', 'visit'])->findOrFail($consultationId);
         $prescriptions = $consultation->prescriptions;
+        $showActions = !$this->isVisitReadOnly($consultation->visit);
 
-        return view('consultations.partials.prescriptions', compact('prescriptions'));
+        return view('consultations.partials.prescriptions', compact('prescriptions', 'showActions'));
     }
 
     /**
@@ -1355,6 +1451,10 @@ class ConsultationController extends Controller
         // If not found, try to find by visit ID
         if (!$consultation) {
             $consultation = Consultation::where('visit_id', $consultationId)->firstOrFail();
+        }
+
+        if ($blocked = $this->blockIfVisitReadOnly($consultation->visit)) {
+            return $blocked;
         }
 
         $request->validate([
@@ -1586,6 +1686,12 @@ class ConsultationController extends Controller
      */
     public function addIcdDiagnosis(Request $request, $consultationId)
     {
+        $consultation = Consultation::findOrFail($consultationId);
+
+        if ($blocked = $this->blockIfVisitReadOnly($consultation->visit)) {
+            return $blocked;
+        }
+
         $request->validate([
             'icd_code' => 'required|string|max:10',
             'description' => 'required|string|max:500',
@@ -1593,9 +1699,7 @@ class ConsultationController extends Controller
             'category' => 'nullable|string|max:100',
             'subcategory' => 'nullable|string|max:100',
         ]);
-        
-        $consultation = Consultation::findOrFail($consultationId);
-        
+
         // Check if this ICD code already exists for this consultation and type
         $existingDiagnosis = $consultation->icdDiagnoses()
             ->where('icd_code', $request->icd_code)
@@ -1644,7 +1748,12 @@ class ConsultationController extends Controller
      */
     public function removeIcdDiagnosis($icdDiagnosisId)
     {
-        $icdDiagnosis = IcdDiagnosis::findOrFail($icdDiagnosisId);
+        $icdDiagnosis = IcdDiagnosis::with('consultation.visit')->findOrFail($icdDiagnosisId);
+
+        if ($blocked = $this->blockIfVisitReadOnly($icdDiagnosis->consultation->visit ?? null)) {
+            return $blocked;
+        }
+
         $icdDiagnosis->delete();
         
         return response()->json([
@@ -1659,8 +1768,12 @@ class ConsultationController extends Controller
     public function removeInvestigation($investigationId)
     {
         try {
-            $investigation = Investigation::findOrFail($investigationId);
-            
+            $investigation = Investigation::with('visit')->findOrFail($investigationId);
+
+            if ($blocked = $this->blockIfVisitReadOnly($investigation->visit)) {
+                return $blocked;
+            }
+
             // Only allow removal if status is 'ordered'
             if ($investigation->status !== 'ordered') {
                 return response()->json([
@@ -1695,6 +1808,11 @@ class ConsultationController extends Controller
             if (!$consultation) {
                 $consultation = Consultation::where('visit_id', $consultationId)->firstOrFail();
             }
+
+            if ($blocked = $this->blockIfVisitReadOnly($consultation->visit)) {
+                return $blocked;
+            }
+
             $alert = \App\Models\CdsAlert::findOrFail($alertId);
 
             // Validate that this alert belongs to this consultation's patient/visit

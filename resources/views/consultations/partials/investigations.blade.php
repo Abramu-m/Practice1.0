@@ -53,8 +53,8 @@
                                     title="View Details">
                                 <i class="fas fa-eye"></i>
                             </button>
-                            @if(!$investigation->is_paid)
-                            <button type="button" class="btn btn-sm btn-outline-danger" 
+                            @if(!$investigation->is_paid && !($isReadOnly ?? false))
+                            <button type="button" class="btn btn-sm btn-outline-danger"
                                     onclick="removeInvestigation({{ $investigation->id }})"
                                     title="Remove Investigation">
                                 <i class="fas fa-trash"></i>

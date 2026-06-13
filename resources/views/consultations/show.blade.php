@@ -31,11 +31,11 @@
 <div class="container-fluid">
 
     <!-- Visit Switcher -->
-    <div class="mb-3 p-3 bg-light rounded" style="box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+    <div class="mb-2 p-2 bg-light rounded" style="box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
         <ul class="nav nav-pills flex-wrap">
             @foreach($allVisits as $aVisit)
             <li class="nav-item">
-                <a class="nav-link {{ $aVisit->id === $visit->id ? 'active' : '' }}" href="{{ route('consultations.show', $aVisit->id) }}"
+                <a class="nav-link py-1 {{ $aVisit->id === $visit->id ? 'active' : '' }}" href="{{ route('consultations.show', $aVisit->id) }}"
                    title="{{ $aVisit->visitType->type_name ?? 'General Consultation' }} &ndash; {{ $aVisit->visit_status_label }} &ndash; Dr. {{ trim((optional(optional($aVisit->doctorInfo)->user)->first_name ?? '') . ' ' . (optional(optional($aVisit->doctorInfo)->user)->last_name ?? '')) ?: 'Unknown' }}">
                     <i class="fas {{ $aVisit->id === $currentVisitId ? 'fa-calendar-check' : 'fa-calendar-alt' }} me-1"></i>
                     @if($aVisit->id === $currentVisitId)
@@ -56,16 +56,16 @@
     </div>
 
     <!-- Navigation Pills -->
-    <ul class="nav nav-pills nav-justified mb-4 bg-light p-3 rounded" style="box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+    <ul class="nav nav-pills nav-justified mb-3 bg-light p-2 rounded" style="box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
         <li class="nav-item">
-            <a class="nav-link d-flex flex-column justify-content-end align-items-center" data-bs-toggle="pill" href="#home">
-                <i class="fas fa-user-injured mb-1"></i> 
+            <a class="nav-link d-flex align-items-center justify-content-center py-1" data-bs-toggle="pill" href="#home">
+                <i class="fas fa-user-injured me-1"></i>
                 <span>Patient Profile</span>
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link d-flex flex-column justify-content-end align-items-center active" data-bs-toggle="pill" href="#clinical-information" data-tab="clinical-information">
-                <i class="fas fa-stethoscope mb-1"></i> 
+            <a class="nav-link d-flex align-items-center justify-content-center py-1 active" data-bs-toggle="pill" href="#clinical-information" data-tab="clinical-information">
+                <i class="fas fa-stethoscope me-1"></i>
                 <span>
                     Clinical Information
                     <span class="unsaved-indicator d-none ms-1" title="Unsaved changes">
@@ -75,8 +75,8 @@
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link d-flex flex-column justify-content-end align-items-center" data-bs-toggle="pill" href="#examinations" data-tab="examinations">
-                <i class="fas fa-heartbeat mb-1"></i> 
+            <a class="nav-link d-flex align-items-center justify-content-center py-1" data-bs-toggle="pill" href="#examinations" data-tab="examinations">
+                <i class="fas fa-heartbeat me-1"></i>
                 <span>
                     Examinations
                     <span class="unsaved-indicator d-none ms-1" title="Unsaved changes">
@@ -86,8 +86,8 @@
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link d-flex flex-column justify-content-end align-items-center" data-bs-toggle="pill" href="#diagnosis" data-tab="diagnosis">
-                <i class="fas fa-diagnoses mb-1"></i> 
+            <a class="nav-link d-flex align-items-center justify-content-center py-1" data-bs-toggle="pill" href="#diagnosis" data-tab="diagnosis">
+                <i class="fas fa-diagnoses me-1"></i>
                 <span>
                     Diagnosis
                     <span class="unsaved-indicator d-none ms-1" title="Unsaved changes">
@@ -97,8 +97,8 @@
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link d-flex flex-column justify-content-end align-items-center" data-bs-toggle="pill" href="#investigations" data-tab="investigations">
-                <i class="fas fa-flask mb-1"></i> 
+            <a class="nav-link d-flex align-items-center justify-content-center py-1" data-bs-toggle="pill" href="#investigations" data-tab="investigations">
+                <i class="fas fa-flask me-1"></i>
                 <span>
                     Investigations/Procedures
                     <span class="unsaved-indicator d-none ms-1" title="Unsaved changes">
@@ -108,8 +108,8 @@
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link d-flex flex-column justify-content-end align-items-center" data-bs-toggle="pill" href="#treatment" data-tab="treatment">
-                <i class="fas fa-pills mb-1"></i> 
+            <a class="nav-link d-flex align-items-center justify-content-center py-1" data-bs-toggle="pill" href="#treatment" data-tab="treatment">
+                <i class="fas fa-pills me-1"></i>
                 <span>
                     Treatment
                     <span class="unsaved-indicator d-none ms-1" title="Unsaved changes">
@@ -119,8 +119,8 @@
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link d-flex flex-column justify-content-end align-items-center" data-bs-toggle="pill" href="#remarks" data-tab="remarks">
-                <i class="fas fa-comment-medical mb-1"></i> 
+            <a class="nav-link d-flex align-items-center justify-content-center py-1" data-bs-toggle="pill" href="#remarks" data-tab="remarks">
+                <i class="fas fa-comment-medical me-1"></i>
                 <span>
                     Remarks
                     <span class="unsaved-indicator d-none ms-1" title="Unsaved changes">
@@ -130,8 +130,8 @@
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link d-flex flex-column justify-content-end align-items-center" data-bs-toggle="pill" href="#results" data-tab="results">
-                <i class="fas fa-chart-line mb-1"></i>
+            <a class="nav-link d-flex align-items-center justify-content-center py-1" data-bs-toggle="pill" href="#results" data-tab="results">
+                <i class="fas fa-chart-line me-1"></i>
                 <span>
                     Results
                     <span class="unsaved-indicator d-none ms-1" title="Unsaved changes">
@@ -141,6 +141,17 @@
             </a>
         </li>
     </ul>
+
+    @if($isReadOnly)
+    <div class="alert alert-warning d-flex align-items-center mb-3 py-2">
+        <i class="fas fa-lock me-2"></i>
+        <div>
+            <strong>Read-only visit.</strong> This visit is more than 7 days old and is no longer the patient's current visit, so nothing here can be edited.
+            New notes, diagnoses, investigations and prescriptions must be recorded against the
+            <a href="{{ route('consultations.show', $currentVisitId) }}" class="alert-link">current visit</a>.
+        </div>
+    </div>
+    @endif
 
     <!-- Tab Content -->
     <div class="tab-content border rounded p-4" style="min-height: 500px; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
@@ -608,18 +619,20 @@
                                     <label for="history_of_present_illness" class="form-label fw-bold">
                                         <i class="fas fa-comment-dots"></i> Chief Complaints / History of Present Illness:
                                     </label>
-                                    <textarea class="form-control" id="history_of_present_illness" name="history_of_present_illness" rows="4" 
-                                            placeholder="Write patient presenting illness..." 
-                                            style="resize: vertical;">{{ $consultation->history_of_present_illness }}</textarea>
+                                    <textarea class="form-control" id="history_of_present_illness" name="history_of_present_illness" rows="4"
+                                            placeholder="Write patient presenting illness..."
+                                            style="resize: vertical;" @if($isReadOnly) disabled @endif>{{ $consultation->history_of_present_illness }}</textarea>
                                 </div>
-                                
+
+                                @unless($isReadOnly)
                                 <div class="text-end">
                                     <button type="button" class="btn btn-primary" onclick="saveConsultation()" id="saveConsultationBtn">
-                                        <i class="fas fa-save"></i> 
+                                        <i class="fas fa-save"></i>
                                         <span class="btn-text">Save Consultation</span>
                                         <span class="unsaved-text d-none text-warning">• Unsaved</span>
                                     </button>
                                 </div>
+                                @endunless
                             </form>
                         </div>
                     </div>
@@ -817,8 +830,9 @@
                                     </small>
                                 </div>
                                 
+                                @unless($isReadOnly)
                                 <div class="d-grid gap-2">
-                                    <button type="button" class="btn btn-info btn-sm" 
+                                    <button type="button" class="btn btn-info btn-sm"
                                             onclick="openVitalsModal({id: {{ $visit->id }}}, {id: {{ $visit->patientInfo->id }}, name: {{ json_encode($visit->patientInfo->first_name . ' ' . $visit->patientInfo->last_name) }}})">
                                         <i class="fas fa-chart-line"></i> View Full Vitals & Record
                                     </button>
@@ -826,10 +840,12 @@
                                         <i class="fas fa-edit"></i> Quick Update Vitals
                                     </button>
                                 </div>
+                                @endunless
                             @else
                                 <div class="alert alert-info">
                                     <i class="fas fa-info-circle"></i> No vital signs recorded yet.
                                 </div>
+                                @unless($isReadOnly)
                                 <div class="d-grid gap-2">
                                     <button type="button" class="btn btn-info btn-sm"
                                             onclick="openVitalsModal({id: {{ $visit->id }}}, {id: {{ $visit->patientInfo->id }}, name: {{ json_encode($visit->patientInfo->first_name . ' ' . $visit->patientInfo->last_name) }}})">
@@ -839,8 +855,10 @@
                                         <i class="fas fa-plus"></i> Quick Add Vitals
                                     </button>
                                 </div>
+                                @endunless
                             @endif
-                            
+
+                            @unless($isReadOnly)
                             <!-- Quick Vitals Form -->
                             <div class="collapse mt-3" id="quickVitalsForm">
                                 <div class="border-top pt-3">
@@ -873,7 +891,7 @@
                                                 Cancel
                                             </button>
                                             <button type="button" class="btn btn-sm btn-info" onclick="saveQuickVitals()" id="saveQuickVitalsBtn">
-                                                <i class="fas fa-save"></i> 
+                                                <i class="fas fa-save"></i>
                                                 <span class="btn-text">Save</span>
                                                 <span class="unsaved-text d-none text-warning">• Unsaved</span>
                                             </button>
@@ -881,6 +899,7 @@
                                     </form>
                                 </div>
                             </div>
+                            @endunless
                         </div>
                     </div>
                 </div>
@@ -972,10 +991,12 @@
                             </div>
                             
                             <!-- Modal Button -->
-                            <button type="button" class="btn btn-success" 
+                            @unless($isReadOnly)
+                            <button type="button" class="btn btn-success"
                                     onclick="openSystemicExaminationModal({id: {{ $visit->id }}}, {{ json_encode($visit->patientInfo->first_name . ' ' . $visit->patientInfo->last_name) }}, 'consultation', {{ $consultation->id }})">
                                 <i class="fas fa-plus"></i> Add/Manage Systemic Examinations
                             </button>
+                            @endunless
                         </div>
                     </div>
                 </div>
@@ -997,9 +1018,9 @@
                             <label for="provisional_diagnosis" class="form-label fw-bold">
                                 <i class="fas fa-clipboard-check"></i> Provisional Diagnosis:
                             </label>
-                            <textarea class="form-control" id="provisional_diagnosis" name="provisional_diagnosis" rows="4" 
-                                    placeholder="Enter provisional diagnosis..." 
-                                    style="resize: vertical;" required>{{ $consultation->provisional_diagnosis ?? '' }}</textarea>
+                            <textarea class="form-control" id="provisional_diagnosis" name="provisional_diagnosis" rows="4"
+                                    placeholder="Enter provisional diagnosis..."
+                                    style="resize: vertical;" required @if($isReadOnly) disabled @endif>{{ $consultation->provisional_diagnosis ?? '' }}</textarea>
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -1007,13 +1028,14 @@
                             <label for="final_diagnosis" class="form-label fw-bold">
                                 <i class="fas fa-diagnoses"></i> Final Diagnosis:
                             </label>
-                            <textarea class="form-control" id="final_diagnosis" name="final_diagnosis" rows="4" 
-                                    placeholder="Enter final diagnosis..." 
-                                    style="resize: vertical;">{{ $consultation->final_diagnosis ?? '' }}</textarea>
+                            <textarea class="form-control" id="final_diagnosis" name="final_diagnosis" rows="4"
+                                    placeholder="Enter final diagnosis..."
+                                    style="resize: vertical;" @if($isReadOnly) disabled @endif>{{ $consultation->final_diagnosis ?? '' }}</textarea>
                         </div>
                     </div>
                 </div>
                 
+                @unless($isReadOnly)
                 <!-- ICD-10 Code Selection Section -->
                 <div class="card border-primary mb-4">
                     <div class="card-header bg-primary text-white">
@@ -1033,7 +1055,7 @@
                             <div class="col-md-4">
                                 <div class="mb-3">
                                     <label for="icd10_code" class="form-label">ICD 10 Code</label>
-                                    <input type="text" class="form-control" id="icd10_code" name="icd10_code" 
+                                    <input type="text" class="form-control" id="icd10_code" name="icd10_code"
                                            placeholder="Type ICD-10 code (e.g., J45.9)" autocomplete="off">
                                     <small class="text-muted">Type at least 2 characters</small>
                                 </div>
@@ -1041,13 +1063,13 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="icd10_description" class="form-label">ICD 10 Description</label>
-                                    <input type="text" class="form-control" id="icd10_description" name="icd10_description" 
+                                    <input type="text" class="form-control" id="icd10_description" name="icd10_description"
                                            placeholder="Type ICD-10 description (e.g., Asthma)" autocomplete="off">
                                     <small class="text-muted">Type at least 3 characters</small>
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="text-end mt-2">
                             <button type="button" class="btn btn-success" onclick="addIcdDiagnosis()" id="addIcdBtn" disabled>
                                 <i class="fas fa-plus"></i> Add ICD Diagnosis
@@ -1055,6 +1077,7 @@
                         </div>
                     </div>
                 </div>
+                @endunless
 
                 <!-- ICD Diagnoses List -->
                 <div class="row mb-4">
@@ -1062,11 +1085,13 @@
                         <div class="card">
                             <div class="card-header bg-light d-flex justify-content-between align-items-center">
                                 <h6 class="mb-0"><i class="fas fa-list"></i> ICD-10 Diagnoses</h6>
+                                @unless($isReadOnly)
                                 <div>
                                     <button type="button" class="btn btn-sm btn-outline-info" onclick="syncAllIcdToText()" title="Sync all ICD diagnoses to text">
                                         <i class="fas fa-sync"></i> Sync All to Text
                                     </button>
                                 </div>
+                                @endunless
                             </div>
                             <div class="card-body">
                                 <div id="icd_diagnoses_list">
@@ -1080,7 +1105,9 @@
                                                         <th>Description</th>
                                                         <th>Category</th>
                                                         <th>Date Added</th>
+                                                        @unless($isReadOnly)
                                                         <th>Action</th>
+                                                        @endunless
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -1100,13 +1127,15 @@
                                                             @endif
                                                         </td>
                                                         <td><small>{{ $icd->created_at->format('d/m/Y') }}</small></td>
+                                                        @unless($isReadOnly)
                                                         <td>
-                                                            <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                            <button type="button" class="btn btn-sm btn-outline-danger"
                                                                     onclick="removeIcdDiagnosis({{ $icd->id }})"
                                                                     title="Remove this diagnosis">
                                                                 <i class="fas fa-trash"></i>
                                                             </button>
                                                         </td>
+                                                        @endunless
                                                     </tr>
                                                     @endforeach
                                                 </tbody>
@@ -1121,13 +1150,15 @@
                     </div>
                 </div>
                 
+                @unless($isReadOnly)
                 <div class="text-end">
                     <button type="button" class="btn btn-primary" onclick="saveDiagnosis()" id="saveDiagnosisBtn">
-                        <i class="fas fa-save"></i> 
+                        <i class="fas fa-save"></i>
                         <span class="btn-text">Save Diagnosis</span>
                         <span class="unsaved-text d-none text-warning">• Unsaved</span>
                     </button>
                 </div>
+                @endunless
             </form>
         </div>
     </div>
@@ -1146,14 +1177,16 @@
                         </div>
                         <div class="card-body">
                             <div id="investigations-table-container">
-                                @include('consultations.partials.investigations', ['investigations' => $investigations, 'consultation' => $consultation])
+                                @include('consultations.partials.investigations', ['investigations' => $investigations, 'consultation' => $consultation, 'isReadOnly' => $isReadOnly])
                             </div>
-                            
+
+                            @unless($isReadOnly)
                             <!-- Investigation Button - Opens Reusable Modal -->
-                            <button type="button" class="btn btn-sm btn-outline-warning" 
+                            <button type="button" class="btn btn-sm btn-outline-warning"
                                     onclick="openLabModal({{ json_encode($visit) }})">
                                 <i class="fas fa-plus"></i> Order Investigation
                             </button>
+                            @endunless
                         </div>
                     </div>
                 </div>
@@ -1175,14 +1208,16 @@
                             </h5>
                             
                             <div id="prescriptions-list">
-                                @include('consultations.partials.prescriptions', ['prescriptions' => $prescriptions])
+                                @include('consultations.partials.prescriptions', ['prescriptions' => $prescriptions, 'showActions' => !$isReadOnly])
                             </div>
-                            
+
+                            @unless($isReadOnly)
                             <!-- Prescription Button - Opens Reusable Modal -->
-                            <button type="button" class="btn btn-sm btn-outline-primary" 
+                            <button type="button" class="btn btn-sm btn-outline-primary"
                                     onclick="openPrescriptionModal({{ json_encode($visit) }}, 'consultation')">
                                 <i class="fas fa-plus"></i> Add Prescription
                             </button>
+                            @endunless
                         </div>
 
                         <!-- Clinical Decision Support Alerts -->
@@ -1211,6 +1246,7 @@
                                                                 {{ Str::limit($alert->rationale, 100) }}
                                                             </div>
                                                         @endif
+                                                        @unless($isReadOnly)
                                                         <div class="mt-2">
                                                             <button class="btn btn-sm btn-outline-success me-1" onclick="ackCdsAlert({{ $alert->id }}, 'accept')" title="Accept Alert">
                                                                 <i class="fas fa-check"></i>
@@ -1222,6 +1258,7 @@
                                                                 <i class="fas fa-times"></i>
                                                             </button>
                                                         </div>
+                                                        @endunless
                                                     </div>
                                                 </div>
                                             </div>
@@ -1257,9 +1294,9 @@
                                     <label for="csremarks" class="form-label fw-bold">
                                         <i class="fas fa-comment-medical"></i> Clinical Remarks:
                                     </label>
-                                    <textarea class="form-control" id="remarks" name="remarks" rows="6" 
-                                            placeholder="Additional clinical remarks and observations..." 
-                                            style="resize: vertical;">{{ $consultation->remarks }}</textarea>
+                                    <textarea class="form-control" id="remarks" name="remarks" rows="6"
+                                            placeholder="Additional clinical remarks and observations..."
+                                            style="resize: vertical;" @if($isReadOnly) disabled @endif>{{ $consultation->remarks }}</textarea>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -1267,28 +1304,30 @@
                                     <label for="followup_date" class="form-label fw-bold">
                                         <i class="fas fa-calendar-check"></i> Follow-up Date:
                                     </label>
-                                    <input type="date" class="form-control" id="followup_date" name="followup_date" 
-                                           value="{{ $consultation->followup_date ? \Carbon\Carbon::parse($consultation->followup_date)->format('Y-m-d') : '' }}">
+                                    <input type="date" class="form-control" id="followup_date" name="followup_date"
+                                           value="{{ $consultation->followup_date ? \Carbon\Carbon::parse($consultation->followup_date)->format('Y-m-d') : '' }}" @if($isReadOnly) disabled @endif>
                                 </div>
                                 
                                 <div class="mb-3">
                                     <label for="followup_instructions" class="form-label fw-bold">
                                         <i class="fas fa-clipboard-list"></i> Follow-up Instructions:
                                     </label>
-                                    <textarea class="form-control" id="followup_instructions" name="followup_instructions" rows="4" 
-                                            placeholder="Instructions for next visit..." 
-                                            style="resize: vertical;">{{ $consultation->followup_instructions }}</textarea>
+                                    <textarea class="form-control" id="followup_instructions" name="followup_instructions" rows="4"
+                                            placeholder="Instructions for next visit..."
+                                            style="resize: vertical;" @if($isReadOnly) disabled @endif>{{ $consultation->followup_instructions }}</textarea>
                                 </div>
                             </div>
                         </div>
                         
+                        @unless($isReadOnly)
                         <div class="text-end">
                             <button type="button" class="btn btn-primary" onclick="saveRemarks()" id="saveRemarksBtn">
-                                <i class="fas fa-save"></i> 
+                                <i class="fas fa-save"></i>
                                 <span class="btn-text">Save Remarks</span>
                                 <span class="unsaved-text d-none text-warning">• Unsaved</span>
                             </button>
                         </div>
+                        @endunless
                     </form>
                 </div>
             </div>
@@ -1321,24 +1360,30 @@
     <div class="col-12">
         <div class="card">
             <div class="card-body text-center">
+                @unless($isReadOnly)
                 <button type="button" class="btn btn-secondary me-2" id="saveAllBtn" onclick="saveAll(false)">
                     <i class="fas fa-save"></i> Save All
                 </button>
                 <button type="button" class="btn btn-outline-secondary me-2" id="saveAndBackBtn" onclick="saveAll(true)">
                     <i class="fas fa-save"></i> Save & Back
                 </button>
+                @endunless
                 <a id="backToVisitsBtn" href="{{ route('patient_visits.index') }}" class="btn btn-secondary">
                     <i class="fas fa-arrow-left"></i> Back to Visits
                 </a>
+                @unless($isReadOnly)
                 <button type="button" class="btn btn-success" onclick="dischargePatient()">
                     <i class="fas fa-user-check"></i> Discharge Patient
                 </button>
+                @endunless
                 <button type="button" class="btn btn-info" onclick="printCaseSummary()">
                     <i class="fas fa-file-alt"></i> Print Case Summary
                 </button>
-                 <button type="button" class="btn btn-warning" onclick="referPatient()">
+                @unless($isReadOnly)
+                <button type="button" class="btn btn-warning" onclick="referPatient()">
                     <i class="fas fa-share-square"></i> Refer Patient
                 </button>
+                @endunless
             </div>
         </div>
     </div>
