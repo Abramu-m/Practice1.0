@@ -12,7 +12,7 @@
 
     <style>
         body {
-            background-image: url('/images/logo.png');
+            background-image: url('{{ ($facility instanceof \App\Models\Facility && $facility->logo) ? asset('storage/' . $facility->logo) : asset('images/logo.png') }}');
             background-size: contain;
             background-position: center;
             background-repeat: no-repeat;
@@ -189,7 +189,7 @@
 
         <!-- Left: Logo panel -->
         <div class="login-logo-panel">
-            <img src="/images/logo.png" alt="{{ config('app.name') }}">
+            <img src="{{ ($facility instanceof \App\Models\Facility && $facility->logo) ? asset('storage/' . $facility->logo) : asset('images/logo.png') }}" alt="{{ $facility->name ?? config('app.name') }}">
         </div>
 
         <!-- Right: Form panel -->

@@ -18,7 +18,7 @@
         <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
             <div>
                 <a href="/">
-                    <img src="/images/logo.png" alt="{{ config('app.name') }}" style="height: 300px; width: auto;">
+                    <img src="{{ ($facility instanceof \App\Models\Facility && $facility->logo) ? asset('storage/' . $facility->logo) : asset('images/logo.png') }}" alt="{{ $facility->name ?? config('app.name') }}" style="height: 300px; width: auto;">
                 </a>
             </div>
 
