@@ -15,92 +15,11 @@
             $analyzerName = is_numeric($analyzedByRaw)
                 ? optional(\App\Models\User::find($analyzedByRaw))->name
                 : ($analyzedByRaw ?: null);
+            $resultParams = $result->form_data['parameters'] ?? null;
+            if (is_string($resultParams)) $resultParams = json_decode($resultParams, true);
+            $hasGenericParameters = is_array($resultParams);
         @endphp
-        @if(in_array($tplCode, ['simple', 'simple_lab', 'single_numeric_lab', 'qualitative_lab', 'urinalysis', 'multistix', 'wet_prep_microscopy', 'stool_analysis', 'spermiogram', 'mrdt_malaria', 'full_blood_picture', 'blood_count', 'genxpert_tb', 'zn_stain_tb', 'blood_grouping', 'pbs_microfilaria', 'pbs_malaria', 'pbs_rbc_morphology', 'psa_semiquantitative', 'gram_stain']) && isset($result->form_data['parameters']))
-            {{-- Simple lab results display --}}
-            <div class="table-responsive">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Parameter</th>
-                            <th>Value</th>
-                            <th>Unit</th>
-                            <th>Normal Range</th>
-                            <th>Remarks</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @php
-                            // Handle both array and object formats
-                            $parameters = $result->form_data['parameters'];
-                            if (is_string($parameters)) {
-                                $parameters = json_decode($parameters, true);
-                            }
-                            // If it's still not an array, try to make it one
-                            if (!is_array($parameters)) {
-                                $parameters = [$parameters];
-                            }
-
-                        @endphp
-
-                        @foreach($parameters as $param)
-                            @php
-                                if (is_string($param)) $param = json_decode($param, true);
-                                if (!is_array($param)) continue;
-                                $pname  = $param['parameter_name'] ?? ($param['parameter'] ?? 'N/A');
-                                $pvalue = is_array($param['value'] ?? null) ? null : ($param['value'] ?? null);
-                                $punit  = is_array($param['unit'] ?? null) ? '' : ($param['unit'] ?? '');
-                                $prange = is_array($param['normal_range'] ?? null) ? '' : ($param['normal_range'] ?? '');
-                            @endphp
-                            <tr>
-                                <td class="fw-medium">{{ $pname }}</td>
-                                <td>
-                                    @if(is_array($param['value'] ?? ''))
-                                        {{ json_encode($param['value']) }}
-                                    @else
-                                        {{ $pvalue ?? 'N/A' }}
-                                    @endif
-                                </td>
-                                <td class="text-muted">{{ $punit }}</td>
-                                <td class="text-muted">{{ $prange }}</td>
-                                <td class="text-muted">
-                                    @if(is_array($param['remarks'] ?? ''))
-                                        {{ json_encode($param['remarks']) }}
-                                    @else
-                                        {{ $param['remarks'] ?? '' }}
-                                    @endif
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-
-            @if(isset($result->form_data['additional_comments']) && $result->form_data['additional_comments'])
-                <div class="mt-3">
-                    <h6>Additional Comments:</h6>
-                    <div class="alert alert-light">
-                        @if(is_array($result->form_data['additional_comments']))
-                            {{ json_encode($result->form_data['additional_comments']) }}
-                        @else
-                            {{ $result->form_data['additional_comments'] }}
-                        @endif
-                    </div>
-                </div>
-            @endif
-
-            @if($analyzerName || isset($result->form_data['analysis_date']))
-                <div class="mt-3 d-flex gap-4">
-                    @if($analyzerName)
-                        <div><span class="text-muted small">Analyzed By</span><br><strong>{{ $analyzerName }}</strong></div>
-                    @endif
-                    @if(isset($result->form_data['analysis_date']) && $result->form_data['analysis_date'])
-                        <div><span class="text-muted small">Analysis Date</span><br><strong>{{ \Carbon\Carbon::parse($result->form_data['analysis_date'])->format('d M Y H:i') }}</strong></div>
-                    @endif
-                </div>
-            @endif
-
-        @elseif($tplCode === 'narrative_lab')
+        @if($tplCode === 'narrative_lab')
             {{-- Narrative / free-text result --}}
             @php
                 $narrativeValue = null;
@@ -500,6 +419,77 @@
                     <i class="fas fa-expand-alt me-1"></i> View Full Form
                 </a>
             </div>
+
+        @elseif($hasGenericParameters)
+            {{-- Generic parameters[] table — default for any template with this shape --}}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Value</th>
+                            <th>Unit</th>
+                            <th>Normal Range</th>
+                            <th>Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($resultParams as $param)
+                            @php
+                                if (is_string($param)) $param = json_decode($param, true);
+                                if (!is_array($param)) continue;
+                                $pname  = $param['parameter_name'] ?? ($param['parameter'] ?? 'N/A');
+                                $pvalue = is_array($param['value'] ?? null) ? null : ($param['value'] ?? null);
+                                $punit  = is_array($param['unit'] ?? null) ? '' : ($param['unit'] ?? '');
+                                $prange = is_array($param['normal_range'] ?? null) ? '' : ($param['normal_range'] ?? '');
+                            @endphp
+                            <tr>
+                                <td class="fw-medium">{{ $pname }}</td>
+                                <td>
+                                    @if(is_array($param['value'] ?? ''))
+                                        {{ json_encode($param['value']) }}
+                                    @else
+                                        {{ $pvalue ?? 'N/A' }}
+                                    @endif
+                                </td>
+                                <td class="text-muted">{{ $punit }}</td>
+                                <td class="text-muted">{{ $prange }}</td>
+                                <td class="text-muted">
+                                    @if(is_array($param['remarks'] ?? ''))
+                                        {{ json_encode($param['remarks']) }}
+                                    @else
+                                        {{ $param['remarks'] ?? '' }}
+                                    @endif
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+
+            @if(isset($result->form_data['additional_comments']) && $result->form_data['additional_comments'])
+                <div class="mt-3">
+                    <h6>Additional Comments:</h6>
+                    <div class="alert alert-light">
+                        @if(is_array($result->form_data['additional_comments']))
+                            {{ json_encode($result->form_data['additional_comments']) }}
+                        @else
+                            {{ $result->form_data['additional_comments'] }}
+                        @endif
+                    </div>
+                </div>
+            @endif
+
+            @if($analyzerName || isset($result->form_data['analysis_date']))
+                <div class="mt-3 d-flex gap-4">
+                    @if($analyzerName)
+                        <div><span class="text-muted small">Analyzed By</span><br><strong>{{ $analyzerName }}</strong></div>
+                    @endif
+                    @if(isset($result->form_data['analysis_date']) && $result->form_data['analysis_date'])
+                        <div><span class="text-muted small">Analysis Date</span><br><strong>{{ \Carbon\Carbon::parse($result->form_data['analysis_date'])->format('d M Y H:i') }}</strong></div>
+                    @endif
+                </div>
+            @endif
 
         @else
             {{-- Generic complex result display --}}

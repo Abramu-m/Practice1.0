@@ -84,7 +84,21 @@ class ConsultationController extends Controller
                 'consultation_date' => $visit->visit_date,
                 'status' => 'active'
             ]);
-        } 
+        }
+
+        // Get all of this patient's visits (for the visit switcher), ordered by date desc
+        $allVisits = PatientVisit::with(['visitType', 'doctorInfo.user'])
+            ->where('patient', $visit->patient)
+            ->where('id', '!=', $visit->id)
+            ->orderBy('visit_date', 'desc')
+            ->get()
+            ->concat([$visit])
+            ->sortByDesc('visit_date')
+            ->values();
+
+        // The patient's actual current visit is the most recent one still waiting/in treatment
+        $currentVisit = $allVisits->whereIn('visit_status', [0, 1])->sortByDesc('visit_date')->first();
+        $currentVisitId = $currentVisit ? $currentVisit->id : $allVisits->first()->id;
 
         // Get latest vital signs
         $vitals = $consultation->vitals()->latest('id')->first();
@@ -162,64 +176,7 @@ class ConsultationController extends Controller
         $referralHospitals = ReferralHospital::where('is_active', true)->orderBy('name')->get();
 
         // Get test results from investigations with results
-        $testResults = collect();
-        
-        // Add results from investigations
-        foreach ($investigations as $investigation) {
-            if ($investigation->templateResults && $investigation->templateResults->count() > 0) {
-                // Get the latest final result, or the most recent result if no final result exists
-                $latestResult = $investigation->templateResults
-                    ->where('form_status', 'final')
-                    ->sortByDesc('reported_at')
-                    ->first();
-                
-                if (!$latestResult) {
-                    $latestResult = $investigation->templateResults
-                        ->sortByDesc('reported_at')
-                        ->first();
-                }
-                
-                if ($latestResult) {
-                    $testResults->push((object)[
-                        'investigation_id' => $investigation->id,
-                        'investigation' => $investigation,
-                        'template_result' => $latestResult,
-                        'template_name' => $latestResult->template_name,
-                        'metadata' => $latestResult->metadata,
-                        'form_data' => $latestResult->form_data,
-                        'form_status' => $latestResult->form_status,
-                        'reported_at' => $latestResult->reported_at,
-                        'reported_by' => $latestResult->reportedBy->name ?? 'Unknown',
-                        'test_name' => $investigation->medicalService->name ?? 'Unknown Test',
-                        'is_simple' => in_array($latestResult->metadata['template_code'] ?? $latestResult->template_name, ['simple', 'simple_lab', 'single_numeric_lab', 'qualitative_lab', 'narrative_lab', 'chemistry']),
-                        'is_manual' => false
-                    ]);
-                }
-            }
-        }
-        
-        // Add manual test results
-        $manualResults = \App\Models\InvestigationTemplateResult::with('reportedBy')
-            ->where('investigation_id', null)
-            ->whereJsonContains('form_data->consultation_id', (string)$consultation->id)
-            ->orderBy('reported_at', 'desc')
-            ->get();
-            
-        foreach ($manualResults as $manualResult) {
-            $testResults->push((object)[
-                'investigation_id' => null,
-                'investigation' => null,
-                'template_result' => $manualResult,
-                'test_name' => $manualResult->form_data['test_name'] ?? 'Manual Test Result',
-                'template_name' => $manualResult->template_name,
-                'form_data' => $manualResult->form_data,
-                'form_status' => $manualResult->form_status,
-                'reported_at' => $manualResult->reported_at,
-                'reported_by' => $manualResult->reportedBy->name ?? 'Unknown',
-                'is_simple' => true, // Manual results are always displayed as simple
-                'is_manual' => true
-            ]);
-        }
+        $testResults = $this->buildTestResults($investigations, $consultation->id);
 
         // Load any open CDS alerts for this visit
         $cdsAlerts = app(\App\Services\CDS\CdsAlertService::class)->forVisit($visit->id);
@@ -242,8 +199,77 @@ class ConsultationController extends Controller
             'drugAllergySummary',
             'drugAllergyOverflow',
             'otherAllergiesSummary',
-            'referralHospitals'
+            'referralHospitals',
+            'allVisits',
+            'currentVisitId'
         ));
+    }
+
+    /**
+     * Build the test results collection (simple + manual) for a consultation's investigations
+     */
+    private function buildTestResults($investigations, $consultationId)
+    {
+        $testResults = collect();
+
+        // Add results from investigations
+        foreach ($investigations as $investigation) {
+            if ($investigation->templateResults && $investigation->templateResults->count() > 0) {
+                // Get the latest final result, or the most recent result if no final result exists
+                $latestResult = $investigation->templateResults
+                    ->where('form_status', 'final')
+                    ->sortByDesc('reported_at')
+                    ->first();
+
+                if (!$latestResult) {
+                    $latestResult = $investigation->templateResults
+                        ->sortByDesc('reported_at')
+                        ->first();
+                }
+
+                if ($latestResult) {
+                    $testResults->push((object)[
+                        'investigation_id' => $investigation->id,
+                        'investigation' => $investigation,
+                        'template_result' => $latestResult,
+                        'template_name' => $latestResult->template_name,
+                        'metadata' => $latestResult->metadata,
+                        'form_data' => $latestResult->form_data,
+                        'form_status' => $latestResult->form_status,
+                        'reported_at' => $latestResult->reported_at,
+                        'reported_by' => $latestResult->reportedBy->name ?? 'Unknown',
+                        'test_name' => $investigation->medicalService->name ?? 'Unknown Test',
+                        'is_simple' => in_array($latestResult->metadata['template_code'] ?? $latestResult->template_name, ['simple', 'simple_lab', 'single_numeric_lab', 'qualitative_lab', 'narrative_lab', 'chemistry']),
+                        'is_manual' => false
+                    ]);
+                }
+            }
+        }
+
+        // Add manual test results
+        $manualResults = \App\Models\InvestigationTemplateResult::with('reportedBy')
+            ->where('investigation_id', null)
+            ->whereJsonContains('form_data->consultation_id', (string)$consultationId)
+            ->orderBy('reported_at', 'desc')
+            ->get();
+
+        foreach ($manualResults as $manualResult) {
+            $testResults->push((object)[
+                'investigation_id' => null,
+                'investigation' => null,
+                'template_result' => $manualResult,
+                'test_name' => $manualResult->form_data['test_name'] ?? 'Manual Test Result',
+                'template_name' => $manualResult->template_name,
+                'form_data' => $manualResult->form_data,
+                'form_status' => $manualResult->form_status,
+                'reported_at' => $manualResult->reported_at,
+                'reported_by' => $manualResult->reportedBy->name ?? 'Unknown',
+                'is_simple' => true, // Manual results are always displayed as simple
+                'is_manual' => true
+            ]);
+        }
+
+        return $testResults;
     }
 
     /**

@@ -29,7 +29,32 @@
 
 @section('main_content')
 <div class="container-fluid">
-    
+
+    <!-- Visit Switcher -->
+    <div class="mb-3 p-3 bg-light rounded" style="box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <ul class="nav nav-pills flex-wrap">
+            @foreach($allVisits as $aVisit)
+            <li class="nav-item">
+                <a class="nav-link {{ $aVisit->id === $visit->id ? 'active' : '' }}" href="{{ route('consultations.show', $aVisit->id) }}"
+                   title="{{ $aVisit->visitType->type_name ?? 'General Consultation' }} &ndash; {{ $aVisit->visit_status_label }} &ndash; Dr. {{ trim((optional(optional($aVisit->doctorInfo)->user)->first_name ?? '') . ' ' . (optional(optional($aVisit->doctorInfo)->user)->last_name ?? '')) ?: 'Unknown' }}">
+                    <i class="fas {{ $aVisit->id === $currentVisitId ? 'fa-calendar-check' : 'fa-calendar-alt' }} me-1"></i>
+                    @if($aVisit->id === $currentVisitId)
+                        Current Visit
+                        @if($aVisit->visit_date)
+                            ({{ \Carbon\Carbon::parse($aVisit->visit_date)->format('d/m/Y') }})
+                        @endif
+                    @else
+                        {{ $aVisit->visit_date ? \Carbon\Carbon::parse($aVisit->visit_date)->format('d/m/Y') : 'N/A' }}
+                    @endif
+                    @if($aVisit->id === $visit->id)
+                        <span class="badge bg-light text-primary ms-1">Viewing</span>
+                    @endif
+                </a>
+            </li>
+            @endforeach
+        </ul>
+    </div>
+
     <!-- Navigation Pills -->
     <ul class="nav nav-pills nav-justified mb-4 bg-light p-3 rounded" style="box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
         <li class="nav-item">
@@ -106,7 +131,7 @@
         </li>
         <li class="nav-item">
             <a class="nav-link d-flex flex-column justify-content-end align-items-center" data-bs-toggle="pill" href="#results" data-tab="results">
-                <i class="fas fa-chart-line mb-1"></i> 
+                <i class="fas fa-chart-line mb-1"></i>
                 <span>
                     Results
                     <span class="unsaved-indicator d-none ms-1" title="Unsaved changes">
@@ -1281,137 +1306,13 @@
                 <div class="col-md-12">
                     <div class="card">
                         <div class="card-body">
-                            @if(isset($testResults) && $testResults->count() > 0)
-                                @php
-                                    // Helpers for status computation
-                                    $resultToFloat = function ($val) {
-                                        if ($val === null || $val === '') return null;
-                                        if (is_numeric($val)) return (float)$val;
-                                        if (preg_match('/-?\d+(?:[\.,]\d+)?/', (string)$val, $m)) return (float) str_replace(',', '.', $m[0]);
-                                        return null;
-                                    };
-                                    $resultComputeStatus = function ($valueRaw, $rangeRaw) use ($resultToFloat) {
-                                        $val = $resultToFloat($valueRaw);
-                                        if ($val === null || !$rangeRaw) return null;
-                                        $r = str_replace(["–","—","−"], "-", trim((string)$rangeRaw));
-                                        if (preg_match('/^\s*(-?\d+(?:\.\d+)?)\s*(?:-|to)\s*(-?\d+(?:\.\d+)?)\s*$/i', $r, $mm)) {
-                                            if ($val < (float)$mm[1]) return 'low';
-                                            if ($val > (float)$mm[2]) return 'high';
-                                            return 'normal';
-                                        }
-                                        if (preg_match('/^\s*([<>]=?)\s*(-?\d+(?:\.\d+)?)\s*$/', $r, $mm)) {
-                                            $op = $mm[1]; $cut = (float)$mm[2];
-                                            if ($op === '<')  return $val <  $cut ? 'normal' : 'high';
-                                            if ($op === '<=') return $val <= $cut ? 'normal' : 'high';
-                                            if ($op === '>')  return $val >  $cut ? 'normal' : 'low';
-                                            if ($op === '>=') return $val >= $cut ? 'normal' : 'low';
-                                        }
-                                        return null;
-                                    };
-                                    $tplNameMap = ['LEGACY' => 'legacy', 'Long Text' => 'narrative_lab', 'Qualitative Positive Negative' => 'qualitative_lab', 'Single Numeric Lab Values' => 'single_numeric_lab', 'Urinalysis' => 'urinalysis', 'Full Blood Picture' => 'full_blood_picture', 'GeneXpert MTB/RIF' => 'genxpert_tb', 'ZN Stain Microscopy (AFB)' => 'zn_stain_tb', 'Blood Group & Rh Typing' => 'blood_grouping', 'PBS – Microfilaria' => 'pbs_microfilaria', 'PBS – Malaria Parasites' => 'pbs_malaria', 'PBS – RBC Morphology' => 'pbs_rbc_morphology', 'PSA Semi-quantitative' => 'psa_semiquantitative', 'Gram Stain Microscopy' => 'gram_stain'];
-
-                                    $simpleResults  = collect();
-                                    $complexResults = collect();
-                                    foreach ($testResults as $result) {
-                                        $tc = $result->template_result->metadata['template_code'] ?? null;
-                                        if (!$tc) $tc = $tplNameMap[$result->template_result->template_name ?? ''] ?? ($result->template_result->template_name ?? '');
-                                        $result->_tplCode = $tc;
-                                        if (in_array($tc, ['legacy', 'narrative_lab', 'urinalysis', 'full_blood_picture', 'blood_count', 'genxpert_tb', 'zn_stain_tb', 'blood_grouping', 'pbs_microfilaria', 'pbs_malaria', 'pbs_rbc_morphology', 'psa_semiquantitative', 'gram_stain', 'cd4', 'general', 'vital_observations'])) $complexResults->push($result);
-                                        else $simpleResults->push($result);
-                                    }
-                                @endphp
-
-                                {{-- ── Simple results: one unified table ── --}}
-                                @if($simpleResults->count())
-                                <div class="table-responsive mb-4">
-                                    <table class="table table-sm table-hover align-middle mb-0">
-                                        <thead class="table-light">
-                                            <tr>
-                                                <th>Investigation</th>
-                                                <th>Value</th>
-                                                <th>Unit</th>
-                                                <th>Normal Range</th>
-                                                <th>Status</th>
-                                                <th>Reported</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach($simpleResults as $result)
-                                                @php
-                                                    $params = $result->form_data['parameters'] ?? [];
-                                                    if (is_string($params)) $params = json_decode($params, true);
-                                                    if (!is_array($params)) $params = [];
-                                                    $firstRow = true;
-                                                @endphp
-                                                @if(empty($params))
-                                                    <tr>
-                                                        <td class="fw-medium">{{ $result->test_name }}</td>
-                                                        <td colspan="3" class="text-muted">—</td>
-                                                        <td>—</td>
-                                                        <td class="text-muted small" style="white-space:nowrap;">{{ $result->reported_at->format('d/m/Y H:i') }}<br>{{ $result->reported_by }}</td>
-                                                    </tr>
-                                                @else
-                                                    @foreach($params as $param)
-                                                        @php
-                                                            if (is_string($param)) $param = json_decode($param, true);
-                                                            if (!is_array($param)) continue;
-                                                            $pvalue = $param['value'] ?? null;
-                                                            $punit  = $param['unit'] ?? '';
-                                                            $prange = $param['normal_range'] ?? '';
-                                                            $status = $param['status'] ?? $resultComputeStatus($pvalue, $prange) ?? 'unknown';
-                                                            $badgeClass = match($status) {
-                                                                'high'     => 'bg-danger',
-                                                                'low'      => 'bg-warning',
-                                                                'normal'   => 'bg-success',
-                                                                'critical' => 'bg-danger',
-                                                                default    => 'bg-secondary'
-                                                            };
-                                                        @endphp
-                                                        <tr>
-                                                            <td class="fw-medium">
-                                                                @if($firstRow)
-                                                                    {{ $result->test_name }}
-                                                                    @php $firstRow = false; @endphp
-                                                                @endif
-                                                            </td>
-                                                            <td>{{ $pvalue ?? '—' }}</td>
-                                                            <td class="text-muted">{{ $punit }}</td>
-                                                            <td class="text-muted">{{ $prange }}</td>
-                                                            <td><span class="badge {{ $badgeClass }}">{{ ucfirst($status) }}</span></td>
-                                                            <td class="text-muted small" style="white-space:nowrap;">
-                                                                @if($loop->first)
-                                                                    {{ $result->reported_at->format('d/m/Y H:i') }}<br>{{ $result->reported_by }}
-                                                                @endif
-                                                            </td>
-                                                        </tr>
-                                                    @endforeach
-                                                @endif
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                                @endif
-
-                                {{-- ── Complex / narrative results ── --}}
-                                @foreach($complexResults as $result)
-                                    <div class="d-flex justify-content-between align-items-center border p-3 mb-2 rounded bg-light">
-                                        <span class="fw-semibold">{{ $result->test_name }}</span>
-                                        @if($result->template_result)
-                                            <button type="button" class="btn btn-sm btn-outline-primary"
-                                                    onclick="viewComplexResult({{ $result->investigation_id ?? 'null' }}, {{ $result->template_result->id }})">
-                                                <i class="fas fa-expand-alt me-1"></i> View Full Results
-                                            </button>
-                                        @endif
-                                    </div>
-                                @endforeach
-                            @else
-                                <p class="text-muted">No test results available yet.</p>
-                            @endif
+                            @include('consultations.partials.test_results_table')
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
     </div>
 </div>
 

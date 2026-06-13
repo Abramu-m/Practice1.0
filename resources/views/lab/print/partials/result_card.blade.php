@@ -55,6 +55,12 @@
         ?? (is_numeric($analyzedByRaw) ? optional(\App\Models\User::find($analyzedByRaw))->name : $analyzedByRaw)
         ?? null;
     $reporterDate = isset($result->form_data['analysis_date']) ? \Carbon\Carbon::parse($result->form_data['analysis_date'])->format('d M Y H:i') : null;
+
+    // Shape-based fallback: any template with a parameters[] array renders as a
+    // generic table, regardless of $tplCode — covers new/unmapped template codes.
+    $resultParams = $result->form_data['parameters'] ?? null;
+    if (is_string($resultParams)) $resultParams = json_decode($resultParams, true);
+    $hasGenericParameters = is_array($resultParams) && count($resultParams) > 0;
 @endphp
 
 {{-- Section heading --}}
@@ -62,53 +68,7 @@
     <span style="font-weight:700; font-size:0.85rem;">{{ $result->investigation->medicalService->name }} Results</span>
 </div>
 
-@if(in_array($tplCode, ['simple', 'simple_lab', 'single_numeric_lab', 'qualitative_lab', 'urinalysis', 'multistix', 'wet_prep_microscopy', 'stool_analysis', 'spermiogram', 'mrdt_malaria', 'full_blood_picture', 'blood_count', 'genxpert_tb', 'zn_stain_tb', 'blood_grouping', 'pbs_microfilaria', 'pbs_malaria', 'pbs_rbc_morphology', 'psa_semiquantitative', 'gram_stain']) && isset($result->form_data['parameters']))
-    @php
-        $parameters = $result->form_data['parameters'];
-        if (is_string($parameters)) $parameters = json_decode($parameters, true);
-        if (!is_array($parameters)) $parameters = [$parameters];
-    @endphp
-    <table style="width:100%; border-collapse:collapse; font-size:0.875rem; margin-bottom:6px;">
-        <thead>
-            <tr style="background:#f8f9fa;">
-                <th style="border:1px solid #dee2e6; padding:5px 8px; text-align:left; width:35%;">Parameter</th>
-                <th style="border:1px solid #dee2e6; padding:5px 8px; text-align:left; width:15%;">Value</th>
-                <th style="border:1px solid #dee2e6; padding:5px 8px; text-align:left; width:12%;">Unit</th>
-                <th style="border:1px solid #dee2e6; padding:5px 8px; text-align:left; width:20%;">Normal Range</th>
-                <th style="border:1px solid #dee2e6; padding:5px 8px; text-align:left; width:18%;">Remarks</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($parameters as $i => $param)
-                @php
-                    if (is_string($param)) $param = json_decode($param, true);
-                    if (!is_array($param)) continue;
-                    $pname  = $param['parameter_name'] ?? ($param['parameter'] ?? 'N/A');
-                    $pvalue = is_array($param['value'] ?? null) ? '' : ($param['value'] ?? '');
-                    $punit  = is_array($param['unit'] ?? null) ? '' : ($param['unit'] ?? '');
-                    $prange = is_array($param['normal_range'] ?? null) ? '' : ($param['normal_range'] ?? '');
-                    $premarks = is_array($param['remarks'] ?? null) ? '' : ($param['remarks'] ?? '');
-                    $rowBg = $i % 2 === 0 ? '#fff' : '#f8f9fa';
-                @endphp
-                <tr style="background:{{ $rowBg }};">
-                    <td style="border:1px solid #dee2e6; padding:4px 8px; font-weight:500;">{{ $pname }}</td>
-                    <td style="border:1px solid #dee2e6; padding:4px 8px;">{{ $pvalue !== '' ? $pvalue : '—' }}</td>
-                    <td style="border:1px solid #dee2e6; padding:4px 8px; color:#6c757d;">{{ $punit }}</td>
-                    <td style="border:1px solid #dee2e6; padding:4px 8px; color:#6c757d;">{{ $prange }}</td>
-                    <td style="border:1px solid #dee2e6; padding:4px 8px; color:#6c757d;">{{ $premarks }}</td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
-
-    @if(isset($result->form_data['additional_comments']) && $result->form_data['additional_comments'])
-        <div style="font-size:0.8rem; color:#495057; margin-bottom:4px;">
-            <strong>Comments:</strong>
-            {{ is_array($result->form_data['additional_comments']) ? implode(', ', $result->form_data['additional_comments']) : $result->form_data['additional_comments'] }}
-        </div>
-    @endif
-
-@elseif($tplCode === 'narrative_lab')
+@if($tplCode === 'narrative_lab')
     @php
         $narrativeValue = null;
         if (isset($result->form_data['parameters'])) {
@@ -184,14 +144,56 @@
         <div style="font-size:0.8rem; margin-top:4px;"><strong>Comments:</strong> {{ $result->form_data['additional_comments'] }}</div>
     @endif
 
+@elseif($hasGenericParameters)
+    @php $parameters = $resultParams; @endphp
+    <table style="width:100%; border-collapse:collapse; font-size:0.875rem; margin-bottom:6px;">
+        <thead>
+            <tr style="background:#f8f9fa;">
+                <th style="border:1px solid #dee2e6; padding:5px 8px; text-align:left; width:35%;">Parameter</th>
+                <th style="border:1px solid #dee2e6; padding:5px 8px; text-align:left; width:15%;">Value</th>
+                <th style="border:1px solid #dee2e6; padding:5px 8px; text-align:left; width:12%;">Unit</th>
+                <th style="border:1px solid #dee2e6; padding:5px 8px; text-align:left; width:20%;">Normal Range</th>
+                <th style="border:1px solid #dee2e6; padding:5px 8px; text-align:left; width:18%;">Remarks</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($parameters as $i => $param)
+                @php
+                    if (is_string($param)) $param = json_decode($param, true);
+                    if (!is_array($param)) continue;
+                    $pname  = $param['parameter_name'] ?? ($param['parameter'] ?? 'N/A');
+                    $pvalue = is_array($param['value'] ?? null) ? '' : ($param['value'] ?? '');
+                    $punit  = is_array($param['unit'] ?? null) ? '' : ($param['unit'] ?? '');
+                    $prange = is_array($param['normal_range'] ?? null) ? '' : ($param['normal_range'] ?? '');
+                    $premarks = is_array($param['remarks'] ?? null) ? '' : ($param['remarks'] ?? '');
+                    $rowBg = $i % 2 === 0 ? '#fff' : '#f8f9fa';
+                @endphp
+                <tr style="background:{{ $rowBg }};">
+                    <td style="border:1px solid #dee2e6; padding:4px 8px; font-weight:500;">{{ $pname }}</td>
+                    <td style="border:1px solid #dee2e6; padding:4px 8px;">{{ $pvalue !== '' ? $pvalue : '—' }}</td>
+                    <td style="border:1px solid #dee2e6; padding:4px 8px; color:#6c757d;">{{ $punit }}</td>
+                    <td style="border:1px solid #dee2e6; padding:4px 8px; color:#6c757d;">{{ $prange }}</td>
+                    <td style="border:1px solid #dee2e6; padding:4px 8px; color:#6c757d;">{{ $premarks }}</td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+
+    @if(isset($result->form_data['additional_comments']) && $result->form_data['additional_comments'])
+        <div style="font-size:0.8rem; color:#495057; margin-bottom:4px;">
+            <strong>Comments:</strong>
+            {{ is_array($result->form_data['additional_comments']) ? implode(', ', $result->form_data['additional_comments']) : $result->form_data['additional_comments'] }}
+        </div>
+    @endif
+
 @else
     {{-- Generic fallback --}}
     <table style="width:100%; border-collapse:collapse; font-size:0.875rem; margin-bottom:6px;">
         @foreach($result->form_data as $key => $value)
-            @if(!in_array($key, ['_token', 'template_', 'action', 'analyzed_by', 'analysis_date']) && !empty($value))
+            @if(!in_array($key, ['_token', 'template_', 'action', 'analyzed_by', 'analysis_date']) && !empty($value) && !is_array($value))
             <tr>
                 <td style="border:1px solid #dee2e6; padding:4px 8px; width:35%; font-weight:600; background:#f8f9fa;">{{ ucwords(str_replace('_', ' ', $key)) }}</td>
-                <td style="border:1px solid #dee2e6; padding:4px 8px;">{{ is_array($value) ? implode(', ', $value) : $value }}</td>
+                <td style="border:1px solid #dee2e6; padding:4px 8px;">{{ $value }}</td>
             </tr>
             @endif
         @endforeach

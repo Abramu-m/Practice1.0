@@ -79,8 +79,9 @@
         <div class="card-body p-0">
             @php
                 $templateCode = $result->metadata['template_code'] ?? $result->template_name ?? '';
-                $isSimpleTemplate = in_array($templateCode, ['simple', 'simple_lab', 'single_numeric_lab', 'qualitative_lab', 'mrdt_malaria', 'urinalysis', 'full_blood_picture', 'blood_count', 'genxpert_tb', 'zn_stain_tb', 'blood_grouping', 'pbs_microfilaria', 'pbs_malaria', 'pbs_rbc_morphology', 'psa_semiquantitative', 'gram_stain']) && isset($result->form_data['parameters']);
-                $isQualitative = in_array($templateCode, ['qualitative_lab', 'mrdt_malaria']) && isset($result->form_data['parameters']);
+                $resultParams = $result->form_data['parameters'] ?? null;
+                if (is_string($resultParams)) $resultParams = json_decode($resultParams, true);
+                $isSimpleTemplate = is_array($resultParams);
                 $isNarrative = $templateCode === 'narrative_lab';
                 $isCd4 = $templateCode === 'cd4';
                 $isGeneral = $templateCode === 'general';

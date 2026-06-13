@@ -209,16 +209,27 @@
             }
             return null;
         };
-        $tplNameMap = ['LEGACY' => 'legacy', 'Long Text' => 'narrative_lab', 'Qualitative Positive Negative' => 'qualitative_lab', 'Single Numeric Lab Values' => 'single_numeric_lab', 'Urinalysis' => 'urinalysis', 'Full Blood Picture' => 'full_blood_picture', 'GeneXpert MTB/RIF' => 'genxpert_tb', 'ZN Stain Microscopy (AFB)' => 'zn_stain_tb', 'Blood Group & Rh Typing' => 'blood_grouping', 'PBS – Microfilaria' => 'pbs_microfilaria', 'PBS – Malaria Parasites' => 'pbs_malaria', 'PBS – RBC Morphology' => 'pbs_rbc_morphology', 'PSA Semi-quantitative' => 'psa_semiquantitative', 'Gram Stain Microscopy' => 'gram_stain'];
-
         $simpleResults  = collect();
         $complexResults = collect();
         foreach ($testResults as $result) {
-            $tc = $result->template_result->metadata['template_code'] ?? null;
-            if (!$tc) $tc = $tplNameMap[$result->template_result->template_name ?? ''] ?? ($result->template_result->template_name ?? '');
-            $result->_tplCode = $tc;
-            if (in_array($tc, ['legacy', 'narrative_lab', 'urinalysis', 'full_blood_picture', 'blood_count', 'genxpert_tb', 'zn_stain_tb', 'blood_grouping', 'pbs_microfilaria', 'pbs_malaria', 'pbs_rbc_morphology', 'psa_semiquantitative', 'gram_stain'])) $complexResults->push($result);
-            else $simpleResults->push($result);
+            $params = $result->form_data['parameters'] ?? null;
+            if (is_string($params)) $params = json_decode($params, true);
+
+            // A single short value renders inline; anything with multiple
+            // parameters, no parameters[] at all (flat-field templates), or a
+            // long single value collapses to the full result display.
+            $firstValue = is_array($params) ? ($params[0]['value'] ?? '') : '';
+            $isSingleShortValue = is_array($params) && count($params) === 1
+                && !is_array($firstValue) && strlen((string) $firstValue) <= 80;
+
+            // narrative_lab (procedures, imaging, etc.) always collapses, even
+            // for a short placeholder value — it supports long free text and
+            // image attachments that the inline table can't represent.
+            $templateCode = $result->metadata['template_code'] ?? null;
+            if ($templateCode === 'narrative_lab') $isSingleShortValue = false;
+
+            if ($isSingleShortValue) $simpleResults->push($result);
+            else $complexResults->push($result);
         }
     @endphp
 
