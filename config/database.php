@@ -146,6 +146,22 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Legacy Medcom Procedure Uploads Path
+    |--------------------------------------------------------------------------
+    |
+    | Filesystem path to the legacy Medcom1.0 app's `production/uploads`
+    | directory, used by investigations:backfill-procedure-images to copy
+    | across Procedure/Specialized Investigations result images referenced by
+    | `{legacy_medcom_database}.procedures.pimage`. Defaults to the sibling
+    | Medcom1.0 checkout used locally; override per-environment if the legacy
+    | app's uploads directory lives elsewhere on the online server.
+    |
+    */
+
+    'legacy_procedure_uploads_path' => env('LEGACY_PROCEDURE_UPLOADS_PATH', base_path('../Medcom1.0/production/uploads')),
+
+    /*
+    |--------------------------------------------------------------------------
     | Redis Databases
     |--------------------------------------------------------------------------
     |
