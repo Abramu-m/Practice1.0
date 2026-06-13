@@ -18,6 +18,7 @@ use App\Models\StoreRequisition;
 use App\Models\StoreLocation;
 use App\Models\MedicalService;
 use App\Models\PatientCategory;
+use App\Models\ServiceCategory;
 use Carbon\Carbon;
 
 class DashboardController extends Controller
@@ -543,26 +544,26 @@ class DashboardController extends Controller
         // Radiology investigations statistics
         $todaysRadiologyOrders = Investigation::whereDate('created_at', $today)
             ->whereHas('medicalService.serviceCategory', function ($q) {
-                $q->where('name', 'LIKE', '%Radiology%');
+                $q->where('id', ServiceCategory::SPECIALIZED_INVESTIGATIONS);
             })
             ->count();
             
         $pendingRadiologyReports = Investigation::where('status', 'pending')
             ->whereHas('medicalService.serviceCategory', function ($q) {
-                $q->where('name', 'LIKE', '%Radiology%');
+                $q->where('id', ServiceCategory::SPECIALIZED_INVESTIGATIONS);
             })
             ->count();
             
         $completedToday = Investigation::whereDate('resulted_at', $today)
             ->whereHas('medicalService.serviceCategory', function ($q) {
-                $q->where('name', 'LIKE', '%Radiology%');
+                $q->where('id', ServiceCategory::SPECIALIZED_INVESTIGATIONS);
             })
             ->count();
             
         $urgentStudies = Investigation::where('priority', 'urgent')
             ->where('status', 'pending')
             ->whereHas('medicalService.serviceCategory', function ($q) {
-                $q->where('name', 'LIKE', '%Radiology%');
+                $q->where('id', ServiceCategory::SPECIALIZED_INVESTIGATIONS);
             })
             ->count();
         
@@ -570,12 +571,12 @@ class DashboardController extends Controller
         $weeklyStats = [
             'total_studies' => Investigation::whereBetween('created_at', [$startOfWeek, $endOfWeek])
                 ->whereHas('medicalService.serviceCategory', function ($q) {
-                    $q->where('name', 'LIKE', '%Radiology%');
+                    $q->where('id', ServiceCategory::SPECIALIZED_INVESTIGATIONS);
                 })
                 ->count(),
             'completed_studies' => Investigation::whereBetween('resulted_at', [$startOfWeek, $endOfWeek])
                 ->whereHas('medicalService.serviceCategory', function ($q) {
-                    $q->where('name', 'LIKE', '%Radiology%');
+                    $q->where('id', ServiceCategory::SPECIALIZED_INVESTIGATIONS);
                 })
                 ->count(),
             'average_turnaround' => '45 min', // This would be calculated from actual data
@@ -619,7 +620,7 @@ class DashboardController extends Controller
             ->where('priority', 'urgent')
             ->where('status', 'pending')
             ->whereHas('medicalService.serviceCategory', function ($q) {
-                $q->where('name', 'LIKE', '%Radiology%');
+                $q->where('id', ServiceCategory::SPECIALIZED_INVESTIGATIONS);
             })
             ->orderBy('created_at', 'desc')
             ->limit(10)
@@ -630,7 +631,7 @@ class DashboardController extends Controller
             ->whereDate('created_at', $today)
             ->where('status', 'pending')
             ->whereHas('medicalService.serviceCategory', function ($q) {
-                $q->where('name', 'LIKE', '%Radiology%');
+                $q->where('id', ServiceCategory::SPECIALIZED_INVESTIGATIONS);
             })
             ->orderBy('priority', 'desc')
             ->orderBy('created_at', 'asc')
@@ -651,7 +652,7 @@ class DashboardController extends Controller
             'repeat_rate' => '2.1%', // Percentage of studies requiring repeat
             'critical_findings' => Investigation::where('notes', 'LIKE', '%critical%')
                 ->whereHas('medicalService.serviceCategory', function ($q) {
-                    $q->where('name', 'LIKE', '%Radiology%');
+                    $q->where('id', ServiceCategory::SPECIALIZED_INVESTIGATIONS);
                 })
                 ->whereDate('resulted_at', $today)
                 ->count(),
