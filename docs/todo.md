@@ -1,33 +1,3 @@
-## Dead code: ProcedureController / procedures.* (for later removal)
-
-`app/Http/Controllers/ProcedureController.php` and its `procedures.*` routes
-(`routes/web.php` ~line 873-879) are non-functional: `applyRoleBasedFiltering()`
-and `getRoleSpecificServiceCategories()` filter on category names `'Procedures'`
-and `'Radiology'`, but `service_categories` actually has `'Procedure'` (singular)
-and `'Specialized Investigations'` — zero matches, so `procedures.index` returns
-empty for every role.
-
-The real, working result-entry flow for Laboratory/Procedure/Specialized
-Investigations is `LabController::showVisitInvestigations` →
-`showResultForm`/`storeResults` → `lab.results.view`, gated by
-`service_category_id` via the `ServiceCategory::LABORATORY/PROCEDURE/
-SPECIALIZED_INVESTIGATIONS/OTHERS` constants (app/Models/ServiceCategory.php).
-
-When removing `ProcedureController`/`procedures.*`, also clean up:
-- Nav entries: `resources/views/layouts/role_specific/admin.blade.php` ("Procedure
-  Results Management"), `radiologist.blade.php` ("Medical Procedures"),
-  `nurse.blade.php` ("Triage Center" link), `doctor.blade.php` (2 links,
-  filter_type=procedures/radiology)
-- Dashboard links in `resources/views/dashboards/{doctor,nurse,radiologist,
-  lab_technician}.blade.php` (~12 quick-action/stat links)
-- `resources/views/medications/consumption/index.blade.php` (3 "View All" links
-  with `?service_category=...`)
-- Orphaned views: `resources/views/procedures/{index,show,report,_actions}.blade.php`
-- Orphaned result-template partials (not in `/api/result-template` map, no
-  matching `result_templates.code` row): `resources/views/lab/result_templates/
-  {simple,imaging,default,complex}.blade.php` — these POST to
-  `procedures.store-result` and link to `procedures.show`/`procedures.view-results`
-
 // Print results routes
     Route::get('/patient-visits/{visit}/print-results', [PatientVisitController::class, 'printResults'])->name('patient_visits.print_results');
     Route::get('/patient-visits/{visit}/results-details', [PatientVisitController::class, 'resultsDetails'])->name('patient_visits.results_details');

@@ -100,27 +100,20 @@
               </li>
 
               <!-- Laboratory -->
-              <li class="nav-item has-treeview {{ nav_menu_open_class(['lab.visits.*', 'procedures.*', 'investigations.*']) }}">
-                <a href="#" class="nav-link nav-header {{ nav_active_class(['lab.visits.*', 'procedures.*', 'investigations.*']) }}">
+              <li class="nav-item has-treeview {{ nav_menu_open_class(['lab.visits.*', 'investigations.*']) }}">
+                <a href="#" class="nav-link nav-header {{ nav_active_class(['lab.visits.*', 'investigations.*']) }}">
                   <i class="nav-icon bi bi-clipboard2-pulse-fill text-success"></i>
                   <p class="text-bold">
                     Lab & Investigations
                     <i class="nav-arrow bi bi-chevron-right"></i>
                   </p>
                 </a>
-                <ul class="nav nav-treeview" style="{{ nav_display_style(['lab.visits.*', 'procedures.*', 'investigations.*']) }}">
+                <ul class="nav nav-treeview" style="{{ nav_display_style(['lab.visits.*', 'investigations.*']) }}">
                   <!-- Lab Personnel Interface -->
                   <li class="nav-item">
                     <a href="{{ route('lab.visits.index') }}" class="nav-link nav-sub-item {{ nav_active_class(['lab.visits.*']) }}">
                       <i class="nav-icon fas fa-vial text-primary"></i>
                       <p>Lab Personnel Dashboard</p>
-                    </a>
-                  </li>
-                  <!-- Modern Clinical Management -->
-                  <li class="nav-item">
-                    <a href="{{ route('procedures.index') }}" class="nav-link nav-sub-item {{ nav_active_class(['procedures.*']) }}">
-                      <i class="nav-icon bi bi-clipboard-check-fill text-primary"></i>
-                      <p>Procedure Results Management</p>
                     </a>
                   </li>
                   <li class="nav-item">

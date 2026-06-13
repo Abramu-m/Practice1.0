@@ -171,7 +171,7 @@
                             <i class="fas fa-plus-circle me-1"></i>
                             Record Vitals
                         </a>
-                        <a href="{{ route('procedures.index') }}" class="btn btn-success">
+                        <a href="{{ route('lab.visits.index') }}" class="btn btn-success">
                             <i class="fas fa-clipboard-check me-1"></i>
                             Nursing Procedures
                         </a>

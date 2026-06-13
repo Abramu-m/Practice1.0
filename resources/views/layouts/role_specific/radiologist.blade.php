@@ -10,19 +10,19 @@
 </li>
 
 <!-- Medical Procedures -->
-<li class="nav-item has-treeview {{ nav_menu_open_class(['procedures.*']) }}">
-  <a href="#" class="nav-link nav-header {{ nav_active_class(['procedures.*']) }}">
+<li class="nav-item has-treeview {{ nav_menu_open_class(['lab.visits.*']) }}">
+  <a href="#" class="nav-link nav-header {{ nav_active_class(['lab.visits.*']) }}">
     <i class="nav-icon bi bi-clipboard-plus-fill text-success"></i>
     <p class="text-bold">
       Medical Procedures
       <i class="nav-arrow bi bi-chevron-right"></i>
     </p>
   </a>
-  <ul class="nav nav-treeview" style="{{ nav_display_style(['procedures.*']) }}">
+  <ul class="nav nav-treeview" style="{{ nav_display_style(['lab.visits.*']) }}">
     <li class="nav-item">
-      <a href="{{ route('procedures.index') }}" class="nav-link nav-sub-item {{ nav_active_class(['procedures.*']) }}">
+      <a href="{{ route('lab.visits.index') }}" class="nav-link nav-sub-item {{ nav_active_class(['lab.visits.*']) }}">
         <i class="nav-icon bi bi-radioactive text-warning"></i>
-        <p>Radiology Investigations</p>
+        <p>Pending Investigations</p>
       </a>
     </li>
   </ul>

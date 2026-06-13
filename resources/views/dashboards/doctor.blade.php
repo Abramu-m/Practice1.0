@@ -80,7 +80,7 @@
                     </div>
                 </div>
                 <div class="card-footer bg-light">
-                    <a href="{{ route('procedures.index') }}" class="small text-warning">
+                    <a href="{{ route('lab.visits.index') }}" class="small text-warning">
                         Review <i class="fas fa-arrow-circle-right"></i>
                     </a>
                 </div>
@@ -132,13 +132,13 @@
                             </a>
                         </div>
                         <div class="col-6 mb-3">
-                            <a href="{{ route('procedures.index') }}" class="btn btn-outline-success w-100">
+                            <a href="{{ route('lab.visits.index') }}" class="btn btn-outline-success w-100">
                                 <i class="fas fa-clipboard-check me-1"></i>
                                 Medical Procedures
                             </a>
                         </div>
                         <div class="col-6 mb-3">
-                            <a href="{{ route('procedures.index', ['filter_type' => 'radiology']) }}" class="btn btn-outline-warning w-100">
+                            <a href="{{ route('lab.visits.index') }}" class="btn btn-outline-warning w-100">
                                 <i class="fas fa-x-ray me-1"></i>
                                 Radiology Orders
                             </a>

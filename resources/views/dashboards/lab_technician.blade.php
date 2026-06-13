@@ -208,10 +208,6 @@
                                     <i class="fas fa-flask me-1"></i>
                                     Process Investigations
                                 </a>
-                                <a href="{{ route('procedures.index') }}" class="btn btn-info w-100 mb-2">
-                                    <i class="fas fa-clipboard-list me-1"></i>
-                                    Lab Procedures
-                                </a>
                                 <a href="{{ url('lab_diary') }}" class="btn btn-warning w-100">
                                     <i class="fas fa-book me-1"></i>
                                     Lab Diary

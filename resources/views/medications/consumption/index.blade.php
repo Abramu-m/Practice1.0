@@ -191,7 +191,7 @@
                         <i class="fas fa-microscope text-info me-2"></i>
                         Recent Lab Investigations
                     </h5>
-                    <a href="{{ route('procedures.index') }}?service_category=laboratory" class="btn btn-sm btn-outline-info">
+                    <a href="{{ route('lab.visits.index') }}" class="btn btn-sm btn-outline-info">
                         View All
                     </a>
                 </div>
@@ -241,7 +241,7 @@
                         <i class="fas fa-user-nurse text-primary me-2"></i>
                         Recent Nursing Procedures
                     </h5>
-                    <a href="{{ route('procedures.index') }}?service_category=procedures" class="btn btn-sm btn-outline-primary">
+                    <a href="{{ route('lab.visits.index') }}" class="btn btn-sm btn-outline-primary">
                         View All
                     </a>
                 </div>
@@ -293,7 +293,7 @@
                         <i class="fas fa-x-ray text-secondary me-2"></i>
                         Recent Radiology Studies
                     </h5>
-                    <a href="{{ route('procedures.index') }}?service_category=radiology" class="btn btn-sm btn-outline-secondary">
+                    <a href="{{ route('lab.visits.index') }}" class="btn btn-sm btn-outline-secondary">
                         View All
                     </a>
                 </div>

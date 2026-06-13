@@ -866,18 +866,6 @@ Route::get('medications/search', [\App\Http\Controllers\MedicationController::cl
     Route::post('/medications/{medication}/toggle-status', [App\Http\Controllers\MedicationController::class, 'toggleStatus'])
         ->name('medications.toggle-status');
 
-    // ================================
-    // PROCEDURE RESULTS MANAGEMENT
-    // ================================
-    
-    // Procedure results routes - Custom routes first to avoid conflicts
-    Route::post('procedures/{id}/store-result', [App\Http\Controllers\ProcedureController::class, 'storeResult'])
-        ->name('procedures.store-result')
-        ->where('id', '[0-9]+');
-    Route::get('procedures/{procedure}/view-results', [App\Http\Controllers\ProcedureController::class, 'report'])
-        ->name('procedures.view-results');
-    Route::resource('procedures', App\Http\Controllers\ProcedureController::class)->names('procedures');
-
 // ================================
 // API ROUTES (PUBLIC/AJAX)
 // ================================

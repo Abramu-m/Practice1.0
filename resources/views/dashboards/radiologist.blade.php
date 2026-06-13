@@ -49,7 +49,7 @@
                     </div>
                 </div>
                 <div class="card-footer bg-light">
-                    <a href="{{ route('procedures.index', ['filter_type' => 'radiology']) }}" class="small text-primary">
+                    <a href="{{ route('lab.visits.index') }}" class="small text-primary">
                         View Orders <i class="fas fa-arrow-circle-right"></i>
                     </a>
                 </div>
@@ -74,7 +74,7 @@
                     </div>
                 </div>
                 <div class="card-footer bg-light">
-                    <a href="{{ route('procedures.index', ['status' => 'pending']) }}" class="small text-warning">
+                    <a href="{{ route('lab.visits.index') }}" class="small text-warning">
                         Review Reports <i class="fas fa-arrow-circle-right"></i>
                     </a>
                 </div>
@@ -99,7 +99,7 @@
                     </div>
                 </div>
                 <div class="card-footer bg-light">
-                    <a href="{{ route('procedures.index', ['status' => 'completed']) }}" class="small text-success">
+                    <a href="{{ route('lab.visits.index') }}" class="small text-success">
                         View Completed <i class="fas fa-arrow-circle-right"></i>
                     </a>
                 </div>
@@ -124,7 +124,7 @@
                     </div>
                 </div>
                 <div class="card-footer bg-light">
-                    <a href="{{ route('procedures.index', ['priority' => 'urgent']) }}" class="small text-danger">
+                    <a href="{{ route('lab.visits.index') }}" class="small text-danger">
                         Review Urgent <i class="fas fa-arrow-circle-right"></i>
                     </a>
                 </div>
@@ -180,21 +180,21 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-6 mb-3">
-                            <a href="{{ route('procedures.index', ['filter_type' => 'radiology', 'status' => 'pending']) }}" 
+                            <a href="{{ route('lab.visits.index') }}"
                                class="btn btn-outline-warning w-100">
                                 <i class="fas fa-clipboard-list me-1"></i>
                                 Pending Reports
                             </a>
                         </div>
                         <div class="col-6 mb-3">
-                            <a href="{{ route('procedures.index', ['priority' => 'urgent']) }}" 
+                            <a href="{{ route('lab.visits.index') }}"
                                class="btn btn-outline-danger w-100">
                                 <i class="fas fa-exclamation-triangle me-1"></i>
                                 Urgent Studies
                             </a>
                         </div>
                         <div class="col-6 mb-3">
-                            <a href="{{ route('procedures.index', ['filter_type' => 'radiology']) }}" 
+                            <a href="{{ route('lab.visits.index') }}"
                                class="btn btn-outline-info w-100">
                                 <i class="fas fa-search me-1"></i>
                                 Search Studies
@@ -248,7 +248,7 @@
                                 </small>
                             </div>
                             <div>
-                                <a href="{{ route('procedures.show', $study->id) }}" class="btn btn-sm btn-outline-primary">
+                                <a href="{{ route('lab.results.form', $study->id) }}" class="btn btn-sm btn-outline-primary">
                                     <i class="fas fa-eye me-1"></i>View
                                 </a>
                             </div>
@@ -402,7 +402,7 @@
                                 </small>
                             </div>
                             <div>
-                                <a href="{{ route('procedures.show', $urgent->id) }}" class="btn btn-sm btn-danger">
+                                <a href="{{ route('lab.results.form', $urgent->id) }}" class="btn btn-sm btn-danger">
                                     <i class="fas fa-eye"></i>
                                 </a>
                             </div>
