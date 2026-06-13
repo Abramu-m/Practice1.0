@@ -312,6 +312,7 @@ Route::get('/result-template/{templateName}', function($templateName) {
             'urinalysis'         => 'lab.result_templates.urinalysis',
             'full_blood_picture' => 'lab.result_templates.full_blood_picture',
             'blood_count'        => 'lab.result_templates.full_blood_picture',
+            'wbc_differential'   => 'lab.result_templates.wbc_differential',
             'blood_grouping'     => 'lab.result_templates.blood_grouping',
             'pbs_microfilaria'   => 'lab.result_templates.pbs_microfilaria',
             'pbs_malaria'        => 'lab.result_templates.pbs_malaria',
