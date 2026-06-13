@@ -111,6 +111,8 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsAdmin::class, 'facil
         ->name('users.verify');
     Route::patch('/users/{id}/unverify', [UserController::class, 'unverify'])
         ->name('users.unverify');
+    Route::patch('/users/{id}/activate', [UserController::class, 'activate'])
+        ->name('users.activate');
     Route::post('/users/bulk-verify', [UserController::class, 'bulkVerify'])
         ->name('users.bulk-verify');
     

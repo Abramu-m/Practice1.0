@@ -155,13 +155,23 @@
                 </div>
                 <div class="col-md-4 text-end">
                     @if($user->role !== 'super_admin')
-                        <form action="{{ route('users.destroy', $user->id) }}" method="POST" style="display:inline;">
-                            @csrf 
-                            @method('DELETE')
-                            <button type="submit" onclick="return confirm('Are you sure you want to delete this user?')" class="btn btn-danger">
-                                <i class="fas fa-trash"></i> Delete User
-                            </button>
-                        </form>
+                        @if($user->is_active)
+                            <form action="{{ route('users.destroy', $user->id) }}" method="POST" style="display:inline;">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" onclick="return confirm('Are you sure you want to deactivate this user?')" class="btn btn-danger">
+                                    <i class="fas fa-user-slash"></i> Deactivate User
+                                </button>
+                            </form>
+                        @else
+                            <form action="{{ route('users.activate', $user->id) }}" method="POST" style="display:inline;">
+                                @csrf
+                                @method('PATCH')
+                                <button type="submit" onclick="return confirm('Are you sure you want to activate this user?')" class="btn btn-success">
+                                    <i class="fas fa-user-check"></i> Activate User
+                                </button>
+                            </form>
+                        @endif
                     @endif
                 </div>
             </div>

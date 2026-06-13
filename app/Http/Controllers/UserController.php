@@ -138,8 +138,26 @@ class UserController extends Controller
     public function destroy($id)
     {
         $user = User::findOrFail($id);
-        $user->delete();
-        return redirect()->route('users.index')->with('success', 'User deleted successfully');        
+
+        if ($user->is_super) {
+            return redirect()->back()->with('error', 'Cannot deactivate super admin.');
+        }
+
+        $user->update(['is_active' => false]);
+
+        return redirect()->route('users.index')->with('success', 'User deactivated successfully');
+    }
+
+    /**
+     * Reactivate a previously deactivated user.
+     */
+    public function activate($id)
+    {
+        $user = User::findOrFail($id);
+
+        $user->update(['is_active' => true]);
+
+        return redirect()->route('users.index')->with('success', 'User activated successfully');
     }
 
     /**

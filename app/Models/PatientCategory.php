@@ -34,6 +34,22 @@ class PatientCategory extends Model
     }
 
     /**
+     * Patient visits recorded against this category.
+     */
+    public function visits()
+    {
+        return $this->hasMany(PatientVisit::class, 'visit_category');
+    }
+
+    /**
+     * Medication cash sales recorded against this category.
+     */
+    public function medicationCashSales()
+    {
+        return $this->hasMany(MedicationCashSale::class, 'patient_category_id');
+    }
+
+    /**
      * Visit types allowed for this patient category.
      * A visit type with no categories assigned is available to all categories.
      */

@@ -148,6 +148,18 @@ class PatientCategoryController extends Controller
      */
     public function destroy(PatientCategory $patientCategory)
     {
+        if ($patientCategory->patients()->exists()) {
+            return redirect()->back()->with('error', 'Cannot delete: this category has patients assigned to it.');
+        }
+
+        if ($patientCategory->visits()->exists()) {
+            return redirect()->back()->with('error', 'Cannot delete: this category has patient visits recorded against it.');
+        }
+
+        if ($patientCategory->medicationCashSales()->exists()) {
+            return redirect()->back()->with('error', 'Cannot delete: this category has medication cash sales recorded against it.');
+        }
+
         $patientCategory->delete();
 
         return redirect()->route('patient_categories.index')->with('success', 'Patient category deleted successfully.');

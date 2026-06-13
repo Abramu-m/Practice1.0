@@ -181,12 +181,21 @@
                                 </a>
                                 
                                 @if($user->role !== 'super_admin')
-                                    <form action="{{ route('users.destroy', $user->id) }}" method="POST" style="display:inline;">
-                                        @csrf @method('DELETE')
-                                        <button type="submit" onclick="return confirm('Delete User?')" class="btn btn-sm btn-danger" title="Delete User">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </form>
+                                    @if($user->is_active)
+                                        <form action="{{ route('users.destroy', $user->id) }}" method="POST" style="display:inline;">
+                                            @csrf @method('DELETE')
+                                            <button type="submit" onclick="return confirm('Deactivate this user?')" class="btn btn-sm btn-danger" title="Deactivate User">
+                                                <i class="fas fa-user-slash"></i>
+                                            </button>
+                                        </form>
+                                    @else
+                                        <form action="{{ route('users.activate', $user->id) }}" method="POST" style="display:inline;">
+                                            @csrf @method('PATCH')
+                                            <button type="submit" onclick="return confirm('Activate this user?')" class="btn btn-sm btn-success" title="Activate User">
+                                                <i class="fas fa-user-check"></i>
+                                            </button>
+                                        </form>
+                                    @endif
                                 @endif
                             </div>
                         </td>
