@@ -186,16 +186,4 @@ class User extends Authenticatable
         };
     }
 
-    /**
-     * Check if User is Learning.
-     */
-    public function isLearning()
-    {
-        $learning = false;
-        if (($this->email === 'learning@hospital.com') && ($this->role == 'user') && ($this->is_verified)) {
-            $learning = true;
-        }
-        return $learning;
-    }
-    
 }

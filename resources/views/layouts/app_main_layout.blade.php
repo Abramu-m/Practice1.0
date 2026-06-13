@@ -413,8 +413,6 @@
                 @include('layouts.role_specific.nurse')
               @elseif(auth()->check() && auth()->user()->isRadiologist())
                 @include('layouts.role_specific.radiologist')
-              @elseif(auth()->check() && auth()->user()->isLearning())
-                @include('layouts.role_specific.user')
               @else
               <li class="nav-item">
                 <a href="#" class="nav-link">
