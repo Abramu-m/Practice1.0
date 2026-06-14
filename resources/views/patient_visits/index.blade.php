@@ -137,7 +137,7 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label>Visit Date <span class="text-danger">*</span></label>
-                                <input type="date" class="form-control" id="vm_visit_date" name="visit_date" required>
+                                <input type="date" class="form-control" id="vm_visit_date" name="visit_date" required readonly>
                             </div>
                         </div>
                     </div>
@@ -197,13 +197,13 @@
                         <div class="col-md-4">
                             <div class="mb-3">
                                 <label id="vm_cash_label">Cash Amount <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="vm_amount_cash" name="amount_cash" value="0.00" required>
+                                <input type="text" class="form-control" id="vm_amount_cash" name="amount_cash" value="0.00" required readonly>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="mb-3">
                                 <label id="vm_covered_label">Covered Amount</label>
-                                <input type="text" class="form-control" id="vm_amount_covered" name="amount_covered" value="0.00">
+                                <input type="text" class="form-control" id="vm_amount_covered" name="amount_covered" value="0.00" readonly>
                             </div>
                         </div>
                     </div>
@@ -469,7 +469,7 @@ function vmResetForm() {
     $('#vm_cash_label').html('Cash Amount <span class="text-danger">*</span>');
     $('#vm_alert').addClass('d-none');
     $('#vm_in_treatment_msg, #vm_discharged_msg').hide();
-    $('#vm_visit_date, #vm_amount_cash, #vm_amount_covered, #vm_sic_no, #vm_authorization_no, #vm_nhif_reference_no')
+    $('#vm_sic_no, #vm_authorization_no, #vm_nhif_reference_no')
         .prop('readonly', false);
     $('#vm_visit_category, #vm_visit_type, #vm_doctor').prop('disabled', false)
         .css({'pointer-events': '', 'background-color': '', 'opacity': ''});
@@ -539,9 +539,8 @@ function openEditVisitModal(visitId) {
 
             if (!v.is_waiting) {
                 // Visually lock these fields — they are still enabled (will serialize), but look readonly
-                $('#vm_visit_date, #vm_amount_cash, #vm_sic_no, #vm_authorization_no, #vm_nhif_reference_no')
+                $('#vm_sic_no, #vm_authorization_no, #vm_nhif_reference_no')
                     .prop('readonly', true);
-                $('#vm_amount_covered').prop('readonly', true);
                 $('#vm_visit_category').css({'pointer-events': 'none', 'background-color': '#e9ecef', 'opacity': '0.7'});
                 $('#vm_apply_fee_btn').prop('disabled', true);
                 $('#vm_fee_display').val('Fees locked');
