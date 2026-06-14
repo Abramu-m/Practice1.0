@@ -10,9 +10,17 @@
 <div class="container-fluid">
     <div class="page-title-box d-flex justify-content-between align-items-center mb-4">
         <h4 class="page-title mb-0"><i class="bi bi-envelope-open me-2"></i>{{ $subject ?: '(no subject)' }}</h4>
-        <a href="{{ route('email.index', ['folder' => $folderPath]) }}" class="btn btn-outline-secondary btn-sm">
-            <i class="bi bi-arrow-left me-1"></i> Back to Inbox
-        </a>
+        <div>
+            <a href="{{ route('email.compose', ['mode' => 'reply', 'uid' => $message->uid, 'folder' => $folderPath]) }}" class="btn btn-primary btn-sm">
+                <i class="bi bi-reply me-1"></i> Reply
+            </a>
+            <a href="{{ route('email.compose', ['mode' => 'forward', 'uid' => $message->uid, 'folder' => $folderPath]) }}" class="btn btn-outline-primary btn-sm">
+                <i class="bi bi-forward me-1"></i> Forward
+            </a>
+            <a href="{{ route('email.index', ['folder' => $folderPath]) }}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left me-1"></i> Back to Inbox
+            </a>
+        </div>
     </div>
 
     <div class="card">

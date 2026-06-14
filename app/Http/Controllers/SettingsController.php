@@ -49,6 +49,8 @@ class SettingsController extends Controller
             'imap_host'          => 'nullable|string|max:255',
             'imap_port'          => 'nullable|integer|min:1|max:65535',
             'imap_encryption'    => 'nullable|in:ssl,tls,starttls,none',
+            'smtp_port'          => 'nullable|integer|min:1|max:65535',
+            'smtp_encryption'    => 'nullable|in:ssl,starttls,none',
             'nhif_facility_code' => 'nullable|string|max:50',
             'hfr_code'           => 'nullable|string|max:50',
             'in_charge'          => 'nullable|exists:users,id',

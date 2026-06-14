@@ -177,6 +177,24 @@
                         </select>
                         @error('imap_encryption') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label fw-semibold">SMTP Port</label>
+                        <input type="number" name="smtp_port" class="form-control @error('smtp_port') is-invalid @enderror"
+                               value="{{ old('smtp_port', $facility->smtp_port) }}" min="1" max="65535">
+                        @error('smtp_port') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label fw-semibold">SMTP Encryption</label>
+                        <select name="smtp_encryption" class="form-select @error('smtp_encryption') is-invalid @enderror">
+                            @foreach(['ssl' => 'SSL (465)', 'starttls' => 'STARTTLS (587)', 'none' => 'None'] as $value => $label)
+                                <option value="{{ $value }}" @selected(old('smtp_encryption', $facility->smtp_encryption) === $value)>{{ $label }}</option>
+                            @endforeach
+                        </select>
+                        @error('smtp_encryption') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        <small class="text-muted">Uses the same host as IMAP.</small>
+                    </div>
                 </div>
 
                 <div class="mt-4">

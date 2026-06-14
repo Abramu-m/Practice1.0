@@ -3,6 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Symfony\Component\Mailer\Mailer;
+use Symfony\Component\Mailer\Transport;
+use Symfony\Component\Mailer\Transport\TransportInterface;
 use Webklex\PHPIMAP\Client;
 use Webklex\PHPIMAP\ClientManager;
 
@@ -23,6 +26,8 @@ class Facility extends Model
         'imap_host',
         'imap_port',
         'imap_encryption',
+        'smtp_port',
+        'smtp_encryption',
         'nhif_facility_code',
         'hfr_code',
         'logo',
@@ -52,6 +57,35 @@ class Facility extends Model
             'password' => $password,
             'authentication' => null,
         ]);
+    }
+
+    /**
+     * Build an SMTP transport for sending mail as a mailbox on this facility's mail server.
+     */
+    public function makeSmtpTransport(string $username, string $password): TransportInterface
+    {
+        $scheme = $this->smtp_encryption === 'ssl' ? 'smtps' : 'smtp';
+        $query = $this->smtp_encryption === 'none' ? '?auto_tls=false' : '';
+
+        $dsn = sprintf(
+            '%s://%s:%s@%s:%d%s',
+            $scheme,
+            rawurlencode($username),
+            rawurlencode($password),
+            $this->imap_host,
+            $this->smtp_port,
+            $query
+        );
+
+        return Transport::fromDsn($dsn);
+    }
+
+    /**
+     * Build a Mailer for sending mail as a mailbox on this facility's mail server.
+     */
+    public function makeMailer(string $username, string $password): Mailer
+    {
+        return new Mailer($this->makeSmtpTransport($username, $password));
     }
 
     /**

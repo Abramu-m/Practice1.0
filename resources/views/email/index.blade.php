@@ -6,12 +6,17 @@
 <div class="container-fluid">
     <div class="page-title-box d-flex justify-content-between align-items-center mb-4">
         <h4 class="page-title mb-0"><i class="bi bi-envelope me-2"></i>Email</h4>
-        <form method="POST" action="{{ route('email.disconnect') }}" onsubmit="return confirm('Forget your saved mailbox password?')">
-            @csrf
-            <button type="submit" class="btn btn-outline-danger btn-sm">
-                <i class="bi bi-x-circle me-1"></i> Disconnect Mailbox
-            </button>
-        </form>
+        <div>
+            <a href="{{ route('email.compose') }}" class="btn btn-primary btn-sm">
+                <i class="bi bi-pencil-square me-1"></i> Compose
+            </a>
+            <form method="POST" action="{{ route('email.disconnect') }}" onsubmit="return confirm('Forget your saved mailbox password?')" class="d-inline">
+                @csrf
+                <button type="submit" class="btn btn-outline-danger btn-sm">
+                    <i class="bi bi-x-circle me-1"></i> Disconnect Mailbox
+                </button>
+            </form>
+        </div>
     </div>
 
     @if(session('success'))
@@ -87,7 +92,9 @@
     $(document).ready(function () {
         $('#inbox-table').DataTable({
             responsive: true,
-            pageLength: 25,
+            paging: false,
+            info: false,
+            searching: false,
             columnDefs: [
                 { orderable: false, targets: [-1] }
             ]

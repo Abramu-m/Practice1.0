@@ -475,6 +475,8 @@ CREATE TABLE `facilities` (
   `imap_host` varchar(255) DEFAULT NULL,
   `imap_port` smallint(5) unsigned NOT NULL DEFAULT 993,
   `imap_encryption` varchar(10) NOT NULL DEFAULT 'ssl',
+  `smtp_port` smallint(5) unsigned NOT NULL DEFAULT 465,
+  `smtp_encryption` varchar(10) NOT NULL DEFAULT 'ssl',
   `nhif_facility_code` varchar(255) DEFAULT NULL,
   `hfr_code` varchar(50) DEFAULT NULL,
   `in_charge` bigint(20) unsigned DEFAULT NULL,
@@ -2904,3 +2906,4 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (272,'2026_06_13_06
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (273,'2026_06_13_100000_add_wbc_differential_result_template',149);
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (274,'2026_06_13_120000_add_email_settings_to_facilities_table',150);
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (275,'2026_06_13_120100_add_imap_password_to_users_table',150);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (276,'2026_06_14_090000_add_smtp_settings_to_facilities_table',151);

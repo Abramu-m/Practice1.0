@@ -89,6 +89,8 @@ Route::middleware(['auth', 'email_access'])->prefix('email')->name('email.')->gr
     Route::get('/', [App\Http\Controllers\EmailController::class, 'index'])->name('index');
     Route::post('/connect', [App\Http\Controllers\EmailController::class, 'connect'])->name('connect');
     Route::post('/disconnect', [App\Http\Controllers\EmailController::class, 'disconnect'])->name('disconnect');
+    Route::get('/compose', [App\Http\Controllers\EmailController::class, 'compose'])->name('compose');
+    Route::post('/send', [App\Http\Controllers\EmailController::class, 'send'])->name('send');
     Route::get('/message/{uid}', [App\Http\Controllers\EmailController::class, 'show'])->name('show');
     Route::get('/message/{uid}/attachment', [App\Http\Controllers\EmailController::class, 'attachment'])->name('attachment');
 });
