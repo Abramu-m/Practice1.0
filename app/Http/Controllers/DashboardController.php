@@ -35,7 +35,7 @@ class DashboardController extends Controller
                 case 'nurse':
                     return redirect()->route('dashboard.nurse');
                 case 'receptionist':
-                    return redirect()->route('dashboard.receptionist');
+                    return redirect()->route('cashier.index');
                 case 'lab_technician':
                     return redirect()->route('dashboard.lab_technician');
                 case 'radiologist':
@@ -308,111 +308,6 @@ class DashboardController extends Controller
             'suppliesStatus',
             'nextRounds',
             'recentCTCActivities'
-        ));
-    }
-    
-    /**
-     * Receptionist Dashboard
-     */
-    public function receptionistDashboard()
-    {
-        // Today's registrations (new patients)
-        $todaysRegistrations = Patient::whereDate('created_at', Carbon::today())->count();
-        
-        // Today's revenue
-        $todaysRevenue = FinancialTransaction::where('transaction_type', 'income')
-                                           ->whereDate('transaction_date', Carbon::today())
-                                           ->sum('amount');
-        
-        // Pending visits (not yet started consultations)
-        $pendingVisits = PatientVisit::where('visit_status', 0)->count();
-        
-        // Ready results (completed investigations)
-        $readyResults = Investigation::where('status', 'resulted')
-                                   ->whereNotNull('resulted_at')
-                                   ->count();
-        
-        // Cashier statistics
-        $dailyTransactions = FinancialTransaction::where('transaction_type', 'income')
-                                               ->whereDate('transaction_date', Carbon::today())
-                                               ->count();
-        
-        $receiptsIssued = DB::table('payment_receipts')
-                           ->whereDate('receipt_date', Carbon::today())
-                           ->where('status', '!=', 'cancelled')
-                           ->count();
-        
-        // Daily percentage (placeholder calculation)
-        $dailyPercentage = 75;
-        
-        $cashierStats = [
-            'daily_total' => $todaysRevenue,
-            'transactions' => $dailyTransactions,
-            'receipts' => $receiptsIssued,
-            'daily_percentage' => $dailyPercentage
-        ];
-        
-        $recentActivities = []; // Would be populated with recent activities
-        
-        // Today's schedule
-        $todaysSchedule = PatientVisit::with(['patientInfo'])
-                                     ->whereDate('visit_date', Carbon::today())
-                                     ->orderBy('visit_date', 'asc')
-                                     ->take(10)
-                                     ->get();
-        
-        // Schedule statistics
-        $scheduledVisits = PatientVisit::whereDate('visit_date', Carbon::today())->count();
-        $inProgressVisits = PatientVisit::where('visit_status', 1)->whereDate('visit_date', Carbon::today())->count();
-        $completedVisits = PatientVisit::where('visit_status', 2)->whereDate('visit_date', Carbon::today())->count();
-        
-        $scheduleStats = [
-            'scheduled' => $scheduledVisits,
-            'in_progress' => $inProgressVisits,
-            'completed' => $completedVisits
-        ];
-        
-        // Operations statistics
-        $newPatients = Patient::whereDate('created_at', Carbon::today())->count();
-        $returnPatients = PatientVisit::whereDate('visit_date', Carbon::today())
-                                     ->whereHas('patientInfo', function($q) {
-                                         $q->whereDate('created_at', '<', Carbon::today());
-                                     })->count();
-        
-        $cashPayments = FinancialTransaction::where('payment_method', 'cash')
-                                          ->whereDate('transaction_date', Carbon::today())
-                                          ->count();
-        
-        $insuranceClaims = FinancialTransaction::where('payment_method', 'nhif')
-                                             ->whereDate('transaction_date', Carbon::today())
-                                             ->count();
-        
-        $operationsStats = [
-            'new_patients' => $newPatients,
-            'return_patients' => $returnPatients,
-            'cash_payments' => $cashPayments,
-            'insurance_claims' => $insuranceClaims
-        ];
-        
-        // Payment statistics (percentages)
-        $totalPayments = $cashPayments + $insuranceClaims;
-        $paymentStats = [
-            'cash_percentage' => $totalPayments > 0 ? round(($cashPayments / $totalPayments) * 100) : 0,
-            'insurance_percentage' => $totalPayments > 0 ? round(($insuranceClaims / $totalPayments) * 100) : 0,
-            'other_percentage' => 5 // Placeholder for other payment methods
-        ];
-        
-        return view('dashboards.receptionist', compact(
-            'todaysRegistrations',
-            'todaysRevenue',
-            'pendingVisits',
-            'readyResults',
-            'cashierStats',
-            'recentActivities',
-            'todaysSchedule',
-            'scheduleStats',
-            'operationsStats',
-            'paymentStats'
         ));
     }
     

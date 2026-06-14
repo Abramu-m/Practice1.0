@@ -329,7 +329,6 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsVerified::class, 'fa
     // Role-specific Dashboards
     Route::get('/dashboard/doctor', [App\Http\Controllers\DashboardController::class, 'doctorDashboard'])->name('dashboard.doctor');
     Route::get('/dashboard/nurse', [App\Http\Controllers\DashboardController::class, 'nurseDashboard'])->name('dashboard.nurse');
-    Route::get('/dashboard/receptionist', [App\Http\Controllers\DashboardController::class, 'receptionistDashboard'])->name('dashboard.receptionist');
     Route::get('/dashboard/lab-technician', [App\Http\Controllers\DashboardController::class, 'labTechnicianDashboard'])->name('dashboard.lab_technician');
     Route::get('/dashboard/radiologist', [App\Http\Controllers\DashboardController::class, 'radiologistDashboard'])->name('dashboard.radiologist');
 

@@ -1,14 +1,3 @@
-<!-- Reception Dashboard -->
-<li class="nav-item">
-  <a href="{{ route('dashboard.receptionist') }}" class="nav-link nav-header {{ nav_active_class(['dashboard.receptionist']) }}">
-    <i class="nav-icon bi bi-speedometer2 text-primary"></i>
-    <p class="text-bold">
-      Reception Dashboard
-      <i class="bi bi-house-fill text-success ms-auto"></i>
-    </p>
-  </a>
-</li>
-
 <!-- Reception Desk -->
 <li class="nav-item has-treeview {{ nav_menu_open_class(['patient_visits.*'], ['patients', 'patients/*', 'readyInvResults']) }}">
   <a href="#" class="nav-link nav-header {{ nav_active_class(['patient_visits.*'], ['patients', 'patients/*', 'readyInvResults']) }}">
