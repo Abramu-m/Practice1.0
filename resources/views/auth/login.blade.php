@@ -215,7 +215,7 @@
                                type="email"
                                class="form-control @error('email') is-invalid @enderror"
                                name="email"
-                               value="{{ old('email') }}"
+                               value="{{ old('email', $rememberedEmail ?? '') }}"
                                required
                                autofocus
                                autocomplete="username"
@@ -240,7 +240,7 @@
                     </div>
 
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="remember" id="remember_me">
+                        <input class="form-check-input" type="checkbox" name="remember" id="remember_me" {{ !empty($rememberedEmail) ? 'checked' : '' }}>
                         <label class="form-check-label" for="remember_me">{{ __('Remember me') }}</label>
                     </div>
 

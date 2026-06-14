@@ -7,6 +7,7 @@ use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\View\View;
 
 class AuthenticatedSessionController extends Controller
@@ -14,9 +15,11 @@ class AuthenticatedSessionController extends Controller
     /**
      * Display the login view.
      */
-    public function create(): View
+    public function create(Request $request): View
     {
-        return view('auth.login');
+        return view('auth.login', [
+            'rememberedEmail' => $request->cookie('remembered_email'),
+        ]);
     }
 
     /**
@@ -27,6 +30,12 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         $request->session()->regenerate();
+
+        if ($request->boolean('remember')) {
+            Cookie::queue('remembered_email', $request->input('email'), 525600);
+        } else {
+            Cookie::queue(Cookie::forget('remembered_email'));
+        }
 
         return redirect()->intended(route('dashboard', absolute: false));
     }
