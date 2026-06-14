@@ -307,8 +307,7 @@ window.savePrescriptionFromModal = function savePrescriptionFromModal() {
     // Get context
     const context = window.prescriptionModalContext.mode;
     const consultationId = window.prescriptionModalContext.consultationId;
-    const visitId = window.prescriptionModalContext.visitId;
-    
+
     // Determine URL based on context
     const url = context === 'consultation' 
         ? `/consultations/${consultationId}/prescriptions`
@@ -348,7 +347,7 @@ window.savePrescriptionFromModal = function savePrescriptionFromModal() {
 
                 // Show CDS interstitial modal if new alerts were triggered
                 if (response.cds_alerts && response.cds_alerts.length > 0) {
-                    showCdsAlertInterstitial(response.cds_alerts, visitId);
+                    showCdsAlertInterstitial(response.cds_alerts, consultationId);
                 }
                 
                 // Reset the form but keep the modal open
@@ -411,7 +410,7 @@ function updateCDSDrawer(response) {
 /**
  * Show CDS alert interstitial modal stacked on top of the prescription modal.
  * @param {Array} alerts  - Array of {id, severity, message, rationale}
- * @param {number} consultationId - Consultation / visit ID used for the ACK endpoint
+ * @param {number} consultationId - Consultation ID used for the ACK endpoint
  */
 function showCdsAlertInterstitial(alerts, consultationId) {
     window._cdsInterstitialAlerts = alerts;

@@ -1795,31 +1795,34 @@ class ConsultationController extends Controller
      */
     public function acknowledgeCdsAlert(Request $request, $consultationId, $alertId)
     {
+        $data = $request->validate([
+            'action' => 'required|in:accept,override,dismiss',
+            'reason' => 'nullable|string|max:500'
+        ]);
+
         try {
-            // Support both consultation ID and visit ID (the modal passes visit ID)
-            $consultation = Consultation::find($consultationId);
-            if (!$consultation) {
-                $consultation = Consultation::where('visit_id', $consultationId)->firstOrFail();
-            }
-
-            if ($blocked = $this->blockIfVisitReadOnly($consultation->visit)) {
-                return $blocked;
-            }
-
             $alert = \App\Models\CdsAlert::findOrFail($alertId);
 
-            // Validate that this alert belongs to this consultation's patient/visit
-            if ($alert->patient_id !== $consultation->patient_id && $alert->visit_id !== $consultation->visit_id) {
+            // Whether a consultation is the one this alert was raised for
+            $belongsToAlert = fn (?Consultation $consultation) => $consultation
+                && ($alert->patient_id === $consultation->patient_id || $alert->visit_id === $consultation->visit_id);
+
+            // Support both consultation ID and visit ID (different callers pass either)
+            $consultation = Consultation::find($consultationId);
+            if (!$belongsToAlert($consultation)) {
+                $consultation = Consultation::where('visit_id', $consultationId)->first();
+            }
+
+            if (!$belongsToAlert($consultation)) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Alert does not belong to this consultation.'
                 ], 403);
             }
 
-            $request->validate([
-                'action' => 'required|in:accept,override,dismiss',
-                'reason' => 'nullable|string|max:500'
-            ]);
+            if ($blocked = $this->blockIfVisitReadOnly($consultation->visit)) {
+                return $blocked;
+            }
 
             // Update alert status
             $alert->update([
@@ -1831,15 +1834,15 @@ class ConsultationController extends Controller
             // Log the acknowledgment action
             \App\Models\CdsAlertAction::create([
                 'cds_alert_id' => $alert->id,
-                'action' => $request->action,
-                'reason' => $request->reason,
+                'action' => $data['action'],
+                'reason' => $data['reason'] ?? null,
                 'user_id' => Auth::id()
             ]);
 
             Log::info('CDS Alert acknowledged', [
                 'alert_id' => $alert->id,
-                'action' => $request->action,
-                'reason' => $request->reason,
+                'action' => $data['action'],
+                'reason' => $data['reason'] ?? null,
                 'user_id' => Auth::id()
             ]);
 
