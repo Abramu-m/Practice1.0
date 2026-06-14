@@ -22,8 +22,11 @@
                         </div>
                         <div class="col-md-6">
                             <label for="referralDepartment" class="form-label">Referral Department</label>
-                            <select id="referralDepartment" name="referral_department_id" class="form-select" required disabled>
+                            <select id="referralDepartment" name="referral_department_id" class="form-select" required>
                                 <option value="">Select department</option>
+                                @foreach($referralDepartments as $department)
+                                    <option value="{{ $department->id }}">{{ $department->name }}</option>
+                                @endforeach
                             </select>
                         </div>
                     </div>

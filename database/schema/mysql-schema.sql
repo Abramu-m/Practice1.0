@@ -456,6 +456,75 @@ CREATE TABLE `drug_classes` (
   UNIQUE KEY `drug_classes_slug_unique` (`slug`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `employee_salary_components`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `employee_salary_components` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `uuid` char(36) DEFAULT NULL,
+  `employee_id` bigint(20) unsigned NOT NULL,
+  `type` enum('allowance','deduction') NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `calculation_type` enum('fixed','percentage_of_basic') NOT NULL DEFAULT 'fixed',
+  `amount` decimal(10,2) DEFAULT NULL,
+  `percentage` decimal(5,2) DEFAULT NULL,
+  `is_taxable` tinyint(1) NOT NULL DEFAULT 1,
+  `is_pre_tax` tinyint(1) NOT NULL DEFAULT 0,
+  `is_statutory` tinyint(1) NOT NULL DEFAULT 0,
+  `is_active` tinyint(1) NOT NULL DEFAULT 1,
+  `sort_order` int(10) unsigned NOT NULL DEFAULT 0,
+  `created_by` bigint(20) unsigned NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `employee_salary_components_uuid_unique` (`uuid`),
+  KEY `employee_salary_components_created_by_foreign` (`created_by`),
+  KEY `employee_salary_components_employee_id_index` (`employee_id`),
+  CONSTRAINT `employee_salary_components_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`),
+  CONSTRAINT `employee_salary_components_employee_id_foreign` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `employees`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `employees` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `uuid` char(36) DEFAULT NULL,
+  `employee_number` varchar(50) NOT NULL,
+  `user_id` bigint(20) unsigned DEFAULT NULL,
+  `first_name` varchar(255) NOT NULL,
+  `middle_name` varchar(255) DEFAULT NULL,
+  `last_name` varchar(255) NOT NULL,
+  `gender` enum('male','female','other') DEFAULT NULL,
+  `date_of_birth` date DEFAULT NULL,
+  `phone` varchar(255) DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `address` varchar(255) DEFAULT NULL,
+  `job_title` varchar(255) DEFAULT NULL,
+  `department` varchar(255) DEFAULT NULL,
+  `employment_type` enum('permanent','contract','casual','volunteer') NOT NULL DEFAULT 'permanent',
+  `date_joined` date DEFAULT NULL,
+  `basic_salary` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `bank_name` varchar(255) DEFAULT NULL,
+  `bank_account_number` varchar(255) DEFAULT NULL,
+  `tin_number` varchar(255) DEFAULT NULL,
+  `nssf_number` varchar(255) DEFAULT NULL,
+  `payment_method` varchar(50) NOT NULL DEFAULT 'cash',
+  `status` enum('active','inactive','terminated') NOT NULL DEFAULT 'active',
+  `notes` text DEFAULT NULL,
+  `created_by` bigint(20) unsigned NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `employees_employee_number_unique` (`employee_number`),
+  UNIQUE KEY `employees_uuid_unique` (`uuid`),
+  KEY `employees_user_id_foreign` (`user_id`),
+  KEY `employees_created_by_foreign` (`created_by`),
+  KEY `employees_status_index` (`status`),
+  CONSTRAINT `employees_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`),
+  CONSTRAINT `employees_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `facilities`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -1782,6 +1851,7 @@ CREATE TABLE `patient_visits` (
   KEY `patient_visits_created_at_index` (`created_at`),
   KEY `patient_visits_visit_date_index` (`visit_date`),
   KEY `patient_visits_informed_by_foreign` (`informed_by`),
+  KEY `patient_visits_visit_status_index` (`visit_status`),
   CONSTRAINT `patient_visits_doctor_foreign` FOREIGN KEY (`doctor`) REFERENCES `doctors` (`doctor_id`) ON DELETE CASCADE,
   CONSTRAINT `patient_visits_informed_by_foreign` FOREIGN KEY (`informed_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
   CONSTRAINT `patient_visits_patient_foreign` FOREIGN KEY (`patient`) REFERENCES `patients` (`id`) ON DELETE CASCADE,
@@ -1824,6 +1894,24 @@ CREATE TABLE `patients` (
   UNIQUE KEY `patients_uuid_unique` (`uuid`),
   KEY `patients_patient_category_foreign` (`patient_category`),
   KEY `patients_created_by_foreign` (`created_by`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `paye_tax_bands`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `paye_tax_bands` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `uuid` char(36) DEFAULT NULL,
+  `band_order` int(10) unsigned NOT NULL,
+  `min_income` decimal(12,2) NOT NULL,
+  `max_income` decimal(12,2) DEFAULT NULL,
+  `rate` decimal(5,2) NOT NULL,
+  `is_active` tinyint(1) NOT NULL DEFAULT 1,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `paye_tax_bands_uuid_unique` (`uuid`),
+  KEY `paye_tax_bands_is_active_index` (`is_active`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `payment_receipts`;
@@ -2019,7 +2107,6 @@ DROP TABLE IF EXISTS `referral_departments`;
 CREATE TABLE `referral_departments` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `uuid` char(36) DEFAULT NULL,
-  `referral_hospital_id` bigint(20) unsigned NOT NULL,
   `name` varchar(255) NOT NULL,
   `description` text DEFAULT NULL,
   `phone` varchar(255) DEFAULT NULL,
@@ -2028,9 +2115,7 @@ CREATE TABLE `referral_departments` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `referral_departments_uuid_unique` (`uuid`),
-  KEY `referral_departments_referral_hospital_id_foreign` (`referral_hospital_id`),
-  CONSTRAINT `referral_departments_referral_hospital_id_foreign` FOREIGN KEY (`referral_hospital_id`) REFERENCES `referral_hospitals` (`id`) ON DELETE CASCADE
+  UNIQUE KEY `referral_departments_uuid_unique` (`uuid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `referral_hospitals`;
@@ -2067,6 +2152,79 @@ CREATE TABLE `result_templates` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `result_templates_code_unique` (`code`),
   KEY `result_templates_code_index` (`code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `salary_payment_items`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `salary_payment_items` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `uuid` char(36) DEFAULT NULL,
+  `salary_payment_id` bigint(20) unsigned NOT NULL,
+  `type` enum('allowance','deduction') NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `amount` decimal(10,2) NOT NULL,
+  `is_taxable` tinyint(1) NOT NULL DEFAULT 1,
+  `is_pre_tax` tinyint(1) NOT NULL DEFAULT 0,
+  `is_statutory` tinyint(1) NOT NULL DEFAULT 0,
+  `source_component_id` bigint(20) unsigned DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `salary_payment_items_uuid_unique` (`uuid`),
+  KEY `salary_payment_items_source_component_id_foreign` (`source_component_id`),
+  KEY `salary_payment_items_salary_payment_id_index` (`salary_payment_id`),
+  CONSTRAINT `salary_payment_items_salary_payment_id_foreign` FOREIGN KEY (`salary_payment_id`) REFERENCES `salary_payments` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `salary_payment_items_source_component_id_foreign` FOREIGN KEY (`source_component_id`) REFERENCES `employee_salary_components` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `salary_payments`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `salary_payments` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `uuid` char(36) DEFAULT NULL,
+  `payment_number` varchar(50) NOT NULL,
+  `employee_id` bigint(20) unsigned NOT NULL,
+  `pay_period_year` smallint(5) unsigned NOT NULL,
+  `pay_period_month` tinyint(3) unsigned NOT NULL,
+  `basic_salary` decimal(10,2) NOT NULL,
+  `total_allowances` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `total_deductions` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `net_salary` decimal(10,2) NOT NULL,
+  `payment_date` date DEFAULT NULL,
+  `payment_method` varchar(50) NOT NULL DEFAULT 'cash',
+  `payment_reference` varchar(100) DEFAULT NULL,
+  `status` enum('draft','approved','paid','cancelled') NOT NULL DEFAULT 'draft',
+  `notes` text DEFAULT NULL,
+  `financial_transaction_id` bigint(20) unsigned DEFAULT NULL,
+  `created_by` bigint(20) unsigned NOT NULL,
+  `approved_by` bigint(20) unsigned DEFAULT NULL,
+  `approved_at` timestamp NULL DEFAULT NULL,
+  `paid_by` bigint(20) unsigned DEFAULT NULL,
+  `paid_at` timestamp NULL DEFAULT NULL,
+  `cancelled_by` bigint(20) unsigned DEFAULT NULL,
+  `cancelled_at` timestamp NULL DEFAULT NULL,
+  `cancellation_reason` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `salary_payments_employee_period_unique` (`employee_id`,`pay_period_year`,`pay_period_month`),
+  UNIQUE KEY `salary_payments_payment_number_unique` (`payment_number`),
+  UNIQUE KEY `salary_payments_uuid_unique` (`uuid`),
+  KEY `salary_payments_financial_transaction_id_foreign` (`financial_transaction_id`),
+  KEY `salary_payments_created_by_foreign` (`created_by`),
+  KEY `salary_payments_approved_by_foreign` (`approved_by`),
+  KEY `salary_payments_paid_by_foreign` (`paid_by`),
+  KEY `salary_payments_cancelled_by_foreign` (`cancelled_by`),
+  KEY `salary_payments_period_index` (`pay_period_year`,`pay_period_month`),
+  KEY `salary_payments_status_index` (`status`),
+  CONSTRAINT `salary_payments_approved_by_foreign` FOREIGN KEY (`approved_by`) REFERENCES `users` (`id`),
+  CONSTRAINT `salary_payments_cancelled_by_foreign` FOREIGN KEY (`cancelled_by`) REFERENCES `users` (`id`),
+  CONSTRAINT `salary_payments_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`),
+  CONSTRAINT `salary_payments_employee_id_foreign` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`),
+  CONSTRAINT `salary_payments_financial_transaction_id_foreign` FOREIGN KEY (`financial_transaction_id`) REFERENCES `financial_transactions` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `salary_payments_paid_by_foreign` FOREIGN KEY (`paid_by`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `sample_types`;
@@ -2552,7 +2710,7 @@ CREATE TABLE `users` (
   `address` varchar(255) DEFAULT NULL,
   `profile_picture` varchar(255) DEFAULT NULL,
   `signature` varchar(255) DEFAULT NULL,
-  `role` enum('user','admin','doctor','nurse','receptionist','cashier','pharmacist','lab_technician','radiologist','super_admin') NOT NULL DEFAULT 'user',
+  `role` enum('user','admin','doctor','nurse','receptionist','cashier','pharmacist','lab_technician','radiologist','super_admin','hr') NOT NULL DEFAULT 'user',
   `is_admin` tinyint(1) NOT NULL DEFAULT 0,
   `is_super` tinyint(1) NOT NULL DEFAULT 0,
   `is_active` tinyint(1) NOT NULL DEFAULT 1,
@@ -2907,3 +3065,11 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (273,'2026_06_13_10
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (274,'2026_06_13_120000_add_email_settings_to_facilities_table',150);
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (275,'2026_06_13_120100_add_imap_password_to_users_table',150);
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (276,'2026_06_14_090000_add_smtp_settings_to_facilities_table',151);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (277,'2026_06_14_063856_add_visit_status_index_to_patient_visits_table',152);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (278,'2026_06_14_100000_create_employees_table',153);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (279,'2026_06_14_100100_create_paye_tax_bands_table',153);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (280,'2026_06_14_100200_create_employee_salary_components_table',153);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (281,'2026_06_14_100300_create_salary_payments_table',153);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (282,'2026_06_14_100400_create_salary_payment_items_table',153);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (283,'2026_06_14_100500_add_hr_role_to_users_table',153);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (284,'2026_06_14_100000_drop_referral_hospital_id_from_referral_departments_table',154);

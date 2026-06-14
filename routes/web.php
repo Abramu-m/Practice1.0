@@ -528,8 +528,6 @@ Route::get('medications/search', [\App\Http\Controllers\MedicationController::cl
         ->name('consultations.show');
     Route::post('consultations/{consultation}/referrals', [ConsultationController::class, 'storeReferralLetter'])
         ->name('consultations.referrals.store');
-    Route::get('referrals/hospitals/{hospital}/departments', [ConsultationController::class, 'getHospitalDepartments'])
-        ->name('referrals.hospital_departments');
     Route::get('consultations/{consultation}/case-summary-pdf', [ConsultationController::class, 'generateCaseSummaryPdf'])
         ->name('consultations.case_summary_pdf');
     Route::put('consultations/{consultationId}', [ConsultationController::class, 'update'])

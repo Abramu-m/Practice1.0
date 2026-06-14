@@ -20,9 +20,4 @@ class ReferralHospital extends Model
         'notes',
         'is_active',
     ];
-
-    public function departments()
-    {
-        return $this->hasMany(ReferralDepartment::class, 'referral_hospital_id', 'id');
-    }
 }

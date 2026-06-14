@@ -178,8 +178,9 @@ class ConsultationController extends Controller
         // Get ICD diagnoses for the consultation
         $icd_diagnoses = $consultation->icdDiagnoses;
 
-        // Load referral hospital dropdown data
+        // Load referral hospital/department dropdown data (departments are global, not tied to a hospital)
         $referralHospitals = ReferralHospital::where('is_active', true)->orderBy('name')->get();
+        $referralDepartments = ReferralDepartment::where('is_active', true)->orderBy('name')->get();
 
         // Get test results from investigations with results
         $testResults = $this->buildTestResults($investigations, $consultation->id);
@@ -206,6 +207,7 @@ class ConsultationController extends Controller
             'drugAllergyOverflow',
             'otherAllergiesSummary',
             'referralHospitals',
+            'referralDepartments',
             'allVisits',
             'currentVisitId',
             'isReadOnly'
@@ -513,15 +515,6 @@ class ConsultationController extends Controller
             'testResults' => $testResults,
             'isPdf' => true,
         ])->setPaper('a4', 'portrait')->stream('case_summary_'.$consultation->id.'.pdf');
-    }
-
-    /**
-     * Fetch departments for a referral hospital
-     */
-    public function getHospitalDepartments(ReferralHospital $hospital)
-    {
-        $departments = $hospital->departments()->where('is_active', true)->orderBy('name')->get(['id', 'name']);
-        return response()->json(['success' => true, 'departments' => $departments]);
     }
 
     /**

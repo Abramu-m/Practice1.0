@@ -1489,44 +1489,6 @@
         showModal('#referralLetterModal');
     }
 
-    document.addEventListener('DOMContentLoaded', function () {
-        const hospitalSelect = document.getElementById('referralHospital');
-        const departmentSelect = document.getElementById('referralDepartment');
-
-        if (hospitalSelect && departmentSelect) {
-            hospitalSelect.addEventListener('change', function () {
-                const hospitalId = this.value;
-                departmentSelect.innerHTML = '<option value="">Loading departments...</option>';
-                departmentSelect.disabled = true;
-
-                if (!hospitalId) {
-                    departmentSelect.innerHTML = '<option value="">Select department</option>';
-                    departmentSelect.disabled = true;
-                    return;
-                }
-
-                fetch(`{{ url('referrals/hospitals') }}/${hospitalId}/departments`)
-                    .then(response => response.json())
-                    .then(data => {
-                        departmentSelect.innerHTML = '<option value="">Select department</option>';
-                        if (data.success && Array.isArray(data.departments)) {
-                            data.departments.forEach(function (dept) {
-                                const option = document.createElement('option');
-                                option.value = dept.id;
-                                option.textContent = dept.name;
-                                departmentSelect.appendChild(option);
-                            });
-                        }
-                        departmentSelect.disabled = false;
-                    })
-                    .catch(() => {
-                        departmentSelect.innerHTML = '<option value="">Unable to load departments</option>';
-                        departmentSelect.disabled = true;
-                    });
-            });
-        }
-    });
-
     // Load investigations table - called after saving investigations from modal
     window.loadInvestigations = function() {
         $.ajax({
