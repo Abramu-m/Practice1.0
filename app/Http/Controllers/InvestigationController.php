@@ -165,6 +165,22 @@ class InvestigationController extends Controller
      */
     public function store(Request $request)
     {
+        $user = Auth::user();
+        if (!($user->isAdmin() || $user->role === 'doctor')) {
+            $visit = $request->visit_id
+                ? \App\Models\PatientVisit::with('visitType')->find($request->visit_id)
+                : null;
+            $isLabOnly = $visit && $visit->visitType
+                && stripos($visit->visitType->description, 'lab only') !== false;
+
+            if (!$isLabOnly) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Only a doctor can order investigations for this visit type.'
+                ], 403);
+            }
+        }
+
         // Check if this is a batch request (from Lab Modal)
         if ($request->has('services') && is_array($request->services)) {
             return $this->storeBatchInvestigations($request);

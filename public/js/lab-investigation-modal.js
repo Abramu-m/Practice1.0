@@ -44,7 +44,7 @@ window.openLabModal = function openLabModal(visit) {
     if (visit && typeof visit === 'object') {
         // Called with: visit object
         actualVisitId = visit.id;
-        consultationId = visit.consultation.id;
+        consultationId = visit.consultation ? visit.consultation.id : null;
         patientName = visit.patient_info.first_name + ' ' + visit.patient_info.last_name;
         patientId = visit.patient;
         visitCategoryId = visit.visit_category.id;

@@ -7,11 +7,13 @@
         $hasActiveVisit = $activeVisit && $activeVisit->id == $visit->id;
         $activeVisitId = $hasActiveVisit ? $visit->id : null;
     }
+    $isLabOnlyVisit = $visit->visitType && stripos($visit->visitType->description, 'lab only') !== false;
+    $canOrderAnyVisitType = $user->isAdmin() || $user->role === 'doctor';
 @endphp
 
 <div class="d-flex gap-1 w-100" role="group">
     {{-- Lab Button for active visits --}}
-    @if(!isset($selectedPatient) && $hasActiveVisit)
+    @if(!isset($selectedPatient) && $hasActiveVisit && ($canOrderAnyVisitType || $isLabOnlyVisit))
         <button type="button" class="btn btn-sm btn-success flex-fill" 
                 onclick="openLabModal({{ json_encode($visit) }})"
                 title="Add Lab Investigation">

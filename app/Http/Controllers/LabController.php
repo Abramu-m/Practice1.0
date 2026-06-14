@@ -55,10 +55,11 @@ class LabController extends Controller
                 $relevantServiceIds = MedicalService::whereIn('service_category_id', $labCategoryIds)->pluck('id');
             }
 
-            // Get qualifying visit IDs via indexed JOINs, scoped to date range
+            // Get qualifying visit IDs via indexed JOIN on investigations.visit_id, scoped to date range.
+            // Joining directly on visit_id (rather than through consultations) also picks up
+            // Lab Only visits, whose investigations have no consultation_id.
             $invQuery = DB::table('investigations')
-                ->join('consultations', 'investigations.consultation_id', '=', 'consultations.id')
-                ->join('patient_visits', 'consultations.visit_id', '=', 'patient_visits.id')
+                ->join('patient_visits', 'investigations.visit_id', '=', 'patient_visits.id')
                 ->whereIn('investigations.status', [
                     Investigation::STATUS_ORDERED,
                     Investigation::STATUS_COLLECTED,
@@ -80,13 +81,13 @@ class LabController extends Controller
                 $invQuery->where('investigations.priority', $request->priority);
             }
 
-            $visitIds = $invQuery->pluck('consultations.visit_id')->unique()->values();
+            $visitIds = $invQuery->pluck('investigations.visit_id')->unique()->values();
 
             // Main query: primary-key lookup on the already-filtered visit IDs
             $query = PatientVisit::with([
                 'patientInfo',
                 'doctorInfo.user',
-                'consultation.investigations.medicalService.serviceCategory',
+                'investigations.medicalService.serviceCategory',
             ])
             ->whereIn('id', $visitIds)
             ->orderBy('visit_date', 'desc');
@@ -126,12 +127,9 @@ class LabController extends Controller
                     return '<span class="text-muted">Not assigned</span>';
                 })
                 ->addColumn('investigations_info', function ($visit) use ($isNurse) {
-                    $relevantInvestigations = collect();
-                    if ($visit->consultation && $visit->consultation->investigations) {
-                        $relevantInvestigations = $visit->consultation->investigations->filter(
-                            fn ($investigation) => $this->isRelevantInvestigation($investigation, $isNurse)
-                        );
-                    }
+                    $relevantInvestigations = $visit->investigations->filter(
+                        fn ($investigation) => $this->isRelevantInvestigation($investigation, $isNurse)
+                    );
 
                     $urgentCount = $relevantInvestigations->whereIn('priority', ['urgent', 'stat'])->count();
                     $totalCount = $relevantInvestigations->count();
@@ -145,12 +143,9 @@ class LabController extends Controller
                     return $html;
                 })
                 ->addColumn('priority_status', function ($visit) use ($isNurse) {
-                    $relevantInvestigations = collect();
-                    if ($visit->consultation && $visit->consultation->investigations) {
-                        $relevantInvestigations = $visit->consultation->investigations->filter(
-                            fn ($investigation) => $this->isRelevantInvestigation($investigation, $isNurse)
-                        );
-                    }
+                    $relevantInvestigations = $visit->investigations->filter(
+                        fn ($investigation) => $this->isRelevantInvestigation($investigation, $isNurse)
+                    );
 
                     $statuses = $relevantInvestigations->pluck('status')->unique();
                     $html = '';
@@ -233,56 +228,53 @@ class LabController extends Controller
     public function showVisitInvestigations($visitId)
     {
         $visit = PatientVisit::with([
-            'patientInfo', 
+            'patientInfo',
             'doctorInfo.user',
-            'consultation.investigations.medicalService.serviceCategory',
-            'consultation.investigations.medicalService.activeConsumableRequirements.medication',
-            'consultation.investigations.doctor.user',
-            'consultation.investigations.results',
-            'consultation.investigations.orderedBy',
-            'consultation.investigations.collectedBy',
-            'consultation.investigations.resultedBy'
+            'investigations.medicalService.serviceCategory',
+            'investigations.medicalService.activeConsumableRequirements.medication',
+            'investigations.doctor.user',
+            'investigations.results',
+            'investigations.orderedBy',
+            'investigations.collectedBy',
+            'investigations.resultedBy'
         ])->findOrFail($visitId);
-        
-        // Get lab investigations through consultation relationship, filtered by the
-        // current user's role so each role only sees the categories relevant to them.
+
+        // Get lab investigations for this visit, filtered by the current user's
+        // role so each role only sees the categories relevant to them.
         $user = Auth::user();
 
-        $investigations = collect();
-        if ($visit->consultation && $visit->consultation->investigations) {
-            $investigations = $visit->consultation->investigations->filter(function($investigation) use ($user) {
-                $categoryId = $investigation->medicalService->service_category_id ?? null;
-                if (!$investigation->medicalService || !$categoryId) {
-                    return false;
-                }
+        $investigations = $visit->investigations->filter(function($investigation) use ($user) {
+            $categoryId = $investigation->medicalService->service_category_id ?? null;
+            if (!$investigation->medicalService || !$categoryId) {
+                return false;
+            }
 
-                if ($user->isAdmin()) {
-                    return true;
-                }
+            if ($user->isAdmin()) {
+                return true;
+            }
 
-                if ($user->isRadiologist()) {
-                    return $categoryId === ServiceCategory::SPECIALIZED_INVESTIGATIONS;
-                }
+            if ($user->isRadiologist()) {
+                return $categoryId === ServiceCategory::SPECIALIZED_INVESTIGATIONS;
+            }
 
-                if ($user->isLabTechnician()) {
-                    return $categoryId === ServiceCategory::LABORATORY;
-                }
+            if ($user->isLabTechnician()) {
+                return $categoryId === ServiceCategory::LABORATORY;
+            }
 
-                if ($user->role === 'doctor') {
-                    return in_array($categoryId, [ServiceCategory::PROCEDURE, ServiceCategory::SPECIALIZED_INVESTIGATIONS]);
-                }
+            if ($user->role === 'doctor') {
+                return in_array($categoryId, [ServiceCategory::PROCEDURE, ServiceCategory::SPECIALIZED_INVESTIGATIONS]);
+            }
 
-                if ($user->isNurse()) {
-                    return $categoryId === ServiceCategory::PROCEDURE;
-                }
+            if ($user->isNurse()) {
+                return $categoryId === ServiceCategory::PROCEDURE;
+            }
 
-                return in_array($categoryId, [
-                    ServiceCategory::LABORATORY,
-                    ServiceCategory::PROCEDURE,
-                    ServiceCategory::SPECIALIZED_INVESTIGATIONS,
-                ]);
-            })->sortByDesc('ordered_at');
-        }
+            return in_array($categoryId, [
+                ServiceCategory::LABORATORY,
+                ServiceCategory::PROCEDURE,
+                ServiceCategory::SPECIALIZED_INVESTIGATIONS,
+            ]);
+        })->sortByDesc('ordered_at');
 
         $isNurse = $user->isNurse();
 
@@ -367,7 +359,7 @@ class LabController extends Controller
      */
     public function storeResults(Request $request, $investigationId)
     {
-        $investigation = Investigation::with(['consultation.visit', 'medicalService.resultTemplate'])->findOrFail($investigationId);
+        $investigation = Investigation::with(['medicalService.resultTemplate'])->findOrFail($investigationId);
 
         $request->validate([
             'action' => 'required|in:draft,preliminary,final',
@@ -477,7 +469,7 @@ class LabController extends Controller
 
                 event(new LabResultRecorded(
                     $investigation->patient_id,
-                    $investigation->visit_id ?? ($investigation->consultation->visit->id ?? null),
+                    $investigation->visit_id,
                     $investigation->id,
                     ['parameters' => $normalizedParameters],
                     [
@@ -509,11 +501,7 @@ class LabController extends Controller
                     ->with('success', $message);
             } else {
                 // Default behavior - redirect to lab visits
-                $visitId = $investigation->consultation && $investigation->consultation->visit 
-                    ? $investigation->consultation->visit->id 
-                    : $investigation->patient_id; // Fallback to patient investigations if no visit
-                
-                return redirect()->route('lab.visits.investigations', $visitId)
+                return redirect()->route('lab.visits.investigations', $investigation->visit_id)
                     ->with('success', $message);
             }
 
