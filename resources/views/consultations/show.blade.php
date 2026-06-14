@@ -1085,13 +1085,6 @@
                         <div class="card">
                             <div class="card-header bg-light d-flex justify-content-between align-items-center">
                                 <h6 class="mb-0"><i class="fas fa-list"></i> ICD-10 Diagnoses</h6>
-                                @unless($isReadOnly)
-                                <div>
-                                    <button type="button" class="btn btn-sm btn-outline-info" onclick="syncAllIcdToText()" title="Sync all ICD diagnoses to text">
-                                        <i class="fas fa-sync"></i> Sync All to Text
-                                    </button>
-                                </div>
-                                @endunless
                             </div>
                             <div class="card-body">
                                 <div id="icd_diagnoses_list">
