@@ -18,7 +18,7 @@ class AuthenticatedSessionController extends Controller
     public function create(Request $request): View
     {
         return view('auth.login', [
-            'rememberedEmail' => $request->cookie('remembered_email'),
+            'rememberedLogin' => $request->cookie('remembered_login'),
         ]);
     }
 
@@ -32,9 +32,9 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
 
         if ($request->boolean('remember')) {
-            Cookie::queue('remembered_email', $request->input('email'), 525600);
+            Cookie::queue('remembered_login', $request->input('login'), 525600);
         } else {
-            Cookie::queue(Cookie::forget('remembered_email'));
+            Cookie::queue(Cookie::forget('remembered_login'));
         }
 
         return redirect()->intended(route('dashboard', absolute: false));

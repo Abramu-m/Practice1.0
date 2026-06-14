@@ -210,17 +210,17 @@
                     @csrf
 
                     <div class="mb-3">
-                        <label for="email">{{ __('Email Address') }}</label>
-                        <input id="email"
-                               type="email"
-                               class="form-control @error('email') is-invalid @enderror"
-                               name="email"
-                               value="{{ old('email', $rememberedEmail ?? '') }}"
+                        <label for="login">{{ __('Email or Username') }}</label>
+                        <input id="login"
+                               type="text"
+                               class="form-control @error('login') is-invalid @enderror"
+                               name="login"
+                               value="{{ old('login', $rememberedLogin ?? '') }}"
                                required
                                autofocus
                                autocomplete="username"
-                               placeholder="Enter your email">
-                        @error('email')
+                               placeholder="Enter your email or username">
+                        @error('login')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
@@ -240,7 +240,7 @@
                     </div>
 
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="remember" id="remember_me" {{ !empty($rememberedEmail) ? 'checked' : '' }}>
+                        <input class="form-check-input" type="checkbox" name="remember" id="remember_me" {{ !empty($rememberedLogin) ? 'checked' : '' }}>
                         <label class="form-check-label" for="remember_me">{{ __('Remember me') }}</label>
                     </div>
 
