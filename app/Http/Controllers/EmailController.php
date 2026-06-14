@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Log;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email as MimeEmail;
 use Webklex\PHPIMAP\Client;
+use Webklex\PHPIMAP\Folder;
 
 class EmailController extends Controller
 {
@@ -337,7 +338,36 @@ class EmailController extends Controller
             return back()->withInput()->with('error', 'Could not send the email: ' . $e->getMessage());
         }
 
+        try {
+            $client = $this->connectMailbox($user, $facility);
+            $sentFolder = $this->findSentFolder($client);
+
+            if ($sentFolder) {
+                $sentFolder->appendMessage($email->toString(), ['\\Seen']);
+            }
+
+            $client->disconnect();
+        } catch (\Throwable $e) {
+            Log::warning('Could not save sent message to Sent folder for user ' . $user->id . ': ' . $e->getMessage());
+        }
+
         return redirect()->route('email.index')->with('success', 'Email sent successfully.');
+    }
+
+    /**
+     * Find the mailbox's "Sent" folder, trying common naming conventions.
+     */
+    protected function findSentFolder(Client $client): ?Folder
+    {
+        foreach (['INBOX.Sent', 'Sent', 'INBOX.Sent Items', 'Sent Items'] as $path) {
+            $folder = $client->getFolderByPath($path);
+
+            if ($folder) {
+                return $folder;
+            }
+        }
+
+        return null;
     }
 
     /**

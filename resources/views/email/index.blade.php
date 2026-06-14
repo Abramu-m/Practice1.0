@@ -54,7 +54,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($messages as $msg)
+                        @foreach($messages as $msg)
                             @php
                                 $from = $msg->from->first();
                                 $isUnseen = !$msg->flags->has('seen');
@@ -70,11 +70,7 @@
                                     </a>
                                 </td>
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="4" class="text-center text-muted">No messages in this folder.</td>
-                            </tr>
-                        @endforelse
+                        @endforeach
                     </tbody>
                 </table>
             </div>
@@ -95,6 +91,9 @@
             paging: false,
             info: false,
             searching: false,
+            language: {
+                emptyTable: 'No messages in this folder.'
+            },
             columnDefs: [
                 { orderable: false, targets: [-1] }
             ]
