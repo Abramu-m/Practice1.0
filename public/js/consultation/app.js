@@ -3,9 +3,6 @@
  * Initializes all modules and handles global setup
  */
 
-// Global consultation ID variable
-window.consultationId = null;
-
 // Initialize consultation application
 $(document).ready(function() {
     
