@@ -116,6 +116,7 @@ class FinancialTransactionController extends Controller
     {
         $validated = $request->validate([
             'transaction_type' => 'required|in:income,expense',
+            'transaction_date' => 'required|date',
             'category' => 'required|string|max:100',
             'subcategory' => 'nullable|string|max:100',
             'amount' => 'required|numeric|min:0.01',
@@ -124,10 +125,10 @@ class FinancialTransactionController extends Controller
             'payment_reference' => 'nullable|string|max:100',
             'patient_id' => 'nullable|exists:patients,id',
             'visit_id' => 'nullable|exists:patient_visits,id',
-            'notes' => 'nullable|string'
         ]);
 
         $validated['source_type'] = 'general_expense';
+        $validated['status'] = 'pending';
         $validated['patient_paid_amount'] = $validated['payment_method'] === 'insurance' ? 0 : $validated['amount'];
         $validated['insurance_covered_amount'] = $validated['payment_method'] === 'insurance' ? $validated['amount'] : 0;
 
@@ -282,11 +283,11 @@ class FinancialTransactionController extends Controller
         }
         
         if ($request->filled('date_from')) {
-            $query->whereDate('transaction_date', '>=', $request->date_from);
+            $query->where('transaction_date', '>=', $request->date_from . ' 00:00:00');
         }
-        
+
         if ($request->filled('date_to')) {
-            $query->whereDate('transaction_date', '<=', $request->date_to);
+            $query->where('transaction_date', '<=', $request->date_to . ' 23:59:59');
         }
         
         $transactions = $query->orderBy('transaction_date', 'desc')->get();

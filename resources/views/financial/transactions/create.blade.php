@@ -170,31 +170,6 @@
                             @enderror
                         </div>
 
-                        <!-- Notes -->
-                        <div class="mb-3">
-                            <label for="notes">Additional Notes</label>
-                            <textarea name="notes" id="notes" rows="2"
-                                      class="form-control @error('notes') is-invalid @enderror" 
-                                      placeholder="Any additional notes or comments (optional)">{{ old('notes') }}</textarea>
-                            @error('notes')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <!-- Status -->
-                        <div class="mb-3">
-                            <label for="status">Status</label>
-                            <select name="status" id="status" class="form-control @error('status') is-invalid @enderror">
-                                <option value="completed" {{ old('status') == 'completed' ? 'selected' : '' }}>Completed</option>
-                                <option value="pending" {{ old('status') == 'pending' ? 'selected' : '' }}>Pending</option>
-                            </select>
-                            @error('status')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                            <small class="form-text text-muted">
-                                Pending transactions require approval before being included in financial reports.
-                            </small>
-                        </div>
                     </div>
 
                     <div class="card-footer">
