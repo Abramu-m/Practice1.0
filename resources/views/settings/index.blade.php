@@ -139,6 +139,46 @@
                     </div>
                 </div>
 
+                <hr class="my-4">
+
+                <h6 class="fw-semibold mb-3"><i class="bi bi-envelope me-1"></i> Work Email (Webmail)</h6>
+                <p class="text-muted small">
+                    Staff whose email address ends with the domain below, and whose email is verified,
+                    will see an "Email" link in the sidebar to view their work mailbox.
+                </p>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Email Domain</label>
+                        <input type="text" name="email_domain" class="form-control @error('email_domain') is-invalid @enderror"
+                               value="{{ old('email_domain', $facility->email_domain) }}" placeholder="e.g. hospital.com">
+                        @error('email_domain') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">IMAP Host</label>
+                        <input type="text" name="imap_host" class="form-control @error('imap_host') is-invalid @enderror"
+                               value="{{ old('imap_host', $facility->imap_host) }}" placeholder="e.g. mail.hospital.com">
+                        @error('imap_host') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label fw-semibold">IMAP Port</label>
+                        <input type="number" name="imap_port" class="form-control @error('imap_port') is-invalid @enderror"
+                               value="{{ old('imap_port', $facility->imap_port) }}" min="1" max="65535">
+                        @error('imap_port') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label fw-semibold">Encryption</label>
+                        <select name="imap_encryption" class="form-select @error('imap_encryption') is-invalid @enderror">
+                            @foreach(['ssl' => 'SSL', 'tls' => 'TLS', 'starttls' => 'STARTTLS', 'none' => 'None'] as $value => $label)
+                                <option value="{{ $value }}" @selected(old('imap_encryption', $facility->imap_encryption) === $value)>{{ $label }}</option>
+                            @endforeach
+                        </select>
+                        @error('imap_encryption') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
+                </div>
+
                 <div class="mt-4">
                     <button type="submit" class="btn btn-primary">
                         <i class="fas fa-save me-1"></i> Save Changes

@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Webklex\PHPIMAP\Client;
+use Webklex\PHPIMAP\ClientManager;
 
 class Facility extends Model
 {
@@ -17,6 +19,10 @@ class Facility extends Model
         'address',
         'phone',
         'email',
+        'email_domain',
+        'imap_host',
+        'imap_port',
+        'imap_encryption',
         'nhif_facility_code',
         'hfr_code',
         'logo',
@@ -29,6 +35,23 @@ class Facility extends Model
     public function inCharge()
     {
         return $this->belongsTo(User::class, 'in_charge');
+    }
+
+    /**
+     * Build an (unconnected) IMAP client for a mailbox on this facility's mail server.
+     */
+    public function makeImapClient(string $username, string $password): Client
+    {
+        return (new ClientManager(config('imap')))->make([
+            'host' => $this->imap_host,
+            'port' => $this->imap_port,
+            'protocol' => 'imap',
+            'encryption' => in_array($this->imap_encryption, ['ssl', 'tls', 'starttls']) ? $this->imap_encryption : false,
+            'validate_cert' => true,
+            'username' => $username,
+            'password' => $password,
+            'authentication' => null,
+        ]);
     }
 
     /**

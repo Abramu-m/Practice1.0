@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Facility;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rules\Password;
@@ -14,18 +15,8 @@ use Illuminate\Support\Facades\Notification;
 class UserController extends Controller
 {
     public function index(Request $request)
-    {   
-        $search = $request->input('search');
-        if ($search) {
-            $users = User::with('doctor')
-                ->where('first_name', 'like', '%' . $search . '%')
-                ->orWhere('last_name', 'like', '%' . $search . '%')
-                ->orWhere('email', 'like', '%' . $search . '%')
-                ->orWhere('username', 'like', '%' . $search . '%')
-                ->paginate(10);
-        } else {
-            $users = User::with('doctor')->paginate(10);
-        }
+    {
+        $users = User::with('doctor')->get();
 
         return view('users.index', compact('users'));
     }
@@ -355,5 +346,85 @@ class UserController extends Controller
         }
 
         return redirect()->route('users.show', $user->id)->with('success', 'User password updated successfully.');
+    }
+
+    /**
+     * List users and their work-email / mailbox status.
+     */
+    public function emailVerificationIndex()
+    {
+        $users = User::where('is_active', true)->orderBy('first_name')->get();
+        $facility = Facility::current();
+
+        return view('users.email-verification', compact('users', 'facility'));
+    }
+
+    /**
+     * Show the form to assign a work email + mailbox password to a user.
+     */
+    public function editEmailVerification($id)
+    {
+        $user = User::findOrFail($id);
+        $facility = Facility::current();
+
+        return view('users.email-verification-edit', compact('user', 'facility'));
+    }
+
+    /**
+     * Assign a work email to a user, test the mailbox credentials against the
+     * facility's mail server, and mark the email as verified on success.
+     */
+    public function updateEmailVerification(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+        $facility = Facility::current();
+
+        $request->validate([
+            'email' => ['required', 'email', 'max:255', 'unique:users,email,' . $user->id],
+            'imap_password' => ['required', 'string'],
+        ]);
+
+        if (!$facility->email_domain) {
+            return back()->with('error', 'The facility email domain has not been configured yet. Set it up in Settings first.')->withInput();
+        }
+
+        if (!str_ends_with(strtolower($request->email), '@' . strtolower($facility->email_domain))) {
+            return back()->withErrors(['email' => 'The email must use the facility domain (@' . $facility->email_domain . ').'])->withInput();
+        }
+
+        if (!$facility->imap_host) {
+            return back()->with('error', 'The facility mail server has not been configured yet. Set it up in Settings first.')->withInput();
+        }
+
+        try {
+            $client = $facility->makeImapClient($request->email, $request->imap_password);
+            $client->connect();
+            $client->disconnect();
+        } catch (\Throwable $e) {
+            return back()->with('error', 'Could not connect to this mailbox: ' . $e->getMessage())->withInput();
+        }
+
+        $user->email = $request->email;
+        $user->email_verified_at = now();
+        $user->imap_password = $request->imap_password;
+        $user->save();
+
+        return redirect()->route('users.email-verification.index')
+            ->with('success', 'Work email verified and connected for ' . $user->first_name . ' ' . $user->last_name . '.');
+    }
+
+    /**
+     * Revoke a user's work email verification and forget their mailbox password.
+     */
+    public function destroyEmailVerification($id)
+    {
+        $user = User::findOrFail($id);
+
+        $user->email_verified_at = null;
+        $user->imap_password = null;
+        $user->save();
+
+        return redirect()->route('users.email-verification.index')
+            ->with('success', 'Work email access revoked for ' . $user->first_name . ' ' . $user->last_name . '.');
     }
 }

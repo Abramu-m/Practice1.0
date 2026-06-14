@@ -431,6 +431,15 @@
                 </a>
               </li>
               @endif
+              <!-- Email - Available to all authenticated users -->
+              @if(auth()->check() && $navUser->canAccessEmail())
+              <li class="nav-item">
+                <a href="{{ route('email.index') }}" class="nav-link {{ nav_active_class(['email.*']) }}">
+                  <i class="nav-icon bi bi-envelope"></i>
+                  <p>Email</p>
+                </a>
+              </li>
+              @endif
               <!-- Help - Available to all authenticated users -->
               <li class="nav-item">
                 <a href="{{ url('/help') }}" class="nav-link" target="_blank" rel="noopener">

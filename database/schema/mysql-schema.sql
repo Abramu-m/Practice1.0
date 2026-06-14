@@ -471,6 +471,10 @@ CREATE TABLE `facilities` (
   `address` varchar(255) DEFAULT NULL,
   `phone` varchar(255) DEFAULT NULL,
   `email` varchar(255) DEFAULT NULL,
+  `email_domain` varchar(255) DEFAULT NULL,
+  `imap_host` varchar(255) DEFAULT NULL,
+  `imap_port` smallint(5) unsigned NOT NULL DEFAULT 993,
+  `imap_encryption` varchar(10) NOT NULL DEFAULT 'ssl',
   `nhif_facility_code` varchar(255) DEFAULT NULL,
   `hfr_code` varchar(50) DEFAULT NULL,
   `in_charge` bigint(20) unsigned DEFAULT NULL,
@@ -1676,7 +1680,7 @@ CREATE TABLE `patient_categories` (
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50003 TRIGGER `patient_categories_before_delete_set_patients_category`
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `patient_categories_before_delete_set_patients_category`
 BEFORE DELETE ON `patient_categories`
 FOR EACH ROW
 BEGIN
@@ -2552,6 +2556,7 @@ CREATE TABLE `users` (
   `is_active` tinyint(1) NOT NULL DEFAULT 1,
   `email` varchar(255) NOT NULL,
   `email_verified_at` timestamp NULL DEFAULT NULL,
+  `imap_password` text DEFAULT NULL,
   `password` varchar(255) NOT NULL,
   `remember_token` varchar(100) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -2573,7 +2578,7 @@ CREATE TABLE `users` (
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50003 TRIGGER `users_before_delete_set_patients_created_by`
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `users_before_delete_set_patients_created_by`
 BEFORE DELETE ON `users`
 FOR EACH ROW
 BEGIN
@@ -2894,3 +2899,8 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (267,'2026_06_12_15
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (268,'2026_06_12_150003_create_sync_conflicts_table',144);
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (269,'2026_06_12_120000_drop_batch_id_from_store_stock_movements_table',145);
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (270,'2026_06_12_160000_add_copay_policy_to_patient_categories_table',146);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (271,'2026_06_13_090000_add_indication_form_to_procedures_and_specialized_investigations',147);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (272,'2026_06_13_064604_reassign_bedrest_observation_result_template',148);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (273,'2026_06_13_100000_add_wbc_differential_result_template',149);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (274,'2026_06_13_120000_add_email_settings_to_facilities_table',150);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (275,'2026_06_13_120100_add_imap_password_to_users_table',150);

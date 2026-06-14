@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Models\Concerns\Syncable;
+use App\Models\Facility;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -36,6 +37,7 @@ class User extends Authenticatable
         'is_active',
         'email',
         'email_verified_at',
+        'imap_password',
         'password',
         'is_verified',
         'verified_at',
@@ -50,6 +52,7 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'imap_password',
     ];
 
     /**
@@ -68,6 +71,7 @@ class User extends Authenticatable
             'is_super' => 'boolean',
             'is_verified' => 'boolean',
             'verified_at' => 'datetime',
+            'imap_password' => 'encrypted',
         ];
     }
     
@@ -166,6 +170,33 @@ class User extends Authenticatable
     public function isRadiologist()
     {
         return $this->role === 'radiologist';
+    }
+
+    /**
+     * Check whether this user is allowed to view the work email feature:
+     * their email must be verified and match the facility's email domain.
+     */
+    public function canAccessEmail(): bool
+    {
+        if (!$this->email || !$this->email_verified_at) {
+            return false;
+        }
+
+        $domain = Facility::current()->email_domain;
+
+        if (!$domain) {
+            return false;
+        }
+
+        return str_ends_with(strtolower($this->email), '@' . strtolower($domain));
+    }
+
+    /**
+     * Check whether this user has saved mailbox (IMAP) credentials.
+     */
+    public function hasMailboxConnected(): bool
+    {
+        return !empty($this->imap_password);
     }
 
     /**

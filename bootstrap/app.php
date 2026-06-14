@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'facility_setup' => \App\Http\Middleware\CheckFacilitySetup::class,
             'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
+            'email_access' => \App\Http\Middleware\EnsureEmailAccess::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

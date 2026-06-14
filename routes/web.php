@@ -84,6 +84,15 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsAdmin::class])->grou
     Route::put('/settings/reports/alu-monthly', [App\Http\Controllers\SettingsController::class, 'updateAluReportSettings'])->name('settings.reports.alu-monthly.update');
 });
 
+// Work email (webmail) - any authenticated user with a verified facility-domain email
+Route::middleware(['auth', 'email_access'])->prefix('email')->name('email.')->group(function () {
+    Route::get('/', [App\Http\Controllers\EmailController::class, 'index'])->name('index');
+    Route::post('/connect', [App\Http\Controllers\EmailController::class, 'connect'])->name('connect');
+    Route::post('/disconnect', [App\Http\Controllers\EmailController::class, 'disconnect'])->name('disconnect');
+    Route::get('/message/{uid}', [App\Http\Controllers\EmailController::class, 'show'])->name('show');
+    Route::get('/message/{uid}/attachment', [App\Http\Controllers\EmailController::class, 'attachment'])->name('attachment');
+});
+
 // Simple authenticated pages: Help, facility setup, nav view
 Route::middleware('auth')->group(function () {
     Route::get('/facility-setup-required', function () {
@@ -127,6 +136,16 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsAdmin::class, 'facil
         ->name('users.reset-password');
     Route::post('/users/{id}/reset-password', [UserController::class, 'adminResetPassword'])
         ->name('users.reset-password.post');
+
+    // Work email assignment & verification (admin assigns mailbox + credentials to a user)
+    Route::get('/users/email-verification', [UserController::class, 'emailVerificationIndex'])
+        ->name('users.email-verification.index');
+    Route::get('/users/{id}/email-verification', [UserController::class, 'editEmailVerification'])
+        ->name('users.email-verification.edit');
+    Route::post('/users/{id}/email-verification', [UserController::class, 'updateEmailVerification'])
+        ->name('users.email-verification.update');
+    Route::delete('/users/{id}/email-verification', [UserController::class, 'destroyEmailVerification'])
+        ->name('users.email-verification.destroy');
     
     Route::get('investigation-forms/{form}/preview', function ($form) {
         $view = 'lab.forms.' . $form;

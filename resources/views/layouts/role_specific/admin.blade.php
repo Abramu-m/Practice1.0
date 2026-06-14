@@ -563,9 +563,9 @@
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a href="{{ route('users.index') }}" class="nav-link nav-sub-item">
-                      <i class="nav-icon bi bi-person-fill-gear text-primary"></i>
-                      <p>Set User Password</p>
+                    <a href="{{ route('users.email-verification.index') }}" class="nav-link nav-sub-item {{ nav_active_class(['users.email-verification.*']) }}">
+                      <i class="nav-icon bi bi-envelope-check text-info"></i>
+                      <p>Verify Email</p>
                     </a>
                   </li>
                 </ul>
