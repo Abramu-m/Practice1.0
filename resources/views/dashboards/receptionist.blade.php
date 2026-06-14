@@ -373,13 +373,13 @@
                 <div class="card-footer">
                     <div class="row">
                         <div class="col-6">
-                            <a href="{{ route('financial.transactions.create') }}" class="btn btn-primary btn-sm w-100">
-                                <i class="fas fa-plus me-1"></i>Cash Book
+                            <a href="{{ route('financial.transactions.index') }}" class="btn btn-primary btn-sm w-100">
+                                <i class="fas fa-book me-1"></i>Cash Book
                             </a>
                         </div>
                         <div class="col-6">
-                            <a href="{{ route('financial.receipts.index') }}" class="btn btn-success btn-sm w-100">
-                                <i class="fas fa-receipt me-1"></i>Receipts
+                            <a href="{{ route('financial.transactions.create') }}" class="btn btn-success btn-sm w-100">
+                                <i class="fas fa-plus me-1"></i>New Transaction
                             </a>
                         </div>
                     </div>

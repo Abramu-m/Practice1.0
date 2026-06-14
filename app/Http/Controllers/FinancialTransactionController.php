@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\FinancialTransaction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
@@ -14,85 +15,59 @@ class FinancialTransactionController extends Controller
      */
     public function index(Request $request)
     {
-        $query = FinancialTransaction::with(['patient', 'visit', 'creator', 'approver']);
+        // Default to the last 3 days (including today) when no date range is given
+        $dateFrom = $request->filled('date_from')
+            ? Carbon::parse($request->date_from)->startOfDay()
+            : now()->subDays(2)->startOfDay();
 
-        // Apply filters
-        if ($request->filled('transaction_type')) {
-            $query->where('transaction_type', $request->transaction_type);
-        }
+        $dateTo = $request->filled('date_to')
+            ? Carbon::parse($request->date_to)->endOfDay()
+            : now()->endOfDay();
 
-        if ($request->filled('category')) {
-            $query->where('category', $request->category);
-        }
+        $applyFilters = function ($query) use ($request, $dateFrom, $dateTo) {
+            $query->whereBetween('transaction_date', [$dateFrom, $dateTo]);
 
-        if ($request->filled('payment_method')) {
-            $query->where('payment_method', $request->payment_method);
-        }
+            if ($request->filled('transaction_type')) {
+                $query->where('transaction_type', $request->transaction_type);
+            }
 
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
+            if ($request->filled('category')) {
+                $query->where('category', $request->category);
+            }
 
-        if ($request->filled('date_from')) {
-            $query->whereDate('transaction_date', '>=', $request->date_from);
-        }
+            if ($request->filled('payment_method')) {
+                $query->where('payment_method', $request->payment_method);
+            }
 
-        if ($request->filled('date_to')) {
-            $query->whereDate('transaction_date', '<=', $request->date_to);
-        }
+            if ($request->filled('status')) {
+                $query->where('status', $request->status);
+            }
 
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('transaction_number', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%")
-                  ->orWhereHas('patient', function ($patientQuery) use ($search) {
-                      $patientQuery->where('first_name', 'like', "%{$search}%")
-                                  ->orWhere('last_name', 'like', "%{$search}%");
-                  });
-            });
-        }
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $query->where(function ($q) use ($search) {
+                    $q->where('transaction_number', 'like', "%{$search}%")
+                      ->orWhere('description', 'like', "%{$search}%")
+                      ->orWhereHas('patient', function ($patientQuery) use ($search) {
+                          $patientQuery->where('first_name', 'like', "%{$search}%")
+                                      ->orWhere('last_name', 'like', "%{$search}%");
+                      });
+                });
+            }
 
-        $transactions = $query->orderBy('transaction_date', 'desc')
-                             ->paginate(25);
+            return $query;
+        };
 
-        // Calculate summary for filtered results
-        $summaryQuery = FinancialTransaction::query();
-        
-        // Apply same filters as main query for summary
-        if ($request->filled('transaction_type')) {
-            $summaryQuery->where('transaction_type', $request->transaction_type);
-        }
-        if ($request->filled('category')) {
-            $summaryQuery->where('category', $request->category);
-        }
-        if ($request->filled('payment_method')) {
-            $summaryQuery->where('payment_method', $request->payment_method);
-        }
-        if ($request->filled('status')) {
-            $summaryQuery->where('status', $request->status);
-        }
-        if ($request->filled('date_from')) {
-            $summaryQuery->whereDate('transaction_date', '>=', $request->date_from);
-        }
-        if ($request->filled('date_to')) {
-            $summaryQuery->whereDate('transaction_date', '<=', $request->date_to);
-        }
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $summaryQuery->where(function ($q) use ($search) {
-                $q->where('transaction_number', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%")
-                  ->orWhereHas('patient', function ($patientQuery) use ($search) {
-                      $patientQuery->where('first_name', 'like', "%{$search}%")
-                                  ->orWhere('last_name', 'like', "%{$search}%");
-                  });
-            });
-        }
+        $transactions = $applyFilters(FinancialTransaction::with(['patient', 'visit', 'creator', 'approver']))
+            ->orderBy('transaction_date', 'desc')
+            ->paginate(25);
+
+        // Calculate summary for the same filtered range
+        $summaryQuery = $applyFilters(FinancialTransaction::query());
 
         $summary = [
-            'total_income' => $summaryQuery->where('transaction_type', 'income')->sum('amount'),
-            'total_expenses' => $summaryQuery->where('transaction_type', 'expense')->sum('amount'),
+            'total_income' => (clone $summaryQuery)->where('transaction_type', 'income')->sum('amount'),
+            'total_expenses' => (clone $summaryQuery)->where('transaction_type', 'expense')->sum('amount'),
         ];
         $summary['net_balance'] = $summary['total_income'] - $summary['total_expenses'];
 
@@ -104,7 +79,9 @@ class FinancialTransactionController extends Controller
             'transactions',
             'categories',
             'paymentMethods',
-            'summary'
+            'summary',
+            'dateFrom',
+            'dateTo'
         ));
     }
 

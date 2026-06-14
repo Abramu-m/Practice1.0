@@ -24,15 +24,15 @@
                     <div class="col-md-3">
                         <div class="mb-3">
                             <label>Date From</label>
-                            <input type="date" name="date_from" class="form-control" 
-                                   value="{{ request('date_from') }}">
+                            <input type="date" name="date_from" class="form-control"
+                                   value="{{ request('date_from', $dateFrom->format('Y-m-d')) }}">
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="mb-3">
                             <label>Date To</label>
-                            <input type="date" name="date_to" class="form-control" 
-                                   value="{{ request('date_to') }}">
+                            <input type="date" name="date_to" class="form-control"
+                                   value="{{ request('date_to', $dateTo->format('Y-m-d')) }}">
                         </div>
                     </div>
                     <div class="col-md-3">
@@ -165,6 +165,7 @@
         <div class="card-header">
             <h3 class="card-title">
                 <i class="fas fa-list"></i> Financial Transactions
+                <small class="text-muted">{{ $dateFrom->format('M d, Y') }} &ndash; {{ $dateTo->format('M d, Y') }}</small>
             </h3>
             <div class="card-tools">
                 <a href="{{ route('financial.transactions.export', request()->query()) }}" 

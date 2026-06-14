@@ -69,15 +69,9 @@
       </a>
     </li>
     <li class="nav-item">
-      <a href="{{ route('financial.transactions.create') }}" class="nav-link nav-sub-item {{ nav_active_class(['financial.transactions.*']) }}">
+      <a href="{{ route('financial.transactions.index') }}" class="nav-link nav-sub-item {{ nav_active_class(['financial.transactions.*']) }}">
         <i class="nav-icon bi bi-journal-text text-primary"></i>
         <p>Cash Book</p>
-      </a>
-    </li>
-    <li class="nav-item">
-      <a href="{{ route('financial.receipts.index') }}" class="nav-link nav-sub-item {{ nav_active_class(['financial.receipts.index']) }}">
-        <i class="nav-icon bi bi-receipt-cutoff text-success"></i>
-        <p>Receipt Management</p>
       </a>
     </li>
     <li class="nav-item">
@@ -100,22 +94,3 @@
   </a>
 </li>
 @endif
-
-<!-- Administrative Tools -->
-<li class="nav-item has-treeview {{ nav_menu_open_class([], ['signature1']) }}">
-  <a href="#" class="nav-link nav-header {{ nav_active_class([], ['signature1']) }}">
-    <i class="nav-icon bi bi-tools text-secondary"></i>
-    <p class="text-bold">
-      Administrative Tools
-      <i class="nav-arrow bi bi-chevron-right"></i>
-    </p>
-  </a>
-  <ul class="nav nav-treeview" style="{{ nav_display_style([], ['signature1']) }}">
-    <li class="nav-item">
-      <a href="{{ url('signature1') }}" class="nav-link nav-sub-item {{ nav_active_class([], ['signature1']) }}">
-        <i class="nav-icon bi bi-pen text-primary"></i>
-        <p>Digital Signature</p>
-      </a>
-    </li>
-  </ul>
-</li>
