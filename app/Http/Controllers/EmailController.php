@@ -6,6 +6,7 @@ use App\Models\Facility;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email as MimeEmail;
@@ -35,12 +36,19 @@ class EmailController extends Controller
         try {
             $client = $this->connectMailbox($user, $facility);
 
-            $folders = $client->getFolders(false)->reject(fn ($f) => $f->no_select);
+            $folders = Cache::remember("email_folders_{$user->id}", now()->addMinutes(5), function () use ($client) {
+                return $client->getFolders(false)
+                    ->reject(fn ($f) => $f->no_select)
+                    ->map(fn ($f) => ['path' => $f->path, 'full_name' => $f->full_name])
+                    ->values();
+            });
+
             $folder = $client->getFolder($folderPath) ?? $client->getFolder('INBOX');
 
             $messages = $folder->messages()
                 ->whereAll()
                 ->setFetchOrder('desc')
+                ->setFetchBody(false)
                 ->paginate(25);
 
             $client->disconnect();

@@ -32,8 +32,8 @@
                 <label class="form-label fw-semibold">Folder</label>
                 <select name="folder" class="form-select" onchange="this.form.submit()">
                     @foreach($folders as $folder)
-                        <option value="{{ $folder->path }}" @selected($folder->path === $folderPath)>
-                            {{ $folder->full_name }}
+                        <option value="{{ $folder['path'] }}" @selected($folder['path'] === $folderPath)>
+                            {{ $folder['full_name'] }}
                         </option>
                     @endforeach
                 </select>
