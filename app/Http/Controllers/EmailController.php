@@ -43,7 +43,7 @@ class EmailController extends Controller
                     ->values();
             });
 
-            $folder = $client->getFolder($folderPath) ?? $client->getFolder('INBOX');
+            $folder = $client->getFolderByPath($folderPath) ?? $client->getFolderByPath('INBOX');
 
             $messages = $folder->messages()
                 ->whereAll()
@@ -123,7 +123,7 @@ class EmailController extends Controller
 
         try {
             $client = $this->connectMailbox($user, $facility);
-            $folder = $client->getFolder($folderPath) ?? $client->getFolder('INBOX');
+            $folder = $client->getFolderByPath($folderPath) ?? $client->getFolderByPath('INBOX');
             $message = $folder->messages()->getMessageByUid($uid);
             $client->disconnect();
         } catch (\Throwable $e) {
@@ -151,7 +151,7 @@ class EmailController extends Controller
 
         try {
             $client = $this->connectMailbox($user, $facility);
-            $folder = $client->getFolder($folderPath) ?? $client->getFolder('INBOX');
+            $folder = $client->getFolderByPath($folderPath) ?? $client->getFolderByPath('INBOX');
             $message = $folder->messages()->getMessageByUid($uid);
 
             $attachment = $message->attachments()->first(fn ($a) => (string) $a->part_number === (string) $partNumber);
@@ -203,7 +203,7 @@ class EmailController extends Controller
 
             try {
                 $client = $this->connectMailbox($user, $facility);
-                $folder = $client->getFolder($folderPath) ?? $client->getFolder('INBOX');
+                $folder = $client->getFolderByPath($folderPath) ?? $client->getFolderByPath('INBOX');
                 $original = $folder->messages()->getMessageByUid($uid);
                 $client->disconnect();
             } catch (\Throwable $e) {
@@ -318,7 +318,7 @@ class EmailController extends Controller
                 $selectedParts = $request->input('forward_attachments', []);
 
                 $client = $this->connectMailbox($user, $facility);
-                $folder = $client->getFolder($request->input('original_folder', 'INBOX')) ?? $client->getFolder('INBOX');
+                $folder = $client->getFolderByPath($request->input('original_folder', 'INBOX')) ?? $client->getFolderByPath('INBOX');
                 $original = $folder->messages()->getMessageByUid((int) $request->input('original_uid'));
 
                 foreach ($original->attachments() as $attachment) {
