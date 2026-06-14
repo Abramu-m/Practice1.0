@@ -14,7 +14,7 @@ class MedicationFormulationController extends Controller
     {
         $formulations = MedicationFormulation::withCount('medications')
                                             ->orderBy('description')
-                                            ->paginate(10);
+                                            ->get();
         
         return view('medications.formulations.index', compact('formulations'));
     }

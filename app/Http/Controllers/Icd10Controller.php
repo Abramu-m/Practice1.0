@@ -4,28 +4,47 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Icd10;
 use App\Models\MtuhaDiagnosis;
+use Yajra\DataTables\Facades\DataTables;
 
 class Icd10Controller extends Controller
 {
     /**
-     * Show paginated ICD-10 list with mtuha mapping options
+     * Show the ICD-10 list with mtuha mapping options. The table itself is
+     * loaded via server-side DataTables (see the $request->ajax() branch).
      */
     public function index(Request $request)
     {
-        $query = Icd10::with('mtuha')->orderBy('code');
-        if ($request->filled('term')) {
-            $query = $query->search($request->term);
+        $mtuha = MtuhaDiagnosis::orderBy('description')->get();
+
+        if ($request->ajax()) {
+            $query = Icd10::with('mtuha')->orderBy('code');
+
+            if ($request->filled('term')) {
+                $query->search($request->term);
+            }
+
+            // Filter by mtuha diagnosis id (show all ICDs assigned to a given mtuha dx)
+            if ($request->filled('mtuha_diagnosis')) {
+                $query->where('mtuha_diagnosis', $request->mtuha_diagnosis);
+            }
+
+            return DataTables::of($query)
+                ->addColumn('mtuha_display', function ($item) {
+                    return $item->mtuha
+                        ? e($item->mtuha_name)
+                        : '<em class="text-muted">(unassigned)</em>';
+                })
+                ->addColumn('actions', function ($item) use ($mtuha) {
+                    return view('icd10.partials.assign-form', [
+                        'item' => $item,
+                        'mtuha' => $mtuha,
+                    ])->render();
+                })
+                ->rawColumns(['mtuha_display', 'actions'])
+                ->make(true);
         }
 
-        // Filter by mtuha diagnosis id (show all ICDs assigned to a given mtuha dx)
-        if ($request->filled('mtuha_diagnosis')) {
-            $query->where('mtuha_diagnosis', $request->mtuha_diagnosis);
-        }
-
-    $icd10 = $query->paginate(25)->appends($request->only('term', 'mtuha_diagnosis'));
-    $mtuha = MtuhaDiagnosis::orderBy('description')->get();
-
-        return view('icd10.index', compact('icd10', 'mtuha', 'request'));
+        return view('icd10.index', compact('mtuha'));
     }
 
     /**
@@ -41,6 +60,10 @@ class Icd10Controller extends Controller
         $icd = Icd10::findOrFail($id);
         $icd->fill($data);
         $icd->save();
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json(['success' => true, 'message' => 'ICD-10 mapping updated.']);
+        }
 
         return back()->with('success', 'ICD-10 mapping updated.');
     }

@@ -143,19 +143,6 @@
                             </tbody>
                         </table>
                     </div>
-
-                    <!-- Pagination -->
-                    <div class="row mt-3">
-                        <div class="col-md-6">
-                            <p class="text-muted">
-                                Showing {{ $categories->firstItem() ?? 0 }} to {{ $categories->lastItem() ?? 0 }} 
-                                of {{ $categories->total() }} categories
-                            </p>
-                        </div>
-                        <div class="col-md-6">
-                            {{ $categories->links() }}
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>

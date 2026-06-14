@@ -122,13 +122,13 @@ class NhifController extends Controller
             ->with('patient')
             ->get();
 
-        // All claims listing (used by the table). Keep eager loaded patient relationship and paginate.
-        $allClaims = NhifClaim::with('patient')->latest()->paginate(25);
+        // All claims listing (used by the table).
+        $allClaims = NhifClaim::with('patient')->latest()->get();
 
         //Get batches sorted by newest dates for the batch submission section
         $batches = NhifClaimBatch::orderBy('claim_year', 'desc')
             ->orderBy('claim_month', 'desc')
-            ->paginate(12);
+            ->get();
 
         return view('nhif.claims', compact('stats', 'patientVisits', 'draftClaims', 'allClaims', 'batches'));
     }

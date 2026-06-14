@@ -33,7 +33,7 @@ class SampleTypeController extends Controller
         }
 
         $sampleTypes = $query->orderBy('name')
-                            ->paginate(20);
+                            ->get();
 
         return view('sample_types.index', compact('sampleTypes'));
     }

@@ -35,8 +35,7 @@ class DoctorController extends Controller
             $query->where('status', $request->status_filter);
         }
 
-        // Pagination (10 per page)
-        $doctors = $query->orderBy('created_at', 'desc')->paginate(10);
+        $doctors = $query->orderBy('created_at', 'desc')->get();
         
         // Get designations for filter
         $designations = \App\Models\Designation::all();

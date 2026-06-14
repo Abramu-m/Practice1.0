@@ -5,35 +5,20 @@
  @endsection
 
 @section('main_content')
-    <div class="row mb-3">
-        <div class="col-md-8">
-            <a href="{{ route('users.create') }}" class="btn btn-primary">
-                <i class="fas fa-plus"></i> Add User
-            </a>
-            @auth
-                @if(auth()->user()->isAdmin())
-                    <a href="{{ route('users.pending-verification') }}" class="btn btn-warning">
-                        <i class="fas fa-user-clock"></i> Pending Verification
-                        @if(\App\Models\User::where('is_verified', false)->where('role', '!=', 'super_admin')->count() > 0)
-                            <span class="badge bg-light">{{ \App\Models\User::where('is_verified', false)->where('role', '!=', 'super_admin')->count() }}</span>
-                        @endif
-                    </a>
-                @endif
-            @endauth
-        </div>
-        <div class="col-md-4">
-            <form method="GET" action="{{ route('users.index') }}" class="form-inline justify-content-end">
-                <div class="input-group">
-                    <input type="text" name="search" value="{{ request('search') }}" 
-                           class="form-control" placeholder="Search users...">
-                    <div class="input-group-append">
-                        <button class="btn btn-outline-secondary" type="submit">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </div>
-                </div>
-            </form>
-        </div>
+    <div class="mb-3">
+        <a href="{{ route('users.create') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Add User
+        </a>
+        @auth
+            @if(auth()->user()->isAdmin())
+                <a href="{{ route('users.pending-verification') }}" class="btn btn-warning">
+                    <i class="fas fa-user-clock"></i> Pending Verification
+                    @if(\App\Models\User::where('is_verified', false)->where('role', '!=', 'super_admin')->count() > 0)
+                        <span class="badge bg-light">{{ \App\Models\User::where('is_verified', false)->where('role', '!=', 'super_admin')->count() }}</span>
+                    @endif
+                </a>
+            @endif
+        @endauth
     </div>
 
     <div class="card">
@@ -75,7 +60,7 @@
                 <tbody>
                     @foreach($users as $user)
                     <tr>
-                        <td>{{ $loop->iteration + ($users->currentPage() - 1) * $users->perPage() }}</td>
+                        <td>{{ $loop->iteration }}</td>
                         <td>
                             <div class="d-flex align-items-center">
                                 @if($user->profile_picture)
@@ -203,11 +188,6 @@
                     @endforeach
                 </tbody>
             </table>
-        </div>
-        <div class="card-footer">
-            @if($users->hasPages())
-                {{ $users->links('pagination::bootstrap-4') }}
-            @endif
         </div>
     </div>
 @endsection

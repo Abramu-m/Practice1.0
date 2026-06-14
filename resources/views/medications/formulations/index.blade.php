@@ -80,12 +80,6 @@
                                 </tbody>
                             </table>
                         </div>
-
-                        @if(method_exists($formulations, 'links'))
-                            <div class="mt-3">
-                                {{ $formulations->links('pagination::bootstrap-5') }}
-                            </div>
-                        @endif
                     @else
                         <div class="text-center py-4">
                             <i class="fas fa-pills fa-3x text-muted mb-3"></i>

@@ -176,19 +176,6 @@
                             </tbody>
                         </table>
                     </div>
-
-                    <!-- Pagination -->
-                    <div class="row mt-3">
-                        <div class="col-md-6">
-                            <p class="text-muted">
-                                Showing {{ $sampleTypes->firstItem() ?? 0 }} to {{ $sampleTypes->lastItem() ?? 0 }} 
-                                of {{ $sampleTypes->total() }} sample types
-                            </p>
-                        </div>
-                        <div class="col-md-6">
-                            {{ $sampleTypes->links() }}
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>

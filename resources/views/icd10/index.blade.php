@@ -10,7 +10,7 @@
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    <form method="GET" action="{{ route('icd10.index') }}" class="mb-3">
+    <form id="icd10-filter-form" class="mb-3">
         <div class="row g-2 align-items-center">
             <div class="col-md-4">
                 <select id="term_select" name="term" class="form-select w-100"></select>
@@ -19,7 +19,7 @@
                 <select id="mtuha_select" name="mtuha_diagnosis" class="form-select w-100" aria-label="Filter by Mtuha diagnosis">
                     <option value="">-- Filter by Mtuha diagnosis --</option>
                     @foreach($mtuha as $m)
-                        <option value="{{ $m->id }}" {{ (string) request('mtuha_diagnosis') === (string) $m->id ? 'selected' : '' }}>{{ $m->description }}</option>
+                        <option value="{{ $m->id }}">{{ $m->description }}</option>
                     @endforeach
                 </select>
             </div>
@@ -42,43 +42,9 @@
             </tr>
         </thead>
         <tbody>
-        @foreach($icd10 as $item)
-            <tr>
-                <td>{{ $item->code }}</td>
-                <td>{{ $item->description }}</td>
-                <td>{{ $item->category }}</td>
-                <td>
-                    @if($item->mtuha)
-                        {{ $item->mtuha_name }}
-                    @else
-                        <em class="text-muted">(unassigned)</em>
-                    @endif
-                </td>
-                <td style="min-width:240px;">
-                    <form method="POST" action="{{ route('icd10.update', $item->id) }}" class="form-inline">
-                        @csrf
-                        @method('PATCH')
-
-                        <select name="mtuha_diagnosis" class="form-control form-control-sm me-2">
-                            <option value="">-- none --</option>
-                            @foreach($mtuha as $m)
-                                <option value="{{ $m->id }}" {{ $item->mtuha && $item->mtuha->id == $m->id ? 'selected' : '' }}>{{ $m->description ?? 'ID: '.$m->id }}</option>
-                            @endforeach
-                        </select>
-
-                        <button class="btn btn-primary btn-sm" type="submit">Save</button>
-                    </form>
-                </td>
-            </tr>
-        @endforeach
         </tbody>
     </table>
     </div>
-
-    <div class="mt-3">
-        {{ $icd10->links() }}
-    </div>
-    
 </div>
 @endsection
 
@@ -87,13 +53,26 @@
 
     <script>
         (function($){
-            // Initialize DataTable
-            $('.table').DataTable({
+            // Server-side DataTable: fetches a page of ICD-10 codes at a time
+            var table = $('.table').DataTable({
+                processing: true,
+                serverSide: true,
                 responsive: true,
                 order: [[0, 'asc']],
                 pageLength: 25,
-                columnDefs: [
-                    { orderable: false, targets: [-1] }
+                ajax: {
+                    url: '{{ route('icd10.index') }}',
+                    data: function(d) {
+                        d.term = $('#term_select').val();
+                        d.mtuha_diagnosis = $('#mtuha_select').val();
+                    }
+                },
+                columns: [
+                    { data: 'code', name: 'code' },
+                    { data: 'description', name: 'description' },
+                    { data: 'category', name: 'category' },
+                    { data: 'mtuha_display', name: 'mtuha_display', orderable: false, searchable: false },
+                    { data: 'actions', name: 'actions', orderable: false, searchable: false }
                 ],
                 language: {
                     search: "Search ICD-10:",
@@ -150,24 +129,39 @@
                 }
             });
 
-            // Prefill term and mtuha selects if a request value exists
-            var existingTerm = '{{ request('term') }}';
-            if (existingTerm) {
-                var option = new Option(existingTerm, existingTerm, true, true);
-                $('#term_select').append(option).trigger('change');
-            }
+            // Re-fetch the table whenever a filter changes
+            $('#term_select, #mtuha_select').on('change', function() {
+                table.draw();
+            });
 
-            var existingMtuha = '{{ request('mtuha_diagnosis') }}';
-            if (existingMtuha) {
-                // fetch the display text for the mtuha id and set option
-                $.getJSON('/api/mtuha/search', { query: '', limit: 200 }, function(resp) {
-                    var found = resp.data.find(function(i){ return String(i.id) === String(existingMtuha); });
-                    if (found) {
-                        var opt = new Option(found.description, found.id, true, true);
-                        $('#mtuha_select').append(opt).trigger('change');
+            $('#icd10-filter-form').on('submit', function(e) {
+                e.preventDefault();
+                table.draw();
+            });
+
+            // Save a row's mtuha assignment via AJAX without losing the
+            // current page/filters (delegated: rows are redrawn by DataTables)
+            $('.table tbody').on('submit', '.icd10-assign-form', function(e) {
+                e.preventDefault();
+                var form = $(this);
+                var btn = form.find('.save-mtuha');
+
+                btn.prop('disabled', true);
+                $.ajax({
+                    url: form.data('url'),
+                    method: 'POST',
+                    data: form.serialize(),
+                    success: function(resp) {
+                        toastr.success(resp.message || 'ICD-10 mapping updated.');
+                    },
+                    error: function() {
+                        toastr.error('Could not update the mapping. Please try again.');
+                    },
+                    complete: function() {
+                        btn.prop('disabled', false);
                     }
                 });
-            }
+            });
         })(jQuery);
     </script>
 @endsection

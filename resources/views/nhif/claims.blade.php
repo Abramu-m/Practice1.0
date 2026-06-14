@@ -251,9 +251,6 @@
                                 @endforeach
                             </tbody>
                         </table>
-                        <div class="mt-2">
-                            {{ $allClaims->links() }}
-                        </div>
                     </div>
                 </div>
             </div>
@@ -331,6 +328,9 @@ $(document).ready(function () {
         pageLength: 25,
         order: [[5, 'desc']],
         responsive: true,
+        columnDefs: [
+            { orderable: false, targets: [-1] }
+        ],
     });
 
     // Select2

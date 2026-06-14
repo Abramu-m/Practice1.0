@@ -45,7 +45,7 @@ class PatientCategoryController extends Controller
             $patientCategories->where('type', $request->type_filter);
         }
 
-        $patientCategories = $patientCategories->paginate(10);
+        $patientCategories = $patientCategories->get();
 
         return view('patient_categories.index', compact('patientCategories'));
     }
