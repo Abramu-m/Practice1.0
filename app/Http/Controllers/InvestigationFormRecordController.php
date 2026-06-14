@@ -26,6 +26,14 @@ class InvestigationFormRecordController extends Controller
             });
         }
 
+        // Filter to a specific investigation form type (e.g. TB forms)
+        if ($request->filled('form_type')) {
+            $formType = $request->form_type;
+            $query->whereHas('investigation.medicalService', function ($q) use ($formType) {
+                $q->where('form_type', $formType);
+            });
+        }
+
         $records = $query->paginate(25)->withQueryString();
 
         return view('investigation_form_records.index', compact('records'));

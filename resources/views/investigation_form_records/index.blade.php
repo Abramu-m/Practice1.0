@@ -8,12 +8,18 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0"><i class="bi bi-printer me-2"></i>Investigation Form Records</h5>
+                    <h5 class="mb-0">
+                        <i class="bi bi-printer me-2"></i>
+                        {{ request('form_type') === 'tb' ? 'TB Investigation Form Records' : 'Investigation Form Records' }}
+                    </h5>
                 </div>
 
                 {{-- Search --}}
                 <div class="card-body border-bottom pb-2">
                     <form method="GET" class="row g-2 align-items-end">
+                        @if(request('form_type'))
+                            <input type="hidden" name="form_type" value="{{ request('form_type') }}">
+                        @endif
                         <div class="col-md-4">
                             <label class="form-label mb-1">Search patient or service</label>
                             <input type="text" name="search" class="form-control form-control-sm"
@@ -24,7 +30,7 @@
                                 <i class="bi bi-search"></i> Search
                             </button>
                             @if(request('search'))
-                                <a href="{{ route('investigation-form-records.index') }}" class="btn btn-sm btn-outline-secondary ms-1">
+                                <a href="{{ route('investigation-form-records.index', request()->only('form_type')) }}" class="btn btn-sm btn-outline-secondary ms-1">
                                     <i class="bi bi-x"></i> Clear
                                 </a>
                             @endif

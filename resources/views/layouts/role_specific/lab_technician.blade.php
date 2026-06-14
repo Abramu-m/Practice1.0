@@ -74,25 +74,25 @@
 </li>
 
 <!-- Specialized Forms -->
-<li class="nav-item has-treeview {{ nav_menu_open_class([], ['tb_leprosy_form', 'tb_leprosy_register']) }}">
-  <a href="#" class="nav-link nav-header {{ nav_active_class([], ['tb_leprosy_form', 'tb_leprosy_register']) }}">
+<li class="nav-item has-treeview {{ nav_menu_open_class(['investigation-form-records.index'], ['tb_leprosy_register']) }}">
+  <a href="#" class="nav-link nav-header {{ nav_active_class(['investigation-form-records.index'], ['tb_leprosy_register']) }}">
     <i class="nav-icon bi bi-file-medical-fill text-danger"></i>
     <p class="text-bold">
       Specialized Forms
       <i class="nav-arrow bi bi-chevron-right"></i>
     </p>
   </a>
-  <ul class="nav nav-treeview" style="{{ nav_display_style([], ['tb_leprosy_form', 'tb_leprosy_register']) }}">
-    <li class="nav-item">
-      <a href="{{ url('tb_leprosy_form') }}" class="nav-link nav-sub-item {{ nav_active_class([], ['tb_leprosy_form']) }}">
-        <i class="nav-icon bi bi-file-earmark-medical text-danger"></i>
-        <p>TB Leprosy Forms</p>
-      </a>
-    </li>
+  <ul class="nav nav-treeview" style="{{ nav_display_style(['investigation-form-records.index'], ['tb_leprosy_register']) }}">
     <li class="nav-item">
       <a href="{{ url('tb_leprosy_register') }}" class="nav-link nav-sub-item {{ nav_active_class([], ['tb_leprosy_register']) }}">
         <i class="nav-icon bi bi-journal-bookmark text-warning"></i>
         <p>TB Leprosy Register</p>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a href="{{ route('investigation-form-records.index', ['form_type' => 'tb']) }}" class="nav-link nav-sub-item {{ nav_active_query_class(['investigation-form-records.index'], ['form_type' => 'tb']) }}">
+        <i class="nav-icon bi bi-printer text-success"></i>
+        <p>TB Leprosy Forms</p>
       </a>
     </li>
   </ul>
