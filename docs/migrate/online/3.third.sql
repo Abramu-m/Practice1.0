@@ -174,4 +174,10 @@ FROM yyfcolmy_medcom.store_mst AS src1
 INNER JOIN yyfcolmy_brigita_practice.store_locations AS src2
     ON src2.id = src1.section
 INNER JOIN yyfcolmy_brigita_practice.medications AS src3
-    ON src3.id = src1.material;
+    ON src3.id = src1.material
+WHERE NOT (
+    src1.quantity = 0
+    AND TRIM(IFNULL(src1.batch, '')) = ''
+    AND TRIM(IFNULL(src1.expiry, '')) IN ('', '0000-00-00')
+    AND TRIM(IFNULL(src1.unit_cost, '')) IN ('', '0', '0.00')
+);

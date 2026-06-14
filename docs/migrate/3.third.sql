@@ -176,7 +176,13 @@ FROM yyfcolmy_medcom.store_mst AS src1
 INNER JOIN yyfcolmy_practice_brigita.store_locations AS src2
     ON src2.id = src1.section
 INNER JOIN yyfcolmy_practice_brigita.medications AS src3
-    ON src3.id = src1.material;
+    ON src3.id = src1.material
+WHERE NOT (
+    src1.quantity = 0
+    AND TRIM(IFNULL(src1.batch, '')) = ''
+    AND TRIM(IFNULL(src1.expiry, '')) IN ('', '0000-00-00')
+    AND TRIM(IFNULL(src1.unit_cost, '')) IN ('', '0', '0.00')
+);
 
 INSERT INTO yyfcolmy_practice_brigita.`nhif_tariffs` (`id`, `facility_code`, `item_code`, `item_name`, `package_id`, `scheme_id`, `unit_price`, `is_restricted`, `is_excluded`, `excluded_for_products`, `last_updated`, `created_at`, `updated_at`)
 
