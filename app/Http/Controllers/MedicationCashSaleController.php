@@ -120,9 +120,9 @@ class MedicationCashSaleController extends Controller
 
                     // Payment button
                     if ($sale->canBePaid() && ($currentUser->isReceptionist() || $currentUser->isCashier() || $currentUser->isAdmin())) {
-                        $html .= '<button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#paymentModal' . $sale->id . '">
+                        $html .= '<a href="' . route('medication-cash-sales.show', $sale) . '#paymentModal" class="btn btn-sm btn-info">
                                     <i class="fas fa-money-bill"></i> Pay
-                                  </button> ';
+                                  </a> ';
                     }
 
                     // Cancel button
@@ -182,6 +182,8 @@ class MedicationCashSaleController extends Controller
      */
     public function create()
     {
+        abort_if(Auth::user()->isCashier(), 403);
+
         $cashCategories = PatientCategory::where('type', 'cash')
             ->where('is_active', true)
             ->get();
@@ -206,6 +208,8 @@ class MedicationCashSaleController extends Controller
      */
     public function store(Request $request)
     {
+        abort_if(Auth::user()->isCashier(), 403);
+
         $validated = $request->validate([
             'sale_type' => 'required|in:otc,external_prescription',
             'external_prescription_details' => 'required_if:sale_type,external_prescription|nullable|string',

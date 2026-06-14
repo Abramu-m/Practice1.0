@@ -43,11 +43,13 @@
                     <input type="date" class="form-control form-control-sm" id="cs_date_to"
                            value="{{ $dateTo }}" onchange="csTable.draw()">
                 </div>
+                @unless(auth()->user()->isCashier())
                 <div class="col-md-1 d-flex align-items-end">
                     <a href="{{ route('medication-cash-sales.create') }}" class="btn btn-primary btn-sm w-100">
                         <i class="fas fa-plus"></i> New
                     </a>
                 </div>
+                @endunless
             </div>
         </div>
     </div>

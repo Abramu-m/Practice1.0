@@ -618,8 +618,7 @@
                             </div>
                             <div class="mb-3">
                                 <label>Amount Paid *</label>
-                                <input type="number" name="amount_paid" class="form-control" step="0.01" min="{{ $medicationCashSale->final_amount }}" value="{{ $medicationCashSale->final_amount }}" required>
-                                <small class="form-text text-muted">Minimum: TSh {{ number_format($medicationCashSale->final_amount, 2) }}</small>
+                                <input type="number" name="amount_paid" class="form-control bg-light" step="0.01" value="{{ $medicationCashSale->final_amount }}" readonly required>
                             </div>
                             
                             @if(Auth::user()->isReceptionist() || Auth::user()->isCashier() || Auth::user()->isAdmin())
@@ -1046,7 +1045,12 @@ function csSubmitAddItem() {
 
 $(document).ready(function() {
     console.log('Document ready - payment form loaded');
-    
+
+    // Open payment modal automatically when linked via #paymentModal (e.g. from the cash sales list)
+    if (window.location.hash === '#paymentModal' && document.getElementById('paymentModal')) {
+        csBsModal('paymentModal').show();
+    }
+
     // Auto-hide alerts after 5 seconds
     setTimeout(function() {
         $('.alert').fadeOut();
