@@ -48,7 +48,11 @@
                 </div>
             </div>
             <div class="form-text text-muted mt-2 mb-0">
-                Open visits (<strong>Waiting</strong> / <strong>In Treatment</strong>) with paid investigations still awaiting lab work are always shown, even if their visit date is outside the range above.
+                @if($isNurse)
+                    Open visits (<strong>Waiting</strong> / <strong>In Treatment</strong>) with paid procedures still pending are always shown, even if their visit date is outside the range above.
+                @else
+                    Open visits (<strong>Waiting</strong> / <strong>In Treatment</strong>) with paid investigations still awaiting lab work are always shown, even if their visit date is outside the range above.
+                @endif
             </div>
         </div>
     </div>
@@ -57,8 +61,13 @@
     <div class="card">
         <div class="card-header">
             <h4 class="mb-0">
-                <i class="fas fa-vial text-primary"></i>
-                Lab — Patient Visits with Pending Investigations
+                @if($isNurse)
+                    <i class="fas fa-syringe text-primary"></i>
+                    Procedures — Patient Visits with Pending Procedures
+                @else
+                    <i class="fas fa-vial text-primary"></i>
+                    Lab — Patient Visits with Pending Investigations
+                @endif
             </h4>
         </div>
         <div class="card-body p-0">
@@ -68,7 +77,7 @@
                         <th>Patient</th>
                         <th>Visit Date</th>
                         <th>Doctor</th>
-                        <th>Lab Investigations</th>
+                        <th>{{ $isNurse ? 'Procedures' : 'Lab Investigations' }}</th>
                         <th>Priority Status</th>
                         <th>Visit Status</th>
                         <th>Actions</th>

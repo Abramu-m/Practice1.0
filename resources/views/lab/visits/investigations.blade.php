@@ -1,6 +1,6 @@
 @extends('layouts.app_main_layout')
 
-@section('page_title', 'Lab Investigations - ' . $visit->patientInfo->first_name . ' ' . $visit->patientInfo->last_name)
+@section('page_title', ($isNurse ? 'Procedures - ' : 'Lab Investigations - ') . $visit->patientInfo->first_name . ' ' . $visit->patientInfo->last_name)
 
 @section('main_content')
 <div class="container-fluid">
@@ -43,7 +43,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <a href="{{ route('lab.visits.index') }}" class="btn btn-outline-secondary">
-                <i class="fas fa-arrow-left"></i> Back to Lab Visits
+                <i class="fas fa-arrow-left"></i> {{ $isNurse ? 'Back to Procedures' : 'Back to Lab Visits' }}
             </a>
         </div>
         <div>
@@ -57,8 +57,13 @@
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0">
-                <i class="fas fa-vial text-primary"></i> 
-                Lab Investigations ({{ $investigations->count() }})
+                @if($isNurse)
+                    <i class="fas fa-syringe text-primary"></i>
+                    Procedures ({{ $investigations->count() }})
+                @else
+                    <i class="fas fa-vial text-primary"></i>
+                    Lab Investigations ({{ $investigations->count() }})
+                @endif
             </h5>
             <div>
                 @php
@@ -326,9 +331,15 @@
                 @endforeach
             @else
                 <div class="text-center py-5">
-                    <i class="fas fa-vial text-muted fa-3x mb-3"></i>
-                    <h5 class="text-muted">No lab investigations found for this visit</h5>
-                    <p class="text-muted">Lab investigations will appear here when they are ordered by the doctor.</p>
+                    @if($isNurse)
+                        <i class="fas fa-syringe text-muted fa-3x mb-3"></i>
+                        <h5 class="text-muted">No procedures found for this visit</h5>
+                        <p class="text-muted">Procedures will appear here when they are ordered by the doctor.</p>
+                    @else
+                        <i class="fas fa-vial text-muted fa-3x mb-3"></i>
+                        <h5 class="text-muted">No lab investigations found for this visit</h5>
+                        <p class="text-muted">Lab investigations will appear here when they are ordered by the doctor.</p>
+                    @endif
                 </div>
             @endif
         </div>

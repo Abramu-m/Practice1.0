@@ -28,21 +28,16 @@
       </a>
     </li>
     <li class="nav-item">
-      <a href="{{ url('pitc') }}" class="nav-link nav-sub-item {{ nav_active_class([], ['pitc']) }}">
-        <i class="nav-icon bi bi-shield-check text-info"></i>
-        <p>PITC Screening</p>
-      </a>
-    </li>
-    <li class="nav-item">
       <a href="{{ route('lab.visits.index') }}" class="nav-link nav-sub-item {{ nav_active_class(['lab.visits.*']) }}">
         <i class="nav-icon bi bi-clipboard-plus text-success"></i>
-        <p>Pending Investigations</p>
+        <p>Procedures</p>
       </a>
     </li>
   </ul>
 </li>
 
 <!-- CTC Services -->
+<!--
 <li class="nav-item has-treeview {{ nav_menu_open_class([], ['pitc', 'ctc_drug_issue', 'cd4_form_result']) }}">
   <a href="#" class="nav-link nav-header {{ nav_active_class([], ['pitc', 'ctc_drug_issue', 'cd4_form_result']) }}">
     <i class="nav-icon bi bi-hospital-fill text-purple"></i>
@@ -72,13 +67,14 @@
     </li>
   </ul>
 </li>
+ -->
 
 <!-- Stock Management -->
 <li class="nav-item has-treeview {{ nav_menu_open_class(['store.requisitions.*', 'store-locations-stock.*']) }}">
   <a href="#" class="nav-link nav-header {{ nav_active_class(['store.requisitions.*', 'store-locations-stock.*']) }}">
     <i class="nav-icon bi bi-clipboard-data-fill text-info"></i>
     <p class="text-bold">
-      Ward Stock Management
+      Stock Management
       <i class="nav-arrow bi bi-chevron-right"></i>
     </p>
   </a>
@@ -86,13 +82,13 @@
     <li class="nav-item">
       <a href="{{ route('store.requisitions.index') }}" class="nav-link nav-sub-item {{ nav_active_class(['store.requisitions.*']) }}">
         <i class="nav-icon bi bi-clipboard-data text-warning"></i>
-        <p>Ward Supply Requests</p>
+        <p>Supply Requests</p>
       </a>
     </li>
     <li class="nav-item">
       <a href="{{ route('store-locations-stock.index') }}" class="nav-link nav-sub-item {{ nav_active_class(['store-locations-stock.*']) }}">
         <i class="nav-icon bi bi-hospital text-primary"></i>
-        <p>Ward Stock Levels</p>
+        <p>Stock Levels</p>
       </a>
     </li>
   </ul>

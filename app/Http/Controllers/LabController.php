@@ -28,26 +28,32 @@ class LabController extends Controller
      */
     public function index(Request $request)
     {
+        $isNurse = Auth::user()->isNurse();
+
         // Get filter data
         $doctors = Doctor::active()->get();
-        $serviceCategories = ServiceCategory::active()
-            ->where(function($q) {
-                $q->where('name', 'LIKE', '%lab%')
-                  ->orWhere('name', 'LIKE', '%investigation%')
-                  ->orWhere('name', 'LIKE', '%pathology%')
-                  ->orWhere('name', 'LIKE', '%hematology%')
-                  ->orWhere('name', 'LIKE', '%biochemistry%')
-                  ->orWhere('name', 'LIKE', '%microbiology%');
-            })->get();
 
         if ($request->ajax()) {
             $dateFrom = $request->input('date_from', now()->subDays(2)->toDateString());
             $dateTo   = $request->input('date_to',   now()->toDateString());
 
-            // Pre-resolve lab service IDs once (tiny tables — avoids 4-level nested EXISTS)
-            $labServiceIds = MedicalService::whereIn('service_category_id',
-                $serviceCategories->pluck('id')
-            )->pluck('id');
+            // Pre-resolve relevant service IDs once (tiny tables — avoids 4-level nested EXISTS)
+            // Nurses only care about Procedures; other roles see lab-type investigations.
+            if ($isNurse) {
+                $relevantServiceIds = MedicalService::where('service_category_id', ServiceCategory::PROCEDURE)->pluck('id');
+            } else {
+                $labCategoryIds = ServiceCategory::active()
+                    ->where(function($q) {
+                        $q->where('name', 'LIKE', '%lab%')
+                          ->orWhere('name', 'LIKE', '%investigation%')
+                          ->orWhere('name', 'LIKE', '%pathology%')
+                          ->orWhere('name', 'LIKE', '%hematology%')
+                          ->orWhere('name', 'LIKE', '%biochemistry%')
+                          ->orWhere('name', 'LIKE', '%microbiology%');
+                    })->pluck('id');
+
+                $relevantServiceIds = MedicalService::whereIn('service_category_id', $labCategoryIds)->pluck('id');
+            }
 
             // Get qualifying visit IDs via indexed JOINs, scoped to date range
             $invQuery = DB::table('investigations')
@@ -58,7 +64,7 @@ class LabController extends Controller
                     Investigation::STATUS_COLLECTED,
                     Investigation::STATUS_PROCESSING,
                 ])
-                ->whereIn('investigations.medical_service_id', $labServiceIds)
+                ->whereIn('investigations.medical_service_id', $relevantServiceIds)
                 ->where(function ($q) use ($dateFrom, $dateTo) {
                     $q->where(function ($q2) use ($dateFrom, $dateTo) {
                         $q2->where('patient_visits.visit_date', '>=', $dateFrom)
@@ -119,49 +125,34 @@ class LabController extends Controller
                     }
                     return '<span class="text-muted">Not assigned</span>';
                 })
-                ->addColumn('investigations_info', function ($visit) {
-                    $labInvestigations = collect();
+                ->addColumn('investigations_info', function ($visit) use ($isNurse) {
+                    $relevantInvestigations = collect();
                     if ($visit->consultation && $visit->consultation->investigations) {
-                        $labInvestigations = $visit->consultation->investigations->filter(function($investigation) {
-                            return $investigation->medicalService && 
-                                   $investigation->medicalService->serviceCategory &&
-                                   (
-                                       str_contains(strtolower($investigation->medicalService->serviceCategory->name), 'lab') ||
-                                       str_contains(strtolower($investigation->medicalService->serviceCategory->name), 'investigation') ||
-                                       str_contains(strtolower($investigation->medicalService->serviceCategory->name), 'pathology') ||
-                                       str_contains(strtolower($investigation->medicalService->serviceCategory->name), 'hematology') ||
-                                       str_contains(strtolower($investigation->medicalService->serviceCategory->name), 'biochemistry') ||
-                                       str_contains(strtolower($investigation->medicalService->serviceCategory->name), 'microbiology')
-                                   ) &&
-                                   in_array($investigation->status, ['ordered', 'collected', 'processing']);
-                        });
+                        $relevantInvestigations = $visit->consultation->investigations->filter(
+                            fn ($investigation) => $this->isRelevantInvestigation($investigation, $isNurse)
+                        );
                     }
-                    
-                    $urgentCount = $labInvestigations->whereIn('priority', ['urgent', 'stat'])->count();
-                    $totalCount = $labInvestigations->count();
-                    
-                    $html = '<div><span class="badge bg-primary">' . $totalCount . ' investigations</span>';
+
+                    $urgentCount = $relevantInvestigations->whereIn('priority', ['urgent', 'stat'])->count();
+                    $totalCount = $relevantInvestigations->count();
+                    $label = $isNurse ? ' procedures' : ' investigations';
+
+                    $html = '<div><span class="badge bg-primary">' . $totalCount . $label . '</span>';
                     if ($urgentCount > 0) {
                         $html .= '<br><span class="badge bg-danger mt-1">' . $urgentCount . ' urgent</span>';
                     }
                     $html .= '</div>';
                     return $html;
                 })
-                ->addColumn('priority_status', function ($visit) {
-                    $labInvestigations = collect();
+                ->addColumn('priority_status', function ($visit) use ($isNurse) {
+                    $relevantInvestigations = collect();
                     if ($visit->consultation && $visit->consultation->investigations) {
-                        $labInvestigations = $visit->consultation->investigations->filter(function($investigation) {
-                            return $investigation->medicalService && 
-                                   $investigation->medicalService->serviceCategory &&
-                                   (
-                                       str_contains(strtolower($investigation->medicalService->serviceCategory->name), 'lab') ||
-                                       str_contains(strtolower($investigation->medicalService->serviceCategory->name), 'investigation')
-                                   ) &&
-                                   in_array($investigation->status, ['ordered', 'collected', 'processing']);
-                        });
+                        $relevantInvestigations = $visit->consultation->investigations->filter(
+                            fn ($investigation) => $this->isRelevantInvestigation($investigation, $isNurse)
+                        );
                     }
-                    
-                    $statuses = $labInvestigations->pluck('status')->unique();
+
+                    $statuses = $relevantInvestigations->pluck('status')->unique();
                     $html = '';
                     foreach ($statuses as $status) {
                         $statusClass = match($status) {
@@ -172,7 +163,7 @@ class LabController extends Controller
                             'cancelled' => 'secondary',
                             default => 'secondary'
                         };
-                        $count = $labInvestigations->where('status', $status)->count();
+                        $count = $relevantInvestigations->where('status', $status)->count();
                         $html .= '<span class="badge bg-' . $statusClass . ' me-1">' . $count . ' ' . ucfirst($status) . '</span> ';
                     }
                     return $html;
@@ -180,13 +171,20 @@ class LabController extends Controller
                 ->addColumn('visit_status', function ($visit) {
                     return '<span class="badge ' . $visit->visit_status_badge_class . '">' . e($visit->visit_status_label) . '</span>';
                 })
-                ->addColumn('actions', function ($visit) {
-                    return '<div class="btn-group" role="group">
-                                <a href="' . route('lab.visits.investigations', $visit->id) . '" 
+                ->addColumn('actions', function ($visit) use ($isNurse) {
+                    $workButton = $isNurse
+                        ? '<a href="' . route('lab.visits.investigations', $visit->id) . '"
+                                   class="btn btn-sm btn-primary" title="View Procedures">
+                                    <i class="fas fa-syringe"></i> Procedures
+                                </a>'
+                        : '<a href="' . route('lab.visits.investigations', $visit->id) . '"
                                    class="btn btn-sm btn-primary" title="View Lab Investigations">
                                     <i class="fas fa-flask"></i> Lab Work
-                                </a>
-                                <a href="' . route('patient_visits.show', $visit->id) . '" 
+                                </a>';
+
+                    return '<div class="btn-group" role="group">
+                                ' . $workButton . '
+                                <a href="' . route('patient_visits.show', $visit->id) . '"
                                    class="btn btn-sm btn-outline-info" title="View Full Visit Details">
                                     <i class="fas fa-eye"></i>
                                 </a>
@@ -198,7 +196,35 @@ class LabController extends Controller
 
         $dateFrom = now()->subDays(2)->toDateString();
         $dateTo   = now()->toDateString();
-        return view('lab.visits.index', compact('doctors', 'serviceCategories', 'dateFrom', 'dateTo'));
+        return view('lab.visits.index', compact('doctors', 'dateFrom', 'dateTo', 'isNurse'));
+    }
+
+    /**
+     * Determine whether an investigation belongs to the set shown on the
+     * "Pending Investigations" / "Procedures" visit list, based on role.
+     */
+    private function isRelevantInvestigation($investigation, bool $isNurse): bool
+    {
+        if (!$investigation->medicalService || !$investigation->medicalService->serviceCategory) {
+            return false;
+        }
+
+        if (!in_array($investigation->status, ['ordered', 'collected', 'processing'])) {
+            return false;
+        }
+
+        if ($isNurse) {
+            return $investigation->medicalService->service_category_id === ServiceCategory::PROCEDURE;
+        }
+
+        $categoryName = strtolower($investigation->medicalService->serviceCategory->name);
+
+        return str_contains($categoryName, 'lab')
+            || str_contains($categoryName, 'investigation')
+            || str_contains($categoryName, 'pathology')
+            || str_contains($categoryName, 'hematology')
+            || str_contains($categoryName, 'biochemistry')
+            || str_contains($categoryName, 'microbiology');
     }
 
     /**
@@ -242,8 +268,12 @@ class LabController extends Controller
                     return $categoryId === ServiceCategory::LABORATORY;
                 }
 
-                if ($user->isDoctor()) {
+                if ($user->role === 'doctor') {
                     return in_array($categoryId, [ServiceCategory::PROCEDURE, ServiceCategory::SPECIALIZED_INVESTIGATIONS]);
+                }
+
+                if ($user->isNurse()) {
+                    return $categoryId === ServiceCategory::PROCEDURE;
                 }
 
                 return in_array($categoryId, [
@@ -254,6 +284,8 @@ class LabController extends Controller
             })->sortByDesc('ordered_at');
         }
 
+        $isNurse = $user->isNurse();
+
         // Build per-investigation consumable stock availability, keyed by medication_id
         $stockChecks = [];
         foreach ($investigations as $investigation) {
@@ -261,7 +293,7 @@ class LabController extends Controller
                 ->keyBy('medication_id');
         }
 
-        return view('lab.visits.investigations', compact('visit', 'investigations', 'stockChecks'));
+        return view('lab.visits.investigations', compact('visit', 'investigations', 'stockChecks', 'isNurse'));
     }
 
     /**
