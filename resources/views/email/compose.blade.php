@@ -64,10 +64,18 @@
 
                 @if($prefill['mode'] === 'forward' && count($prefill['attachments']))
                     <div class="col-12">
-                        <div class="alert alert-info mb-0">
-                            <i class="bi bi-paperclip me-1"></i>
-                            The original attachment(s) will be forwarded with this message:
-                            {{ collect($prefill['attachments'])->pluck('name')->implode(', ') }}
+                        <label class="form-label fw-semibold">Original Attachments</label>
+                        <div class="border rounded p-2">
+                            @foreach($prefill['attachments'] as $attachment)
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="forward_attachments[]"
+                                           value="{{ $attachment['part_number'] }}"
+                                           id="fwd-att-{{ $attachment['part_number'] }}" checked>
+                                    <label class="form-check-label" for="fwd-att-{{ $attachment['part_number'] }}">
+                                        {{ $attachment['name'] }} ({{ round($attachment['size'] / 1024, 1) }} KB)
+                                    </label>
+                                </div>
+                            @endforeach
                         </div>
                     </div>
                 @endif

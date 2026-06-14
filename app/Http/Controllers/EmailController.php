@@ -234,6 +234,7 @@ class EmailController extends Controller
                 if ($original->hasAttachments()) {
                     foreach ($original->attachments() as $attachment) {
                         $prefill['attachments'][] = [
+                            'part_number' => $attachment->part_number,
                             'name' => $attachment->name,
                             'size' => $attachment->size,
                         ];
@@ -261,6 +262,8 @@ class EmailController extends Controller
             'original_uid' => 'nullable|integer',
             'original_folder' => 'nullable|string',
             'in_reply_to' => 'nullable|string',
+            'forward_attachments' => 'nullable|array',
+            'forward_attachments.*' => 'string',
         ]);
 
         $user = $request->user();
@@ -304,12 +307,16 @@ class EmailController extends Controller
             }
 
             if ($request->input('mode') === 'forward' && $request->filled('original_uid')) {
+                $selectedParts = $request->input('forward_attachments', []);
+
                 $client = $this->connectMailbox($user, $facility);
                 $folder = $client->getFolder($request->input('original_folder', 'INBOX')) ?? $client->getFolder('INBOX');
                 $original = $folder->messages()->getMessageByUid((int) $request->input('original_uid'));
 
                 foreach ($original->attachments() as $attachment) {
-                    $email->attach($attachment->content, $attachment->name, $attachment->content_type);
+                    if (in_array((string) $attachment->part_number, $selectedParts, true)) {
+                        $email->attach($attachment->content, $attachment->name, $attachment->content_type);
+                    }
                 }
 
                 $client->disconnect();
