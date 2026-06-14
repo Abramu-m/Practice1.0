@@ -89,6 +89,18 @@
   </ul>
 </li>
 
+@if(auth()->user()->isCashier())
+<!-- Salary Payments (HR) -->
+<li class="nav-item">
+  <a href="{{ route('hr.salary-payments.index') }}" class="nav-link nav-header {{ nav_active_class(['hr.salary-payments.*']) }}">
+    <i class="nav-icon bi bi-cash-coin text-success"></i>
+    <p class="text-bold">
+      Salary Payments
+    </p>
+  </a>
+</li>
+@endif
+
 <!-- Administrative Tools -->
 <li class="nav-item has-treeview {{ nav_menu_open_class([], ['signature1']) }}">
   <a href="#" class="nav-link nav-header {{ nav_active_class([], ['signature1']) }}">

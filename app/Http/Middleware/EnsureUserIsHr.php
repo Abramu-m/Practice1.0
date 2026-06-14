@@ -17,10 +17,19 @@ class EnsureUserIsHr
     {
         $user = \Illuminate\Support\Facades\Auth::user();
 
-        if (!$user || !($user->is_admin || $user->is_super || $user->role === 'hr')) {
+        if (!$user) {
             abort(403, 'Access denied. HR privileges required.');
         }
 
-        return $next($request);
+        if ($user->is_admin || $user->is_super || $user->role === 'hr') {
+            return $next($request);
+        }
+
+        // Cashiers only get access to the Salary Payments section of HR.
+        if ($user->isCashier() && str_starts_with($request->route()?->getName() ?? '', 'hr.salary-payments.')) {
+            return $next($request);
+        }
+
+        abort(403, 'Access denied. HR privileges required.');
     }
 }
