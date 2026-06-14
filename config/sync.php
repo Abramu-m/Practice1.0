@@ -202,6 +202,47 @@ return [
             ],
             'conflict_check' => true,
         ],
+
+        'employees' => [
+            'foreign_keys' => [
+                'user_id' => 'users',
+                'created_by' => 'users',
+            ],
+            'conflict_check' => true,
+        ],
+
+        'employee_salary_components' => [
+            'foreign_keys' => [
+                'employee_id' => 'employees',
+                'created_by' => 'users',
+            ],
+            'conflict_check' => true,
+        ],
+
+        'paye_tax_bands' => [
+            'foreign_keys' => [],
+            'conflict_check' => true,
+        ],
+
+        'salary_payments' => [
+            'foreign_keys' => [
+                'employee_id' => 'employees',
+                'financial_transaction_id' => 'financial_transactions',
+                'created_by' => 'users',
+                'approved_by' => 'users',
+                'paid_by' => 'users',
+                'cancelled_by' => 'users',
+            ],
+            'conflict_check' => true,
+        ],
+
+        'salary_payment_items' => [
+            'foreign_keys' => [
+                'salary_payment_id' => 'salary_payments',
+                'source_component_id' => 'employee_salary_components',
+            ],
+            'conflict_check' => true,
+        ],
     ],
 
     /*

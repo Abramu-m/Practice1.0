@@ -97,6 +97,14 @@ class User extends Authenticatable
     {
         return $this->hasOne(\App\Models\Doctor::class, 'doctor_id', 'id');
     }
+
+    /**
+     * Get the employee profile associated with the user.
+     */
+    public function employee()
+    {
+        return $this->hasOne(\App\Models\Employee::class);
+    }
     
     /**
      * Get the full name attribute.
@@ -171,6 +179,13 @@ class User extends Authenticatable
     {
         return $this->role === 'radiologist';
     }
+    /**
+     * Check if User is HR.
+     */
+    public function isHr()
+    {
+        return $this->role === 'hr';
+    }
 
     /**
      * Check whether this user is allowed to view the work email feature:
@@ -213,6 +228,7 @@ class User extends Authenticatable
             $this->isPharmacist() => 'pharmacist',
             $this->isNurse() => 'nurse',
             $this->isRadiologist() => 'radiologist',
+            $this->isHr() => 'hr',
             default => null,
         };
     }

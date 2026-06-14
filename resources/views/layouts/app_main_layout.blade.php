@@ -194,6 +194,8 @@
                 $role = 'Nurse';
               } elseif ($currentUser->isRadiologist()) {
                 $role = 'Radiologist';
+              } elseif ($currentUser->isHr()) {
+                $role = 'Human Resources';
               } else {
                 $role = $currentUser->role;
               }
@@ -213,6 +215,8 @@
                 $roleIcon = 'fas fa-user-nurse';
               } elseif ($currentUser->isRadiologist()) {
                 $roleIcon = 'fas fa-x-ray';
+              } elseif ($currentUser->isHr()) {
+                $roleIcon = 'fas fa-people-arrows';
               } else {
                 $roleIcon = null;
               }
@@ -413,6 +417,8 @@
                 @include('layouts.role_specific.nurse')
               @elseif(auth()->check() && auth()->user()->isRadiologist())
                 @include('layouts.role_specific.radiologist')
+              @elseif(auth()->check() && auth()->user()->isHr())
+                @include('layouts.role_specific.hr')
               @else
               <li class="nav-item">
                 <a href="#" class="nav-link">

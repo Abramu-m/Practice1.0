@@ -19,6 +19,11 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\InvestigationFormController;
 use App\Http\Controllers\Api\ClinicalController as ApiClinicalController;
 use App\Http\Controllers\AdminReportController;
+use App\Http\Controllers\Hr\EmployeeController as HrEmployeeController;
+use App\Http\Controllers\Hr\EmployeeSalaryComponentController;
+use App\Http\Controllers\Hr\HrDashboardController;
+use App\Http\Controllers\Hr\PayeTaxBandController;
+use App\Http\Controllers\Hr\SalaryPaymentController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -1016,6 +1021,33 @@ Route::middleware(['auth', 'verified', 'facility_setup'])->prefix('admin/cds')->
         ->name('types.show');
 });
 
+});
+
+// ================================
+// HUMAN RESOURCES (HR) ROUTES
+// ================================
+
+Route::middleware(['auth', 'hr', 'facility_setup'])->prefix('hr')->name('hr.')->group(function () {
+    Route::get('/dashboard', [HrDashboardController::class, 'index'])->name('dashboard');
+
+    Route::resource('employees', HrEmployeeController::class)->except(['destroy']);
+    Route::post('employees/{employee}/toggle-status', [HrEmployeeController::class, 'toggleStatus'])->name('employees.toggle-status');
+
+    Route::resource('employees.salary-components', EmployeeSalaryComponentController::class)
+        ->shallow()->except(['index', 'show', 'create', 'edit']);
+
+    Route::resource('salary-payments', SalaryPaymentController::class)->except(['destroy']);
+    Route::post('salary-payments/generate', [SalaryPaymentController::class, 'generate'])->name('salary-payments.generate');
+    Route::post('salary-payments/{salaryPayment}/recalculate-paye', [SalaryPaymentController::class, 'recalculatePaye'])->name('salary-payments.recalculate-paye');
+    Route::post('salary-payments/{salaryPayment}/approve', [SalaryPaymentController::class, 'approve'])->name('salary-payments.approve');
+    Route::post('salary-payments/{salaryPayment}/pay', [SalaryPaymentController::class, 'pay'])->name('salary-payments.pay');
+    Route::post('salary-payments/{salaryPayment}/cancel', [SalaryPaymentController::class, 'cancel'])->name('salary-payments.cancel');
+    Route::get('salary-payments/{salaryPayment}/payslip', [SalaryPaymentController::class, 'payslip'])->name('salary-payments.payslip');
+
+    // PAYE band settings - admin only (tax configuration)
+    Route::middleware('admin')->prefix('settings')->name('settings.')->group(function () {
+        Route::resource('paye-bands', PayeTaxBandController::class)->except(['show']);
+    });
 });
 
 require __DIR__.'/auth.php';
