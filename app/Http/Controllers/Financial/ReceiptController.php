@@ -116,6 +116,7 @@ class ReceiptController extends Controller
 
             $incomeQuery = FinancialTransaction::whereBetween('transaction_date', [$date . ' 00:00:00', $date . ' 23:59:59'])
                 ->where('transaction_type', 'income')
+                ->where('status', 'completed')
                 ->with(['patient', 'creator', 'visit.visitCategory'])
                 ->orderBy('transaction_date');
 
@@ -151,6 +152,7 @@ class ReceiptController extends Controller
             // Expenditure for the day (no collector filter — expenses are facility-wide)
             $expenses = FinancialTransaction::whereBetween('transaction_date', [$date . ' 00:00:00', $date . ' 23:59:59'])
                 ->where('transaction_type', 'expense')
+                ->where('status', 'completed')
                 ->with(['creator'])
                 ->orderBy('transaction_date')
                 ->get();

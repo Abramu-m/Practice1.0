@@ -204,7 +204,7 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="rxAmountPaid" class="form-label">Amount to Pay</label>
-                                <input type="number" class="form-control" id="rxAmountPaid" name="amount_paid" step="0.01" min="0" required>
+                                <input type="number" class="form-control bg-light" id="rxAmountPaid" name="amount_paid" step="0.01" min="0" readonly required>
                             </div>
                         </div>
                     </div>
