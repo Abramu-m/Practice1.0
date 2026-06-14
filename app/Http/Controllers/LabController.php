@@ -59,8 +59,16 @@ class LabController extends Controller
                     Investigation::STATUS_PROCESSING,
                 ])
                 ->whereIn('investigations.medical_service_id', $labServiceIds)
-                ->where('patient_visits.visit_date', '>=', $dateFrom)
-                ->where('patient_visits.visit_date', '<=', $dateTo);
+                ->where(function ($q) use ($dateFrom, $dateTo) {
+                    $q->where(function ($q2) use ($dateFrom, $dateTo) {
+                        $q2->where('patient_visits.visit_date', '>=', $dateFrom)
+                           ->where('patient_visits.visit_date', '<=', $dateTo);
+                    })->orWhere(function ($q3) {
+                        // Paid investigations on still-open visits stay visible until processed, however old.
+                        $q3->where('investigations.is_paid', true)
+                           ->where('patient_visits.visit_status', '!=', 2);
+                    });
+                });
 
             if ($request->filled('priority')) {
                 $invQuery->where('investigations.priority', $request->priority);

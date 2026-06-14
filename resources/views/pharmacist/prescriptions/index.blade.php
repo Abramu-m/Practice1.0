@@ -35,6 +35,9 @@
                            value="{{ $dateTo }}" onchange="rxTable.draw()">
                 </div>
             </div>
+            <div class="form-text text-muted mt-2 mb-0">
+                Open visits (<strong>Waiting</strong> / <strong>In Treatment</strong>) with paid prescriptions still awaiting dispensing are always shown, even if their visit date is outside the range above.
+            </div>
         </div>
     </div>
 

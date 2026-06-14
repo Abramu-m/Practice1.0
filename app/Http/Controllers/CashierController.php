@@ -28,8 +28,18 @@ class CashierController extends Controller
                     ->select('id', 'consultation_id', 'is_paid', 'status', 'cash_amount'),
             ])
             ->select('patient_visits.*')
-            ->whereDate('visit_date', '>=', $dateFrom)
-            ->whereDate('visit_date', '<=', $dateTo);
+            ->where(function ($q) use ($dateFrom, $dateTo) {
+                $q->where('visit_date', '>=', $dateFrom . ' 00:00:00')
+                  ->where('visit_date', '<=', $dateTo . ' 23:59:59')
+                  ->orWhere(function ($q2) {
+                      // Still-open visits with unpaid items stay visible until paid, however old.
+                      $q2->where('visit_status', '!=', 2)
+                         ->where(function ($q3) {
+                             $q3->whereHas('investigations', fn($iq) => $iq->where('status', '!=', 'cancelled')->where('is_paid', false))
+                                ->orWhereHas('consultation.prescriptions', fn($pq) => $pq->where('status', '!=', 'cancelled')->where('is_paid', false));
+                         });
+                  });
+            });
 
             if ($request->filled('status')) {
                 $query->where('visit_status', $request->status);

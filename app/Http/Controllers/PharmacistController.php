@@ -298,8 +298,19 @@ class PharmacistController extends Controller
             'consultation.doctor.user'
         ])
         ->whereHas('consultation.prescriptions')
-        ->where('created_at', '>=', $dateFrom . ' 00:00:00')
-        ->where('created_at', '<=', $dateTo   . ' 23:59:59')
+        ->where(function ($q) use ($dateFrom, $dateTo) {
+            $q->where(function ($q2) use ($dateFrom, $dateTo) {
+                $q2->where('created_at', '>=', $dateFrom . ' 00:00:00')
+                   ->where('created_at', '<=', $dateTo   . ' 23:59:59');
+            })->orWhere(function ($q3) {
+                // Paid prescriptions on still-open visits stay visible until dispensed, however old.
+                $q3->where('visit_status', '!=', 2)
+                   ->whereHas('consultation.prescriptions', function ($pq) {
+                       $pq->where('is_paid', true)
+                          ->whereIn('status', ['prescribed', 'prepared']);
+                   });
+            });
+        })
         ->orderBy('created_at', 'desc');
 
         if ($request->filled('status') && is_string($request->status)) {

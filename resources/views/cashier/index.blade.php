@@ -35,6 +35,9 @@
                             <input type="date" class="form-control" id="date_to" value="{{ $dateTo }}">
                         </div>
                     </div>
+                    <div class="form-text text-muted mt-2">
+                        Open visits (<strong>Waiting</strong> / <strong>In Treatment</strong>) with unpaid investigations or prescriptions are always shown, even if their visit date is outside the range above.
+                    </div>
                 </div>
             </div>
 
