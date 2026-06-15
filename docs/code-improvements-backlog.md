@@ -10,6 +10,17 @@ _None currently._
 
 ## Done
 
+- **`FinancialTransaction::scopeIncome`/`scopeExpense` didn't exclude
+  non-completed statuses (2026-06-14)** — `scopeIncome()`/`scopeExpense()`
+  only filtered `transaction_type`, so transactions marked `refunded` (set by
+  `ConsultationFeeObserver`, `MedicationDispensingObserver`,
+  `InvestigationFinancialObserver::deleted()`, and
+  `MedicationCashSaleController::cancelPaid()`) or `pending` still counted
+  toward `getTodayIncome()`/`getMonthlyIncome()`/`getTodayExpenses()`/
+  `getMonthlyExpenses()` on the financial dashboard. Fixed by adding
+  `->where('status', 'completed')` to both scopes, matching the convention
+  already used in `ReceiptController::viewDailySummary()`.
+
 - **email/index.blade.php double pagination (2026-06-14)** — IMAP pagination
   (`webklex/php-imap`'s `->paginate(25)`) is correct/efficient: it does one
   cheap IMAP `SEARCH` for all UIDs, then fetches headers only for the current

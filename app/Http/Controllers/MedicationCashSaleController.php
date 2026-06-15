@@ -8,6 +8,7 @@ use App\Models\Medication;
 use App\Models\PatientCategory;
 use App\Models\StoreLocationStock;
 use App\Models\StoreLocation;
+use App\Models\FinancialTransaction;
 use App\Services\FinancialTransactionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -865,19 +866,17 @@ class MedicationCashSaleController extends Controller
             $request = request();
             $request->validate([
                 'cancel_reason' => 'required|string|min:15',
-                'refund_required' => 'required|in:yes,no'
             ]);
 
             $cancelReason = $request->cancel_reason;
-            $refundRequired = $request->refund_required == 'yes';
 
-            // Update sale status
+            // Update sale status - a paid sale being cancelled always requires a refund
             $medicationCashSale->update([
                 'status' => 'cancelled',
                 'cancelled_at' => now(),
                 'cancelled_by' => Auth::id(),
                 'cancellation_reason' => $cancelReason,
-                'refund_required' => $refundRequired,
+                'refund_required' => true,
             ]);
 
             // Cancel all items (return stock to available)
@@ -901,25 +900,36 @@ class MedicationCashSaleController extends Controller
                 'total_amount' => $medicationCashSale->final_amount,
                 'cancelled_by' => Auth::id(),
                 'cancel_reason' => $cancelReason,
-                'refund_required' => $refundRequired,
+                'refund_required' => true,
                 'cancelled_at' => now()
             ]);
 
-            // Create a financial transaction entry if refund is required
-            if ($refundRequired) {
-                // This would typically integrate with your financial system
-                // For now, we'll just log it
-                Log::info("Refund Required for Cancelled Sale", [
-                    'sale_id' => $medicationCashSale->id,
-                    'amount' => $medicationCashSale->final_amount,
-                    'requires_manual_processing' => true
+            // Mark the original income transaction as refunded (no longer counts as income)
+            FinancialTransaction::where('source_type', 'medication_cash_sale')
+                ->where('source_id', $medicationCashSale->id)
+                ->update([
+                    'status' => 'refunded',
+                    'notes' => 'Sale cancelled - refund required: ' . $cancelReason,
                 ]);
-            }
 
-            $message = "Sale {$medicationCashSale->sale_number} has been successfully cancelled.";
-            if ($refundRequired) {
-                $message .= " Refund processing may be required.";
-            }
+            // Create a pending refund expense for the cashier to approve once the cash is returned
+            FinancialTransaction::create([
+                'transaction_type' => 'expense',
+                'category' => 'medication',
+                'subcategory' => 'refund',
+                'amount' => $medicationCashSale->final_amount,
+                'description' => "Refund for cancelled sale {$medicationCashSale->sale_number}",
+                'source_type' => 'medication_cash_sale_refund',
+                'source_id' => $medicationCashSale->id,
+                'payment_method' => $medicationCashSale->payment_method ?? 'cash',
+                'patient_paid_amount' => $medicationCashSale->final_amount,
+                'insurance_covered_amount' => 0,
+                'status' => 'pending',
+                'notes' => 'Refund pending cashier approval. Reason: ' . $cancelReason,
+            ]);
+
+            $message = "Sale {$medicationCashSale->sale_number} has been successfully cancelled. "
+                . "A refund of TSh " . number_format($medicationCashSale->final_amount, 2) . " is pending cashier approval.";
 
             return redirect()->route('medication-cash-sales.show', $medicationCashSale)
                 ->with('success', $message);

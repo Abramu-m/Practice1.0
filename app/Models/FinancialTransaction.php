@@ -113,12 +113,12 @@ class FinancialTransaction extends Model
      */
     public function scopeIncome($query)
     {
-        return $query->where('transaction_type', 'income');
+        return $query->where('transaction_type', 'income')->where('status', 'completed');
     }
 
     public function scopeExpense($query)
     {
-        return $query->where('transaction_type', 'expense');
+        return $query->where('transaction_type', 'expense')->where('status', 'completed');
     }
 
     public function scopeToday($query)

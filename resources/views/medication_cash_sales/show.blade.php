@@ -719,12 +719,9 @@
                         <small class="form-text text-muted">This reason will be recorded for audit purposes.</small>
                     </div>
                     
-                    <div class="mb-3">
-                        <label for="refund_required">Refund Required?</label>
-                        <select name="refund_required" id="refund_required" class="form-control">
-                            <option value="no">No Refund Required</option>
-                            <option value="yes">Refund Required</option>
-                        </select>
+                    <div class="alert alert-warning">
+                        <i class="fas fa-money-bill-wave"></i>
+                        A refund of <strong>TSh {{ number_format($medicationCashSale->final_amount, 2) }}</strong> will be required for this patient.
                     </div>
                 </div>
                 <div class="modal-footer">
