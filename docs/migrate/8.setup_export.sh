@@ -31,6 +31,7 @@ TABLES=(
   referral_hospitals referral_departments
   system_settings blood_transfusion_report_rows hematology_report_rows clinical_chemistry_report_rows
   serology_report_rows microbiology_report_rows parasitology_report_rows medicine_dispensing_report_rows
+  paye_tax_bands
 )
 
 mysqldump -u"$DB_USER" --no-create-info --skip-triggers --complete-insert --replace "$DB_NAME" "${TABLES[@]}"
