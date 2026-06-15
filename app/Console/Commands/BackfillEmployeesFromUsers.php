@@ -56,7 +56,7 @@ class BackfillEmployeesFromUsers extends Command
                 'middle_name' => $user->middle_name,
                 'last_name' => $user->last_name,
                 'gender' => $user->gender,
-                'date_of_birth' => $user->date_of_birth,
+                'date_of_birth' => $user->date_of_birth?->year >= 1900 ? $user->date_of_birth : null,
                 'phone' => $user->phone,
                 'email' => $user->email,
                 'address' => $user->address,
